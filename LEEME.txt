@@ -1,0 +1,6 @@
+CAPSULA - PAQUETE PWA
+=====================
+Contenido: index.html, manifest.json, sw.js y carpeta icons/.
+Suban TODO junto, en la misma carpeta, a un sitio con HTTPS (GitHub Pages, Netlify, Cloudflare Pages).
+Luego pega la URL en https://www.pwabuilder.com y descarga el paquete Android.
+Cuando cambies index.html, sube el numero de VERSION en sw.js.
