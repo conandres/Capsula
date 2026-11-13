@@ -234,7 +234,6 @@ textarea.in{resize:vertical;line-height:1.4}
 .btn:not(.s):not(:disabled){box-shadow:0 6px 14px rgba(255,141,187,.4)}
 
 main>*,.ob>*{flex-shrink:0}
-.plusb{display:inline-flex;gap:4px;align-items:center;border:1px solid var(--line);background:var(--soft);color:var(--pd);border-radius:99px;padding:5px 10px;font-weight:600;font-size:13px;cursor:pointer;min-height:32px}
 a.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;text-align:center}
 .fl{position:relative}.fl.sleep{animation:none;filter:saturate(.8)}.fl.sleep .eye{animation:none;transform:scaleY(.12)}
 .zz{position:absolute;right:-8px;top:0;font-weight:600;font-size:22px;color:var(--pd);animation:zzf 2.4s ease-in-out infinite}
@@ -251,16 +250,6 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
 .bar.sm{height:10px}.bar.low i{background:var(--bad)}
 .acts{display:flex;gap:8px;width:100%}
 .acts .btn{flex:1;align-self:stretch;padding:10px 6px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:14px}
-.ad{border:2px dashed var(--soft2);border-radius:20px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:4px;background:repeating-linear-gradient(45deg,#fff,#fff 10px,var(--soft) 10px,var(--soft) 20px)}
-.adk{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mu)}
-.adb{min-height:76px;display:grid;place-items:center;align-content:center;text-align:center;font-weight:600;color:var(--pd);background:#fff;border-radius:14px;width:100%}
-.adb small{font-weight:400;color:var(--mu);font-size:11px}
-.seg2{display:flex;background:var(--soft);border-radius:99px;padding:4px;gap:4px}
-.seg2 button{flex:1;border:0;background:none;border-radius:99px;padding:9px 6px;font-weight:600;color:var(--mu);cursor:pointer;min-height:40px}
-.seg2 .on{background:#fff;color:var(--pd);box-shadow:0 2px 8px rgba(255,141,187,.3)}
-.price{font-size:32px;font-weight:600;text-align:center}.price small{font-size:14px;color:var(--mu);font-weight:400}
-.cmp{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:1px;background:var(--soft2);border:1px solid var(--soft2);border-radius:16px;overflow:hidden;font-size:13px}
-.cmp>*{background:#fff;padding:8px 10px}.cmp b{background:var(--soft);text-align:center}.cmp .pl2{color:var(--pd);font-weight:600}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -330,7 +319,7 @@ const WQ='¿Cuál fue tu peor trabajo?';
 /* ---------- state ---------- */
 const today=()=>new Date().toDateString(),KEY='capsula_v3',LEGACY='capsula_v2';
 const PT0=()=>({love:80,food:75,t:Date.now(),lr:0,lf:0,ans:0,ad:'',asked:{},moods:[]});
-const S={plan:'free',bill:'y',trial:false,bub:null,bubT:0,pt:PT0(),scr:'boot',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,group:null,
+const S={bub:null,bubT:0,pt:PT0(),scr:'boot',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,group:null,
  user:null,families:[],members:{},solo:false,cloudErr:'',bootSlow:0,joinCode:'',
  xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),prompt:null,posts:[]};
 let T={i:0,s:0,a:null},C={};const LIVE=new Set();
@@ -465,7 +454,7 @@ function selPet(k){S.pet.kind=k;if(!S.pe)S.pet.name=PETS[k].n;render()}
 function startGame(){S.pet.name=S.pet.name.trim()||PETS[S.pet.kind].n;S.petSet=true;S.scr='main';S.tab='home';render();toast('¡'+S.pet.name+' ya está contigo!')}
 
 /* ---------- main shell ---------- */
-const hdr=()=>`<div class="brand">Cápsula<small>${S.group?esc(S.group.name):'Mi diario'}</small></div><div class="row" style="gap:6px;flex:none">${S.plan==='plus'?`<span class="tag" style="margin:0">${ic('crown',14)}Plus</span>`:`<button class="plusb" onclick="planSheet()">${ic('crown',15)}Plus</button>`}<span class="chip">${pet(S.pet.kind,30)}${ic('heart',14)}<b>${S.xp}</b></span></div>`;
+const hdr=()=>`<div class="brand">Cápsula<small>${S.group?esc(S.group.name):'Mi diario'}</small></div><div class="row" style="gap:6px;flex:none"><span class="chip">${pet(S.pet.kind,30)}${ic('heart',14)}<b>${S.xp}</b></span></div>`;
 function shell(){return `<div class="top" id="hd">${hdr()}</div><main id="mn">${VIEW[S.tab]()}</main>
 <nav aria-label="Principal">
  <button data-t="home" onclick="go('home')">${ic('home')}Inicio</button>
@@ -494,13 +483,12 @@ function home(){
  ${heroHTML()}
  ${S.chest===today()?`<section class="card c"><span class="mu">Cofre de hoy abierto. Vuelve mañana por otro 🎁</span></section>`:`<section class="card c hero"><div class="chest">🎁</div><h3>¡${esc(S.pet.name)} te trajo un regalo!</h3><button class="btn" onclick="chest()">Abrir cofre</button></section>`}
  <section class="card"><div class="row sp"><h3 class="row" style="gap:6px;color:var(--pd)"><span class="${S.streak?'flick':''}" style="display:inline-flex">${ic('flame',20)}</span><span style="color:var(--tx)">${S.streak?'Racha de '+S.streak+(S.streak>1?' días':' día'):'Empieza tu racha hoy'}</span></h3><span class="mu">${S.posted?'Hoy ya cuentas':'Cuenta algo hoy'}</span></div><div class="days">${strip()}</div></section>
- ${ad('inicio-1')}
  <section class="card"><span class="mu">Pregunta de la semana</span><h2>${WQ}</h2><p class="mu">${wq}</p><button class="btn" onclick="chooser(WQ)">Responder</button></section>
  <section class="card"><h3>¿Cómo quieres contar hoy?</h3><div class="qp">${Object.entries(TY).map(([k,v])=>`<button onclick="compose('${k}')">${ic(v.i,18)}${v.l}</button>`).join('')}</div></section>
  <section class="card"><h3>Misión del fin de semana</h3><p class="mu">Pregúntale a tus papás cómo se conocieron. Recompensa: 80 corazones.</p>
   ${S.mis===0?`<button class="btn s" onclick="S.mis=1;toast('Misión aceptada');render()">Aceptar misión</button>`:S.mis===1?`<button class="btn" onclick="S.mis=2;add(80)">Ya la hice, cobrar</button>`:`<p class="row" style="color:var(--ok);font-weight:500">${ic('check',18)} Misión cumplida</p>`}</section>
- ${moodCard()}${ad('inicio-2')}<section class="card"><h3>Libro de la familia</h3><div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div><p class="mu">${Math.min(n,12)} de 12 historias. Con 12 se arma el libro.</p></section>`}
-function chest(){const r=(10+Math.floor(Math.random()*21))*(S.plan==='plus'?2:1);S.chest=today();burst(32);add(r)}
+ ${moodCard()}<section class="card"><h3>Libro de la familia</h3><div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div><p class="mu">${Math.min(n,12)} de 12 historias. Con 12 se arma el libro.</p></section>`}
+function chest(){const r=(10+Math.floor(Math.random()*21));S.chest=today();burst(32);add(r)}
 const H=3600e3;
 const QS=[
  {k:'dia',mood:1,t:()=>'¿Cómo te fue hoy, '+S.me.name+'?',o:[['😄 Genial','¡Qué alegría! Cuéntale tu día a alguien de tu familia 💗',4],['🙂 Bien','Me alegra. Los días tranquilos también cuentan ✨',3],['😕 Regular','Te entiendo. Mañana es otra oportunidad y yo estoy contigo 🫶',2],['😢 Mal','Ven, te doy un abrazo gigante 🤗 Cuando quieras, me cuentas qué pasó.',1]]},
@@ -552,18 +540,6 @@ function petIdle(force){if(S.scr!=='main'||S.tab!=='home'||document.hidden||$('#
 function moodCard(){const m=S.pt.moods||[];if(!m.length)return'';const E=['','😢','😕','🙂','😄'],L='DLMXJVS';
  return `<section class="card"><h3>Tu ánimo esta semana</h3><div class="days">${Array.from({length:7},(_,i)=>{const dt=new Date(Date.now()-(6-i)*864e5),e=m.find(x=>x.d===dt.toDateString());return `<span style="${e?'font-size:20px;background:var(--soft2)':''}">${e?E[e.v]:L[dt.getDay()]}</span>`}).join('')}</div><p class="mu">${esc(S.pet.name)} lo recuerda cada vez que le cuentas cómo te fue.</p></section>`}
 
-/* ---------- anuncios y membresía ---------- */
-const ad=slot=>S.plan==='plus'?'':`<aside class="ad" aria-label="Publicidad" data-slot="${slot}"><span class="adk">Publicidad</span><div class="adb">Espacio para anuncio<small>${slot}</small></div><button class="lnk" style="min-height:32px;font-size:13px" onclick="planSheet()">Quitar anuncios con Plus</button></aside>`;
-function planSheet(){const plus=S.plan==='plus',y=S.bill==='y';
- const rows=[['Anuncios','Sí','Ninguno'],['Miembros por grupo','6','20'],['Video','60 s','3 min'],['Cofre diario','x1','x2'],['Libro impreso','Precio normal','20% menos'],['Mascotas y accesorios','Básicos','Exclusivos']];
- showSheet(`<div class="ch"><span class="ti">${ic('crown',22)}</span><h2>Cápsula Plus</h2></div>
- <p class="mu">Para familias que quieren guardar más y sin anuncios.</p>
- ${plus?`<div class="q">Plan activo: Plus${S.trial?' · prueba gratis de 7 días':''}</div>`:`<div class="seg2"><button class="${y?'':'on'}" onclick="S.bill='m';planSheet()">Mensual</button><button class="${y?'on':''}" onclick="S.bill='y';planSheet()">Anual · ahorra 33%</button></div><div class="price">${y?'$119.000':'$14.900'}<small> COP / ${y?'año':'mes'}</small></div>`}
- <div class="cmp"><b></b><b>Gratis</b><b>Plus</b>${rows.map(r=>`<span>${r[0]}</span><span>${r[1]}</span><span class="pl2">${r[2]}</span>`).join('')}</div>
- ${plus?`<button class="btn s w" onclick="S.plan='free';S.trial=false;cl();render();toast('Volviste al plan gratis')">Volver al plan gratis</button>`:`<button class="btn w" onclick="goPlus()">Probar 7 días gratis</button>`}
- <p class="mu">Precios de ejemplo. El cobro real se conecta (Wompi, Mercado Pago o Google Play) al publicar la app.</p>`)}
-function goPlus(){S.plan='plus';S.trial=true;cl();burst(40,['👑','✨','💗']);toast('¡Bienvenido a Plus!');render()}
-function planCard(){return S.plan==='plus'?`<div class="card hero"><div class="row" style="gap:8px">${ic('crown',22)}<h3>Eres Cápsula Plus</h3></div><p class="mu">Sin anuncios, cofres dobles y videos de hasta 3 minutos.</p><button class="btn s w" onclick="planSheet()">Ver mi plan</button></div>`:`<div class="card hero"><div class="row" style="gap:8px">${ic('crown',22)}<h3>Cápsula Plus</h3></div><p class="mu">Sin anuncios, más miembros por grupo y videos más largos.</p><button class="btn w" onclick="planSheet()">Ver planes</button></div>`}
 function helpCard(){if(!S.group||Object.keys(S.members).length>1)return'';return `<div class="card"><h3>¿Tu familia aún no se une?</h3><p class="mu">Puedes empezar sin ellos. Tu mascota y tu diario funcionan solos, y todo se comparte cuando entren.</p><ul class="mu"><li>Invítalos con un mensaje listo para enviar.</li><li>Entrevístalos y publica la historia por ellos: al contar, escribe quién la cuenta.</li><li>${esc(S.pet.name)} te recordará invitarlos.</li></ul><a class="btn w" href="https://wa.me/?text=${encodeURIComponent(inviteText())}" target="_blank" rel="noopener">Enviar invitación por WhatsApp</a></div>`}
 
 /* ---------- trivia ---------- */
@@ -575,7 +551,7 @@ function buildQ(){const M=S.members,ids=Object.keys(M);if(ids.length<2)return[];
 function triv(){
  if(!T.q||(!T.q.length&&T.i===0))T.q=buildQ();const Q=T.q;
  if(!Q.length)return `<h2>Trivia familiar</h2><div class="card c">${pet(S.pet.kind,90)}<h3>Aún faltan frases</h3><p class="mu">La trivia usa cartas y fotos con descripción que publiquen otros familiares. Cuando haya historias de otra persona, aquí aparece.</p><button class="btn w" onclick="go('fam')">Invitar a la familia</button></div>`;
- if(T.i>=Q.length)return `<div class="card c">${pet(S.pet.kind,110)}<h2>¡Terminaste!</h2><p>Acertaste ${T.s} de ${Q.length}</p><p class="mu">${T.s===Q.length?'Perfecto, bono de 30 corazones':'Mañana hay trivia nueva'}</p><button class="btn" onclick="T={i:0,s:0,a:null};render()">Jugar otra vez</button></div>${ad('trivia')}`;
+ if(T.i>=Q.length)return `<div class="card c">${pet(S.pet.kind,110)}<h2>¡Terminaste!</h2><p>Acertaste ${T.s} de ${Q.length}</p><p class="mu">${T.s===Q.length?'Perfecto, bono de 30 corazones':'Mañana hay trivia nueva'}</p><button class="btn" onclick="T={i:0,s:0,a:null};render()">Jugar otra vez</button></div>`;
  const q=Q[T.i];
  return `<div class="card"><span class="mu">¿Quién lo escribió? Pregunta ${T.i+1} de ${Q.length}</span><p class="quote">${esc(q.t)}</p>
  ${q.o.map((o,j)=>{const st=T.a===null?'':(o===q.a?'ok':(j===T.a?'no':''));return `<button class="opt ${st}" onclick="ans(${j})">${esc(o)}${st==='ok'?ic('check',20):st==='no'?ic('x',20):''}</button>`}).join('')}
@@ -598,7 +574,7 @@ function arc(){
  const n=S.posts.length;
  const head=`<h2>Archivo familiar</h2><div class="card"><span class="mu">Libro de la familia: ${Math.min(n,12)} de 12 historias</span><div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div></div>`;
  if(!n)return head+`<div class="card c">${pet(S.pet.kind,90)}<h3>Aún no hay historias</h3><p class="mu">Cuenta la primera y ${esc(S.pet.name)} te lo agradecerá.</p><button class="btn" onclick="chooser()">Contar la primera</button></div>`;
- return head+S.posts.map((p,ix)=>(ix===1||ix%4===3?ad('archivo-'+ix):'')+`<article class="card"><div class="row">${av(p.a)}<div class="tx"><b>${esc(p.t)}</b><span class="mu">${esc(who(p.a,p))} · ${rel(p.ts)}${p.by?' · contada por '+esc(p.by):''}</span></div><span class="tag">${ic(TY[p.k].i,14)}${TY[p.k].l}</span></div>
+ return head+S.posts.map((p,ix)=>`<article class="card"><div class="row">${av(p.a)}<div class="tx"><b>${esc(p.t)}</b><span class="mu">${esc(who(p.a,p))} · ${rel(p.ts)}${p.by?' · contada por '+esc(p.by):''}</span></div><span class="tag">${ic(TY[p.k].i,14)}${TY[p.k].l}</span></div>
   ${postBody(p)}
   <div class="rx">${['💗','😂','🥹'].map((e,j)=>`<button class="${p.m[j]?'on':''}" aria-pressed="${!!p.m[j]}" onclick="react('${p.id}',${j})">${e} ${p.r[j]+p.m[j]}</button>`).join('')}</div></article>`).join('')}
 function react(id,j){const p=S.posts.find(q=>q.id===id);if(p&&window.CLOUD&&CLOUD.ready)CLOUD.react(id,j,!p.m[j]).catch(()=>toast('No se pudo guardar tu reacción'))}
@@ -608,12 +584,12 @@ function inviteText(){const c=S.group.code,u=location.origin+location.pathname.r
 const acct=()=>`<div class="card"><span class="mu">Sesión iniciada con</span><b style="overflow-wrap:anywhere">${esc(S.user?S.user.email:'')}</b><button class="btn s w" onclick="logout()">Cerrar sesión</button></div>`;
 async function leave(){if(!confirm('¿Salir de '+S.group.name+'? Tus historias se quedan en el archivo de la familia.'))return;try{await CLOUD.leaveFamily(S.group.id);toast('Saliste del grupo');render()}catch(e){toast('No se pudo salir. Intenta de nuevo.')}}
 function fam(){
- if(!S.group)return `<h2>Tu familia</h2>${planCard()}<div class="card c">${pet(S.pet.kind,90)}<h3>Estás jugando solo</h3><p class="mu">Crea un grupo o únete a uno para compartir historias, ver la liga y jugar la trivia.</p><button class="btn w" onclick="S.scr='group';S.gstep='pick';render()">Crear o unirme a un grupo</button></div>${S.families.length?famList():''}${acct()}`;
+ if(!S.group)return `<h2>Tu familia</h2><div class="card c">${pet(S.pet.kind,90)}<h3>Estás jugando solo</h3><p class="mu">Crea un grupo o únete a uno para compartir historias, ver la liga y jugar la trivia.</p><button class="btn w" onclick="S.scr='group';S.gstep='pick';render()">Crear o unirme a un grupo</button></div>${S.families.length?famList():''}${acct()}`;
  const me=S.user.uid;
  const L=Object.entries(S.members).filter(([id])=>id!==me).map(([id,m])=>({id,n:m.name||'Familiar',xp:m.xp||0})).concat([{id:'me',n:S.me.name+' (tú)',xp:S.xp}]).sort((a,b)=>b.xp-a.xp);
  const B=[['pen','Primera historia',S.posts.some(p=>p.a==='me')],['flame','Racha de 3',S.streak>=3],['brush','Multiformato',S.types.size>=3],['star','Trivia perfecta',S.perfect],['users','Invitador',!!S.inv],['book','Libro listo',S.posts.length>=12]];
  return `<h2>${esc(S.group.name)}</h2>
- ${planCard()}
+ 
  ${S.families.length>1?famList():''}
  <div class="card"><span class="mu">Código del grupo</span><div class="code">${esc(S.group.code)}</div>
   <button class="btn w" onclick="S.inv=1;copy(inviteText());render()">Invitar a un familiar</button>
@@ -621,7 +597,6 @@ function fam(){
 ${helpCard()}
  <div class="card"><h3>Liga de la familia</h3><span class="mu">${L.length} ${L.length>1?'miembros':'miembro'} en el grupo</span>
   ${L.map((r,i)=>`<div class="row sp"><div class="row"><span class="rk ${i===0?'g':''}">${i+1}</span>${av(r.id,40)}<b>${esc(r.n)}</b></div><span class="row" style="gap:4px">${r.xp}${ic('heart',14)}</span></div>`).join('')}</div>
-${ad('familia')}
  <div class="card"><h3>Insignias</h3><div class="bd">${B.map(b=>`<div class="${b[2]?'':'lk'}">${ic(b[0],28)}${b[1]}</div>`).join('')}</div></div>
  <button class="btn s w" onclick="S.scr='group';S.gstep='pick';render()">Crear o unirme a otra familia</button>
  ${S.group.ownerUid!==me?`<button class="btn s w" onclick="leave()">Salir de esta familia</button>`:''}
@@ -648,7 +623,7 @@ function compose(k){
   foto:`<label class="drop" for="ph-f"><span class="ti">${ic('camera',24)}</span><b>Elegir una foto</b><span class="mu">De tu galería o de la cámara</span></label><input id="ph-f" type="file" accept="image/*" hidden onchange="pick(this,'img')"><img id="pv" class="pv" alt="Vista previa de tu foto" hidden>${ttl('Ponle un nombre al recuerdo')}<label class="lb" for="cap">¿Qué pasó ahí?</label><textarea id="cap" class="in" rows="3" maxlength="300" placeholder="Cuenta quiénes salen y qué recuerdas"></textarea>${go}`,
   carta:`<label class="lb" for="to">Para</label><input id="to" class="in" maxlength="40" placeholder="Toda la familia"><label class="lb" for="tx">Tu carta</label><textarea id="tx" class="in paper" rows="7" maxlength="800" placeholder="Querida familia..." oninput="chk()"></textarea>${go}`,
   dibujo:`<canvas id="cv" class="cv" width="600" height="440" aria-label="Lienzo para dibujar"></canvas><div class="tools"><div class="row" style="gap:8px">${[['#ff8dbb','Rosa'],['#c43d7a','Fucsia'],['#ffb1d0','Rosa pastel'],['#7ccfae','Verde'],['#7fb8f5','Azul'],['#4a2336','Ciruela'],['#ffffff','Borrador']].map((c,i)=>`<button class="swb ${i?'':'on'}" style="background:${c[0]}" data-c="${c[0]}" onclick="setCol(this)" aria-label="${c[1]}"></button>`).join('')}</div><div class="row" style="gap:8px">${[4,8,16].map((s,i)=>`<button class="szb ${i===1?'on':''}" onclick="setSz(this,${s})" aria-label="Grosor ${s}"><i style="width:${s+2}px;height:${s+2}px"></i></button>`).join('')}<button class="btn s" onclick="clr()">Borrar todo</button></div></div>${ttl('Ponle un nombre a tu dibujo')}${go}`,
-  video:`<label class="drop" for="vd-f"><span class="ti">${ic('video',24)}</span><b>Elegir o grabar un video</b><span class="mu">Hasta ${S.plan==='plus'?'3 minutos':'60 segundos'}</span></label><input id="vd-f" type="file" accept="video/*" hidden onchange="pick(this,'vid')"><video id="pv" class="pv" controls playsinline hidden></video><p class="err" id="err"></p>${ttl('Ponle un nombre a tu video')}<label class="lb" for="cap">¿Qué cuenta el video?</label><textarea id="cap" class="in" rows="2" maxlength="300"></textarea>${go}`,
+  video:`<label class="drop" for="vd-f"><span class="ti">${ic('video',24)}</span><b>Elegir o grabar un video</b><span class="mu">Hasta 60 segundos</span></label><input id="vd-f" type="file" accept="video/*" hidden onchange="pick(this,'vid')"><video id="pv" class="pv" controls playsinline hidden></video><p class="err" id="err"></p>${ttl('Ponle un nombre a tu video')}<label class="lb" for="cap">¿Qué cuenta el video?</label><textarea id="cap" class="in" rows="2" maxlength="300"></textarea>${go}`,
   receta:`<label class="lb" for="ttl">Nombre del plato</label><input id="ttl" class="in" maxlength="60" placeholder="Sancocho del domingo" oninput="chk()"><label class="lb" for="by">¿Quién te la enseñó?</label><input id="by" class="in" maxlength="40" placeholder="Abuela Rosa"><label class="lb" for="ing">Ingredientes (uno por línea)</label><textarea id="ing" class="in" rows="4" oninput="chk()"></textarea><label class="lb" for="stp">Preparación</label><textarea id="stp" class="in" rows="4" oninput="chk()"></textarea>${go}`
  };
  showSheet(head+B[k]);if(k==='dibujo')initDraw();
@@ -657,7 +632,7 @@ function chk(){const g=$('#go');if(!g)return;const v=id=>{const e=$('#'+id);retu
  switch(C.k){case 'foto':ok=!!C.url;break;case 'video':ok=!!C.url&&C.ok;break;case 'dibujo':ok=C.drawn;break;case 'carta':ok=v('tx').length>=10;break;case 'receta':ok=!!(v('ttl')&&v('ing')&&v('stp'));break}
  g.disabled=!ok}
 function pick(i,t){const f=i.files&&i.files[0];if(!f)return;C.url=URL.createObjectURL(f);LIVE.add(C.url);const e=$('#pv');e.hidden=false;e.src=C.url;
- if(t==='vid'){C.ok=false;$('#err').textContent='';e.onloadedmetadata=()=>{C.ok=e.duration<=(S.plan==='plus'?181:61);$('#err').textContent=C.ok?'':'El video dura más de '+(S.plan==='plus'?'3 minutos':'60 segundos')+'. Elige uno más corto'+(S.plan==='plus'?'.':' o pasa a Plus.');chk()};e.onerror=()=>{C.ok=false;$('#err').textContent='No se pudo abrir ese video. Prueba con otro archivo.';chk()}}
+ if(t==='vid'){C.ok=false;$('#err').textContent='';e.onloadedmetadata=()=>{C.ok=e.duration<=61;$('#err').textContent=C.ok?'':'El video dura más de 60 segundos. Elige uno más corto.';chk()};e.onerror=()=>{C.ok=false;$('#err').textContent='No se pudo abrir ese video. Prueba con otro archivo.';chk()}}
  else{C.ok=true;shrink(f)}chk()}
 function shrink(f){const im=new Image();im.onload=()=>{const k=Math.min(1,800/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);C.url=c.toDataURL('image/jpeg',.7);const e=$('#pv');if(e)e.src=C.url};im.src=URL.createObjectURL(f)}
 
