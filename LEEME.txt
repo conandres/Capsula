@@ -15,8 +15,7 @@ CONFIGURACIÓN (una sola vez)
    autorizados: agrega  https://conandres.github.io
 4) Firestore Database > Crear base de datos (modo producción, región cercana, p. ej. us-east1
    o southamerica-east1) > pestaña Reglas > pega el contenido de firestore.rules > Publicar.
-5) Sube los archivos. Cada vez que cambies index.html, cloud.js o config.js, sube el número
-   de VERSION en sw.js (si no, los celulares siguen viendo la versión vieja).
+5) Sube los archivos. Los celulares reciben las actualizaciones solos (el service worker pide primero a la red).
 
 QUÉ SE GUARDA Y DÓNDE (Firestore)
 ---------------------------------
