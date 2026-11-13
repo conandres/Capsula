@@ -745,8 +745,8 @@ function doPub(k){
  if(k==='receta'){p.t=g('ttl');p.x={by:g('by'),ing:g('ing').split('\n').map(s=>s.trim()).filter(Boolean),stp:g('stp')}}
  {const by=g('by2');if(by)p.by=by}
  if(JSON.stringify(p.x).length>850000){toast('Ese archivo pesa demasiado. Prueba con uno más liviano.');return}
- CLOUD.publish(p).catch(()=>toast('No se pudo guardar la historia. Revisa tu conexión.'));
- S.types.add(k);S.total=(S.total||0)+1;track('post',k);
+ CLOUD.publish(p).then(()=>{track('post',k);soft()}).catch(()=>toast('No se pudo guardar la historia. Revisa tu conexión.'));
+ S.types.add(k);S.total=(S.total||0)+1;
  if(!S.posted){S.posted=true;S.streak++;S.best=Math.max(S.best||0,S.streak);S.last=today();setTimeout(()=>{toast('🔥 ¡Racha de '+S.streak+(S.streak>1?' días':' día')+'!');burst(26,['🔥','✨'])},1100)}
  S.prompt=null;cl();S.tab='arc';add(TY[k].xp);
 }
