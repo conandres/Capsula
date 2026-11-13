@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.conandres.twa",
+        "sha256_cert_fingerprints": ["4C:C6:24:C3:A9:49:08:99:C0:BD:05:41:A3:81:7E:A5:F2:D6:36:E9:EF:07:BA:78:D4:C0:5C:90:9B:0A:2C:E0"]
+      }
+    }]
