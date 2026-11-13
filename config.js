@@ -11,5 +11,5 @@ window.CAPSULA_CONFIG = {
     appId: '1:440518399932:web:ffe6da5640321afb633db9'
   },
   /* Firebase Console > Authentication > Método de acceso > Google > "ID de cliente web" */
-  googleClientId: 'PEGA_AQUI_TU_CLIENT_ID.apps.googleusercontent.com'
+  googleClientId: '440518399932-vulhk1efet3tv6s22dtce23kk4qk0afl.apps.googleusercontent.com'
 };
