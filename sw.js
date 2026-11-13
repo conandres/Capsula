@@ -1,8 +1,8 @@
 /* Service worker de Cápsula: funciona sin internet.
    Si cambias index.html, sube el número de VERSION para que los celulares se actualicen. */
-const VERSION = 'capsula-v1';
+const VERSION = 'capsula-v2';
 const SHELL = [
-  './', './index.html', './manifest.json',
+  './', './index.html', './manifest.json', './config.js', './cloud.js',
   './icons/icon-192.png', './icons/icon-512.png',
   './icons/maskable-192.png', './icons/maskable-512.png',
   './icons/apple-touch-icon.png', './icons/favicon-32.png'
@@ -25,8 +25,10 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
 
-  // Google Sign-In y cualquier otro dominio: directo a la red, sin caché
-  const isFont = url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com';
+  // Google Sign-In y cualquier otro dominio: directo a la red, sin caché.
+  // Fuentes y librería de Firebase se guardan para que la app abra sin internet.
+  const isFont = url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com' ||
+    (url.hostname === 'www.gstatic.com' && url.pathname.startsWith('/firebasejs/'));
   if (url.origin !== location.origin && !isFont) return;
 
   // Fuentes: usa la guardada y actualiza en segundo plano

@@ -1,6 +1,43 @@
-CAPSULA - PAQUETE PWA
-=====================
-Contenido: index.html, manifest.json, sw.js y carpeta icons/.
-Suban TODO junto, en la misma carpeta, a un sitio con HTTPS (GitHub Pages, Netlify, Cloudflare Pages).
-Luego pega la URL en https://www.pwabuilder.com y descarga el paquete Android.
-Cuando cambies index.html, sube el numero de VERSION en sw.js.
+CAPSULA - PWA con cuentas de Google y familias en la nube
+==========================================================
+Archivos: index.html, config.js, cloud.js, sw.js, manifest.json, firestore.rules,
+icons/ y .well-known/assetlinks.json. Suban TODO junto a GitHub Pages (raíz del repo).
+
+CONFIGURACIÓN (una sola vez)
+----------------------------
+1) Crea el proyecto en https://console.firebase.google.com
+   - Agrega una app Web (</>) y copia el bloque "firebaseConfig" dentro de config.js.
+2) Authentication > Método de acceso > activa "Google".
+   - Copia el "ID de cliente web" de ese proveedor a googleClientId en config.js.
+   - Authentication > Configuración > Dominios autorizados: agrega conandres.github.io
+3) Google Cloud Console (mismo proyecto) > APIs y servicios > Credenciales >
+   "Cliente web (creado automáticamente por Google Service)" > Orígenes de JavaScript
+   autorizados: agrega  https://conandres.github.io
+4) Firestore Database > Crear base de datos (modo producción, región cercana, p. ej. us-east1
+   o southamerica-east1) > pestaña Reglas > pega el contenido de firestore.rules > Publicar.
+5) Sube los archivos. Cada vez que cambies index.html, cloud.js o config.js, sube el número
+   de VERSION en sw.js (si no, los celulares siguen viendo la versión vieja).
+
+QUÉ SE GUARDA Y DÓNDE (Firestore)
+---------------------------------
+users/{uid}                    progreso personal: mascota, corazones, racha, cofre, misión...
+users/{uid}/posts/{id}         diario personal (cuando juegas sin familia)
+families/{id}                  nombre, código de invitación, dueño
+families/{id}/members/{uid}    miembros: nombre, mascota, corazones (alimenta la liga)
+families/{id}/posts/{id}       HISTORIAL de la familia (cartas, fotos, dibujos, recetas, voz)
+familyCodes/{codigo}           código -> familia (se consulta uno a uno, no se puede listar)
+
+LÍMITES CONOCIDOS DE ESTA VERSIÓN
+---------------------------------
+- Videos y audio real: aún no. Necesitan Cloud Storage (plan Blaze). Hoy las fotos y dibujos
+  se guardan comprimidos dentro del documento (máx. ~850 KB) y la nota de voz sigue simulada.
+- Los corazones los calcula el celular; con las reglas actuales un usuario técnico podría
+  editarse los suyos. Para blindarlo hacen falta Cloud Functions (plan Blaze).
+- El plan Plus sigue siendo un interruptor local de prueba: el cobro real se conecta después.
+- Sin App Check: conviene activarlo antes de publicar en Play para frenar abuso de la API.
+
+APP ANDROID (TWA)
+-----------------
+.well-known/assetlinks.json ya trae la huella del keystore del APK. Si publicas con
+"Play App Signing", añade también la huella SHA-256 que te muestra Play Console
+(Integridad de la app > Firma de la app); con ambas la barra de URL desaparece.

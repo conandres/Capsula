@@ -270,6 +270,7 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
   <div id="ts" class="ts" role="status"></div>
 </div>
 
+<script src="config.js"></script>
 <script>
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -321,34 +322,32 @@ const TY={
  foto:{l:'Foto',h:'Un recuerdo con foto',i:'camera',xp:40},
  carta:{l:'Carta',h:'Escríbelo con calma',i:'pen',xp:40},
  dibujo:{l:'Dibujo',h:'Dibújalo a mano',i:'brush',xp:45},
- video:{l:'Video',h:'Hasta 60 s · 3 min con Plus',i:'video',xp:60},
+ video:{l:'Video',h:'Muy pronto',i:'video',xp:60},
  receta:{l:'Receta',h:'Un plato de la familia',i:'cup',xp:55}
 };
-const MEM={rosa:{n:'Abuela Rosa',c:'#ffc2d9',xp:420},lucia:{n:'Mamá Lucía',c:'#ffd0e3',xp:360},carlos:{n:'Papá Carlos',c:'#ffdbe8',xp:310},andres:{n:'Tío Andrés',c:'#ffe6f0',xp:190}};
 const WQ='¿Cuál fue tu peor trabajo?';
-const Q=[
- {t:'“Tuve que vender mis zapatos para pagar el bus a la ciudad”',a:'Abuela Rosa',o:['Abuela Rosa','Tío Andrés','Papá Carlos']},
- {t:'“Me quedé dormido en mi propia graduación”',a:'Papá Carlos',o:['Mamá Lucía','Papá Carlos','Abuela Rosa']},
- {t:'“Mi primer trabajo fue lavar carros con una manguera rota”',a:'Tío Andrés',o:['Tío Andrés','Papá Carlos','Mamá Lucía']}
-];
-const demoPosts=()=>[
- {id:1,k:'voz',a:'rosa',when:'hace 2 días',t:'Cómo conoció a mi abuelo en un baile',x:{d:'2:14'},r:[4,2,6],m:[0,0,0]},
- {id:2,k:'receta',a:'rosa',when:'hace 4 días',t:'Arroz con leche de la abuela',x:{by:'Abuela Rosa',ing:['1 taza de arroz','4 tazas de leche','1 rama de canela','Azúcar al gusto'],stp:'Cocina el arroz con la canela en agua hasta que se abra. Agrega la leche y revuelve despacio hasta que espese. Endulza al final.'},r:[9,1,3],m:[0,0,0]},
- {id:3,k:'voz',a:'carlos',when:'hace 5 días',t:'El día que me perdí en el centro',x:{d:'1:48'},r:[3,7,1],m:[0,0,0]},
- {id:4,k:'carta',a:'lucia',when:'hace 1 semana',t:'Carta para Toda la familia',x:{to:'Toda la familia',tx:'Hoy encontré la foto del paseo al río. Estábamos todos con los pies mojados y nadie quería volver. Guárdenla bien, que ya es parte del libro.'},r:[6,0,8],m:[0,0,0]},
- {id:5,k:'voz',a:'andres',when:'hace 1 año',t:'Mi primer carro y su primera falla',x:{d:'1:05'},r:[2,5,0],m:[0,0,0]}
-];
 
 /* ---------- state ---------- */
-const S={plan:'free',bill:'y',trial:false,bub:null,bubT:0,pt:{love:80,food:75,t:Date.now(),lr:0,lf:0,ans:0,ad:'',asked:{},moods:[]},scr:'welcome',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,group:null,demo:false,
+const today=()=>new Date().toDateString(),KEY='capsula_v3',LEGACY='capsula_v2';
+const PT0=()=>({love:80,food:75,t:Date.now(),lr:0,lf:0,ans:0,ad:'',asked:{},moods:[]});
+const S={plan:'free',bill:'y',trial:false,bub:null,bubT:0,pt:PT0(),scr:'boot',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,group:null,
+ user:null,families:[],members:{},solo:false,cloudErr:'',bootSlow:0,joinCode:'',
  xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),prompt:null,posts:[]};
 let T={i:0,s:0,a:null},C={};const LIVE=new Set();
-const today=()=>new Date().toDateString(),KEY='capsula_v2';
-function save(){const o={...S,types:[...S.types]};delete o.prompt;delete o.bub;const tr=p=>{try{localStorage.setItem(KEY,JSON.stringify({...o,posts:p}));return true}catch(e){return false}};const P=S.posts.slice(0,40);if(!tr(P))tr(P.map(p=>p.x&&p.x.src?{...p,x:{...p.x,src:''}}:p))}
-function load(){try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(!o||!o.me||!o.me.name)return;Object.assign(S,o,{types:new Set(o.types||[])});S.pt=Object.assign({love:80,food:75,t:Date.now(),lr:0,lf:0,ans:0,ad:'',asked:{},moods:[]},o.pt||{});S.bub=null;
- const y=new Date(Date.now()-864e5).toDateString();S.posted=S.last===today();if(!S.posted&&S.last!==y)S.streak=0;
- S.scr=!S.petSet?(S.group?'pet':'group'):'main';S.gstep='pick';S.tab='home'}catch(e){}}
-function logout(){try{localStorage.removeItem(KEY)}catch(e){}location.reload()}
+try{const c=new URLSearchParams(location.search).get('codigo');if(c){S.joinCode=c.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);history.replaceState(null,'',location.pathname)}}catch(e){}
+
+/* Lo personal (mascota, corazones, racha...) viaja a la nube; la copia local sirve de respaldo sin internet */
+const personal=()=>({name:S.me.name,pet:S.pet,petSet:S.petSet,xp:S.xp,streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,types:[...S.types],pt:S.pt,solo:S.solo,active:S.group?S.group.id:null});
+function save(){if(S.user){try{localStorage.setItem(KEY,JSON.stringify({...personal(),uid:S.user.uid,familyIds:S.families.map(f=>f.id)}))}catch(e){}}
+ if(window.CLOUD&&CLOUD.ready)CLOUD.dirty()}
+function resetPersonal(){Object.assign(S,{xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),pt:PT0(),pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,solo:false,group:null,bub:null,posts:[],members:{},families:[]});T={i:0,s:0,a:null}}
+function applyPersonal(o){if(!o)return;
+ ['petSet','xp','streak','last','chest','mis','petDone','inv','perfect','solo'].forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
+ if(o.pet&&PETS[o.pet.kind])S.pet={kind:o.pet.kind,name:String(o.pet.name||PETS[o.pet.kind].n).slice(0,14)};
+ S.types=new Set(o.types||[]);S.pt=Object.assign(PT0(),o.pt||{});S.pt.t=S.pt.t||Date.now();S.bub=null;
+ const y=new Date(Date.now()-864e5).toDateString();S.posted=S.last===today();if(!S.posted&&S.last!==y)S.streak=0}
+function legacy(){try{const o=JSON.parse(localStorage.getItem(LEGACY)||'null');if(o&&o.me&&o.me.name)return{pet:o.pet,petSet:o.petSet,xp:o.xp,streak:o.streak,last:o.last,chest:o.chest,mis:o.mis,petDone:o.petDone,inv:o.inv,perfect:o.perfect,types:o.types,pt:o.pt}}catch(e){}return null}
+async function logout(){try{if(window.google&&google.accounts)google.accounts.id.disableAutoSelect()}catch(e){}try{localStorage.removeItem(KEY)}catch(e){}try{if(window.CLOUD&&CLOUD.signOut)await CLOUD.signOut()}catch(e){}location.reload()}
 function burst(n=28,em=['💗','✨','⭐','🎉','💖']){const a=$('.app');for(let i=0;i<n;i++){const e=document.createElement('span');e.className='cf';e.textContent=em[i%em.length];e.style.cssText=`left:${50+(Math.random()-.5)*20}%;--dx:${(Math.random()-.5)*360}px;--dy:${-120-Math.random()*320}px;--r:${(Math.random()-.5)*720}deg;animation-delay:${Math.random()*.2}s`;a.appendChild(e);setTimeout(()=>e.remove(),1900)}}
 function floatH(t){const e=document.createElement('div');e.className='fh';e.textContent=t;$('.app').appendChild(e);setTimeout(()=>e.remove(),1300)}
 function hopPet(){const f=$('.hero .fl');if(f){f.classList.remove('hop');void f.offsetWidth;f.classList.add('hop')}}
@@ -358,10 +357,9 @@ function levelUp(l){const o=document.createElement('div');o.className='lvup';o.i
 function toast(m){const t=$('#ts');t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),2000)}
 function add(n){const a=Math.floor(S.xp/100);S.xp+=n;const b=Math.floor(S.xp/100);toast('+'+n+' corazones para '+S.pet.name);render();floatH('+'+n+' 💗');hopPet();{const ch=$('.chip');if(ch){ch.classList.remove('bump');void ch.offsetWidth;ch.classList.add('bump')}}if(b>a)setTimeout(()=>levelUp(b),500)}
 function copy(t){try{navigator.clipboard.writeText(t).then(()=>toast('Copiado')).catch(()=>toast('Copia este texto: '+t))}catch(e){toast('Copia este texto: '+t)}}
-function av(id,s=44){
- if(id==='me')return `<span class="av" style="width:${s}px;height:${s}px">${pet(S.pet.kind,s-4)}</span>`;
- const m=MEM[id];return `<span class="av" style="width:${s}px;height:${s}px;background:${m.c};font-size:${Math.round(s*.42)}px">${m.n.split(' ')[1][0]}</span>`}
-const who=id=>id==='me'?S.me.name:MEM[id].n;
+function av(id,s=44){const k=id==='me'?S.pet.kind:((S.members[id]||{}).petKind||'nube');return `<span class="av" style="width:${s}px;height:${s}px">${pet(PETS[k]?k:'nube',s-4)}</span>`}
+const who=(id,p)=>id==='me'?S.me.name:((S.members[id]||{}).name||(p&&p.an)||'Familiar');
+const rel=t=>{const m=Math.floor((Date.now()-t)/6e4);if(m<1)return'ahora';if(m<60)return'hace '+m+' min';const h=Math.floor(m/60);if(h<24)return'hace '+h+(h>1?' horas':' hora');const d=Math.floor(h/24);if(d<7)return'hace '+d+(d>1?' días':' día');if(d<30){const w=Math.floor(d/7);return'hace '+w+(w>1?' semanas':' semana')}if(d<365){const mo=Math.floor(d/30);return'hace '+mo+(mo>1?' meses':' mes')}const y=Math.floor(d/365);return'hace '+y+(y>1?' años':' año')};
 const bars=(n=16,anim)=>Array.from({length:n},(_,i)=>`<i style="${anim?`animation-delay:${(i*.07).toFixed(2)}s;`:''}height:${8+(i*7)%30}px"></i>`).join('');
 function strip(){const t=new Date(),L='DLMXJVS',last=S.posted?6:5;
  return Array.from({length:7},(_,i)=>{const d=new Date(t);d.setDate(t.getDate()-6+i);const on=i>last-S.streak&&i<=last;return `<span class="${on?'on':''} ${i===6?'now':''}">${L[d.getDay()]}</span>`}).join('')}
@@ -411,42 +409,51 @@ function bindCr(){const c=$('#cr');if(!c)return;clearTimeout(CR.t);CR.i=0;CR.hol
  c.addEventListener('scroll',()=>{const i=Math.max(0,Math.min(CR.n-1,Math.round(c.scrollLeft/w())));if(i!==CR.i)set(i,false)},{passive:true});
  set(0,false)}
 
-const GOOGLE_CLIENT_ID=''; /* pega aquí tu Client ID web de Google Cloud para activar el botón real */
-function gsheet(){showSheet(`<div class="ch">${GLOGO}<h2>Inicia sesión</h2></div>
- ${GOOGLE_CLIENT_ID?'<div id="gbox" style="min-height:44px;display:flex;justify-content:center"></div><p class="mu c">o entra solo con tu nombre</p>':'<p class="mu">Google se conectará en la versión de la tienda. Por ahora entra con tu nombre y tu progreso queda guardado.</p>'}
- <label class="lb" for="gn">Tu nombre</label>
- <input id="gn" class="in" maxlength="24" placeholder="Sofi" autocomplete="off" onkeydown="if(event.key==='Enter')login()">
- <p class="err" id="err"></p>
- <button class="btn w" onclick="login()">Continuar</button>`);
- if(GOOGLE_CLIENT_ID)loadG();else setTimeout(()=>{const e=$('#gn');e&&e.focus()},50)}
-function gOK(n,p){S.me.name=String(n||'').slice(0,24)||'Amigo';if(p){S.me.email=p.email;S.me.pic=p.picture}cl();S.scr='group';S.gstep='pick';render()}
-function loadG(){const go=()=>{try{google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:r=>{try{const p=JSON.parse(decodeURIComponent(escape(atob(r.credential.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')))));gOK(p.given_name||p.name,p)}catch(e){$('#err').textContent='No pudimos leer tu cuenta de Google. Usa tu nombre.'}}});google.accounts.id.renderButton($('#gbox'),{theme:'outline',size:'large',shape:'pill',width:300,text:'continue_with',locale:'es'})}catch(e){$('#err').textContent='Google no respondió. Entra con tu nombre.'}};
- if(window.google&&google.accounts)return go();const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.async=true;s.onload=go;s.onerror=()=>{const e=$('#err');if(e)e.textContent='Sin conexión con Google. Entra con tu nombre.'};document.head.appendChild(s)}
-function login(){const e=$('#gn'),n=e?e.value.trim():'';if(!n){$('#err').textContent='Escribe tu nombre para continuar.';return}gOK(n)}
+const CFG=()=>window.CAPSULA_CONFIG||{};
+const gerr=m=>{const e=$('#err');if(e)e.textContent=m};
+function gsheet(){
+ const id=CFG().googleClientId,ok=!!(id&&!/^PEGA/i.test(id)&&window.CLOUD&&CLOUD.configured);
+ showSheet(`<div class="ch">${GLOGO}<h2>Inicia sesión</h2></div>
+ ${ok?`<p class="mu">Con tu cuenta de Google guardamos tu progreso, tu familia y sus historias. Las recuperas en cualquier celular.</p><div id="gbox" style="min-height:44px;display:flex;justify-content:center"></div><p class="mu c" id="gst"></p>`:`<p class="err" style="display:block">${esc(S.cloudErr||'El inicio de sesión todavía no está configurado. Abre config.js y sigue el LEEME.')}</p>`}
+ <p class="err" id="err"></p>`);
+ if(ok)loadG(id)}
+function loadG(id){const go=()=>{try{google.accounts.id.initialize({client_id:id,callback:gCred,ux_mode:'popup'});google.accounts.id.renderButton($('#gbox'),{theme:'outline',size:'large',shape:'pill',width:300,text:'continue_with',locale:'es'})}catch(e){gerr('Google no respondió. Intenta de nuevo.')}};
+ if(window.google&&google.accounts)return go();const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.async=true;s.onload=go;s.onerror=()=>gerr('Sin conexión con Google. Revisa tu internet.');document.head.appendChild(s)}
+async function gCred(r){const g=$('#gst');if(g)g.textContent='Entrando…';try{await CLOUD.signIn(r.credential)}catch(e){if(g)g.textContent='';gerr('No pudimos iniciar sesión. Intenta de nuevo.')}}
 
 function groupScr(){
  const back=`<button class="bk" onclick="S.gstep='pick';render()">${ic('back',18)} Atrás</button>`;let b='';
- if(S.gstep==='pick')b=`<h1>Hola, ${esc(S.me.name)}. ¿Con quién juegas?</h1><p class="mu">Puedes cambiarlo cuando quieras.</p>
+ if(S.gstep==='pick')b=`${S.petSet?`<button class="bk" onclick="nextScr()">${ic('back',18)} Volver</button>`:''}<h1>Hola, ${esc(S.me.name)}. ¿Con quién juegas?</h1><p class="mu">Puedes tener varias familias y cambiar entre ellas cuando quieras.</p>
   <button class="opc" onclick="S.gstep='create';render()"><span class="ti">${ic('users',24)}</span><span class="tx"><b>Crear un grupo familiar</b><span class="mu">Tú invitas al resto con un código.</span></span></button>
   <button class="opc" onclick="S.gstep='join';render()"><span class="ti">${ic('heart',24)}</span><span class="tx"><b>Unirme a un grupo</b><span class="mu">Si alguien ya creó uno, usa su código.</span></span></button>
-  <button class="lnk" onclick="soloGo()">Jugar solo por ahora</button>`;
+  ${S.petSet||S.families.length?'':`<button class="lnk" onclick="soloGo()">Jugar solo por ahora</button>`}`;
  if(S.gstep==='create')b=`${back}<h1>Crea tu grupo</h1><label class="lb" for="gname">Nombre del grupo</label>
   <input id="gname" class="in" maxlength="30" placeholder="Familia Ramírez" onkeydown="if(event.key==='Enter')mk()">
-  <button class="btn w" onclick="mk()">Crear grupo</button>`;
+  <p class="err" id="err"></p>
+  <button class="btn w" id="mkb" onclick="mk()">Crear grupo</button>`;
  if(S.gstep==='created')b=`<h1>¡Listo, ${esc(S.group.name)}!</h1><p class="mu">Comparte este código con tu familia para que se unan.</p>
-  <div class="code">${S.group.code}</div>
-  <button class="btn s w" onclick="copy('${S.group.code}')">Copiar código</button>
+  <div class="code">${esc(S.group.code)}</div>
+  <button class="btn s w" onclick="copy(inviteText())">Copiar invitación</button>
   <button class="btn w" onclick="nextScr()">Continuar</button>`;
  if(S.gstep==='join')b=`${back}<h1>Únete a tu familia</h1><label class="lb" for="gc">Código del grupo</label>
-  <input id="gc" class="in" maxlength="8" placeholder="ROSA24" autocapitalize="characters" autocomplete="off" onkeydown="if(event.key==='Enter')jn()">
-  <p class="err" id="err"></p><p class="mu">Para probar, usa el código de ejemplo ROSA24.</p>
-  <button class="btn w" onclick="jn()">Unirme</button>`;
+  <input id="gc" class="in" maxlength="8" placeholder="K7M2QX9P" value="${esc(S.joinCode)}" autocapitalize="characters" autocomplete="off" onkeydown="if(event.key==='Enter')jn()">
+  <p class="err" id="err"></p>
+  <button class="btn w" id="jnb" onclick="jn()">Unirme</button>`;
  return `<div class="ob">${b}</div>`}
-const genCode=()=>Array.from({length:6},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random()*32)]).join('');
-function mk(){S.group={name:$('#gname').value.trim()||'Mi familia',code:genCode()};S.demo=false;S.posts=[];S.gstep='created';render()}
-function jn(){const c=$('#gc').value.trim().toUpperCase();if(c!=='ROSA24'){$('#err').textContent='No encontramos ese código. Revisa que esté bien escrito.';return}
- S.group={name:'Familia Rosa',code:'ROSA24'};S.demo=true;S.posts=demoPosts().concat(S.posts);nextScr()}
-function soloGo(){S.group=null;S.demo=false;nextScr()}
+async function mk(){const b=$('#mkb');if(!b||b.disabled)return;
+ if(!navigator.onLine){gerr('Necesitas internet para crear el grupo.');return}
+ b.disabled=true;b.textContent='Creando…';gerr('');
+ try{await CLOUD.createFamily($('#gname').value.trim()||'Mi familia');S.gstep='created';render()}
+ catch(e){b.disabled=false;b.textContent='Crear grupo';gerr('No pudimos crear el grupo. Intenta de nuevo.')}}
+async function jn(){const b=$('#jnb'),c=$('#gc').value.trim().toUpperCase();if(!b||b.disabled)return;
+ if(c.length<4){gerr('Escribe el código completo.');return}
+ if(!navigator.onLine){gerr('Necesitas internet para unirte.');return}
+ b.disabled=true;b.textContent='Entrando…';gerr('');
+ try{const r=await CLOUD.joinFamily(c);
+  if(r.err){b.disabled=false;b.textContent='Unirme';gerr('No encontramos ese código. Revisa que esté bien escrito.');return}
+  S.joinCode='';nextScr();toast('Ya eres parte de '+S.group.name+' 💗')}
+ catch(e){b.disabled=false;b.textContent='Unirme';gerr('No pudimos unirte. Revisa tu conexión e intenta de nuevo.')}}
+function soloGo(){S.solo=true;S.group=null;if(window.CLOUD&&CLOUD.ready)CLOUD.switchFamily(null);nextScr()}
 function nextScr(){S.scr=S.petSet?'main':'pet';S.tab='home';render()}
 
 function petScr(){return `<div class="ob"><h1>Elige tu mascota</h1><p class="mu">Crecerá con cada historia que cuentes.</p>
@@ -471,7 +478,7 @@ function navSync(){document.querySelectorAll('nav [data-t]').forEach(b=>{const o
 function render(){
  save();
  if(S.scr==='main'&&$('#mn')){$('#mn').innerHTML=VIEW[S.tab]();$('#hd').innerHTML=hdr();navSync();return}
- $('#scr').innerHTML=({welcome,group:groupScr,pet:petScr,main:shell})[S.scr]();
+ $('#scr').innerHTML=({boot,welcome,group:groupScr,pet:petScr,main:shell})[S.scr]();
  if(S.scr==='welcome')bindCr();else clearTimeout(CR.t);
  if(S.scr==='main'){navSync();enterAnim($('#mn'))}
  const key=S.scr+':'+S.gstep;if(key!==render.k){render.k=key;if(S.scr==='group'||S.scr==='pet')enterAnim($('.ob'))}
@@ -482,7 +489,7 @@ function enterAnim(m){if(!m)return;[...m.children].forEach((e,i)=>e.style.setPro
 /* ---------- home ---------- */
 function home(){
  const lvl=Math.floor(S.xp/100),n=S.posts.length;
- const wq=S.demo?'3 de 4 familiares ya respondieron. Faltas tú.':S.group?'Serás la primera persona en responder.':'Respóndela para tu diario.';
+ const wq=S.group?'Cuéntale a tu familia cómo lo viviste.':'Respóndela para tu diario.';
  return `
  ${heroHTML()}
  ${S.chest===today()?`<section class="card c"><span class="mu">Cofre de hoy abierto. Vuelve mañana por otro 🎁</span></section>`:`<section class="card c hero"><div class="chest">🎁</div><h3>¡${esc(S.pet.name)} te trajo un regalo!</h3><button class="btn" onclick="chest()">Abrir cofre</button></section>`}
@@ -492,7 +499,6 @@ function home(){
  <section class="card"><h3>¿Cómo quieres contar hoy?</h3><div class="qp">${Object.entries(TY).map(([k,v])=>`<button onclick="compose('${k}')">${ic(v.i,18)}${v.l}</button>`).join('')}</div></section>
  <section class="card"><h3>Misión del fin de semana</h3><p class="mu">Pregúntale a tus papás cómo se conocieron. Recompensa: 80 corazones.</p>
   ${S.mis===0?`<button class="btn s" onclick="S.mis=1;toast('Misión aceptada');render()">Aceptar misión</button>`:S.mis===1?`<button class="btn" onclick="S.mis=2;add(80)">Ya la hice, cobrar</button>`:`<p class="row" style="color:var(--ok);font-weight:500">${ic('check',18)} Misión cumplida</p>`}</section>
- ${S.demo?`<section class="card"><h3>Tal día como hoy</h3><p class="mu">Hace un año Tío Andrés contó la primera falla de su carro.</p><button class="btn s" onclick="toast('Reproduciendo recuerdo (demo)')">Volver a escuchar</button></section>`:''}
  ${moodCard()}${ad('inicio-2')}<section class="card"><h3>Libro de la familia</h3><div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div><p class="mu">${Math.min(n,12)} de 12 historias. Con 12 se arma el libro.</p></section>`}
 function chest(){const r=(10+Math.floor(Math.random()*21))*(S.plan==='plus'?2:1);S.chest=today();burst(32);add(r)}
 const H=3600e3;
@@ -502,7 +508,7 @@ const QS=[
  {k:'mejor',t:()=>'¿Qué fue lo mejor de tu día?',o:[['La comida','¡Ñam! Guárdame un poquito 🍪'],['Mi familia','Eso vale oro 💗 ¿Lo cuentas en una historia?'],['Trabajo o estudio','¡Qué orgullo! Sigue así 💪'],['Otra cosa','Cuéntamelo en una historia, quiero saberlo todo ✨']]},
  {k:'agua',t:()=>'¿Ya tomaste agua hoy?',o:[['Sí 💧','¡Muy bien! Los dos nos hidratamos ☁️'],['Ahorita','Anda, que yo te espero 🥤']]},
  {k:'hist',t:()=>'¿Me cuentas una historia hoy?',o:[['Sí, vamos','¡Sí! Elige cómo quieres contarla 🎉',0,'chooser'],['Luego','Dale, aquí estaré 💗']]},
- {k:'inv',cond:()=>S.group&&!S.demo,t:()=>'¿Ya invitaste a alguien de tu familia?',o:[['Sí','¡Genial! Con ellos todo es más lindo 💗'],['Aún no','Comparte el código desde Familia, ¡quiero conocerlos!',0,'fam']]}
+ {k:'inv',cond:()=>S.group&&Object.keys(S.members).length<2,t:()=>'¿Ya invitaste a alguien de tu familia?',o:[['Sí','¡Genial! Con ellos todo es más lindo 💗'],['Aún no','Comparte el código desde Familia, ¡quiero conocerlos!',0,'fam']]}
 ];
 const asleep=()=>new Date().getHours()<6;
 const fmtWait=ms=>{const m=Math.ceil(ms/60000);return m>=60?Math.floor(m/60)+' h '+(m%60)+' min':m+' min'};
@@ -558,18 +564,24 @@ function planSheet(){const plus=S.plan==='plus',y=S.bill==='y';
  <p class="mu">Precios de ejemplo. El cobro real se conecta (Wompi, Mercado Pago o Google Play) al publicar la app.</p>`)}
 function goPlus(){S.plan='plus';S.trial=true;cl();burst(40,['👑','✨','💗']);toast('¡Bienvenido a Plus!');render()}
 function planCard(){return S.plan==='plus'?`<div class="card hero"><div class="row" style="gap:8px">${ic('crown',22)}<h3>Eres Cápsula Plus</h3></div><p class="mu">Sin anuncios, cofres dobles y videos de hasta 3 minutos.</p><button class="btn s w" onclick="planSheet()">Ver mi plan</button></div>`:`<div class="card hero"><div class="row" style="gap:8px">${ic('crown',22)}<h3>Cápsula Plus</h3></div><p class="mu">Sin anuncios, más miembros por grupo y videos más largos.</p><button class="btn w" onclick="planSheet()">Ver planes</button></div>`}
-function helpCard(){if(S.demo||!S.group)return'';return `<div class="card"><h3>¿Tu familia aún no se une?</h3><p class="mu">Puedes empezar sin ellos. Tu mascota y tu diario funcionan solos, y todo se comparte cuando entren.</p><ul class="mu"><li>Invítalos con un mensaje listo para enviar.</li><li>Entrevístalos y publica la historia por ellos: al contar, escribe quién la cuenta.</li><li>${esc(S.pet.name)} te recordará invitarlos.</li></ul><a class="btn w" href="https://wa.me/?text=${encodeURIComponent('Te invito a nuestra familia en Cápsula 💗 Entra con el código '+S.group.code)}" target="_blank" rel="noopener">Enviar invitación por WhatsApp</a></div>`}
+function helpCard(){if(!S.group||Object.keys(S.members).length>1)return'';return `<div class="card"><h3>¿Tu familia aún no se une?</h3><p class="mu">Puedes empezar sin ellos. Tu mascota y tu diario funcionan solos, y todo se comparte cuando entren.</p><ul class="mu"><li>Invítalos con un mensaje listo para enviar.</li><li>Entrevístalos y publica la historia por ellos: al contar, escribe quién la cuenta.</li><li>${esc(S.pet.name)} te recordará invitarlos.</li></ul><a class="btn w" href="https://wa.me/?text=${encodeURIComponent(inviteText())}" target="_blank" rel="noopener">Enviar invitación por WhatsApp</a></div>`}
 
 /* ---------- trivia ---------- */
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function buildQ(){const M=S.members,ids=Object.keys(M);if(ids.length<2)return[];
+ const nm=id=>id===S.user.uid?S.me.name:(M[id].name||'Familiar'),all=ids.map(nm);
+ const pool=S.posts.filter(p=>p.a!=='me'&&M[p.a]&&(p.k==='carta'?p.x.tx:p.x.cap));
+ return shuf(pool).slice(0,3).map(p=>{const a=who(p.a,p),tx=(p.k==='carta'?p.x.tx:p.x.cap).trim().slice(0,160);return{t:'“'+tx+'”',a,o:shuf([a,...shuf(all.filter(n=>n!==a)).slice(0,2)])}})}
 function triv(){
- if(!S.demo)return `<h2>Trivia familiar</h2><div class="card c">${pet(S.pet.kind,90)}<h3>Se activa con tu familia</h3><p class="mu">La trivia mezcla frases de varios familiares y todos adivinan quién las dijo. Necesitas familiares con historias publicadas.</p><button class="btn w" onclick="go('fam')">Ir a Familia</button></div>`;
+ if(!T.q||(!T.q.length&&T.i===0))T.q=buildQ();const Q=T.q;
+ if(!Q.length)return `<h2>Trivia familiar</h2><div class="card c">${pet(S.pet.kind,90)}<h3>Aún faltan frases</h3><p class="mu">La trivia usa cartas y fotos con descripción que publiquen otros familiares. Cuando haya historias de otra persona, aquí aparece.</p><button class="btn w" onclick="go('fam')">Invitar a la familia</button></div>`;
  if(T.i>=Q.length)return `<div class="card c">${pet(S.pet.kind,110)}<h2>¡Terminaste!</h2><p>Acertaste ${T.s} de ${Q.length}</p><p class="mu">${T.s===Q.length?'Perfecto, bono de 30 corazones':'Mañana hay trivia nueva'}</p><button class="btn" onclick="T={i:0,s:0,a:null};render()">Jugar otra vez</button></div>${ad('trivia')}`;
  const q=Q[T.i];
- return `<div class="card"><span class="mu">¿Quién vivió esto? Pregunta ${T.i+1} de ${Q.length}</span><p class="quote">${q.t}</p>
- ${q.o.map((o,j)=>{const st=T.a===null?'':(o===q.a?'ok':(j===T.a?'no':''));return `<button class="opt ${st}" onclick="ans(${j})">${o}${st==='ok'?ic('check',20):st==='no'?ic('x',20):''}</button>`}).join('')}
+ return `<div class="card"><span class="mu">¿Quién lo escribió? Pregunta ${T.i+1} de ${Q.length}</span><p class="quote">${esc(q.t)}</p>
+ ${q.o.map((o,j)=>{const st=T.a===null?'':(o===q.a?'ok':(j===T.a?'no':''));return `<button class="opt ${st}" onclick="ans(${j})">${esc(o)}${st==='ok'?ic('check',20):st==='no'?ic('x',20):''}</button>`}).join('')}
  ${T.a!==null?`<button class="btn" onclick="nx()">Siguiente</button>`:''}</div>`}
-function ans(j){if(T.a!==null)return;T.a=j;if(Q[T.i].o[j]===Q[T.i].a){T.s++;burst(10,['✨','💗']);add(10)}else render()}
-function nx(){T.i++;T.a=null;if(T.i>=Q.length&&T.s===Q.length){S.perfect=true;burst(44);add(30)}else render()}
+function ans(j){if(T.a!==null)return;T.a=j;if(T.q[T.i].o[j]===T.q[T.i].a){T.s++;burst(10,['✨','💗']);add(10)}else render()}
+function nx(){T.i++;T.a=null;if(T.i>=T.q.length&&T.s===T.q.length){S.perfect=true;burst(44);add(30)}else render()}
 
 /* ---------- archive ---------- */
 function postBody(p){
@@ -586,29 +598,35 @@ function arc(){
  const n=S.posts.length;
  const head=`<h2>Archivo familiar</h2><div class="card"><span class="mu">Libro de la familia: ${Math.min(n,12)} de 12 historias</span><div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div></div>`;
  if(!n)return head+`<div class="card c">${pet(S.pet.kind,90)}<h3>Aún no hay historias</h3><p class="mu">Cuenta la primera y ${esc(S.pet.name)} te lo agradecerá.</p><button class="btn" onclick="chooser()">Contar la primera</button></div>`;
- return head+S.posts.map((p,ix)=>(ix===1||ix%4===3?ad('archivo-'+ix):'')+`<article class="card"><div class="row">${av(p.a)}<div class="tx"><b>${esc(p.t)}</b><span class="mu">${esc(who(p.a))} · ${p.when}${p.by?' · contada por '+esc(p.by):''}</span></div><span class="tag">${ic(TY[p.k].i,14)}${TY[p.k].l}</span></div>
+ return head+S.posts.map((p,ix)=>(ix===1||ix%4===3?ad('archivo-'+ix):'')+`<article class="card"><div class="row">${av(p.a)}<div class="tx"><b>${esc(p.t)}</b><span class="mu">${esc(who(p.a,p))} · ${rel(p.ts)}${p.by?' · contada por '+esc(p.by):''}</span></div><span class="tag">${ic(TY[p.k].i,14)}${TY[p.k].l}</span></div>
   ${postBody(p)}
-  <div class="rx">${['💗','😂','🥹'].map((e,j)=>`<button class="${p.m[j]?'on':''}" aria-pressed="${!!p.m[j]}" onclick="react(${p.id},${j})">${e} ${p.r[j]+p.m[j]}</button>`).join('')}</div></article>`).join('')}
-function react(id,j){const p=S.posts.find(q=>q.id===id);if(p){p.m[j]=1-p.m[j];render()}}
+  <div class="rx">${['💗','😂','🥹'].map((e,j)=>`<button class="${p.m[j]?'on':''}" aria-pressed="${!!p.m[j]}" onclick="react('${p.id}',${j})">${e} ${p.r[j]+p.m[j]}</button>`).join('')}</div></article>`).join('')}
+function react(id,j){const p=S.posts.find(q=>q.id===id);if(p&&window.CLOUD&&CLOUD.ready)CLOUD.react(id,j,!p.m[j]).catch(()=>toast('No se pudo guardar tu reacción'))}
 
 /* ---------- family ---------- */
+function inviteText(){const c=S.group.code,u=location.origin+location.pathname.replace(/index\.html$/,'')+'?codigo='+c;return 'Te invito a nuestra familia en Cápsula 💗 Entra con el código '+c+' o toca este enlace: '+u}
+const acct=()=>`<div class="card"><span class="mu">Sesión iniciada con</span><b style="overflow-wrap:anywhere">${esc(S.user?S.user.email:'')}</b><button class="btn s w" onclick="logout()">Cerrar sesión</button></div>`;
+async function leave(){if(!confirm('¿Salir de '+S.group.name+'? Tus historias se quedan en el archivo de la familia.'))return;try{await CLOUD.leaveFamily(S.group.id);toast('Saliste del grupo');render()}catch(e){toast('No se pudo salir. Intenta de nuevo.')}}
 function fam(){
- if(!S.group)return `<h2>Tu familia</h2>${planCard()}<div class="card c">${pet(S.pet.kind,90)}<h3>Estás jugando solo</h3><p class="mu">Crea un grupo o únete a uno para compartir historias, ver la liga y jugar la trivia.</p><button class="btn w" onclick="S.scr='group';S.gstep='pick';render()">Crear o unirme a un grupo</button></div>`;
- const L=[...(S.demo?Object.keys(MEM).map(k=>({id:k,n:MEM[k].n,xp:MEM[k].xp})):[]),{id:'me',n:S.me.name+' (tú)',xp:S.xp}].sort((a,b)=>b.xp-a.xp);
+ if(!S.group)return `<h2>Tu familia</h2>${planCard()}<div class="card c">${pet(S.pet.kind,90)}<h3>Estás jugando solo</h3><p class="mu">Crea un grupo o únete a uno para compartir historias, ver la liga y jugar la trivia.</p><button class="btn w" onclick="S.scr='group';S.gstep='pick';render()">Crear o unirme a un grupo</button></div>${S.families.length?famList():''}${acct()}`;
+ const me=S.user.uid;
+ const L=Object.entries(S.members).filter(([id])=>id!==me).map(([id,m])=>({id,n:m.name||'Familiar',xp:m.xp||0})).concat([{id:'me',n:S.me.name+' (tú)',xp:S.xp}]).sort((a,b)=>b.xp-a.xp);
  const B=[['pen','Primera historia',S.posts.some(p=>p.a==='me')],['flame','Racha de 3',S.streak>=3],['brush','Multiformato',S.types.size>=3],['star','Trivia perfecta',S.perfect],['users','Invitador',!!S.inv],['book','Libro listo',S.posts.length>=12]];
  return `<h2>${esc(S.group.name)}</h2>
  ${planCard()}
- <div class="card"><span class="mu">Código del grupo</span><div class="code">${S.group.code}</div>
-  <button class="btn w" onclick="S.inv=1;copy('Únete a mi familia en Cápsula con el código ${S.group.code}');render()">Invitar a un familiar</button>
-  <a class="btn s w" href="https://wa.me/?text=${encodeURIComponent('Te invito a nuestra familia en Cápsula 💗 Entra con el código '+S.group.code)}" target="_blank" rel="noopener">Enviar por WhatsApp</a>
-  ${S.demo?'':`<button class="btn s w" onclick="loadDemo()">Probar con una familia de ejemplo</button>`}</div>
+ ${S.families.length>1?famList():''}
+ <div class="card"><span class="mu">Código del grupo</span><div class="code">${esc(S.group.code)}</div>
+  <button class="btn w" onclick="S.inv=1;copy(inviteText());render()">Invitar a un familiar</button>
+  <a class="btn s w" href="https://wa.me/?text=${encodeURIComponent(inviteText())}" target="_blank" rel="noopener">Enviar por WhatsApp</a></div>
 ${helpCard()}
- <div class="card"><h3>Liga de la familia</h3><span class="mu">Se reinicia en 3 días</span>
+ <div class="card"><h3>Liga de la familia</h3><span class="mu">${L.length} ${L.length>1?'miembros':'miembro'} en el grupo</span>
   ${L.map((r,i)=>`<div class="row sp"><div class="row"><span class="rk ${i===0?'g':''}">${i+1}</span>${av(r.id,40)}<b>${esc(r.n)}</b></div><span class="row" style="gap:4px">${r.xp}${ic('heart',14)}</span></div>`).join('')}</div>
 ${ad('familia')}
- <div class="card"><h3>Insignias</h3><div class="bd">${B.map(b=>`<div class="${b[2]?'':'lk'}">${ic(b[0],28)}${b[1]}</div>`).join('')}</div></div>`}
-function loadDemo(){if(!S.demo){S.demo=true;S.posts=S.posts.concat(demoPosts())}toast('Familia de ejemplo cargada');render()}
-const _f=fam;fam=()=>_f()+'<button class="btn s w" onclick="logout()">Cerrar sesión</button>';
+ <div class="card"><h3>Insignias</h3><div class="bd">${B.map(b=>`<div class="${b[2]?'':'lk'}">${ic(b[0],28)}${b[1]}</div>`).join('')}</div></div>
+ <button class="btn s w" onclick="S.scr='group';S.gstep='pick';render()">Crear o unirme a otra familia</button>
+ ${S.group.ownerUid!==me?`<button class="btn s w" onclick="leave()">Salir de esta familia</button>`:''}
+ ${acct()}`}
+const famList=()=>`<div class="card"><h3>Mis familias</h3>${S.families.map(f=>`<button class="opc" style="min-height:56px" onclick="CLOUD.switchFamily('${esc(f.id)}')"><span class="tx"><b>${esc(f.name)}</b></span>${S.group&&S.group.id===f.id?`<span class="tag">${ic('check',14)}Activa</span>`:''}</button>`).join('')}</div>`;
 const VIEW={home,triv,arc,fam};
 
 /* ---------- publish ---------- */
@@ -619,6 +637,7 @@ function chooser(p){S.prompt=p||null;
  showSheet(`<h2>${p?'Responder la pregunta':'¿Cómo quieres contarlo?'}</h2>${p?`<p class="q">${esc(p)}</p>`:'<p class="mu">Elige la forma que más te guste.</p>'}
  <div class="tg">${Object.entries(TY).map(([k,v])=>`<button class="tile" onclick="compose('${k}')"><span class="ti">${ic(v.i,24)}</span><b>${v.l}</b><span class="mu">${v.h}</span></button>`).join('')}</div>`)}
 function compose(k){
+ if(k==='video'){showSheet(`<div class="ch"><span class="ti">${ic('video',22)}</span><h2>Videos muy pronto</h2></div><p class="mu">Estamos preparando el almacenamiento en la nube para los videos de tu familia. Mientras tanto, cuenta tu historia con foto, voz, carta, dibujo o receta.</p><button class="btn w" onclick="chooser()">Elegir otra forma</button>`);return}
  C={k,ph:0,sec:0,ok:false,drawn:false,url:null,col:'#ff8dbb',sz:8};
  const v=TY[k],pr=S.prompt?`<p class="q">${esc(S.prompt)}</p>`:'';
  const head=`<div class="ch"><span class="ti">${ic(v.i,22)}</span><h2>${v.l}</h2></div>${pr}<label class="lb" for="by2">¿Quién la cuenta? (opcional)</label><input id="by2" class="in" maxlength="30" placeholder="Yo, o por ejemplo: Abuela Rosa">`;
@@ -665,21 +684,47 @@ function setSz(b,s){C.sz=s;document.querySelectorAll('.szb').forEach(e=>e.classL
 function clr(){const c=$('#cv'),x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);C.drawn=false;chk()}
 
 function doPub(k){
+ if(!window.CLOUD||!CLOUD.ready){toast('Sin conexión con tu cuenta. Intenta de nuevo en un momento.');return}
  const g=id=>{const e=$('#'+id);return e?e.value.trim():''};
- const p={id:Date.now(),k,a:'me',when:'ahora',r:[0,0,0],m:[0,0,0],t:'',x:{}};
+ const p={k,t:'',x:{}};
  if(k==='voz'){p.t=S.prompt||'Nota de voz';p.x={d:fmt(C.sec||42)}}
- if(k==='foto'){p.t=g('ttl')||S.prompt||'Foto sin título';p.x={src:C.url,cap:g('cap')}}
- if(k==='video'){p.t=g('ttl')||S.prompt||'Video corto';p.x={src:C.url,cap:g('cap')}}
+ if(k==='foto'){if(!C.url||C.url.startsWith('blob:')){toast('Un momento, preparando la foto…');return}p.t=g('ttl')||S.prompt||'Foto sin título';p.x={src:C.url,cap:g('cap')}}
  if(k==='dibujo'){p.t=g('ttl')||S.prompt||'Mi dibujo';p.x={src:$('#cv').toDataURL('image/png')}}
  if(k==='carta'){const to=g('to')||'Toda la familia';p.t='Carta para '+to;p.x={to,tx:g('tx')}}
  if(k==='receta'){p.t=g('ttl');p.x={by:g('by'),ing:g('ing').split('\n').map(s=>s.trim()).filter(Boolean),stp:g('stp')}}
  {const by=g('by2');if(by)p.by=by}
- S.posts.unshift(p);S.types.add(k);
+ if(JSON.stringify(p.x).length>850000){toast('Ese archivo pesa demasiado. Prueba con uno más liviano.');return}
+ CLOUD.publish(p).catch(()=>toast('No se pudo guardar la historia. Revisa tu conexión.'));
+ S.types.add(k);
  if(!S.posted){S.posted=true;S.streak++;S.last=today();setTimeout(()=>{toast('🔥 ¡Racha de '+S.streak+(S.streak>1?' días':' día')+'!');burst(26,['🔥','✨'])},1100)}
  S.prompt=null;cl();S.tab='arc';add(TY[k].xp);
 }
 
-load();render();setInterval(petIdle,20000);setTimeout(()=>petIdle(true),5000);
+/* ---------- puente con cloud.js ---------- */
+const soft=()=>{if(S.scr==='main')render()};
+const boot=()=>`<div class="wl" style="justify-content:center;align-items:center;text-align:center"><div class="fl">${pet('nube',110)}</div><h2>Cápsula</h2>${S.cloudErr?`<p class="err" style="display:block;max-width:300px">${esc(S.cloudErr)}</p><button class="btn" style="align-self:center" onclick="location.reload()">Reintentar</button>`:S.bootSlow?`<p class="mu">Tarda más de lo normal… revisa tu conexión.</p><button class="btn s" style="align-self:center" onclick="location.reload()">Reintentar</button>`:'<p class="mu">Cargando tu espacio…</p>'}</div>`;
+window.APP={
+ personal,legacy,
+ localCache(uid){try{const o=JSON.parse(localStorage.getItem(KEY)||'null');return o&&o.uid===uid?o:null}catch(e){return null}},
+ legacyDone(){try{localStorage.removeItem(LEGACY)}catch(e){}},
+ noConfig(){S.cloudErr='Falta configurar Firebase: abre config.js y pega tus datos (mira el LEEME).';S.scr='welcome';render()},
+ cloudError(m){S.cloudErr=m;render()},
+ signedOut(){resetPersonal();S.user=null;S.cloudErr='';S.scr='welcome';cl();render()},
+ applyUser(d,u){resetPersonal();S.user=u;S.me.name=String(d.name||u.name||'Amigo').slice(0,24);S.me.email=u.email;S.me.pic=u.photo;applyPersonal(d)},
+ families(l){S.families=l},
+ setGroup(g){S.group=g?{id:g.id,name:g.name,code:g.code,ownerUid:g.ownerUid}:null},
+ group(g){if(S.group&&S.group.id===g.id){Object.assign(S.group,{name:g.name,code:g.code,ownerUid:g.ownerUid});S.families=S.families.map(f=>f.id===g.id?{...f,name:g.name}:f);soft()}},
+ switched(){S.posts=[];S.members={};T={i:0,s:0,a:null};soft()},
+ posts(l){S.posts=l;soft()},
+ members(m){S.members=m;soft()},
+ afterLogin(){cl();S.cloudErr='';const pc=S.joinCode;
+  if(pc&&!S.families.some(f=>f.code===pc)){S.scr='group';S.gstep='join'}
+  else{S.joinCode='';S.scr=S.petSet?'main':((S.group||S.solo||S.families.length)?'pet':'group');S.gstep='pick'}
+  S.tab='home';render()}
+};
+render();setInterval(petIdle,20000);setTimeout(()=>petIdle(true),5000);
+setTimeout(()=>{if(S.scr==='boot'&&!S.cloudErr){S.bootSlow=1;render()}},8000);
+import('./cloud.js').catch(e=>{console.error(e);APP.cloudError('No pudimos conectar con el servicio. Revisa tu conexión e intenta de nuevo.')});
 </script>
 
 
