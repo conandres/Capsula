@@ -4,31 +4,31 @@
 .cli.on{border-color:var(--pd);background:var(--soft)}
 .cli.lk{opacity:.5;cursor:default}
 .cli span{font-weight:600;font-size:13px}.cli small{font-size:11px;color:var(--mu);text-align:center}
-</style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F7F5F0"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
+</style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F5F5F7"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* Layout: one phone-width column. Intro cards + Google sign-in, group, pet, then 4 tabs with a center "Contar" button.
    Single light look by choice: warm ivory ground, sage actions, pink only as a brand accent. No dark mode. */
 :root{
   /* Paleta cálida minimalista (DIRECCION_VISUAL_CAPSULA.md). Todos los colores de la interfaz salen de aquí. */
-  --color-bg:#F7F5F0; --color-surface:#FFFFFF; --color-surface-soft:#EFEEE8; --color-paper:#FBF9F4;
-  --color-text:#292B2A; --color-text-muted:#6B6C67;      /* muted oscurecido de #777873 para llegar a contraste 4.5:1 */
-  --color-border:#E6E3DB; --color-border-input:#B9B5AA;
-  --color-primary:#596B5D; --color-primary-hover:#46564A; --color-on-primary:#FFFFFF;
-  --color-accent-pink:#D98FA5; --color-accent-lilac:#A99BCB; --color-accent-sand:#D9BD91; --color-sand-soft:#F3EBDD;
-  --color-success:#4F8066; --color-success-bg:#E3EEE7; --color-success-text:#2F5A44;
+  --color-bg:#F5F5F7; --color-surface:#FFFFFF; --color-surface-soft:#F0F0F3; --color-paper:#FBFBFD;
+  --color-text:#1D1D1F; --color-text-muted:#6E6E73;      /* contraste 4.7:1 sobre el fondo */
+  --color-border:#E8E8ED; --color-border-input:#C7C7CC;
+  --color-primary:#12805A; --color-primary-hover:#0E6B4A; --color-on-primary:#FFFFFF;
+  --color-accent-pink:#D98FA5; --color-accent-lilac:#A99BCB; --color-accent-sand:#D9BD91; --color-sand-soft:#F6F0E4;
+  --color-success:#2E9E6F; --color-success-bg:#E6F4EC; --color-success-text:#1E6B4A;
   --color-warning:#B78343;
   --color-danger:#B85F59; --color-danger-bg:#F5E2E0; --color-danger-text:#9A423B;
-  --radius-card:20px; --shadow-soft:0 6px 16px rgba(41,43,42,.10); --overlay:rgba(41,43,42,.45);
+  --radius-card:22px; --shadow-soft:0 6px 18px rgba(0,0,0,.10); --overlay:rgba(0,0,0,.42);
   /* Nombres anteriores: apuntan a los nuevos tokens para no tocar cada regla ni el JavaScript. */
   --bg:var(--color-bg); --card:var(--color-surface); --soft:var(--color-surface-soft); --soft2:var(--color-border); --line:var(--color-border);
   --tx:var(--color-text); --mu:var(--color-text-muted);
   --p:var(--color-primary); --p2:var(--color-primary); --pd:var(--color-primary);
   --ok:var(--color-success); --okbg:var(--color-success-bg); --bad:var(--color-danger); --badbg:var(--color-danger-bg);
-  --f:'Fredoka',ui-rounded,'Nunito','Varela Round',system-ui,sans-serif;
+  --f:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Inter','Segoe UI',Roboto,system-ui,sans-serif;
   color-scheme:light;
 }
 *,*::before,*::after{box-sizing:inherit}
@@ -272,6 +272,28 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
 .bar.sm{height:10px}.bar.low i{background:var(--bad)}
 .acts{display:flex;gap:8px;width:100%}
 .acts .btn{flex:1;align-self:stretch;padding:10px 6px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:14px}
+
+/* ---- Capa estilo Apple: gris perla, tarjetas blancas con sombra suave, barra translúcida, títulos compactos ---- */
+h1,h2,h3,.brand,.tm{letter-spacing:-.022em}
+h1{font-size:28px;font-weight:700}h2{font-weight:600}
+body{-webkit-font-smoothing:antialiased;font-size:15px}
+.card{border:1px solid rgba(0,0,0,.04);box-shadow:0 1px 2px rgba(0,0,0,.04),0 10px 30px rgba(0,0,0,.05)}
+.hero{box-shadow:0 1px 2px rgba(0,0,0,.04),0 16px 40px rgba(0,0,0,.07)}
+.hero::before{background:radial-gradient(color-mix(in srgb,var(--p) 13%,transparent),transparent 68%)}
+nav{background:rgba(255,255,255,.74);-webkit-backdrop-filter:saturate(180%) blur(22px);backdrop-filter:saturate(180%) blur(22px);border-top:1px solid rgba(0,0,0,.07)}
+nav button.on{background:color-mix(in srgb,var(--pd) 11%,transparent);color:var(--pd)}
+.top{background:rgba(245,245,247,.8);-webkit-backdrop-filter:saturate(180%) blur(18px);backdrop-filter:saturate(180%) blur(18px)}
+.btn{font-weight:600;letter-spacing:-.01em}
+.btn.s{background:rgba(0,0,0,.05);border:0;color:var(--pd)}
+.btn.s:not(:disabled):hover{background:rgba(0,0,0,.09)}
+.btn:not(.s):not(:disabled){box-shadow:0 4px 12px color-mix(in srgb,var(--p) 30%,transparent)}
+.chip{background:rgba(255,255,255,.8);border:1px solid rgba(0,0,0,.05);box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.qp button,.qr button{background:rgba(0,0,0,.05);border-color:transparent}
+.tile,.opc,.pk,.opt{border-color:rgba(0,0,0,.07)}
+.pn{box-shadow:0 -10px 40px rgba(0,0,0,.12)}
+.bar{background:rgba(0,0,0,.07)}
+.days span{background:rgba(0,0,0,.05)}
+.ti,.av{background:rgba(0,0,0,.05)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
