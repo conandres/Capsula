@@ -1,6 +1,6 @@
 /* Service worker de Cápsula: funciona sin internet.
-   Si cambias index.html, sube el número de VERSION para que los celulares se actualicen. */
-const VERSION = 'capsula-v2';
+   Los archivos se piden primero a la red, así que las actualizaciones llegan solas. */
+const VERSION = 'capsula-v3';
 const SHELL = [
   './', './index.html', './manifest.json', './config.js', './cloud.js',
   './icons/icon-192.png', './icons/icon-512.png',
@@ -44,8 +44,17 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // Archivos de la app: primero caché, si no está va a la red; si falla todo, abre la app
+  // Archivos de la app: primero la red (así los celulares siempre ven la versión nueva);
+  // si no hay internet, se usa la copia guardada.
   e.respondWith(
-    caches.match(req).then(hit => hit || fetch(req).catch(() => caches.match('./index.html')))
+    fetch(req.url, { cache: 'no-cache', credentials: 'same-origin' })
+      .then(res => {
+        if (res && res.ok && res.type === 'basic') {
+          const copy = res.clone();
+          caches.open(VERSION).then(c => c.put(req, copy));
+        }
+        return res;
+      })
+      .catch(() => caches.match(req).then(hit => hit || caches.match('./index.html')))
   );
 });
