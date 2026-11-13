@@ -28,11 +28,12 @@ familyCodes/{codigo}           código -> familia (se consulta uno a uno, no se 
 
 LÍMITES CONOCIDOS DE ESTA VERSIÓN
 ---------------------------------
-- Videos y audio real: aún no. Necesitan Cloud Storage (plan Blaze). Hoy las fotos y dibujos
-  se guardan comprimidos dentro del documento (máx. ~850 KB) y la nota de voz sigue simulada.
+- Videos: aún no. Necesitan Cloud Storage (plan Blaze). Las fotos, dibujos y notas de voz
+  (hasta 2 min, comprimidas) se guardan dentro del documento de la historia (máx. ~850 KB).
+- La voz usa el micrófono del navegador: la primera vez Chrome pide permiso.
 - Los corazones los calcula el celular; con las reglas actuales un usuario técnico podría
   editarse los suyos. Para blindarlo hacen falta Cloud Functions (plan Blaze).
-- El plan Plus sigue siendo un interruptor local de prueba: el cobro real se conecta después.
+- Anuncios y membresía Plus se quitaron por ahora; se retomarán más adelante.
 - Sin App Check: conviene activarlo antes de publicar en Play para frenar abuso de la API.
 
 APP ANDROID (TWA)

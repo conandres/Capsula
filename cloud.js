@@ -4,7 +4,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/fireba
 import { getAuth, onAuthStateChanged, signInWithCredential, GoogleAuthProvider, signOut }
   from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager,
-  doc, collection, getDoc, setDoc, updateDoc, addDoc, writeBatch, onSnapshot, query, orderBy, limit,
+  doc, collection, getDoc, setDoc, updateDoc, addDoc, deleteDoc, writeBatch, onSnapshot, query, orderBy, limit,
   serverTimestamp, arrayUnion, arrayRemove }
   from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
@@ -35,7 +35,7 @@ function start() {
   CLOUD.configured = true;
 
   let me = null, famIds = [], families = [], active = null, subs = [];
-  let lastP = '', lastM = '', timer = null, gen = 0, ready = false;
+  let lastP = '', lastM = '', timer = null, gen = 0, ready = false, plim = 60;
 
   const userRef = () => doc(db, 'users', me.uid);
   const base = () => (active ? ['families', active] : ['users', me.uid]);
@@ -90,8 +90,8 @@ function start() {
       }, warn));
       subs.push(onSnapshot(doc(db, 'families', fid), s => { if (s.exists()) A.group(pick(fid, s.data())); }, warn));
     } else A.members({});
-    const q = query(collection(db, ...base(), 'posts'), orderBy('createdAt', 'desc'), limit(60));
-    subs.push(onSnapshot(q, s => A.posts(s.docs.map(norm)), warn));
+    const q = query(collection(db, ...base(), 'posts'), orderBy('createdAt', 'desc'), limit(plim));
+    subs.push(onSnapshot(q, s => A.posts(s.docs.map(norm), plim), warn));
   }
 
   async function loadFamilies() {
@@ -156,7 +156,7 @@ function start() {
     if (!famIds.includes(fam.id)) famIds.push(fam.id);
     families = families.filter(f => f.id !== fam.id).concat(fam);
     A.families(families);
-    active = fam.id;
+    active = fam.id; plim = 60;
     A.setGroup(fam);
     A.switched();
     subscribe(active);
@@ -196,7 +196,7 @@ function start() {
 
   CLOUD.switchFamily = fid => {
     const fam = families.find(f => f.id === fid) || null;
-    active = fam ? fam.id : null;
+    active = fam ? fam.id : null; plim = 60;
     A.setGroup(fam); A.switched(); subscribe(active); CLOUD.dirty();
   };
 
@@ -216,6 +216,9 @@ function start() {
     k: p.k, t: p.t, x: p.x, by: p.by || '', authorUid: me.uid, authorName: A.personal().name,
     createdAt: serverTimestamp(), rx0: [], rx1: [], rx2: []
   });
+
+  CLOUD.more = () => { plim += 60; subscribe(active); };
+  CLOUD.deletePost = id => deleteDoc(doc(db, ...base(), 'posts', id));
 
   CLOUD.react = (id, j, on) =>
     updateDoc(doc(db, ...base(), 'posts', id), { ['rx' + j]: on ? arrayUnion(me.uid) : arrayRemove(me.uid) });
