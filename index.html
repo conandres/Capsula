@@ -79,7 +79,8 @@ ul{padding-left:20px}
 
 /* top bar + tabs */
 .top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px))}
-.brand{font-weight:600;font-size:21px;line-height:1.1;min-width:0}
+.brand{font-weight:600;font-size:21px;line-height:1.1;min-width:0;display:flex;align-items:center;gap:10px}.brand .bn{min-width:0}.brand .bi{width:38px;height:38px;border-radius:11px;flex:none;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.bl{width:96px;height:96px;border-radius:24px;box-shadow:0 8px 26px rgba(120,60,160,.28)}
 .brand small{display:block;font-size:12px;font-weight:400;color:var(--mu);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .chip{display:inline-flex;align-items:center;gap:6px;background:var(--soft);border:1px solid var(--line);border-radius:99px;padding:3px 12px 3px 6px;font-weight:500;flex:none}
 .chip .ic{color:var(--color-accent-pink);fill:var(--color-accent-pink)}
@@ -526,10 +527,11 @@ function groupScr(){
   <input id="gname" class="in" maxlength="30" placeholder="Familia Ramírez" onkeydown="if(event.key==='Enter')mk()">
   <p class="err" id="err"></p>
   <button class="btn w" id="mkb" onclick="mk()">Crear grupo</button>`;
- if(S.gstep==='created')b=`<h1>¡Listo, ${esc(S.group.name)}!</h1><p class="mu">Comparte este código con tu familia para que se unan.</p>
+ if(S.gstep==='created')b=`<h1>¡Listo, ${esc(S.group.name)}!</h1><p class="mu">Comparte el enlace o el código con quien quieras que se una.</p>
   <div class="code">${esc(S.group.code)}</div>
-  <button class="btn s w" onclick="copy(inviteText())">Copiar invitación</button>
-  <button class="btn w" onclick="nextScr()">Continuar</button>`;
+  <button class="btn w" onclick="shareInvite()">Compartir invitación</button>
+  <button class="btn s w" onclick="copyLink()">Copiar enlace</button>
+  <button class="btn s w" onclick="nextScr()">Continuar</button>`;
  if(S.gstep==='join')b=`${back}<h1>Únete a tu familia</h1><label class="lb" for="gc">Código del grupo</label>
   <input id="gc" class="in" maxlength="8" placeholder="K7M2QX9P" value="${esc(S.joinCode)}" autocapitalize="characters" autocomplete="off" onkeydown="if(event.key==='Enter')jn()">
   <p class="err" id="err"></p>
@@ -560,7 +562,7 @@ function selPet(k){S.pet.kind=k;if(!S.pe)S.pet.name=PETS[k].n;render()}
 function startGame(){S.pet.name=S.pet.name.trim()||PETS[S.pet.kind].n;S.petSet=true;S.scr='main';S.tab='home';render();toast('¡'+S.pet.name+' ya está contigo!')}
 
 /* ---------- main shell ---------- */
-const hdr=()=>`<div class="brand">Cápsula<small>${S.group?esc(S.group.name):'Mi diario'}</small></div><div class="row" style="gap:6px;flex:none"><span class="chip">${pet(S.pet.kind,30)}${ic('heart',14)}<b>${S.xp}</b></span><button class="pf${syncOff()||SYNC.pend>0?' unsaved':''}" onclick="profile()" aria-label="Mi perfil">${pfIn()}</button></div>`;
+const hdr=()=>`<div class="brand"><img class="bi" src="icons/icon-192.png" width="38" height="38" alt="" decoding="async"><span class="bn">Cápsula<small>${S.group?esc(S.group.name):'Mi diario'}</small></span></div><div class="row" style="gap:6px;flex:none"><span class="chip">${pet(S.pet.kind,30)}${ic('heart',14)}<b>${S.xp}</b></span><button class="pf${syncOff()||SYNC.pend>0?' unsaved':''}" onclick="profile()" aria-label="Mi perfil">${pfIn()}</button></div>`;
 function shell(){return `<div class="top" id="hd">${hdr()}</div><main id="mn">${VIEW[S.tab]()}</main>
 <nav aria-label="Principal">
  <button data-t="home" onclick="go('home')">${ic('home')}Inicio</button>
@@ -724,7 +726,12 @@ function delPost(id){if(!confirm('¿Eliminar esta historia'+(S.group?' para toda
 function react(id,j){const p=S.posts.find(q=>q.id===id);if(p&&window.CLOUD&&CLOUD.ready)CLOUD.react(id,j,!p.m[j]).catch(()=>toast('No se pudo guardar tu reacción'))}
 
 /* ---------- family ---------- */
-function inviteText(){const c=S.group.code,u=location.origin+location.pathname.replace(/index\.html$/,'')+'?codigo='+c;return 'Te invito a nuestra familia en Cápsula 💗 Entra con el código '+c+' o toca este enlace: '+u}
+const inviteLink=()=>location.origin+location.pathname.replace(/index\.html$/,'')+'?codigo='+S.group.code;
+function inviteText(){return 'Te invito a "'+S.group.name+'" en Cápsula 💗 Toca este enlace para entrar (o usa el código '+S.group.code+'): '+inviteLink()}
+async function shareInvite(){S.inv=1;save();
+ if(navigator.share){try{await navigator.share({title:'Cápsula',text:inviteText()});return}catch(e){if(e&&e.name==='AbortError')return}}
+ copy(inviteText());soft()}
+function copyLink(){S.inv=1;save();copy(inviteLink());soft()}
 /* ---------- tema y perfil ---------- */
 function applyTheme(id){const t=THEMES.find(x=>x.id===id)||THEMES[1];S.theme=t.id;document.documentElement.dataset.theme=t.id;
  try{localStorage.setItem('capsula_theme',t.id)}catch(e){}
@@ -758,7 +765,8 @@ function fam(){
  
  ${S.families.length>1?famList():''}
  <div class="card"><span class="mu">Código del grupo</span><div class="code">${esc(S.group.code)}</div>
-  <button class="btn w" onclick="S.inv=1;copy(inviteText());render()">Invitar a un familiar</button>
+  <button class="btn w" onclick="shareInvite()">Compartir invitación</button>
+  <button class="btn s w" onclick="copyLink()">Copiar enlace</button>
   <a class="btn s w" href="https://wa.me/?text=${encodeURIComponent(inviteText())}" target="_blank" rel="noopener">Enviar por WhatsApp</a></div>
 ${helpCard()}
  <div class="card"><h3>Liga de la familia</h3><span class="mu">${L.length} ${L.length>1?'miembros':'miembro'} en el grupo</span>
@@ -896,7 +904,7 @@ async function exportMem(){if(!window.CLOUD||!CLOUD.exportAll||!CLOUD.ready){toa
 
 /* ---------- puente con cloud.js ---------- */
 const soft=()=>{if(S.scr==='main')render()};
-const boot=()=>`<div class="wl" style="justify-content:center;align-items:center;text-align:center"><div class="fl">${pet('nube',110)}</div><h2>Cápsula</h2>${S.cloudErr?`<p class="err" style="display:block;max-width:300px">${esc(S.cloudErr)}</p><button class="btn" style="align-self:center" onclick="location.reload()">Reintentar</button>`:S.bootSlow?`<p class="mu">Tarda más de lo normal… revisa tu conexión.</p><button class="btn s" style="align-self:center" onclick="location.reload()">Reintentar</button>`:'<p class="mu">Cargando tu espacio…</p>'}</div>`;
+const boot=()=>`<div class="wl" style="justify-content:center;align-items:center;text-align:center"><div class="fl"><img class="bl" src="icons/icon-192.png" width="96" height="96" alt=""></div><h2>Cápsula</h2>${S.cloudErr?`<p class="err" style="display:block;max-width:300px">${esc(S.cloudErr)}</p><button class="btn" style="align-self:center" onclick="location.reload()">Reintentar</button>`:S.bootSlow?`<p class="mu">Tarda más de lo normal… revisa tu conexión.</p><button class="btn s" style="align-self:center" onclick="location.reload()">Reintentar</button>`:'<p class="mu">Cargando tu espacio…</p>'}</div>`;
 window.APP={
  personal,legacy,
  localCache(uid){try{const o=JSON.parse(localStorage.getItem(KEY)||'null');return o&&o.uid===uid?o:null}catch(e){return null}},
