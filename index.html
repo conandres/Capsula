@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:var(--color-bg,#F7F5F0);color:var(--color-text,#292B2A)}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.ms{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid var(--soft2)}
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{var t=localStorage.getItem("capsula_theme");if(t==="rosa"||t==="negro"||t==="azul")document.documentElement.dataset.theme=t}catch(e){}</script><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:var(--color-bg,#F7F5F0);color:var(--color-text,#292B2A)}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.ms{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid var(--soft2)}
 .cl{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
 .cli{border:2px solid var(--soft2);background:var(--card);border-radius:16px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;font:inherit;color:var(--tx);cursor:pointer;min-height:44px}
 .cli.on{border-color:var(--pd);background:var(--soft)}
@@ -15,14 +15,17 @@
 :root{
   /* Paleta cálida minimalista (DIRECCION_VISUAL_CAPSULA.md). Todos los colores de la interfaz salen de aquí. */
   --color-bg:#F5F5F7; --color-surface:#FFFFFF; --color-surface-soft:#F0F0F3; --color-paper:#FBFBFD;
-  --color-text:#1D1D1F; --color-text-muted:#6E6E73;      /* contraste 4.7:1 sobre el fondo */
+  --color-text:#1D1D1F; --color-text-muted:#68686D;      /* contraste >= 4.5:1 sobre el fondo */
   --color-border:#E8E8ED; --color-border-input:#C7C7CC;
-  --color-primary:#12805A; --color-primary-hover:#0E6B4A; --color-on-primary:#FFFFFF;
+  --color-primary:#0066CC; --color-primary-hover:#0057AD; --color-on-primary:#FFFFFF;
   --color-accent-pink:#D98FA5; --color-accent-lilac:#A99BCB; --color-accent-sand:#D9BD91; --color-sand-soft:#F6F0E4;
   --color-success:#2E9E6F; --color-success-bg:#E6F4EC; --color-success-text:#1E6B4A;
   --color-warning:#B78343;
   --color-danger:#B85F59; --color-danger-bg:#F5E2E0; --color-danger-text:#9A423B;
   --radius-card:22px; --shadow-soft:0 6px 18px rgba(0,0,0,.10); --overlay:rgba(0,0,0,.42);
+  --tint:rgba(0,0,0,.05); --tint-2:rgba(0,0,0,.09); --line-soft:rgba(0,0,0,.05); --line-mid:rgba(0,0,0,.07);
+  --nav-bg:rgba(255,255,255,.74); --top-bg:rgba(245,245,247,.8); --chip-bg:rgba(255,255,255,.8);
+  --shadow-card:0 1px 2px rgba(0,0,0,.04),0 10px 30px rgba(0,0,0,.05); --shadow-hero:0 1px 2px rgba(0,0,0,.04),0 16px 40px rgba(0,0,0,.07); --shadow-pn:0 -10px 40px rgba(0,0,0,.12);
   /* Nombres anteriores: apuntan a los nuevos tokens para no tocar cada regla ni el JavaScript. */
   --bg:var(--color-bg); --card:var(--color-surface); --soft:var(--color-surface-soft); --soft2:var(--color-border); --line:var(--color-border);
   --tx:var(--color-text); --mu:var(--color-text-muted);
@@ -31,6 +34,30 @@
   --f:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Inter','Segoe UI',Roboto,system-ui,sans-serif;
   color-scheme:light;
 }
+/* ---- Temas: azul es el predeterminado (:root). El elegido se guarda en la cuenta (users/{uid}.theme). ---- */
+html[data-theme="rosa"]{
+  --color-bg:#FFF6FA; --color-surface:#FFFFFF; --color-surface-soft:#FFEAF3; --color-paper:#FFFAFC;
+  --color-text:#4A2336; --color-text-muted:#8A5A72; --color-border:#F7D6E6; --color-border-input:#E3B1CA;
+  --color-primary:#B5336E; --color-primary-hover:#9A2A5E; --color-on-primary:#FFFFFF;
+  --color-accent-pink:#E8709F; --color-sand-soft:#FFF0E0;
+  --tint:rgba(181,51,110,.07); --tint-2:rgba(181,51,110,.12); --line-soft:rgba(181,51,110,.08); --line-mid:rgba(181,51,110,.14);
+  --nav-bg:rgba(255,255,255,.76); --top-bg:rgba(255,246,250,.82); --chip-bg:rgba(255,255,255,.85);
+  --shadow-card:0 1px 2px rgba(181,51,110,.05),0 10px 30px rgba(181,51,110,.07); --shadow-hero:0 1px 2px rgba(181,51,110,.05),0 16px 40px rgba(181,51,110,.10);
+}
+html[data-theme="negro"]{
+  color-scheme:dark;
+  --color-bg:#000000; --color-surface:#1C1C1E; --color-surface-soft:#2C2C2E; --color-paper:#242426;
+  --color-text:#F5F5F7; --color-text-muted:#A1A1A6; --color-border:#2C2C2E; --color-border-input:#48484A;
+  --color-primary:#F5F5F7; --color-primary-hover:#D8D8DC; --color-on-primary:#000000;
+  --color-accent-pink:#E58FB0; --color-sand-soft:#2B261C;
+  --color-success:#30D158; --color-success-bg:#12301F; --color-success-text:#7BE3A0;
+  --color-danger:#FF6961; --color-danger-bg:#3A1C1A; --color-danger-text:#FF9C96;
+  --overlay:rgba(0,0,0,.65); --shadow-soft:0 6px 18px rgba(0,0,0,.5);
+  --tint:rgba(255,255,255,.07); --tint-2:rgba(255,255,255,.12); --line-soft:rgba(255,255,255,.08); --line-mid:rgba(255,255,255,.12);
+  --nav-bg:rgba(28,28,30,.78); --top-bg:rgba(0,0,0,.8); --chip-bg:rgba(44,44,46,.85);
+  --shadow-card:none; --shadow-hero:none; --shadow-pn:0 -10px 40px rgba(0,0,0,.6);
+}
+
 *,*::before,*::after{box-sizing:inherit}
 html{box-sizing:border-box;height:100%}
 body{margin:0;height:100%;background:var(--bg);color:var(--tx);font-family:var(--f);font-size:15px;display:flex;justify-content:center}
@@ -213,7 +240,7 @@ textarea.in{resize:vertical;line-height:1.4}
 @keyframes dt{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @keyframes drift{0%{transform:translateY(14px);opacity:0}15%{opacity:1}100%{transform:translateY(-120px);opacity:0}}
 @keyframes tpop{from{transform:scale(0) rotate(-40deg);opacity:0}}
-@keyframes tglow{0%,18%,100%{transform:scale(1);background:var(--soft2);color:var(--pd)}6%,12%{transform:scale(1.22);background:var(--pd);color:#fff}}
+@keyframes tglow{0%,18%,100%{transform:scale(1);background:var(--soft2);color:var(--pd)}6%,12%{transform:scale(1.22);background:var(--pd);color:var(--color-on-primary)}}
 @keyframes wave{0%,32%,100%{transform:none}14%{transform:translateY(-18px)}}
 @keyframes bob{50%{transform:translateY(-10px) rotate(2deg)}}
 @keyframes heartup{0%{transform:translateY(0) scale(.5);opacity:0}20%{opacity:1}100%{transform:translateY(-110px) scale(1.2);opacity:0}}
@@ -273,27 +300,42 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
 .acts{display:flex;gap:8px;width:100%}
 .acts .btn{flex:1;align-self:stretch;padding:10px 6px;display:inline-flex;align-items:center;justify-content:center;gap:6px;font-size:14px}
 
-/* ---- Capa estilo Apple: gris perla, tarjetas blancas con sombra suave, barra translúcida, títulos compactos ---- */
+/* ---- Capa estilo Apple: tarjetas con sombra suave, barra translúcida, títulos compactos ---- */
 h1,h2,h3,.brand,.tm{letter-spacing:-.022em}
 h1{font-size:28px;font-weight:700}h2{font-weight:600}
 body{-webkit-font-smoothing:antialiased;font-size:15px}
-.card{border:1px solid rgba(0,0,0,.04);box-shadow:0 1px 2px rgba(0,0,0,.04),0 10px 30px rgba(0,0,0,.05)}
-.hero{box-shadow:0 1px 2px rgba(0,0,0,.04),0 16px 40px rgba(0,0,0,.07)}
+.card{border:1px solid var(--line-soft);box-shadow:var(--shadow-card)}
+.hero{box-shadow:var(--shadow-hero)}
 .hero::before{background:radial-gradient(color-mix(in srgb,var(--p) 13%,transparent),transparent 68%)}
-nav{background:rgba(255,255,255,.74);-webkit-backdrop-filter:saturate(180%) blur(22px);backdrop-filter:saturate(180%) blur(22px);border-top:1px solid rgba(0,0,0,.07)}
+nav{background:var(--nav-bg);-webkit-backdrop-filter:saturate(180%) blur(22px);backdrop-filter:saturate(180%) blur(22px);border-top:1px solid var(--line-mid)}
 nav button.on{background:color-mix(in srgb,var(--pd) 11%,transparent);color:var(--pd)}
-.top{background:rgba(245,245,247,.8);-webkit-backdrop-filter:saturate(180%) blur(18px);backdrop-filter:saturate(180%) blur(18px)}
+.top{background:var(--top-bg);-webkit-backdrop-filter:saturate(180%) blur(18px);backdrop-filter:saturate(180%) blur(18px)}
 .btn{font-weight:600;letter-spacing:-.01em}
-.btn.s{background:rgba(0,0,0,.05);border:0;color:var(--pd)}
-.btn.s:not(:disabled):hover{background:rgba(0,0,0,.09)}
+.btn.s{background:var(--tint);border:0;color:var(--pd)}
+.btn.s:not(:disabled):hover{background:var(--tint-2)}
 .btn:not(.s):not(:disabled){box-shadow:0 4px 12px color-mix(in srgb,var(--p) 30%,transparent)}
-.chip{background:rgba(255,255,255,.8);border:1px solid rgba(0,0,0,.05);box-shadow:0 1px 2px rgba(0,0,0,.04)}
-.qp button,.qr button{background:rgba(0,0,0,.05);border-color:transparent}
-.tile,.opc,.pk,.opt{border-color:rgba(0,0,0,.07)}
-.pn{box-shadow:0 -10px 40px rgba(0,0,0,.12)}
-.bar{background:rgba(0,0,0,.07)}
-.days span{background:rgba(0,0,0,.05)}
-.ti,.av{background:rgba(0,0,0,.05)}
+html[data-theme="negro"] .btn:not(.s):not(:disabled){box-shadow:none}
+.chip{background:var(--chip-bg);border:1px solid var(--line-soft);box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.qp button,.qr button{background:var(--tint);border-color:transparent}
+.tile,.opc,.pk,.opt{border-color:var(--line-mid)}
+.pn{box-shadow:var(--shadow-pn)}
+.bar{background:var(--tint-2)}
+.days span{background:var(--tint)}
+.ti,.av{background:var(--tint)}
+.ts{color:var(--color-bg)}
+/* perfil y temas */
+.pf{position:relative;width:38px;height:38px;border-radius:50%;border:0;padding:0;background:var(--tint-2);color:var(--tx);font-weight:600;font-size:16px;display:grid;place-items:center;overflow:hidden;cursor:pointer;flex:none}
+.pf img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pfc{display:flex;align-items:center;gap:14px;min-width:0}
+.pfc .pf{width:64px;height:64px;font-size:26px;cursor:default}
+.pfc .tx b{font-size:18px}
+.th{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.thb{border:2px solid var(--line-mid);background:var(--card);border-radius:18px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;min-height:44px;font-weight:500;color:var(--tx)}
+.thb.on{border-color:var(--pd);box-shadow:0 0 0 3px color-mix(in srgb,var(--pd) 20%,transparent)}
+.thb .sw{width:100%;height:48px;border-radius:12px;border:1px solid rgba(128,128,128,.28);display:grid;place-items:center}
+.thb .sw i{width:22px;height:22px;border-radius:50%;display:block}
+.pfp{display:flex;align-items:center;gap:12px}
+.pfp .in{flex:1}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -378,18 +420,20 @@ const TY={
 /* ---------- state ---------- */
 const today=()=>new Date().toDateString(),KEY='capsula_v3',LEGACY='capsula_v2';
 const PT0=()=>({love:80,food:75,t:Date.now(),lr:0,lf:0,ans:0,ad:'',asked:{},moods:[],seen:{},tv:{d:'',n:0},tvb:''});
-const S={bub:null,bubT:0,pt:PT0(),scr:'boot',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,group:null,
+const THEMES=[{id:'rosa',n:'Rosa',bg:'#FFF6FA',pr:'#B5336E',bar:'#FFF6FA'},{id:'azul',n:'Azul',bg:'#F5F5F7',pr:'#0066CC',bar:'#F5F5F7'},{id:'negro',n:'Negro',bg:'#000000',pr:'#F5F5F7',bar:'#000000'}];
+const S={theme:document.documentElement.dataset.theme||'azul',bub:null,bubT:0,pt:PT0(),scr:'boot',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,group:null,
  user:null,families:[],members:{},solo:false,cloudErr:'',bootSlow:0,joinCode:'',
  xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,prompt:null,posts:[],plim:60};
 let T={i:0,s:0,a:null},C={};const LIVE=new Set();
 try{const c=new URLSearchParams(location.search).get('codigo');if(c){S.joinCode=c.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);history.replaceState(null,'',location.pathname)}}catch(e){}
 
 /* Lo personal (mascota, corazones, racha...) viaja a la nube; la copia local sirve de respaldo sin internet */
-const personal=()=>({name:S.me.name,pet:S.pet,petSet:S.petSet,xp:S.xp,streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,best:S.best,total:S.total,types:[...S.types],pt:S.pt,solo:S.solo,active:S.group?S.group.id:null});
+const personal=()=>({name:S.me.name,pet:S.pet,petSet:S.petSet,xp:S.xp,streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,best:S.best,total:S.total,types:[...S.types],pt:S.pt,solo:S.solo,theme:S.theme,active:S.group?S.group.id:null});
 function save(){if(S.user){try{localStorage.setItem(KEY,JSON.stringify({...personal(),uid:S.user.uid,familyIds:S.families.map(f=>f.id)}))}catch(e){}}
  if(window.CLOUD&&CLOUD.ready)CLOUD.dirty()}
 function resetPersonal(){Object.assign(S,{xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,pt:PT0(),pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,solo:false,group:null,bub:null,posts:[],members:{},families:[]});T={i:0,s:0,a:null}}
 function applyPersonal(o){if(!o)return;
+ if(THEMES.some(t=>t.id===o.theme))applyTheme(o.theme);
  ['petSet','xp','streak','last','chest','mis','petDone','inv','perfect','solo','best','total'].forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
  if(o.pet&&PETS[o.pet.kind])S.pet={kind:o.pet.kind,name:String(o.pet.name||PETS[o.pet.kind].n).slice(0,14)};
  S.types=new Set(o.types||[]);S.wk=o.wk||null;S.unl=Array.isArray(o.unl)?o.unl.filter(x=>typeof x==='string'):[];S.wear=Array.isArray(o.wear)?o.wear.filter(x=>typeof x==='string'):[];S.pt=Object.assign(PT0(),o.pt||{});S.pt.t=S.pt.t||Date.now();S.bub=null;
@@ -513,7 +557,7 @@ function selPet(k){S.pet.kind=k;if(!S.pe)S.pet.name=PETS[k].n;render()}
 function startGame(){S.pet.name=S.pet.name.trim()||PETS[S.pet.kind].n;S.petSet=true;S.scr='main';S.tab='home';render();toast('¡'+S.pet.name+' ya está contigo!')}
 
 /* ---------- main shell ---------- */
-const hdr=()=>`<div class="brand">Cápsula<small>${S.group?esc(S.group.name):'Mi diario'}</small></div><div class="row" style="gap:6px;flex:none"><span class="chip">${pet(S.pet.kind,30)}${ic('heart',14)}<b>${S.xp}</b></span></div>`;
+const hdr=()=>`<div class="brand">Cápsula<small>${S.group?esc(S.group.name):'Mi diario'}</small></div><div class="row" style="gap:6px;flex:none"><span class="chip">${pet(S.pet.kind,30)}${ic('heart',14)}<b>${S.xp}</b></span><button class="pf" onclick="profile()" aria-label="Mi perfil">${pfIn()}</button></div>`;
 function shell(){return `<div class="top" id="hd">${hdr()}</div><main id="mn">${VIEW[S.tab]()}</main>
 <nav aria-label="Principal">
  <button data-t="home" onclick="go('home')">${ic('home')}Inicio</button>
@@ -678,6 +722,25 @@ function react(id,j){const p=S.posts.find(q=>q.id===id);if(p&&window.CLOUD&&CLOU
 
 /* ---------- family ---------- */
 function inviteText(){const c=S.group.code,u=location.origin+location.pathname.replace(/index\.html$/,'')+'?codigo='+c;return 'Te invito a nuestra familia en Cápsula 💗 Entra con el código '+c+' o toca este enlace: '+u}
+/* ---------- tema y perfil ---------- */
+function applyTheme(id){const t=THEMES.find(x=>x.id===id)||THEMES[1];S.theme=t.id;document.documentElement.dataset.theme=t.id;
+ try{localStorage.setItem('capsula_theme',t.id)}catch(e){}
+ const m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t.bar)}
+function setTheme(id){if(!THEMES.some(t=>t.id===id))return;applyTheme(id);save();render();if($('#sh.open')&&S.profileOpen)profile()}
+function setName(v){v=String(v||'').trim().slice(0,24);if(!v){toast('Escribe un nombre');profile();return}S.me.name=v;save();render();const n=$('#sh .pfc .tx b'),f=$('#sh .pfc .pf');if(n)n.textContent=v;if(f)f.innerHTML=pfIn();toast('Nombre guardado')}
+function setPetName(v){v=String(v||'').trim().slice(0,14);if(!v){toast('Escribe un nombre');profile();return}S.pet={kind:S.pet.kind,name:v};save();render();toast('Nombre guardado')}
+const pfIn=()=>`${esc((S.me.name||'?').trim().charAt(0).toUpperCase())}${S.me.pic?`<img src="${esc(S.me.pic)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:''}`;
+const pfAv=()=>`<span class="pf" aria-hidden="true">${pfIn()}</span>`;
+function profile(){S.profileOpen=true;
+ showSheet(`<h2>Mi perfil</h2>
+ <div class="pfc">${pfAv()}<span class="tx"><b>${esc(S.me.name)}</b><span class="mu" style="overflow-wrap:anywhere">${esc(S.user?S.user.email:'')}</span></span></div>
+ <label class="lb" for="pfn">Tu nombre</label><input id="pfn" class="in" maxlength="24" value="${esc(S.me.name)}" onchange="setName(this.value)">
+ <label class="lb" id="thl">Apariencia</label>
+ <div class="th" role="radiogroup" aria-labelledby="thl">${THEMES.map(t=>`<button class="thb ${S.theme===t.id?'on':''}" role="radio" aria-checked="${S.theme===t.id}" onclick="setTheme('${t.id}')"><span class="sw" style="background:${t.bg}"><i style="background:${t.pr}"></i></span>${t.n}</button>`).join('')}</div>
+ <p class="mu">Tu apariencia y tu nombre se guardan en tu cuenta y te acompañan en todos tus dispositivos.</p>
+ <label class="lb" for="pfm">Nombre de tu mascota</label>
+ <div class="pfp">${pet(S.pet.kind,52)}<input id="pfm" class="in" maxlength="14" value="${esc(S.pet.name)}" onchange="setPetName(this.value)"></div>
+ <button class="btn s w" onclick="logout()">Cerrar sesión</button>`)}
 const acct=()=>`<div class="card"><span class="mu">Sesión iniciada con</span><b style="overflow-wrap:anywhere">${esc(S.user?S.user.email:'')}</b><button class="btn s w" onclick="logout()">Cerrar sesión</button></div>`;
 async function leave(){if(!confirm('¿Salir de '+S.group.name+'? Tus historias se quedan en el archivo de la familia.'))return;try{await CLOUD.leaveFamily(S.group.id);toast('Saliste del grupo');render()}catch(e){toast('No se pudo salir. Intenta de nuevo.')}}
 function fam(){
@@ -703,7 +766,7 @@ const VIEW={home,triv,arc,fam};
 
 /* ---------- publish ---------- */
 function showSheet(h){const s=$('#sh');s.innerHTML=`<div class="pn" role="dialog" aria-modal="true"><button class="x" onclick="cl()" aria-label="Cerrar">${ic('x',18)}</button>${h}</div>`;s.classList.add('open')}
-function cl(){clearInterval(C.tm);if(C.rec&&C.rec.state!=='inactive'){C.discard=true;try{C.rec.stop()}catch(e){}}if(C.stream)C.stream.getTracks().forEach(t=>t.stop());$('#sh').classList.remove('open')}
+function cl(){clearInterval(C.tm);if(C.rec&&C.rec.state!=='inactive'){C.discard=true;try{C.rec.stop()}catch(e){}}if(C.stream)C.stream.getTracks().forEach(t=>t.stop());S.profileOpen=false;$('#sh').classList.remove('open')}
 $('#sh').addEventListener('click',e=>{if(e.target.id==='sh')cl()});
 function chooser(p){S.prompt=p||null;
  showSheet(`<h2>${p?'Responder la pregunta':'¿Cómo quieres contarlo?'}</h2>${p?`<p class="q">${esc(p)}</p>`:'<p class="mu">Elige la forma que más te guste.</p>'}

@@ -40,7 +40,10 @@ DISEÑO (colores y estilos)
 --------------------------
 Todos los colores salen de las variables --color-* al inicio del <style> de index.html (bloque :root).
 Para cambiar la paleta basta editar ese bloque; los nombres cortos antiguos (--p, --tx, --soft...) apuntan a ellas.
-El rosa solo se usa como acento: corazones, código de invitación, reacciones, mascota y accesorios.
+Hay tres temas (rosa, azul y negro) definidos en el <style> con html[data-theme="..."]. El azul es el predeterminado.
+Cada persona elige el suyo en Mi perfil (el botón redondo arriba a la derecha). Se guarda en su cuenta
+(users/{uid}.theme en Firestore) y también en el teléfono (capsula_theme) para abrir sin parpadeo.
+En el tema azul y negro el rosa solo se usa como acento: corazones, código de invitación, reacciones, mascota y accesorios.
 La mascota, los accesorios y los colores del lienzo de dibujo conservan su paleta propia a propósito.
 Los colores de la barra del sistema (theme-color) están en index.html y manifest.json.
 
