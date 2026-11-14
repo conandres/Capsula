@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function fam(fid) { return /databases/$(database)/documents/families/$(fid); }
+    function isMember(fid) {
+      return signedIn() && exists(/databases/$(database)/documents/families/$(fid)/members/$(request.auth.uid));
+    }
+
+    // Progreso personal y diario individual (solo el dueño).
+    match /users/{uid} {
+      allow read, write: if signedIn() && request.auth.uid == uid;
+      match /posts/{pid} {
+        allow read, write: if signedIn() && request.auth.uid == uid;
+      }
+    }
+
+    // Código de invitación -> familia. Se puede consultar uno por uno, pero no listar.
+    match /familyCodes/{code} {
+      allow get: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['familyId', 'ownerUid'])
+        && request.resource.data.ownerUid == request.auth.uid
+        && getAfter(fam(request.resource.data.familyId)).data.code == code
+        && getAfter(fam(request.resource.data.familyId)).data.ownerUid == request.auth.uid;
+    }
+
+    match /families/{fid} {
+      allow read: if isMember(fid);
+      allow create: if signedIn()
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['name', 'code', 'ownerUid', 'createdAt'])
+        && request.resource.data.name is string && request.resource.data.name.size() <= 30
+        && request.resource.data.code is string && request.resource.data.code.size() == 8;
+      // El dueño solo puede cambiar el nombre.
+      allow update: if signedIn() && resource.data.ownerUid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name']);
+      allow delete: if false;
+
+      match /members/{uid} {
+        allow read: if isMember(fid);
+        // Entra el creador de la familia, o quien trae el código correcto.
+        allow create: if signedIn() && request.auth.uid == uid && (
+          getAfter(fam(fid)).data.ownerUid == uid ||
+          getAfter(fam(fid)).data.code == request.resource.data.joinCode);
+        allow update: if signedIn() && request.auth.uid == uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'petKind', 'petName', 'xp']);
+        allow delete: if signedIn() && request.auth.uid == uid;
+      }
+
+      // Historial de la familia.
+      match /posts/{pid} {
+        allow read: if isMember(fid);
+        allow create: if isMember(fid) && request.resource.data.authorUid == request.auth.uid;
+        allow update: if isMember(fid)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rx0', 'rx1', 'rx2']);
+        allow delete: if isMember(fid) && resource.data.authorUid == request.auth.uid;
+      }
+    }
+  }
+}

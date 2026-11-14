@@ -36,6 +36,16 @@ LÍMITES CONOCIDOS DE ESTA VERSIÓN
 - Anuncios y membresía Plus se quitaron por ahora; se retomarán más adelante.
 - Sin App Check: conviene activarlo antes de publicar en Play para frenar abuso de la API.
 
+REGLAS DE FIRESTORE (firestore.rules)
+-------------------------------------
+Publicar las reglas es un paso manual: Firebase > Firestore > Reglas > pegar el contenido > Publicar.
+Subir el archivo a GitHub NO cambia las reglas publicadas.
+firestore.rules.anterior.txt guarda la versión previa por si hay que volver atrás (pegarla y Publicar).
+Las reglas validan: tipo y tamaño de cada historia, que solo puedas escribir a tu nombre, que solo puedas
+añadir o quitar TU propia reacción, y la forma de la ficha de miembro (mascota válida, corazones razonables).
+Lo que las reglas NO pueden hacer: limitar cuántas familias crea una cuenta, limitar la frecuencia de publicación
+ni impedir que alguien se edite sus propios corazones. Eso necesita Cloud Functions (plan Blaze).
+
 DISEÑO (colores y estilos)
 --------------------------
 Todos los colores salen de las variables --color-* al inicio del <style> de index.html (bloque :root).
