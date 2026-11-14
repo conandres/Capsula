@@ -4,7 +4,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/fireba
 import { getAuth, onAuthStateChanged, signInWithCredential, GoogleAuthProvider, signOut }
   from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager,
-  doc, collection, getDoc, setDoc, updateDoc, addDoc, deleteDoc, writeBatch, onSnapshot, query, orderBy, limit,
+  doc, collection, getDoc, getDocs, setDoc, updateDoc, addDoc, deleteDoc, writeBatch, onSnapshot, query, orderBy, limit,
   serverTimestamp, arrayUnion, arrayRemove }
   from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
@@ -29,7 +29,7 @@ function start() {
   try {
     db = initializeFirestore(app, {
       ignoreUndefinedProperties: true,
-      localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+      localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager(), cacheSizeBytes: 200 * 1024 * 1024 })
     });
   } catch (e) { db = getFirestore(app); }
   CLOUD.configured = true;
@@ -41,28 +41,33 @@ function start() {
   const base = () => (active ? ['families', active] : ['users', me.uid]);
   const pick = (id, d) => ({ id, name: d.name || 'Familia', code: d.code || '', ownerUid: d.ownerUid || '' });
 
+  /* ---------- estado de guardado: cuántas escrituras esperan confirmación de la nube ---------- */
+  let pend = 0;
+  const notify = () => { try { A.sync && A.sync({ pend }); } catch (e) {} };
+  const track = p => { pend++; notify(); Promise.resolve(p).catch(() => {}).then(() => { pend--; notify(); }); return p; };
+
   /* ---------- guardado del progreso personal (con espera para no escribir de más) ---------- */
   const pHash = p => JSON.stringify({ ...p, pt: { ...p.pt, t: 0, love: Math.round(p.pt.love), food: Math.round(p.pt.food) } });
   const mHash = p => [p.xp, p.pet.kind, p.pet.name, p.name].join('|');
 
   function flush(force) {
     if (!me || !ready) return;
-    clearTimeout(timer);
+    clearTimeout(timer); timer = null;
     const p = A.personal(), ph = pHash(p), mh = mHash(p);
     if (force || ph !== lastP) {
       lastP = ph;
-      setDoc(userRef(), { ...p, email: me.email, photo: me.photo, updatedAt: serverTimestamp() }, { merge: true })
-        .catch(e => { lastP = ''; console.warn('No se guardó el progreso', e); });
+      track(setDoc(userRef(), { ...p, email: me.email, photo: me.photo, updatedAt: serverTimestamp() }, { merge: true })
+        .catch(e => { lastP = ''; console.warn('No se guardó el progreso', e); }));
     }
     if (force || mh !== lastM) {
       lastM = mh;
       famIds.forEach(fid =>
-        updateDoc(doc(db, 'families', fid, 'members', me.uid),
+        track(updateDoc(doc(db, 'families', fid, 'members', me.uid),
           { name: p.name, petKind: p.pet.kind, petName: p.pet.name, xp: p.xp })
-          .catch(e => console.warn('No se actualizó tu ficha de familia', e)));
+          .catch(e => console.warn('No se actualizó tu ficha de familia', e))));
     }
   }
-  CLOUD.dirty = () => { if (!ready) return; clearTimeout(timer); timer = setTimeout(() => flush(false), 2500); };
+  CLOUD.dirty = () => { if (!ready) return; clearTimeout(timer); timer = setTimeout(() => flush(false), 2500); notify(); };
   document.addEventListener('visibilitychange', () => { if (document.hidden) flush(false); });
   addEventListener('pagehide', () => flush(false));
 
@@ -124,7 +129,13 @@ function start() {
       if (!data) { A.cloudError('No pudimos cargar tu cuenta. Revisa tu conexión e intenta de nuevo.'); return; }
     }
     if (g !== gen) return;
+    let merged = false;
     if (!data) { isNew = true; data = A.legacy() || {}; }
+    else if (A.merge) {
+      /* Si este celular avanzó sin internet, no se pierde: se une lo mejor de la nube y de la copia local. */
+      const m = A.merge(data, A.localCache(me.uid));
+      if (m.changed) { data = m.data; merged = true; }
+    }
     famIds = Array.isArray(data.familyIds) ? data.familyIds.slice() : [];
     A.applyUser(data, me);
     await loadFamilies();
@@ -137,7 +148,7 @@ function start() {
       flush(true); A.legacyDone();
     } else {
       const p = A.personal(); lastP = pHash(p); lastM = mHash(p);
-      if ((data.active || null) !== active) flush(true);
+      if (merged || (data.active || null) !== active) flush(true);
     }
     subscribe(active);
     A.afterLogin();
@@ -212,14 +223,30 @@ function start() {
   };
 
   /* ---------- historias y reacciones ---------- */
-  CLOUD.publish = p => addDoc(collection(db, ...base(), 'posts'), {
+  CLOUD.publish = p => track(addDoc(collection(db, ...base(), 'posts'), {
     k: p.k, t: p.t, x: p.x, by: p.by || '', authorUid: me.uid, authorName: A.personal().name,
     createdAt: serverTimestamp(), rx0: [], rx1: [], rx2: []
-  });
+  }));
 
   CLOUD.more = () => { plim += 60; subscribe(active); };
-  CLOUD.deletePost = id => deleteDoc(doc(db, ...base(), 'posts', id));
+  CLOUD.deletePost = id => track(deleteDoc(doc(db, ...base(), 'posts', id)));
 
-  CLOUD.react = (id, j, on) =>
-    updateDoc(doc(db, ...base(), 'posts', id), { ['rx' + j]: on ? arrayUnion(me.uid) : arrayRemove(me.uid) });
+  CLOUD.react = (id, j, on) => track(
+    updateDoc(doc(db, ...base(), 'posts', id), { ['rx' + j]: on ? arrayUnion(me.uid) : arrayRemove(me.uid) }));
+
+  /* ---------- descarga de recuerdos: tu diario y las historias de cada grupo ---------- */
+  CLOUD.exportAll = async () => {
+    const out = [];
+    const grab = async (name, path) => {
+      const s = await getDocs(query(collection(db, ...path, 'posts'), orderBy('createdAt', 'asc')));
+      out.push({ name, posts: s.docs.map(d => {
+        const x = d.data({ serverTimestamps: 'estimate' });
+        return { id: d.id, k: x.k, t: x.t || '', x: x.x || {}, by: x.by || '', an: x.authorName || '',
+          mine: x.authorUid === me.uid, ts: x.createdAt && x.createdAt.toMillis ? x.createdAt.toMillis() : Date.now() };
+      }) });
+    };
+    await grab('Mi diario', ['users', me.uid]);
+    for (const f of families) await grab(f.name, ['families', f.id]);
+    return out;
+  };
 }

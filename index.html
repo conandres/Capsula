@@ -327,6 +327,8 @@ html[data-theme="negro"] .btn:not(.s):not(:disabled){box-shadow:none}
 /* perfil y temas */
 .pf{position:relative;width:38px;height:38px;border-radius:50%;border:0;padding:0;background:var(--tint-2);color:var(--tx);font-weight:600;font-size:16px;display:grid;place-items:center;overflow:hidden;cursor:pointer;flex:none}
 .pf img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pf{position:relative}.pf.unsaved::after{content:'';position:absolute;right:1px;bottom:1px;width:11px;height:11px;border-radius:50%;background:#F5A623;border:2px solid var(--top-bg,#fff)}
+.sy{display:flex;align-items:center;gap:8px}.sy i{width:9px;height:9px;border-radius:50%;background:#34C759;flex:none}.sy.w i{background:#F5A623}
 .pfc{display:flex;align-items:center;gap:14px;min-width:0}
 .pfc .pf{width:64px;height:64px;font-size:26px;cursor:default}
 .pfc .tx b{font-size:18px}
@@ -485,7 +487,7 @@ function welcome(){
   <div class="cr" id="cr" tabindex="0" aria-label="Cómo jugar">${cards.map((c,i)=>`<div class="ct${i?'':' act'}"><span class="mu k">Cómo jugar · ${i+1} de ${cards.length}</span><h2>${c[0]}</h2><div class="ill" aria-label="${esc(c[1])}">${c[2]}</div><p class="mu">${c[3]}</p></div>`).join('')}</div>
   <div class="dots">${cards.map((_,i)=>`<button class="${i?'':'on'}" onclick="CR.go(${i})" aria-label="Ir a la tarjeta ${i+1}"></button>`).join('')}</div>
  </div>
- <div class="cta"><button class="gbtn" onclick="gsheet()">${GLOGO} Continuar con Google</button><p class="mu c">Una sola cuenta para toda la familia.</p></div>`}
+ <div class="cta"><button class="gbtn" onclick="gsheet()">${GLOGO} Continuar con Google</button><p class="mu c">Para ti solo, en pareja, con amigos o en familia.</p></div>`}
 const CR={t:null,i:0,n:5,ms:3000,hold:0};
 function bindCr(){const c=$('#cr');if(!c)return;clearTimeout(CR.t);CR.i=0;CR.hold=0;
  const w=()=>c.firstElementChild.offsetWidth+12,RM=()=>matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -558,7 +560,7 @@ function selPet(k){S.pet.kind=k;if(!S.pe)S.pet.name=PETS[k].n;render()}
 function startGame(){S.pet.name=S.pet.name.trim()||PETS[S.pet.kind].n;S.petSet=true;S.scr='main';S.tab='home';render();toast('¡'+S.pet.name+' ya está contigo!')}
 
 /* ---------- main shell ---------- */
-const hdr=()=>`<div class="brand">Cápsula<small>${S.group?esc(S.group.name):'Mi diario'}</small></div><div class="row" style="gap:6px;flex:none"><span class="chip">${pet(S.pet.kind,30)}${ic('heart',14)}<b>${S.xp}</b></span><button class="pf" onclick="profile()" aria-label="Mi perfil">${pfIn()}</button></div>`;
+const hdr=()=>`<div class="brand">Cápsula<small>${S.group?esc(S.group.name):'Mi diario'}</small></div><div class="row" style="gap:6px;flex:none"><span class="chip">${pet(S.pet.kind,30)}${ic('heart',14)}<b>${S.xp}</b></span><button class="pf${syncOff()||SYNC.pend>0?' unsaved':''}" onclick="profile()" aria-label="Mi perfil">${pfIn()}</button></div>`;
 function shell(){return `<div class="top" id="hd">${hdr()}</div><main id="mn">${VIEW[S.tab]()}</main>
 <nav aria-label="Principal">
  <button data-t="home" onclick="go('home')">${ic('home')}Inicio</button>
@@ -739,8 +741,11 @@ function profile(){S.profileOpen=true;
  <label class="lb" id="thl">Apariencia</label>
  <div class="th" role="radiogroup" aria-labelledby="thl">${THEMES.map(t=>`<button class="thb ${S.theme===t.id?'on':''}" role="radio" aria-checked="${S.theme===t.id}" onclick="setTheme('${t.id}')"><span class="sw" style="background:${t.bg}"><i style="background:${t.pr}"></i></span>${t.n}</button>`).join('')}</div>
  <p class="mu">Tu apariencia y tu nombre se guardan en tu cuenta y te acompañan en todos tus dispositivos.</p>
+ <p id="sy" class="sy mu${syncOff()||SYNC.pend>0?' w':''}"><i></i><span>${syncTxt()}</span></p>
  <label class="lb" for="pfm">Nombre de tu mascota</label>
  <div class="pfp">${pet(S.pet.kind,52)}<input id="pfm" class="in" maxlength="14" value="${esc(S.pet.name)}" onchange="setPetName(this.value)"></div>
+ <button class="btn s w" onclick="exportMem()">Descargar mis recuerdos</button>
+ <p class="mu">Un archivo con todas tus historias (fotos, voz, cartas y recetas) para guardarlo donde quieras.</p>
  <button class="btn s w" onclick="logout()">Cerrar sesión</button>`)}
 const acct=()=>`<div class="card"><span class="mu">Sesión iniciada con</span><b style="overflow-wrap:anywhere">${esc(S.user?S.user.email:'')}</b><button class="btn s w" onclick="logout()">Cerrar sesión</button></div>`;
 async function leave(){if(!confirm('¿Salir de '+S.group.name+'? Tus historias se quedan en el archivo de la familia.'))return;try{await CLOUD.leaveFamily(S.group.id);toast('Saliste del grupo');render()}catch(e){toast('No se pudo salir. Intenta de nuevo.')}}
@@ -787,7 +792,7 @@ function compose(k){
   video:`<label class="drop" for="vd-f"><span class="ti">${ic('video',24)}</span><b>Elegir o grabar un video</b><span class="mu">Hasta 60 segundos</span></label><input id="vd-f" type="file" accept="video/*" hidden onchange="pick(this,'vid')"><video id="pv" class="pv" controls playsinline hidden></video><p class="err" id="err"></p>${ttl('Ponle un nombre a tu video')}<label class="lb" for="cap">¿Qué cuenta el video?</label><textarea id="cap" class="in" rows="2" maxlength="300"></textarea>${go}`,
   receta:`<label class="lb" for="ttl">Nombre del plato</label><input id="ttl" class="in" maxlength="60" placeholder="Sancocho del domingo" oninput="chk()"><label class="lb" for="by">¿Quién te la enseñó?</label><input id="by" class="in" maxlength="40" placeholder="Abuela Rosa"><label class="lb" for="ing">Ingredientes (uno por línea)</label><textarea id="ing" class="in" rows="4" maxlength="1500" oninput="chk()"></textarea><label class="lb" for="stp">Preparación</label><textarea id="stp" class="in" rows="4" maxlength="3000" oninput="chk()"></textarea>${go}`
  };
- showSheet(head+B[k]);if(k==='dibujo')initDraw();
+ showSheet(head+B[k]);if(k==='dibujo')initDraw();draftLoad(k);
 }
 function chk(){const g=$('#go');if(!g)return;const v=id=>{const e=$('#'+id);return e?e.value.trim():''};let ok=false;
  switch(C.k){case 'foto':ok=!!C.url;break;case 'video':ok=!!C.url&&C.ok;break;case 'dibujo':ok=C.drawn;break;case 'carta':ok=v('tx').length>=10;break;case 'receta':ok=!!(v('ttl')&&v('ing')&&v('stp'));break}
@@ -847,11 +852,47 @@ function doPub(k){
  if(k==='receta'){p.t=g('ttl');p.x={by:g('by'),ing:g('ing').split('\n').map(s=>s.trim()).filter(Boolean).slice(0,60),stp:g('stp')}}
  {const by=g('by2');if(by)p.by=by}
  if(JSON.stringify(p.x).length>850000){toast('Ese archivo pesa demasiado. Prueba con uno más liviano.');return}
+ draftClear(k);
  CLOUD.publish(p).then(()=>{track('post',k);soft()}).catch(()=>toast('No se pudo guardar la historia. Revisa tu conexión.'));
  S.types.add(k);S.total=(S.total||0)+1;
  if(!S.posted){S.posted=true;S.streak++;S.best=Math.max(S.best||0,S.streak);S.last=today();setTimeout(()=>{toast('🔥 ¡Racha de '+S.streak+(S.streak>1?' días':' día')+'!');burst(26,['🔥','✨'])},1100)}
  S.prompt=null;cl();S.tab='arc';add(TY[k].xp);
 }
+
+/* ---------- estado de guardado ---------- */
+let SYNC={pend:0};
+const syncOff=()=>navigator.onLine===false;
+const syncTxt=()=>syncOff()?'Sin conexión. Tus cambios están a salvo en este celular y se envían solos cuando vuelvas.':SYNC.pend>0?'Guardando en tu cuenta…':'Todo guardado en tu cuenta.';
+function syncPaint(){const w=syncOff()||SYNC.pend>0;const b=$('.top .pf');if(b)b.classList.toggle('unsaved',w);const e=$('#sy');if(e){e.className='sy mu'+(w?' w':'');e.lastChild.textContent=syncTxt()}}
+addEventListener('online',syncPaint);addEventListener('offline',syncPaint);
+
+/* ---------- borradores: lo que escribes (texto) sobrevive aunque cierres la app ---------- */
+const DKEY='capsula_draft',DIDS={carta:['to','tx','by2'],receta:['ttl','by','ing','stp','by2'],foto:['ttl','cap','by2'],voz:['ttl','by2'],dibujo:['ttl','by2']};
+function draftSave(){if(!S.user||!C||!DIDS[C.k])return;clearTimeout(draftSave.h);draftSave.h=setTimeout(()=>{try{const f={};DIDS[C.k].forEach(id=>{const e=$('#'+id);if(e&&e.value.trim())f[id]=e.value});
+ if(Object.keys(f).length)localStorage.setItem(DKEY,JSON.stringify({k:C.k,u:S.user.uid,t:Date.now(),f}));else draftClear(C.k)}catch(e){}},500)}
+function draftClear(k){try{const d=JSON.parse(localStorage.getItem(DKEY)||'null');if(!d||!k||d.k===k)localStorage.removeItem(DKEY)}catch(e){}}
+function draftLoad(k){if(!S.user||!DIDS[k])return;try{const d=JSON.parse(localStorage.getItem(DKEY)||'null');
+ if(!d||d.k!==k||d.u!==S.user.uid||Date.now()-d.t>30*864e5)return;let n=0;Object.keys(d.f).forEach(id=>{const e=$('#'+id);if(e&&DIDS[k].includes(id)){e.value=String(d.f[id]).slice(0,e.maxLength>0?e.maxLength:5000);n++}});
+ if(n){chk();toast('Recuperamos lo que estabas escribiendo')}}catch(e){}}
+document.addEventListener('input',e=>{if(e.target&&e.target.closest&&e.target.closest('#sh'))draftSave()});
+
+/* ---------- descargar mis recuerdos (un solo archivo que se abre en cualquier navegador) ---------- */
+const kName={voz:'Nota de voz',foto:'Foto',carta:'Carta',dibujo:'Dibujo',receta:'Receta'};
+function memHtml(sp){const dt=ms=>new Date(ms).toLocaleDateString('es',{day:'numeric',month:'long',year:'numeric'});
+ const one=p=>{const x=p.x||{};let b='';
+  if(p.k==='foto')b=`<img src="${esc(x.src||'')}" alt="">${x.cap?`<p>${esc(x.cap)}</p>`:''}`;
+  else if(p.k==='dibujo')b=`<img src="${esc(x.src||'')}" alt="">`;
+  else if(p.k==='voz')b=`<audio controls src="${esc(x.src||'')}"></audio><p class="m">Duración ${esc(x.d||'')}</p>`;
+  else if(p.k==='carta')b=`<p class="m">Para ${esc(x.to||'')}</p><p style="white-space:pre-wrap">${esc(x.tx||'')}</p>`;
+  else if(p.k==='receta')b=`${x.by?`<p class="m">Enseñada por ${esc(x.by)}</p>`:''}<h4>Ingredientes</h4><ul>${(x.ing||[]).map(i=>`<li>${esc(i)}</li>`).join('')}</ul><h4>Preparación</h4><p style="white-space:pre-wrap">${esc(x.stp||'')}</p>`;
+  return `<article><h3>${esc(p.t||kName[p.k]||'')}</h3><p class="m">${kName[p.k]||''} · ${dt(p.ts)} · ${esc(p.by||p.an||'')}</p>${b}</article>`};
+ return `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mis recuerdos de Cápsula</title><style>body{font:16px/1.5 system-ui,sans-serif;max-width:680px;margin:0 auto;padding:24px 16px;color:#1D1D1F;background:#F5F5F7}h1{font-size:28px}h2{margin-top:40px}article{background:#fff;border-radius:16px;padding:16px;margin:14px 0}img{max-width:100%;border-radius:12px}audio{width:100%}.m{color:#68686D;font-size:14px;margin:2px 0 8px}</style></head><body><h1>Mis recuerdos de Cápsula</h1><p class="m">Descargado el ${dt(Date.now())}</p>${sp.map(g=>`<h2>${esc(g.name)} (${g.posts.length})</h2>${g.posts.length?g.posts.map(one).join(''):'<p class="m">Todavía no hay historias aquí.</p>'}`).join('')}</body></html>`}
+async function exportMem(){if(!window.CLOUD||!CLOUD.exportAll||!CLOUD.ready){toast('Espera un momento y vuelve a intentar');return}
+ toast('Preparando tus recuerdos…');
+ try{const sp=await CLOUD.exportAll();const n=sp.reduce((a,g)=>a+g.posts.length,0);
+  const u=URL.createObjectURL(new Blob([memHtml(sp)],{type:'text/html'}));const a=document.createElement('a');a.href=u;a.download='recuerdos-capsula-'+new Date().toISOString().slice(0,10)+'.html';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),30000);
+  toast(n?'Listo: '+n+' historias descargadas':'Descargado, aún no tienes historias')}
+ catch(e){toast('No se pudo preparar la descarga. Revisa tu conexión.')}}
 
 /* ---------- puente con cloud.js ---------- */
 const soft=()=>{if(S.scr==='main')render()};
@@ -860,6 +901,17 @@ window.APP={
  personal,legacy,
  localCache(uid){try{const o=JSON.parse(localStorage.getItem(KEY)||'null');return o&&o.uid===uid?o:null}catch(e){return null}},
  legacyDone(){try{localStorage.removeItem(LEGACY)}catch(e){}},
+ sync(st){SYNC=st;syncPaint()},
+ /* Une la nube con la copia de este celular sin perder avances: lo que solo sube (corazones, mejor racha, historias) toma el mayor. */
+ merge(c,l){if(!l||typeof l!=='object')return{data:c,changed:false};const d={...c};let ch=false;
+  ['xp','best','total'].forEach(k=>{const a=+c[k]||0,b=+l[k]||0;if(b>a){d[k]=b;ch=true}});
+  const un=(a,b)=>{const u=[...new Set([...(Array.isArray(a)?a:[]),...(Array.isArray(b)?b:[])])];return u};
+  ['types','unl'].forEach(k=>{const u=un(c[k],l[k]);if(u.length>(Array.isArray(c[k])?c[k].length:0)){d[k]=u;ch=true}});
+  const tc=Date.parse(c.last)||0,tl=Date.parse(l.last)||0;
+  if(tl>tc){['last','streak','chest'].forEach(k=>{if(l[k]!==undefined)d[k]=l[k]});ch=true}
+  else if(tl===tc&&(+l.streak||0)>(+c.streak||0)){d.streak=l.streak;ch=true}
+  d.best=Math.max(+d.best||0,+d.streak||0);
+  return{data:d,changed:ch}},
  noConfig(){S.cloudErr='Falta configurar Firebase: abre config.js y pega tus datos (mira el LEEME).';S.scr='welcome';render()},
  cloudError(m){S.cloudErr=m;render()},
  signedOut(){resetPersonal();S.user=null;S.cloudErr='';S.scr='welcome';cl();render()},
@@ -870,7 +922,7 @@ window.APP={
  switched(){S.posts=[];S.plim=60;S.members={};T={i:0,s:0,a:null};soft()},
  posts(l,lim){S.posts=l;S.plim=lim||60;soft()},
  members(m){S.members=m;soft()},
- afterLogin(){cl();S.cloudErr='';const pc=S.joinCode;
+ afterLogin(){cl();S.cloudErr='';try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}const pc=S.joinCode;
   if(pc&&!S.families.some(f=>f.code===pc)){S.scr='group';S.gstep='join'}
   else{S.joinCode='';S.scr=S.petSet?'main':((S.group||S.solo||S.families.length)?'pet':'group');S.gstep='pick'}
   S.tab='home';render()}
