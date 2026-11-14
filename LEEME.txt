@@ -62,3 +62,17 @@ APP ANDROID (TWA)
 .well-known/assetlinks.json ya trae la huella del keystore del APK. Si publicas con
 "Play App Signing", añade también la huella SHA-256 que te muestra Play Console
 (Integridad de la app > Firma de la app); con ambas la barra de URL desaparece.
+
+----------------------------------------------------------------
+MODOS DE GRUPO, PERFIL, "EN LÍNEA" Y PREGUNTA DEL DÍA
+----------------------------------------------------------------
+- Al crear un grupo se elige el tipo: Familia, Pareja o Amigos (campo "type" en families/{id}).
+  Pareja admite 2 personas: lo controla la app al unirse (las reglas no pueden contar miembros).
+- Al tocar a alguien en la liga se abre su perfil (nivel, corazones, racha, historias, accesorios).
+  Datos nuevos en families/{id}/members/{uid}: streak, total, wear, showSeen, lastSeen.
+- "En línea" = lastSeen de hace menos de 6 minutos. Cada persona puede apagarlo en su perfil (showSeen).
+- Pregunta del día (reemplaza la trivia): families/{id}/qa/{AAAA-MM-DD}/answers/{uid}.
+  Solo se ven las respuestas de los demás después de responder la propia (lo exigen las reglas).
+  En modo solo, la respuesta se guarda como carta en el diario personal.
+- REGLAS: firestore.rules cambió. Hay que pegarlas en Firebase (Firestore > Reglas > Publicar) ANTES de publicar la app.
+  La versión anterior está en firestore.rules.fase1.txt por si hay que volver atrás.

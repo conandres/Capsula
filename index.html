@@ -80,6 +80,13 @@ ul{padding-left:20px}
 /* top bar + tabs */
 .top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px))}
 .brand{font-weight:600;font-size:21px;line-height:1.1;min-width:0;display:flex;align-items:center;gap:10px}.brand .bn{min-width:0}.brand .bi{width:38px;height:38px;border-radius:11px;flex:none;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.gt{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.gtb{display:flex;flex-direction:column;gap:4px;align-items:flex-start;text-align:left;padding:12px;border-radius:16px;border:1.5px solid var(--line-mid,#ddd);background:var(--card);color:var(--tx);font:inherit;cursor:pointer}.gtb.on{border-color:var(--p);background:var(--tint)}.gtb .mu{font-size:12px}
+.mrow{background:none;border:0;width:100%;text-align:left;font:inherit;color:inherit;padding:6px 0;cursor:pointer;border-radius:12px}.mrow:active{background:var(--tint)}.mrow .mt{display:flex;flex-direction:column;min-width:0}.mrow .mt .mu{font-size:12px}
+.avw{position:relative;display:inline-flex}.odot{position:absolute;right:0;bottom:0;width:11px;height:11px;border-radius:50%;background:#34C759;border:2px solid var(--card,#fff)}
+.mcd{text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}.mcd .mpet{position:relative;display:inline-flex}.mcd .mpet .odot{width:16px;height:16px;right:6px;bottom:8px}
+.pres{font-size:13px;color:var(--mu)}.pres.on{color:#1f8f3e;font-weight:600}.mst{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;margin:8px 0}.mst div{display:flex;flex-direction:column;background:var(--tint);border-radius:14px;padding:10px 4px}.mst b{font-size:20px}
+.qans{padding:10px 0;border-top:1px solid var(--line-soft,#eee)}.qans:first-of-type{border-top:0}.qans p{margin:2px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.chk{display:flex;align-items:center;gap:10px;font-weight:500;margin-top:8px}.chk input{width:20px;height:20px;accent-color:var(--p)}
 .qrb{display:flex;justify-content:center;padding:14px;background:#fff;border-radius:20px;margin:6px auto 10px;width:max-content;max-width:100%;box-shadow:var(--shadow-card,0 2px 12px rgba(0,0,0,.12))}.qrb svg{display:block;max-width:100%;height:auto}
 .bl{width:96px;height:96px;border-radius:24px;box-shadow:0 8px 26px rgba(120,60,160,.28)}
 .brand small{display:block;font-size:12px;font-weight:400;color:var(--mu);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -399,13 +406,13 @@ const ACCS=[
  {id:'mono',n:'Moño',u:'Nivel 3',s:()=>'<path d="M18 26l12-6v12zM42 26l-12-6v12z" fill="#ff8dbb"/><circle cx="30" cy="26" r="3.5" fill="#c43d7a"/>'},
  {id:'corona',n:'Corona',u:'Nivel 4',s:()=>'<path d="M44 12l5 7 11-13 11 13 5-7v13H44z" fill="#ffd54a" stroke="#e0a800" stroke-width="2" stroke-linejoin="round"/>'},
  {id:'flor',n:'Flor',u:'Cuenta tu 1.ª historia',s:k=>`<g transform="translate(92 ${EY[k]-22})" fill="#ff8dbb"><circle cy="-5" r="3.4"/><circle cx="5" cy="-1.5" r="3.4"/><circle cx="3" cy="4.5" r="3.4"/><circle cx="-3" cy="4.5" r="3.4"/><circle cx="-5" cy="-1.5" r="3.4"/><circle r="2.8" fill="#ffd54a"/></g>`},
- {id:'lentes',n:'Lentes',u:'Trivia perfecta',s:k=>{const y=EY[k];return `<g fill="rgba(255,255,255,.45)" stroke="#4a2336" stroke-width="2.5"><circle cx="48" cy="${y}" r="8.5"/><circle cx="72" cy="${y}" r="8.5"/></g><path d="M56.5 ${y}h7" stroke="#4a2336" stroke-width="2.5"/>`}},
+ {id:'lentes',n:'Lentes',u:'Pregunta del día (7)',s:k=>{const y=EY[k];return `<g fill="rgba(255,255,255,.45)" stroke="#4a2336" stroke-width="2.5"><circle cx="48" cy="${y}" r="8.5"/><circle cx="72" cy="${y}" r="8.5"/></g><path d="M56.5 ${y}h7" stroke="#4a2336" stroke-width="2.5"/>`}},
  {id:'gorro',n:'Gorro de fiesta',u:'Cuenta 10 historias',s:()=>'<path d="M48 24L60 2L72 24z" fill="#8ec5ff" stroke="#5aa0e6" stroke-width="2" stroke-linejoin="round"/><circle cx="60" cy="3" r="3" fill="#ffd54a"/>'},
  {id:'bufanda',n:'Bufanda',u:'Racha de 7 días',s:k=>{const y=EY[k]+18;return `<path d="M30 ${y}q30 14 60 0v9q-30 14-60 0z" fill="#ff8dbb" stroke="#c43d7a" stroke-width="2" stroke-linejoin="round"/><path d="M80 ${y+6}l5 11 7-3-3-9z" fill="#ff8dbb" stroke="#c43d7a" stroke-width="2" stroke-linejoin="round"/>`}}];
 const accSvg=(ids,k)=>ACCS.filter(a=>ids.includes(a.id)).map(a=>a.s(k)).join('');
 const pet=(k,w,wear=[])=>`<svg viewBox="0 0 120 100" width="${w}" height="${w*100/120}" aria-hidden="true">${PETS[k].draw()}${accSvg(wear,k)}</svg>`;
 function checkUnl(){if(!S.user||!S.petSet)return;const lvl=Math.floor(S.xp/100);
- const t={estrella:lvl>=1,mono:lvl>=2,corona:lvl>=3,flor:S.types.size>=1,lentes:!!S.perfect,gorro:(S.total||0)>=10,bufanda:(S.best||0)>=7};
+ const t={estrella:lvl>=1,mono:lvl>=2,corona:lvl>=3,flor:S.types.size>=1,lentes:!!S.perfect||(S.qaN||0)>=7,gorro:(S.total||0)>=10,bufanda:(S.best||0)>=7};
  const nu=ACCS.filter(a=>t[a.id]&&!S.unl.includes(a.id));if(!nu.length)return;
  nu.forEach(a=>{S.unl.push(a.id);S.wear.push(a.id)});toast('🎀 ¡Nuevo accesorio: '+nu.map(a=>a.n).join(', ')+'!')}
 function wear(id){if(!S.unl.includes(id))return;S.wear=S.wear.includes(id)?S.wear.filter(x=>x!==id):S.wear.concat(id);render()}
@@ -423,23 +430,28 @@ const TY={
 };
 
 /* ---------- state ---------- */
+const GT={familia:{n:'Familia',d:'Los tuyos de siempre',fm:'tu familia',ph:'Familia Ramírez',dn:'Mi familia',lib:'Libro de la familia'},pareja:{n:'Pareja',d:'Solo ustedes dos',fm:'tu pareja',ph:'Nosotros dos',dn:'Nosotros',lib:'Nuestro libro'},amigos:{n:'Amigos',d:'Tu grupo cercano',fm:'tus amigos',ph:'Los de siempre',dn:'Mis amigos',lib:'Libro de los amigos'}};
+const gtype=()=>S.group&&GT[S.group.type]?S.group.type:'familia';
+const fm=()=>GT[gtype()].fm;
+const libName=()=>S.group?GT[gtype()].lib:'Mi libro';
+const famLabel=()=>S.group?GT[gtype()].n:'Grupo';
 const today=()=>new Date().toDateString(),KEY='capsula_v3',LEGACY='capsula_v2';
 const PT0=()=>({love:80,food:75,t:Date.now(),lr:0,lf:0,ans:0,ad:'',asked:{},moods:[],seen:{},tv:{d:'',n:0},tvb:''});
 const THEMES=[{id:'rosa',n:'Rosa',bg:'#FFF6FA',pr:'#B5336E',bar:'#FFF6FA'},{id:'azul',n:'Azul',bg:'#F5F5F7',pr:'#0066CC',bar:'#F5F5F7'},{id:'negro',n:'Negro',bg:'#000000',pr:'#F5F5F7',bar:'#000000'}];
-const S={theme:document.documentElement.dataset.theme||'azul',bub:null,bubT:0,pt:PT0(),scr:'boot',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,group:null,
+const S={showSeen:true,qd:'',qaN:0,qa:null,gtype:'familia',gname:'',qtx:'',theme:document.documentElement.dataset.theme||'azul',bub:null,bubT:0,pt:PT0(),scr:'boot',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,group:null,
  user:null,families:[],members:{},solo:false,cloudErr:'',bootSlow:0,joinCode:'',
  xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,prompt:null,posts:[],plim:60};
 let T={i:0,s:0,a:null},C={};const LIVE=new Set();
 try{const c=new URLSearchParams(location.search).get('codigo');if(c){S.joinCode=c.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);history.replaceState(null,'',location.pathname)}}catch(e){}
 
 /* Lo personal (mascota, corazones, racha...) viaja a la nube; la copia local sirve de respaldo sin internet */
-const personal=()=>({name:S.me.name,pet:S.pet,petSet:S.petSet,xp:S.xp,streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,best:S.best,total:S.total,types:[...S.types],pt:S.pt,solo:S.solo,theme:S.theme,active:S.group?S.group.id:null});
+const personal=()=>({name:S.me.name,pet:S.pet,petSet:S.petSet,xp:S.xp,streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,best:S.best,total:S.total,types:[...S.types],pt:S.pt,solo:S.solo,theme:S.theme,showSeen:S.showSeen,qd:S.qd,qaN:S.qaN,active:S.group?S.group.id:null});
 function save(){if(S.user){try{localStorage.setItem(KEY,JSON.stringify({...personal(),uid:S.user.uid,familyIds:S.families.map(f=>f.id)}))}catch(e){}}
  if(window.CLOUD&&CLOUD.ready)CLOUD.dirty()}
-function resetPersonal(){Object.assign(S,{xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,pt:PT0(),pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,solo:false,group:null,bub:null,posts:[],members:{},families:[]});T={i:0,s:0,a:null}}
+function resetPersonal(){Object.assign(S,{xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,pt:PT0(),pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,solo:false,showSeen:true,qd:'',qaN:0,qa:null,group:null,bub:null,posts:[],members:{},families:[]});T={i:0,s:0,a:null}}
 function applyPersonal(o){if(!o)return;
  if(THEMES.some(t=>t.id===o.theme))applyTheme(o.theme);
- ['petSet','xp','streak','last','chest','mis','petDone','inv','perfect','solo','best','total'].forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
+ ['petSet','xp','streak','last','chest','mis','petDone','inv','perfect','solo','best','total','showSeen','qd','qaN'].forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
  if(o.pet&&PETS[o.pet.kind])S.pet={kind:o.pet.kind,name:String(o.pet.name||PETS[o.pet.kind].n).slice(0,14)};
  S.types=new Set(o.types||[]);S.wk=o.wk||null;S.unl=Array.isArray(o.unl)?o.unl.filter(x=>typeof x==='string'):[];S.wear=Array.isArray(o.wear)?o.wear.filter(x=>typeof x==='string'):[];S.pt=Object.assign(PT0(),o.pt||{});S.pt.t=S.pt.t||Date.now();S.bub=null;
  const y=new Date(Date.now()-864e5).toDateString();S.posted=S.last===today();if(!S.posted&&S.last!==y)S.streak=0}
@@ -475,9 +487,9 @@ function welcome(){
   ['Cuida a tu mascota','Crece con tu familia',
    `<div class="hz"><span class="bigpet">${pet('nube',150)}</span>${hearts}</div><div class="row5">${O.map((k,i)=>`<span class="pw" style="--i:${i}">${pet(k,56)}</span>`).join('')}</div><div class="bar" style="max-width:260px"><i style="width:60%"></i></div>`,
    'Crece con cada historia, te pregunta cómo te fue y te hace compañía todos los días.'],
-  ['Adivina quién lo dijo','Trivia de la familia',
-   `<div class="mq">“Me quedé dormido en mi propia graduación”</div><div class="mo o1">Abuela Rosa</div><div class="mo o2">Papá Carlos</div><div class="mo o3">Tío Andrés</div>`,
-   'Cada día hay una trivia con frases de tu familia. Aciertas, ganas corazones y subes en la liga.'],
+  ['Una pregunta cada día','Respondan juntos',
+   `<div class="mq">“¿Qué comida te recuerda a tu infancia?”</div><div class="mo o1">Ana: el arroz con leche</div><div class="mo o2">Beto: las arepas de la abuela</div><div class="mo o3">Tú: …</div>`,
+   'Cada día hay una pregunta nueva. Respondes y ves lo que contestó cada uno. Solo o en grupo, ganas corazones.'],
   ['Arma el libro familiar','12 historias y listo',
    `<span class="bk2">${ic('book',52)}</span><div class="sg">${Array.from({length:12},(_,i)=>`<i style="--i:${i}"></i>`).join('')}</div><div class="mq">Con 12 historias se arma vuestro libro</div>`,
    'Todo lo que cuenten se junta en un libro para guardar y compartir con quien más quieras.']
@@ -520,12 +532,14 @@ async function gCred(r){const g=$('#gst');if(g)g.textContent='Entrando…';try{a
 
 function groupScr(){
  const back=`<button class="bk" onclick="S.gstep='pick';render()">${ic('back',18)} Atrás</button>`;let b='';
- if(S.gstep==='pick')b=`${S.petSet?`<button class="bk" onclick="nextScr()">${ic('back',18)} Volver</button>`:''}<h1>Hola, ${esc(S.me.name)}. ¿Con quién juegas?</h1><p class="mu">Puedes tener varias familias y cambiar entre ellas cuando quieras.</p>
-  <button class="opc" onclick="S.gstep='create';render()"><span class="ti">${ic('users',24)}</span><span class="tx"><b>Crear un grupo familiar</b><span class="mu">Tú invitas al resto con un código.</span></span></button>
+ if(S.gstep==='pick')b=`${S.petSet?`<button class="bk" onclick="nextScr()">${ic('back',18)} Volver</button>`:''}<h1>Hola, ${esc(S.me.name)}. ¿Con quién juegas?</h1><p class="mu">Puedes tener varios grupos (familia, pareja, amigos) y cambiar entre ellos cuando quieras.</p>
+  <button class="opc" onclick="S.gstep='create';render()"><span class="ti">${ic('users',24)}</span><span class="tx"><b>Crear un grupo</b><span class="mu">Familia, pareja o amigos. Tú invitas con un enlace o QR.</span></span></button>
   <button class="opc" onclick="S.gstep='join';render()"><span class="ti">${ic('heart',24)}</span><span class="tx"><b>Unirme a un grupo</b><span class="mu">Si alguien ya creó uno, usa su código.</span></span></button>
   ${S.petSet||S.families.length?'':`<button class="lnk" onclick="soloGo()">Jugar solo por ahora</button>`}`;
- if(S.gstep==='create')b=`${back}<h1>Crea tu grupo</h1><label class="lb" for="gname">Nombre del grupo</label>
-  <input id="gname" class="in" maxlength="30" placeholder="Familia Ramírez" onkeydown="if(event.key==='Enter')mk()">
+ if(S.gstep==='create')b=`${back}<h1>Crea tu grupo</h1><label class="lb" id="gtl">¿Con quién juegas?</label>
+  <div class="gt" role="radiogroup" aria-labelledby="gtl">${Object.keys(GT).map(k=>`<button class="gtb ${S.gtype===k?'on':''}" role="radio" aria-checked="${S.gtype===k}" onclick="S.gname=$('#gname').value;S.gtype='${k}';render()"><b>${GT[k].n}</b><span class="mu">${GT[k].d}</span></button>`).join('')}</div>
+  <label class="lb" for="gname">Nombre del grupo</label>
+  <input id="gname" class="in" maxlength="30" placeholder="${GT[S.gtype].ph}" value="${esc(S.gname)}" onkeydown="if(event.key==='Enter')mk()">
   <p class="err" id="err"></p>
   <button class="btn w" id="mkb" onclick="mk()">Crear grupo</button>`;
  if(S.gstep==='created')b=`<h1>¡Listo, ${esc(S.group.name)}!</h1><p class="mu">Comparte el enlace o el código con quien quieras que se una.</p>
@@ -534,7 +548,7 @@ function groupScr(){
   <button class="btn s w" onclick="copyLink()">Copiar enlace</button>
   <button class="btn s w" onclick="showQr()">Mostrar código QR</button>
   <button class="btn s w" onclick="nextScr()">Continuar</button>`;
- if(S.gstep==='join')b=`${back}<h1>Únete a tu familia</h1><label class="lb" for="gc">Código del grupo</label>
+ if(S.gstep==='join')b=`${back}<h1>Únete a un grupo</h1><label class="lb" for="gc">Código del grupo</label>
   <input id="gc" class="in" maxlength="8" placeholder="K7M2QX9P" value="${esc(S.joinCode)}" autocapitalize="characters" autocomplete="off" onkeydown="if(event.key==='Enter')jn()">
   <p class="err" id="err"></p>
   <button class="btn w" id="jnb" onclick="jn()">Unirme</button>`;
@@ -542,14 +556,14 @@ function groupScr(){
 async function mk(){const b=$('#mkb');if(!b||b.disabled)return;
  if(!navigator.onLine){gerr('Necesitas internet para crear el grupo.');return}
  b.disabled=true;b.textContent='Creando…';gerr('');
- try{await CLOUD.createFamily($('#gname').value.trim()||'Mi familia');S.gstep='created';render()}
+ try{await CLOUD.createFamily($('#gname').value.trim()||GT[S.gtype].dn,S.gtype);S.gname='';S.gstep='created';render()}
  catch(e){b.disabled=false;b.textContent='Crear grupo';gerr('No pudimos crear el grupo. Intenta de nuevo.')}}
 async function jn(){const b=$('#jnb'),c=$('#gc').value.trim().toUpperCase();if(!b||b.disabled)return;
  if(c.length<4){gerr('Escribe el código completo.');return}
  if(!navigator.onLine){gerr('Necesitas internet para unirte.');return}
  b.disabled=true;b.textContent='Entrando…';gerr('');
  try{const r=await CLOUD.joinFamily(c);
-  if(r.err){b.disabled=false;b.textContent='Unirme';gerr('No encontramos ese código. Revisa que esté bien escrito.');return}
+  if(r.err){b.disabled=false;b.textContent='Unirme';gerr(r.err==='full'?'Ese grupo es de pareja y ya tiene a sus dos personas.':'No encontramos ese código. Revisa que esté bien escrito.');return}
   S.joinCode='';nextScr();toast('Ya eres parte de '+S.group.name+' 💗')}
  catch(e){b.disabled=false;b.textContent='Unirme';gerr('No pudimos unirte. Revisa tu conexión e intenta de nuevo.')}}
 function soloGo(){S.solo=true;S.group=null;if(window.CLOUD&&CLOUD.ready)CLOUD.switchFamily(null);nextScr()}
@@ -568,12 +582,12 @@ const hdr=()=>`<div class="brand"><img class="bi" src="icons/icon-192.png" width
 function shell(){return `<div class="top" id="hd">${hdr()}</div><main id="mn">${VIEW[S.tab]()}</main>
 <nav aria-label="Principal">
  <button data-t="home" onclick="go('home')">${ic('home')}Inicio</button>
- <button data-t="triv" onclick="go('triv')">${ic('star')}Trivia</button>
+ <button data-t="triv" onclick="go('triv')">${ic('star')}Pregunta</button>
  <button class="pub" onclick="chooser()" aria-label="Contar una historia"><span class="pb">${ic('plus',28,2.4)}</span>Contar</button>
  <button data-t="arc" onclick="go('arc')">${ic('book')}Archivo</button>
- <button data-t="fam" onclick="go('fam')">${ic('users')}Familia</button>
+ <button data-t="fam" onclick="go('fam')">${ic('users')}<span id="nvf">${famLabel()}</span></button>
 </nav>`}
-function navSync(){document.querySelectorAll('nav [data-t]').forEach(b=>{const on=b.dataset.t===S.tab;b.classList.toggle('on',on);on?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')})}
+function navSync(){const nf=$('#nvf');if(nf)nf.textContent=famLabel();document.querySelectorAll('nav [data-t]').forEach(b=>{const on=b.dataset.t===S.tab;b.classList.toggle('on',on);on?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')})}
 function render(){
  checkUnl();save();
  if(S.scr==='main'&&$('#mn')){$('#mn').innerHTML=VIEW[S.tab]();$('#hd').innerHTML=hdr();navSync();return}
@@ -594,7 +608,7 @@ const wqNow=()=>WQS[wkIdx()%WQS.length];
 const MPOOL=[
  {id:'posts3',t:'Cuenta 3 historias esta semana',g:3,r:60,p:w=>w.posts},
  {id:'types3',t:'Cuenta de 3 formas distintas (voz, foto, carta…)',g:3,r:70,p:w=>w.types.length},
- {id:'trivia5',t:'Acierta 5 preguntas de la trivia',g:5,r:50,p:w=>w.trivia},
+ {id:'trivia5',t:'Responde la pregunta del día 5 veces',g:5,r:50,p:w=>w.trivia},
  {id:'mimos5',t:'Dale 5 mimos a tu mascota',g:5,r:40,p:w=>w.mimos},
  {id:'days4',t:'Cuenta algo en 4 días distintos',g:4,r:80,p:w=>w.days.length},
  {id:'voz1',t:'Graba una nota de voz',g:1,r:50,p:w=>w.types.includes('voz')?1:0},
@@ -604,14 +618,14 @@ const wkEnsure=()=>{const k=wkKey();if(!S.wk||S.wk.k!==k)S.wk={k,posts:0,fotos:0
 const wkMissions=()=>{const i=wkIdx()%MPOOL.length;return[0,3,6].map(j=>MPOOL[(i+j)%MPOOL.length])};
 function track(t,k){const w=wkEnsure();
  if(t==='post'){w.posts++;if(k==='foto')w.fotos++;if(!w.types.includes(k))w.types.push(k);const d=today();if(!w.days.includes(d))w.days.push(d)}
- if(t==='trivia')w.trivia++;if(t==='mimo')w.mimos++}
+ if(t==='trivia'||t==='qa')w.trivia++;if(t==='mimo')w.mimos++}
 function claimM(id){const w=wkEnsure(),m=MPOOL.find(x=>x.id===id);if(!m||w.claimed.includes(id)||m.p(w)<m.g)return;w.claimed.push(id);burst(30);add(m.r)}
 function missionsHTML(){const w=wkEnsure();return `<section class="card"><h3>Misiones de la semana</h3><span class="mu">Cambian cada lunes</span>${wkMissions().map(m=>{const v=Math.min(m.g,m.p(w)),done=w.claimed.includes(m.id),ok=v>=m.g;return `<div class="ms"><div class="row sp"><b>${esc(m.t)}</b><span class="mu">${v}/${m.g}</span></div><div class="bar"><i style="width:${v/m.g*100}%"></i></div>${done?`<p class="row" style="color:var(--color-success-text);font-weight:500">${ic('check',18)} Cobrada · +${m.r} corazones</p>`:ok?`<button class="btn" onclick="claimM('${m.id}')">Cobrar ${m.r} corazones</button>`:`<span class="mu">Recompensa: ${m.r} corazones</span>`}</div>`}).join('')}</section>`}
 
 /* ---------- home ---------- */
 function home(){
  const lvl=Math.floor(S.xp/100),n=S.posts.length;
- const wq=S.group?'Cuéntale a tu familia cómo lo viviste.':'Respóndela para tu diario.';
+ const wq=S.group?'Cuéntale a '+fm()+' cómo lo viviste.':'Respóndela para tu diario.';
  return `
  ${heroHTML()}
  ${S.chest===today()?`<section class="card c"><span class="mu">Cofre de hoy abierto. Vuelve mañana por otro 🎁</span></section>`:`<section class="card c hero"><div class="chest">🎁</div><h3>¡${esc(S.pet.name)} te trajo un regalo!</h3><button class="btn" onclick="chest()">Abrir cofre</button></section>`}
@@ -619,16 +633,16 @@ function home(){
  <section class="card"><span class="mu">Pregunta de la semana</span><h2>${esc(wqNow())}</h2><p class="mu">${wq}</p><button class="btn" onclick="chooser(wqNow())">Responder</button></section>
  <section class="card"><h3>¿Cómo quieres contar hoy?</h3><div class="qp">${Object.entries(TY).map(([k,v])=>`<button onclick="compose('${k}')">${ic(v.i,18)}${v.l}</button>`).join('')}</div></section>
  ${missionsHTML()}${closetHTML()}
- ${moodCard()}<section class="card"><h3>Libro de la familia</h3><div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div><p class="mu">${Math.min(n,12)} de 12 historias. Con 12 se arma el libro.</p></section>`}
+ ${moodCard()}<section class="card"><h3>${libName()}</h3><div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div><p class="mu">${Math.min(n,12)} de 12 historias. Con 12 se arma el libro.</p></section>`}
 function chest(){const r=(10+Math.floor(Math.random()*21));S.chest=today();burst(32);add(r)}
 const H=3600e3;
 const QS=[
- {k:'dia',mood:1,t:()=>'¿Cómo te fue hoy, '+S.me.name+'?',o:[['😄 Genial','¡Qué alegría! Cuéntale tu día a alguien de tu familia 💗',4],['🙂 Bien','Me alegra. Los días tranquilos también cuentan ✨',3],['😕 Regular','Te entiendo. Mañana es otra oportunidad y yo estoy contigo 🫶',2],['😢 Mal','Ven, te doy un abrazo gigante 🤗 Cuando quieras, me cuentas qué pasó.',1]]},
- {k:'fam',t:()=>'¿Hablaste hoy con alguien de tu familia?',o:[['Sí','¡Qué bonito! Eso es lo que más cuenta 💗'],['Todavía no','Escríbele un mensajito ahora, seguro le alegra el día 📱']]},
- {k:'mejor',t:()=>'¿Qué fue lo mejor de tu día?',o:[['La comida','¡Ñam! Guárdame un poquito 🍪'],['Mi familia','Eso vale oro 💗 ¿Lo cuentas en una historia?'],['Trabajo o estudio','¡Qué orgullo! Sigue así 💪'],['Otra cosa','Cuéntamelo en una historia, quiero saberlo todo ✨']]},
+ {k:'dia',mood:1,t:()=>'¿Cómo te fue hoy, '+S.me.name+'?',o:[['😄 Genial','¡Qué alegría! Cuéntale tu día a alguien que quieres 💗',4],['🙂 Bien','Me alegra. Los días tranquilos también cuentan ✨',3],['😕 Regular','Te entiendo. Mañana es otra oportunidad y yo estoy contigo 🫶',2],['😢 Mal','Ven, te doy un abrazo gigante 🤗 Cuando quieras, me cuentas qué pasó.',1]]},
+ {k:'fam',t:()=>'¿Hablaste hoy con alguien que quieres?',o:[['Sí','¡Qué bonito! Eso es lo que más cuenta 💗'],['Todavía no','Escríbele un mensajito ahora, seguro le alegra el día 📱']]},
+ {k:'mejor',t:()=>'¿Qué fue lo mejor de tu día?',o:[['La comida','¡Ñam! Guárdame un poquito 🍪'],['Mi gente','Eso vale oro 💗 ¿Lo cuentas en una historia?'],['Trabajo o estudio','¡Qué orgullo! Sigue así 💪'],['Otra cosa','Cuéntamelo en una historia, quiero saberlo todo ✨']]},
  {k:'agua',t:()=>'¿Ya tomaste agua hoy?',o:[['Sí 💧','¡Muy bien! Los dos nos hidratamos ☁️'],['Ahorita','Anda, que yo te espero 🥤']]},
  {k:'hist',t:()=>'¿Me cuentas una historia hoy?',o:[['Sí, vamos','¡Sí! Elige cómo quieres contarla 🎉',0,'chooser'],['Luego','Dale, aquí estaré 💗']]},
- {k:'inv',cond:()=>S.group&&Object.keys(S.members).length<2,t:()=>'¿Ya invitaste a alguien de tu familia?',o:[['Sí','¡Genial! Con ellos todo es más lindo 💗'],['Aún no','Comparte el código desde Familia, ¡quiero conocerlos!',0,'fam']]}
+ {k:'inv',cond:()=>S.group&&Object.keys(S.members).length<2,t:()=>'¿Ya invitaste a alguien a tu grupo?',o:[['Sí','¡Genial! Con ellos todo es más lindo 💗'],['Aún no','Comparte el código desde Familia, ¡quiero conocerlos!',0,'fam']]}
 ];
 const asleep=()=>new Date().getHours()<6;
 const fmtWait=ms=>{const m=Math.ceil(ms/60000);return m>=60?Math.floor(m/60)+' h '+(m%60)+' min':m+' min'};
@@ -672,38 +686,32 @@ function petIdle(force){if(S.scr!=='main'||S.tab!=='home'||document.hidden||$('#
 function moodCard(){const m=S.pt.moods||[];if(!m.length)return'';const E=['','😢','😕','🙂','😄'],L='DLMXJVS';
  return `<section class="card"><h3>Tu ánimo esta semana</h3><div class="days">${Array.from({length:7},(_,i)=>{const dt=new Date(Date.now()-(6-i)*864e5),e=m.find(x=>x.d===dt.toDateString());return `<span style="${e?'font-size:20px;background:var(--soft2)':''}">${e?E[e.v]:L[dt.getDay()]}</span>`}).join('')}</div><p class="mu">${esc(S.pet.name)} lo recuerda cada vez que le cuentas cómo te fue.</p></section>`}
 
-function helpCard(){if(!S.group||Object.keys(S.members).length>1)return'';return `<div class="card"><h3>¿Tu familia aún no se une?</h3><p class="mu">Puedes empezar sin ellos. Tu mascota y tu diario funcionan solos, y todo se comparte cuando entren.</p><ul class="mu"><li>Invítalos con un mensaje listo para enviar.</li><li>Entrevístalos y publica la historia por ellos: al contar, escribe quién la cuenta.</li><li>${esc(S.pet.name)} te recordará invitarlos.</li></ul><a class="btn w" href="https://wa.me/?text=${encodeURIComponent(inviteText())}" target="_blank" rel="noopener">Enviar invitación por WhatsApp</a></div>`}
+function helpCard(){if(!S.group||Object.keys(S.members).length>1)return'';return `<div class="card"><h3>¿Aún no se une nadie?</h3><p class="mu">Puedes empezar sin ellos. Tu mascota y tu diario funcionan solos, y todo se comparte cuando entren.</p><ul class="mu"><li>Invítalos con un mensaje listo para enviar.</li><li>Entrevístalos y publica la historia por ellos: al contar, escribe quién la cuenta.</li><li>${esc(S.pet.name)} te recordará invitarlos.</li></ul><a class="btn w" href="https://wa.me/?text=${encodeURIComponent(inviteText())}" target="_blank" rel="noopener">Enviar invitación por WhatsApp</a></div>`}
 
-/* ---------- trivia ---------- */
-const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
-const GENERIC=['Nota de voz','Foto sin título','Mi dibujo','Video corto'];
-const KL={voz:'una nota de voz',foto:'una foto',dibujo:'un dibujo',receta:'una receta',carta:'una carta'};
-/* Hasta 5 preguntas con historias de OTROS familiares. Una frase jugada no vuelve en 3 días. */
-function buildQ(){const M=S.members,ids=Object.keys(M);if(ids.length<2)return{q:[],why:'solo'};
- const nm=id=>id===S.user.uid?S.me.name:(M[id].name||'Familiar'),all=ids.map(nm),seen=S.pt.seen||{},lim=Date.now()-3*864e5;
- const cands=[];
- S.posts.filter(p=>p.a!=='me'&&M[p.a]&&!(seen[p.id]>lim)).forEach(p=>{
-  const txt=((p.k==='carta'?p.x.tx:p.x.cap)||'').trim();
-  if(txt.length>=10)cands.push({p,h:'¿Quién lo escribió?',t:'“'+txt.slice(0,160)+'”'});
-  else if(p.k!=='carta'&&p.t&&!GENERIC.includes(p.t))cands.push({p,h:'¿Quién contó '+(KL[p.k]||'esto')+'?',t:'“'+p.t+'”'})});
- const q=shuf(cands).slice(0,5).map(c=>{const a=who(c.p.a,c.p);return{id:c.p.id,h:c.h,t:c.t,a,o:shuf([a,...shuf(all.filter(n=>n!==a)).slice(0,2)])}});
- return{q,why:q.length?'':'vacio'}}
-function markSeen(id){const p=S.pt;p.seen=p.seen||{};p.seen[id]=Date.now();const k=Object.keys(p.seen);if(k.length>80)k.sort((a,b)=>p.seen[a]-p.seen[b]).slice(0,k.length-80).forEach(x=>delete p.seen[x])}
-/* tope diario de corazones por trivia: 8 aciertos */
-function tvOK(){const p=S.pt,d=today();if(!p.tv||p.tv.d!==d)p.tv={d,n:0};if(p.tv.n>=8)return false;p.tv.n++;return true}
+/* ---------- pregunta del día ---------- */
+const QD_G=["¿Qué comida te recuerda a tu infancia?", "¿Cuál es el mejor consejo que te han dado?", "¿Qué canción te hace sentir en casa?", "¿Cuál fue el mejor regalo que has recibido?", "¿Qué travesura recuerdas con más cariño?", "¿A qué lugar te gustaría volver?", "¿Qué te hizo reír hoy?", "¿Cuál es tu recuerdo favorito de unas vacaciones?", "¿Qué película podrías ver mil veces?", "¿Qué le dirías a tu yo de hace diez años?", "¿Cuál es tu plato favorito para celebrar?", "¿Qué es lo más valiente que has hecho?", "¿Qué tradición no quisieras que se perdiera?", "¿Quién te enseñó algo que nunca olvidaste?", "¿Qué pequeño detalle te alegra el día?", "¿Cuál fue tu primer trabajo y qué aprendiste?", "¿Qué apodo te han puesto y de dónde salió?", "¿Cuál es tu rincón favorito para descansar?", "¿Qué te gustaría aprender este año?", "¿Qué olor te lleva directo a un recuerdo?", "¿Qué es lo más bonito que alguien ha hecho por ti?", "¿Cuál es tu mejor recuerdo de la escuela?", "¿Qué plan perfecto harías un domingo?", "¿Qué cosa pequeña te hace sentir agradecido?", "¿Qué historia siempre cuentas en las reuniones?", "¿Qué sueño de niño todavía te hace ilusión?", "¿Qué te da paz cuando el día es difícil?", "¿Cuál fue la mejor sorpresa que te llevaste?", "¿Qué viaje te gustaría hacer algún día?", "¿Qué es lo que más valoras de las personas?"];
+const QD_P=["¿Cuál es tu recuerdo favorito de nosotros?", "¿Qué fue lo primero que pensaste cuando nos conocimos?", "¿Qué pequeño gesto mío te hace sentir querido?", "¿Cuál ha sido nuestro mejor día juntos?", "¿Qué te gustaría que hiciéramos este año?", "¿Qué canción nos representa?", "¿Qué plan perfecto haríamos tú y yo?", "¿Qué es lo que más admiras de mí?", "¿Cuál fue tu primera impresión de mí?", "¿Qué lugar te gustaría que conociéramos juntos?", "¿Qué te hizo sonreír de mí esta semana?", "¿Qué cosa nueva te gustaría que probáramos?", "¿Qué comida nos recuerda a algo especial?", "¿Qué momento de nuestra historia repetirías?", "¿Qué sueño te gustaría que cumpliéramos juntos?", "¿Qué te gustaría decirme que no te he dicho?", "¿Cuál es nuestra mejor anécdota?", "¿Qué tradición de pareja te gustaría empezar?", "¿Qué te da tranquilidad cuando estamos juntos?", "¿Qué película o serie sería la nuestra?", "¿Qué apodo cariñoso te gusta más?", "¿Qué es lo más divertido que hemos hecho?", "¿Qué aprendiste de mí que no esperabas?", "¿Qué detalle de nuestra casa o rutina te encanta?", "¿Cómo te imaginas nuestro próximo aniversario?"];
+const dayKey=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const qaToday=()=>{const P=S.group&&S.group.type==='pareja'?QD_P:QD_G,n=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5);return P[n%P.length]};
+function qaForm(solo){return `<textarea id="qat" class="in paper" rows="4" maxlength="300" placeholder="Escribe tu respuesta…" oninput="S.qtx=this.value;$('#qab').disabled=!this.value.trim()">${esc(S.qtx||'')}</textarea>
+ <button class="btn w" id="qab" onclick="qaSend()" ${S.qtx&&S.qtx.trim()?'':'disabled'}>${solo?'Guardar en mi diario':'Responder'}</button>
+ <p class="mu c">${solo?'Tu respuesta se guarda en tu Archivo.':'Cuando respondas, verás lo que contestaron los demás.'}</p>`}
 function triv(){
- if(!T.q||(!T.q.length&&T.i===0)){const b=buildQ();T.q=b.q;T.why=b.why}
- const Q=T.q;
- if(!Q.length){const solo=T.why==='solo';return `<h2>Trivia familiar</h2><div class="card c">${pet(S.pet.kind,90)}<h3>${solo?'Aún faltan familiares':'Ya jugaste todas las frases'}</h3><p class="mu">${solo?'La trivia necesita al menos dos personas en el grupo. Invita a tu familia y que cuenten sus historias.':'Cuando alguien publique una carta o una historia con título nuevo, aparecerán más preguntas. Las frases ya jugadas vuelven a los 3 días.'}</p><button class="btn w" onclick="go('fam')">${solo?'Invitar a la familia':'Ver mi familia'}</button></div>`}
- if(T.i>=Q.length)return `<div class="card c">${pet(S.pet.kind,110)}<h2>¡Terminaste!</h2><p>Acertaste ${T.s} de ${Q.length}</p><p class="mu">${T.s===Q.length&&Q.length>=3?'¡Perfecto!':'Vuelve cuando haya frases nuevas'}</p><button class="btn" onclick="T={i:0,s:0,a:null};render()">Otra ronda</button></div>`;
- const q=Q[T.i];
- return `<div class="card"><span class="mu">${esc(q.h)} · Pregunta ${T.i+1} de ${Q.length}</span><p class="quote">${esc(q.t)}</p>
- ${q.o.map((o,j)=>{const st=T.a===null?'':(o===q.a?'ok':(j===T.a?'no':''));return `<button class="opt ${st}" onclick="ans(${j})">${esc(o)}${st==='ok'?ic('check',20):st==='no'?ic('x',20):''}</button>`}).join('')}
- ${T.a!==null?`<button class="btn" onclick="nx()">Siguiente</button>`:''}</div>`}
-function ans(j){if(T.a!==null)return;T.a=j;const q=T.q[T.i];markSeen(q.id);
- if(q.o[j]===q.a){T.s++;track('trivia');burst(10,['✨','💗']);if(tvOK())add(10);else{toast('¡Correcto! Hoy ya ganaste los corazones de la trivia');render()}}else render()}
-function nx(){T.i++;T.a=null;const Q=T.q;
- if(T.i>=Q.length&&T.s===Q.length&&Q.length>=3){S.perfect=true;burst(44);if(S.pt.tvb!==today()){S.pt.tvb=today();add(30)}else render()}else render()}
+ const day=dayKey(),q=qaToday(),g=S.group;
+ if(g&&window.CLOUD&&CLOUD.qaOpen)CLOUD.qaOpen(day);
+ const st=S.qa&&S.qa.day===day?S.qa:{mine:null,all:null},done=S.qd===day;
+ const head=`<h2>Pregunta del día</h2><div class="card c">${pet(S.pet.kind,80,S.wear)}<span class="mu">Hoy para ${g?fm():'ti'}</span><h2 style="margin:6px 0 0">${esc(q)}</h2></div>`;
+ if(!g)return head+`<div class="card">${done?'<p class="mu c">Ya la respondiste hoy. Tu respuesta quedó en tu Archivo. Vuelve mañana por otra.</p>':qaForm(true)}</div>`;
+ if(!st.mine&&!done)return head+`<div class="card">${qaForm(false)}</div>`;
+ if(!st.all)return head+`<div class="card"><p class="mu c">${st.mine?'Cargando las respuestas…':'Guardando tu respuesta…'}</p></div>`;
+ const me=S.user.uid,l=st.all.slice().sort((a,b)=>(a.uid===me?-1:b.uid===me?1:0)),tot=Object.keys(S.members).length||1;
+ return head+`<section class="card"><h3>Respuestas de hoy</h3><span class="mu">${st.all.length} de ${tot} ${tot===1?'persona':'personas'}</span>${l.map(a=>`<div class="qans"><b>${a.uid===me?'Tú':esc(a.name||'Alguien')}</b><p>${esc(a.tx)}</p></div>`).join('')}</section>${st.all.length<2?`<div class="card c"><p class="mu">Aún nadie más ha respondido. ¡Invítalos!</p><button class="btn s w" onclick="shareInvite()">Compartir invitación</button></div>`:''}`}
+async function qaSend(){const el=$('#qat'),t=(el?el.value:'').trim().slice(0,300);if(!t)return;
+ if(!window.CLOUD||!CLOUD.ready){toast('Sin conexión con tu cuenta. Intenta de nuevo en un momento.');return}
+ const day=dayKey(),q=qaToday(),prev=S.qd,fail=()=>{S.qd=prev;S.qtx=t;toast('No se pudo guardar tu respuesta. Intenta de nuevo.');soft()};
+ S.qd=day;S.qtx='';S.qaN=(S.qaN||0)+1;track('qa');burst(18,['✨','💗']);
+ try{(S.group?CLOUD.qaAnswer(day,t):CLOUD.publish({k:'carta',t:q.slice(0,120),x:{to:'Mi diario',tx:t},by:''})).catch(fail)}catch(e){fail();return}
+ add(10)}
 
 /* ---------- archive ---------- */
 /* solo se muestran fotos y audios guardados como datos; evita que otro miembro inyecte código */
@@ -719,12 +727,12 @@ function postBody(p){
  return ''}
 function arc(){
  const n=S.posts.length;
- const head=`<h2>Archivo familiar</h2><div class="card"><span class="mu">Libro de la familia: ${Math.min(n,12)} de 12 historias</span><div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div></div>`;
+ const head=`<h2>Archivo</h2><div class="card"><span class="mu">${libName()}: ${Math.min(n,12)} de 12 historias</span><div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div></div>`;
  if(!n)return head+`<div class="card c">${pet(S.pet.kind,90)}<h3>Aún no hay historias</h3><p class="mu">Cuenta la primera y ${esc(S.pet.name)} te lo agradecerá.</p><button class="btn" onclick="chooser()">Contar la primera</button></div>`;
  return head+S.posts.filter(p=>TY[p.k]).map(p=>`<article class="card"><div class="row">${av(p.a)}<div class="tx"><b>${esc(p.t)}</b><span class="mu">${esc(who(p.a,p))} · ${rel(p.ts)}${p.by?' · contada por '+esc(p.by):''}</span></div><span class="tag">${ic(TY[p.k].i,14)}${TY[p.k].l}</span></div>
   ${postBody(p)}
   <div class="rx">${['💗','😂','🥹'].map((e,j)=>`<button class="${p.m[j]?'on':''}" aria-pressed="${!!p.m[j]}" onclick="react('${p.id}',${j})">${e} ${p.r[j]+p.m[j]}</button>`).join('')}</div>${p.a==='me'?`<button class="lnk" style="min-height:32px;font-size:13px;align-self:flex-end" onclick="delPost('${p.id}')">Eliminar</button>`:''}</article>`).join('')+(S.posts.length>=S.plim?`<button class="btn s w" onclick="CLOUD.more()">Ver más historias</button>`:'')}
-function delPost(id){if(!confirm('¿Eliminar esta historia'+(S.group?' para toda la familia':'')+'?'))return;CLOUD.deletePost(id).then(()=>toast('Historia eliminada')).catch(()=>toast('No se pudo eliminar. Intenta de nuevo.'))}
+function delPost(id){if(!confirm('¿Eliminar esta historia'+(S.group?' para todo el grupo':'')+'?'))return;CLOUD.deletePost(id).then(()=>toast('Historia eliminada')).catch(()=>toast('No se pudo eliminar. Intenta de nuevo.'))}
 function react(id,j){const p=S.posts.find(q=>q.id===id);if(p&&window.CLOUD&&CLOUD.ready)CLOUD.react(id,j,!p.m[j]).catch(()=>toast('No se pudo guardar tu reacción'))}
 
 /* ---------- family ---------- */
@@ -799,6 +807,23 @@ function setName(v){v=String(v||'').trim().slice(0,24);if(!v){toast('Escribe un 
 function setPetName(v){v=String(v||'').trim().slice(0,14);if(!v){toast('Escribe un nombre');profile();return}S.pet={kind:S.pet.kind,name:v};save();render();toast('Nombre guardado')}
 const pfIn=()=>`${esc((S.me.name||'?').trim().charAt(0).toUpperCase())}${S.me.pic?`<img src="${esc(S.me.pic)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:''}`;
 const pfAv=()=>`<span class="pf" aria-hidden="true">${pfIn()}</span>`;
+const isOn=m=>!!(m&&m.showSeen!==false&&m.lastSeen&&Date.now()-m.lastSeen<6*6e4);
+const presTxt=m=>{if(!m||m.showSeen===false||!m.lastSeen)return'';const mi=Math.floor((Date.now()-m.lastSeen)/6e4);if(mi<6)return'En línea';if(mi<60)return'Activo hace '+mi+' min';const h=Math.floor(mi/60);if(h<24)return'Activo hace '+h+' h';const d=Math.floor(h/24);return d===1?'Activo ayer':'Activo hace '+d+' días'};
+function memberCard(id){
+ const mine=id==='me'||(S.user&&id===S.user.uid),M0=S.members[mine&&S.user?S.user.uid:id]||{};
+ const m=mine?{name:S.me.name,petKind:S.pet.kind,petName:S.pet.name,xp:S.xp,streak:S.streak,total:S.total,wear:S.wear,joinedAt:M0.joinedAt||0,showSeen:S.showSeen,lastSeen:Date.now()}:M0;
+ if(!m||(!mine&&!m.name))return;
+ const lv=Math.floor((m.xp||0)/100),k=PETS[m.petKind]?m.petKind:'nube',wear=Array.isArray(m.wear)?m.wear.filter(x=>typeof x==='string'):[];
+ const np=typeof m.total==='number'?m.total:S.posts.filter(p=>p.a===(mine?'me':id)).length,pt=presTxt(m),on=isOn(m);
+ showSheet(`<div class="mcd"><span class="mpet">${pet(k,132,wear)}${on?'<i class="odot"></i>':''}</span>
+ <h2>${esc(m.name||'Miembro')}${mine?' (tú)':''}</h2>
+ <p class="mu">${esc(m.petName||'')} · ${STAGE[Math.min(lv,3)]} · nivel ${lv+1}</p>
+ ${pt?`<p class="pres ${on?'on':''}">${pt}</p>`:''}
+ <div class="mst"><div><b>${m.xp||0}</b><span class="mu">corazones</span></div><div><b>${m.streak||0}</b><span class="mu">racha</span></div><div><b>${np}</b><span class="mu">historias</span></div></div>
+ ${m.joinedAt?`<p class="mu">En el grupo desde ${new Date(m.joinedAt).toLocaleDateString('es',{day:'numeric',month:'long',year:'numeric'})}</p>`:''}
+ ${mine?'<button class="btn s w" onclick="profile()">Editar mi perfil</button>':''}
+ <button class="btn w" onclick="cl()">Cerrar</button></div>`)}
+function setSeen(v){S.showSeen=!!v;save();toast(v?'Ahora se ve cuando estás activo':'Ya no se ve cuando estás activo')}
 function profile(){S.profileOpen=true;
  showSheet(`<h2>Mi perfil</h2>
  <div class="pfc">${pfAv()}<span class="tx"><b>${esc(S.me.name)}</b><span class="mu" style="overflow-wrap:anywhere">${esc(S.user?S.user.email:'')}</span></span></div>
@@ -807,6 +832,8 @@ function profile(){S.profileOpen=true;
  <div class="th" role="radiogroup" aria-labelledby="thl">${THEMES.map(t=>`<button class="thb ${S.theme===t.id?'on':''}" role="radio" aria-checked="${S.theme===t.id}" onclick="setTheme('${t.id}')"><span class="sw" style="background:${t.bg}"><i style="background:${t.pr}"></i></span>${t.n}</button>`).join('')}</div>
  <p class="mu">Tu apariencia y tu nombre se guardan en tu cuenta y te acompañan en todos tus dispositivos.</p>
  <p id="sy" class="sy mu${syncOff()||SYNC.pend>0?' w':''}"><i></i><span>${syncTxt()}</span></p>
+ <label class="chk"><input type="checkbox" ${S.showSeen!==false?'checked':''} onchange="setSeen(this.checked)"> Mostrar cuando estoy activo</label>
+ <p class="mu">Si lo apagas, los demás no verán "en línea" ni tu última vez.</p>
  <label class="lb" for="pfm">Nombre de tu mascota</label>
  <div class="pfp">${pet(S.pet.kind,52)}<input id="pfm" class="in" maxlength="14" value="${esc(S.pet.name)}" onchange="setPetName(this.value)"></div>
  <button class="btn s w" onclick="exportMem()">Descargar mis recuerdos</button>
@@ -815,10 +842,10 @@ function profile(){S.profileOpen=true;
 const acct=()=>`<div class="card"><span class="mu">Sesión iniciada con</span><b style="overflow-wrap:anywhere">${esc(S.user?S.user.email:'')}</b><button class="btn s w" onclick="logout()">Cerrar sesión</button></div>`;
 async function leave(){if(!confirm('¿Salir de '+S.group.name+'? Tus historias se quedan en el archivo de la familia.'))return;try{await CLOUD.leaveFamily(S.group.id);toast('Saliste del grupo');render()}catch(e){toast('No se pudo salir. Intenta de nuevo.')}}
 function fam(){
- if(!S.group)return `<h2>Tu familia</h2><div class="card c">${pet(S.pet.kind,90)}<h3>Estás jugando solo</h3><p class="mu">Crea un grupo o únete a uno para compartir historias, ver la liga y jugar la trivia.</p><button class="btn w" onclick="S.scr='group';S.gstep='pick';render()">Crear o unirme a un grupo</button></div>${S.families.length?famList():''}${acct()}`;
+ if(!S.group)return `<h2>Tu grupo</h2><div class="card c">${pet(S.pet.kind,90)}<h3>Estás jugando solo</h3><p class="mu">Crea un grupo o únete a uno para compartir historias, ver la liga y responder la pregunta del día.</p><button class="btn w" onclick="S.scr='group';S.gstep='pick';render()">Crear o unirme a un grupo</button></div>${S.families.length?famList():''}${acct()}`;
  const me=S.user.uid;
- const L=Object.entries(S.members).filter(([id])=>id!==me).map(([id,m])=>({id,n:m.name||'Familiar',xp:m.xp||0})).concat([{id:'me',n:S.me.name+' (tú)',xp:S.xp}]).sort((a,b)=>b.xp-a.xp);
- const B=[['pen','Primera historia',S.posts.some(p=>p.a==='me')],['flame','Racha de 3',S.streak>=3],['brush','Multiformato',S.types.size>=3],['star','Trivia perfecta',S.perfect],['users','Invitador',!!S.inv],['book','Libro listo',S.posts.length>=12]];
+ const L=Object.entries(S.members).filter(([id])=>id!==me).map(([id,m])=>({id,n:m.name||'Miembro',xp:m.xp||0,m})).concat([{id:'me',n:S.me.name+' (tú)',xp:S.xp,m:{showSeen:S.showSeen,lastSeen:Date.now()}}]).sort((a,b)=>b.xp-a.xp);
+ const B=[['pen','Primera historia',S.posts.some(p=>p.a==='me')],['flame','Racha de 3',S.streak>=3],['brush','Multiformato',S.types.size>=3],['star','Pregunta del día',(S.qaN||0)>=1||!!S.perfect],['users','Invitador',!!S.inv],['book','Libro listo',S.posts.length>=12]];
  return `<h2>${esc(S.group.name)}</h2>
  
  ${S.families.length>1?famList():''}
@@ -828,8 +855,8 @@ function fam(){
   <button class="btn s w" onclick="showQr()">Invitar en persona (QR)</button>
   <a class="btn s w" href="https://wa.me/?text=${encodeURIComponent(inviteText())}" target="_blank" rel="noopener">Enviar por WhatsApp</a></div>
 ${helpCard()}
- <div class="card"><h3>Liga de la familia</h3><span class="mu">${L.length} ${L.length>1?'miembros':'miembro'} en el grupo</span>
-  ${L.map((r,i)=>`<div class="row sp"><div class="row"><span class="rk ${i===0?'g':''}">${i+1}</span>${av(r.id,40)}<b>${esc(r.n)}</b></div><span class="row" style="gap:4px">${r.xp}${ic('heart',14)}</span></div>`).join('')}</div>
+ <div class="card"><h3>${gtype()==='familia'?'Liga de la familia':gtype()==='pareja'?'Nosotros':'Liga de amigos'}</h3><span class="mu">${L.length} ${L.length>1?'miembros':'miembro'} en el grupo</span>
+  ${L.map((r,i)=>{const pt=presTxt(r.m);return `<button class="row sp mrow" onclick="memberCard('${esc(r.id)}')" aria-label="Ver perfil de ${esc(r.n)}"><div class="row"><span class="rk ${i===0?'g':''}">${i+1}</span><span class="avw">${av(r.id,40)}${isOn(r.m)?'<i class="odot"></i>':''}</span><span class="mt"><b>${esc(r.n)}</b>${pt?`<span class="mu">${pt}</span>`:''}</span></div><span class="row" style="gap:4px">${r.xp}${ic('heart',14)}</span></button>`}).join('')}</div>
  <div class="card"><h3>Insignias</h3><div class="bd">${B.map(b=>`<div class="${b[2]?'':'lk'}">${ic(b[0],28)}${b[1]}</div>`).join('')}</div></div>
  <button class="btn s w" onclick="S.scr='group';S.gstep='pick';render()">Crear o unirme a otra familia</button>
  ${S.group.ownerUid!==me?`<button class="btn s w" onclick="leave()">Salir de esta familia</button>`:''}
@@ -962,7 +989,7 @@ async function exportMem(){if(!window.CLOUD||!CLOUD.exportAll||!CLOUD.ready){toa
  catch(e){toast('No se pudo preparar la descarga. Revisa tu conexión.')}}
 
 /* ---------- puente con cloud.js ---------- */
-const soft=()=>{if(S.scr==='main')render()};
+const soft=()=>{if(S.scr==='main'){const a=document.activeElement;if(a&&a.id==='qat')return;render()}};
 const boot=()=>`<div class="wl" style="justify-content:center;align-items:center;text-align:center"><div class="fl"><img class="bl" src="icons/icon-192.png" width="96" height="96" alt=""></div><h2>Cápsula</h2>${S.cloudErr?`<p class="err" style="display:block;max-width:300px">${esc(S.cloudErr)}</p><button class="btn" style="align-self:center" onclick="location.reload()">Reintentar</button>`:S.bootSlow?`<p class="mu">Tarda más de lo normal… revisa tu conexión.</p><button class="btn s" style="align-self:center" onclick="location.reload()">Reintentar</button>`:'<p class="mu">Cargando tu espacio…</p>'}</div>`;
 window.APP={
  personal,legacy,
@@ -971,7 +998,7 @@ window.APP={
  sync(st){SYNC=st;syncPaint()},
  /* Une la nube con la copia de este celular sin perder avances: lo que solo sube (corazones, mejor racha, historias) toma el mayor. */
  merge(c,l){if(!l||typeof l!=='object')return{data:c,changed:false};const d={...c};let ch=false;
-  ['xp','best','total'].forEach(k=>{const a=+c[k]||0,b=+l[k]||0;if(b>a){d[k]=b;ch=true}});
+  ['xp','best','total','qaN'].forEach(k=>{const a=+c[k]||0,b=+l[k]||0;if(b>a){d[k]=b;ch=true}});
   const un=(a,b)=>{const u=[...new Set([...(Array.isArray(a)?a:[]),...(Array.isArray(b)?b:[])])];return u};
   ['types','unl'].forEach(k=>{const u=un(c[k],l[k]);if(u.length>(Array.isArray(c[k])?c[k].length:0)){d[k]=u;ch=true}});
   const tc=Date.parse(c.last)||0,tl=Date.parse(l.last)||0;
@@ -984,9 +1011,10 @@ window.APP={
  signedOut(){resetPersonal();S.user=null;S.cloudErr='';S.scr='welcome';cl();render()},
  applyUser(d,u){resetPersonal();S.user=u;S.me.name=String(d.name||u.name||'Amigo').slice(0,24);S.me.email=u.email;S.me.pic=u.photo;applyPersonal(d)},
  families(l){S.families=l},
- setGroup(g){S.group=g?{id:g.id,name:g.name,code:g.code,ownerUid:g.ownerUid}:null},
- group(g){if(S.group&&S.group.id===g.id){Object.assign(S.group,{name:g.name,code:g.code,ownerUid:g.ownerUid});S.families=S.families.map(f=>f.id===g.id?{...f,name:g.name}:f);soft()}},
- switched(){S.posts=[];S.plim=60;S.members={};T={i:0,s:0,a:null};soft()},
+ setGroup(g){S.group=g?{id:g.id,name:g.name,code:g.code,ownerUid:g.ownerUid,type:g.type||'familia'}:null},
+ group(g){if(S.group&&S.group.id===g.id){Object.assign(S.group,{name:g.name,code:g.code,ownerUid:g.ownerUid,type:g.type||'familia'});S.families=S.families.map(f=>f.id===g.id?{...f,name:g.name}:f);soft()}},
+ qa(st){const c=S.qa&&S.qa.day===st.day?S.qa:{day:st.day,mine:null,all:null};S.qa={...c,...st};if(S.tab==='triv')soft()},
+ switched(){S.qa=null;S.posts=[];S.plim=60;S.members={};T={i:0,s:0,a:null};soft()},
  posts(l,lim){S.posts=l;S.plim=lim||60;soft()},
  members(m){S.members=m;soft()},
  afterLogin(){cl();S.cloudErr='';try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}const pc=S.joinCode;

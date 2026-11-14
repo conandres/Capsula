@@ -35,11 +35,12 @@ function start() {
   CLOUD.configured = true;
 
   let me = null, famIds = [], families = [], active = null, subs = [];
-  let lastP = '', lastM = '', timer = null, gen = 0, ready = false, plim = 60;
+  let lastP = '', lastM = '', lastE = '', lastPing = 0, timer = null, gen = 0, ready = false, plim = 60;
 
   const userRef = () => doc(db, 'users', me.uid);
   const base = () => (active ? ['families', active] : ['users', me.uid]);
-  const pick = (id, d) => ({ id, name: d.name || 'Familia', code: d.code || '', ownerUid: d.ownerUid || '' });
+  const TYPES = ['familia', 'pareja', 'amigos'];
+  const pick = (id, d) => ({ id, name: d.name || 'Familia', code: d.code || '', ownerUid: d.ownerUid || '', type: TYPES.includes(d.type) ? d.type : 'familia' });
 
   /* ---------- estado de guardado: cuántas escrituras esperan confirmación de la nube ---------- */
   let pend = 0;
@@ -59,6 +60,8 @@ function start() {
       track(setDoc(userRef(), { ...p, email: me.email, photo: me.photo, updatedAt: serverTimestamp() }, { merge: true })
         .catch(e => { lastP = ''; console.warn('No se guardó el progreso', e); }));
     }
+    const eh = [p.streak, (p.wear || []).join(','), p.total || 0, p.showSeen !== false].join('|');
+    if (force || eh !== lastE) { lastE = eh; pushExtra(false); }
     if (force || mh !== lastM) {
       lastM = mh;
       famIds.forEach(fid =>
@@ -67,12 +70,47 @@ function start() {
           .catch(e => console.warn('No se actualizó tu ficha de familia', e))));
     }
   }
+  /* Perfil visible para el grupo (racha, accesorios, historias) y "activo hace". Va aparte para no tropezar con las reglas viejas. */
+  function pushExtra(seen) {
+    if (!me) return;
+    const p = A.personal();
+    const d = { streak: p.streak || 0, total: p.total || 0, wear: (p.wear || []).slice(0, 12), showSeen: p.showSeen !== false };
+    if (seen) d.lastSeen = serverTimestamp();
+    famIds.forEach(fid => track(updateDoc(doc(db, 'families', fid, 'members', me.uid), d)
+      .catch(e => console.warn('No se actualizó tu perfil de grupo', e))));
+  }
+  CLOUD.ping = () => { if (!me || !ready || Date.now() - lastPing < 60000) return; lastPing = Date.now(); pushExtra(true); };
+  setInterval(() => { if (!document.hidden) CLOUD.ping(); }, 5 * 60 * 1000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) CLOUD.ping(); });
+
+  /* ---------- pregunta del día ---------- */
+  let qaUn = [], qaKey = '';
+  function qaStop() { qaUn.forEach(u => { try { u(); } catch (e) {} }); qaUn = []; qaKey = ''; }
+  CLOUD.qaOpen = day => {
+    if (!me || !active || qaKey === active + day) return;
+    qaStop(); qaKey = active + day;
+    const fid = active; let all = null;
+    qaUn.push(onSnapshot(doc(db, 'families', fid, 'qa', day, 'answers', me.uid), s => {
+      const mine = s.exists() ? { tx: s.data().tx || '' } : null;
+      A.qa({ day, mine });
+      if (mine && !all) {
+        all = onSnapshot(collection(db, 'families', fid, 'qa', day, 'answers'), ss => {
+          const l = []; ss.forEach(d => { const x = d.data({ serverTimestamps: 'estimate' }); l.push({ uid: d.id, name: x.name || '', tx: x.tx || '' }); });
+          A.qa({ day, all: l });
+        }, e => console.warn('Respuestas del día', e));
+        qaUn.push(all);
+      }
+    }, e => console.warn('Tu respuesta del día', e)));
+  };
+  CLOUD.qaAnswer = (day, tx) => track(setDoc(doc(db, 'families', active, 'qa', day, 'answers', me.uid),
+    { tx, name: A.personal().name, createdAt: serverTimestamp() }));
+
   CLOUD.dirty = () => { if (!ready) return; clearTimeout(timer); timer = setTimeout(() => flush(false), 2500); notify(); };
   document.addEventListener('visibilitychange', () => { if (document.hidden) flush(false); });
   addEventListener('pagehide', () => flush(false));
 
   /* ---------- listeners de la familia activa ---------- */
-  function teardown() { subs.forEach(u => { try { u(); } catch (e) {} }); subs = []; }
+  function teardown() { subs.forEach(u => { try { u(); } catch (e) {} }); subs = []; qaStop(); }
 
   function norm(d) {
     const x = d.data({ serverTimestamps: 'estimate' });
@@ -91,7 +129,13 @@ function start() {
     const warn = e => console.warn('Escucha de datos', e);
     if (fid) {
       subs.push(onSnapshot(collection(db, 'families', fid, 'members'), s => {
-        const m = {}; s.forEach(d => { m[d.id] = d.data(); }); A.members(m);
+        const m = {};
+        s.forEach(d => {
+          const x = d.data({ serverTimestamps: 'estimate' });
+          const ms = t => (t && t.toMillis ? t.toMillis() : 0);
+          m[d.id] = { ...x, lastSeen: ms(x.lastSeen), joinedAt: ms(x.joinedAt) };
+        });
+        A.members(m);
       }, warn));
       subs.push(onSnapshot(doc(db, 'families', fid), s => { if (s.exists()) A.group(pick(fid, s.data())); }, warn));
     } else A.members({});
@@ -152,6 +196,7 @@ function start() {
     }
     subscribe(active);
     A.afterLogin();
+    CLOUD.ping();
   });
 
   CLOUD.signIn = idToken => signInWithCredential(auth, GoogleAuthProvider.credential(idToken));
@@ -172,18 +217,25 @@ function start() {
     A.switched();
     subscribe(active);
     CLOUD.dirty();
+    lastPing = 0; CLOUD.ping();
   }
 
-  CLOUD.createFamily = async name => {
+  CLOUD.createFamily = async (name, type) => {
+    let withType = TYPES.includes(type);
     for (let i = 0; i < 6; i++) {
       const code = genCode(), fref = doc(collection(db, 'families')), b = writeBatch(db);
-      b.set(fref, { name, code, ownerUid: me.uid, createdAt: serverTimestamp() });
+      b.set(fref, { name, code, ownerUid: me.uid, createdAt: serverTimestamp(), ...(withType ? { type } : {}) });
       b.set(doc(db, 'families', fref.id, 'members', me.uid), memberData(code));
       b.set(doc(db, 'familyCodes', code), { familyId: fref.id, ownerUid: me.uid });
       b.set(userRef(), { familyIds: arrayUnion(fref.id) }, { merge: true });
       try { await b.commit(); }
-      catch (e) { if (e && e.code === 'permission-denied' && i < 5) continue; throw e; }
-      const fam = { id: fref.id, name, code, ownerUid: me.uid };
+      catch (e) {
+        /* Si las reglas de la nube aún no conocen el tipo de grupo, se crea sin él en vez de fallar. */
+        if (e && e.code === 'permission-denied' && withType) { withType = false; i--; continue; }
+        if (e && e.code === 'permission-denied' && i < 5) continue;
+        throw e;
+      }
+      const fam = { id: fref.id, name, code, ownerUid: me.uid, type: withType ? type : 'familia' };
       enter(fam);
       return fam;
     }
@@ -194,14 +246,27 @@ function start() {
     const cs = await getDoc(doc(db, 'familyCodes', code));
     if (!cs.exists()) return { err: 'notfound' };
     const fid = cs.data().familyId;
-    if (!famIds.includes(fid)) {
+    const wasIn = famIds.includes(fid);
+    if (!wasIn) {
       const b = writeBatch(db);
       b.set(doc(db, 'families', fid, 'members', me.uid), memberData(code));
       b.set(userRef(), { familyIds: arrayUnion(fid) }, { merge: true });
       await b.commit();
     }
     const fs = await getDoc(doc(db, 'families', fid));
-    enter(pick(fid, fs.data()));
+    const fam = pick(fid, fs.data());
+    if (fam.type === 'pareja' && !wasIn) {
+      const ms = await getDocs(collection(db, 'families', fid, 'members'));
+      if (ms.size > 2) {
+        const b = writeBatch(db);
+        b.delete(doc(db, 'families', fid, 'members', me.uid));
+        b.set(userRef(), { familyIds: arrayRemove(fid) }, { merge: true });
+        await b.commit();
+        famIds = famIds.filter(i => i !== fid);
+        return { err: 'full' };
+      }
+    }
+    enter(fam);
     return { ok: true };
   };
 
