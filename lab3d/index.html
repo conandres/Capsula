@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex"><title>Laboratorio de mascotas 3D</title>
+<link rel="stylesheet" href="pets.css">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
+</head>
+<body><main>
+<h1>Laboratorio de mascotas 3D</h1>
+<p class="mu">Prueba interna. Toca a la mascota para que reaccione y arrástrala para girarla.</p>
+<div class="stage" id="stage"><span class="hud" id="hud">cargando…</span></div>
+<div class="msg" id="msg"></div>
+
+<h2>Mascota</h2>
+<div class="row r5" id="pets">
+ <button data-pet="cat" aria-pressed="true">Gato</button><button data-pet="dog" aria-pressed="false">Perro</button>
+ <button data-pet="bunny" aria-pressed="false">Conejo</button><button data-pet="bear" aria-pressed="false">Oso</button>
+ <button data-pet="capsule" aria-pressed="false">Cápsula</button>
+</div>
+<h2>Expresión</h2>
+<div class="row r5" id="exprs">
+ <button data-expr="neutral" aria-pressed="true">Normal</button><button data-expr="happy" aria-pressed="false">Feliz</button>
+ <button data-expr="sleepy" aria-pressed="false">Sueño</button><button data-expr="surprised" aria-pressed="false">Sorpresa</button>
+ <button data-expr="sad" aria-pressed="false">Triste</button>
+</div>
+<h2>Acciones</h2>
+<div class="row r4" id="acts">
+ <button class="act" data-act="hello">Saludar</button><button class="act" data-act="happy">Saltar</button>
+ <button class="act" data-act="love">Cariño</button><button class="act" data-act="surprise">Susto</button>
+</div>
+<h2>Accesorios (prueba)</h2>
+<div class="row r3" id="accs">
+ <button data-acc="corona" aria-pressed="false">Corona</button><button data-acc="flor" aria-pressed="false">Flor</button>
+ <button data-acc="lentes" aria-pressed="false">Lentes</button>
+</div>
+<h2>Fondo (como en la app)</h2>
+<div class="row r3" id="bgs">
+ <button data-bg="azul" aria-pressed="true">Azul</button><button data-bg="rosa" aria-pressed="false">Rosa</button>
+ <button data-bg="negro" aria-pressed="false">Negro</button>
+</div>
+<p class="mu" style="margin-top:16px">Si algo se ve raro o va lento, mándame una captura con el número de FPS que aparece arriba a la izquierda y el modelo de tu celular.</p>
+</main>
+<script type="module">
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const msg=t=>{const m=$('#msg');m.textContent=t;m.style.display='block';$('#hud').textContent='sin 3D'};
+let viewer;
+try{
+  const {CapsulaPetViewer}=await import('./capsula-pets.js');
+  viewer=new CapsulaPetViewer($('#stage'),{pet:'cat'});
+  window.viewer=viewer;
+}catch(e){
+  msg('No se pudo iniciar el 3D ('+(e&&e.message||e)+'). Necesita internet para cargar Three.js y un navegador con WebGL. La app seguiría mostrando las mascotas 2D.');
+}
+if(viewer){
+  const pressed=(sel,btn)=>$$(sel).forEach(b=>b.setAttribute('aria-pressed',String(b===btn)));
+  $$('[data-pet]').forEach(b=>b.onclick=()=>{viewer.setPet(b.dataset.pet);pressed('[data-pet]',b)});
+  $$('[data-expr]').forEach(b=>b.onclick=()=>{viewer.setExpression(b.dataset.expr);pressed('[data-expr]',b)});
+  $$('[data-act]').forEach(b=>b.onclick=()=>viewer.play(b.dataset.act));
+  $$('[data-acc]').forEach(b=>b.onclick=()=>{const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',String(on));
+    viewer.setAccessories($$('[data-acc][aria-pressed=true]').map(x=>x.dataset.acc))});
+  $$('[data-bg]').forEach(b=>b.onclick=()=>{document.documentElement.dataset.bg=b.dataset.bg;pressed('[data-bg]',b)});
+  setInterval(()=>{const s=viewer.getState();$('#hud').textContent=s.running?('FPS '+s.fps+(s.motion<1?' · movimiento reducido':'')):'en pausa'},700);
+  addEventListener('pagehide',()=>viewer.destroy(),{once:true});
+}
+</script></body></html>
