@@ -80,6 +80,7 @@ ul{padding-left:20px}
 /* top bar + tabs */
 .top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px))}
 .brand{font-weight:600;font-size:21px;line-height:1.1;min-width:0;display:flex;align-items:center;gap:10px}.brand .bn{min-width:0}.brand .bi{width:38px;height:38px;border-radius:11px;flex:none;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.qrb{display:flex;justify-content:center;padding:14px;background:#fff;border-radius:20px;margin:6px auto 10px;width:max-content;max-width:100%;box-shadow:var(--shadow-card,0 2px 12px rgba(0,0,0,.12))}.qrb svg{display:block;max-width:100%;height:auto}
 .bl{width:96px;height:96px;border-radius:24px;box-shadow:0 8px 26px rgba(120,60,160,.28)}
 .brand small{display:block;font-size:12px;font-weight:400;color:var(--mu);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .chip{display:inline-flex;align-items:center;gap:6px;background:var(--soft);border:1px solid var(--line);border-radius:99px;padding:3px 12px 3px 6px;font-weight:500;flex:none}
@@ -531,6 +532,7 @@ function groupScr(){
   <div class="code">${esc(S.group.code)}</div>
   <button class="btn w" onclick="shareInvite()">Compartir invitación</button>
   <button class="btn s w" onclick="copyLink()">Copiar enlace</button>
+  <button class="btn s w" onclick="showQr()">Mostrar código QR</button>
   <button class="btn s w" onclick="nextScr()">Continuar</button>`;
  if(S.gstep==='join')b=`${back}<h1>Únete a tu familia</h1><label class="lb" for="gc">Código del grupo</label>
   <input id="gc" class="in" maxlength="8" placeholder="K7M2QX9P" value="${esc(S.joinCode)}" autocapitalize="characters" autocomplete="off" onkeydown="if(event.key==='Enter')jn()">
@@ -726,6 +728,62 @@ function delPost(id){if(!confirm('¿Eliminar esta historia'+(S.group?' para toda
 function react(id,j){const p=S.posts.find(q=>q.id===id);if(p&&window.CLOUD&&CLOUD.ready)CLOUD.react(id,j,!p.m[j]).catch(()=>toast('No se pudo guardar tu reacción'))}
 
 /* ---------- family ---------- */
+/* QR sin librerías: modo bytes, corrección M, versiones 1 a 6 (hasta 106 caracteres). Devuelve un SVG. */
+function qrSvg(text,px){
+ const bytes=[...new TextEncoder().encode(text)];
+ const ECC=[0,10,16,26,18,24,16],BLK=[0,1,1,1,2,2,4];
+ const raw=v=>{let r=(16*v+128)*v+64;if(v>=2){const a=Math.floor(v/7)+2;r-=(25*a-10)*a-55}return r};
+ let ver=0;for(let v=1;v<=6;v++){if(Math.floor(raw(v)/8)-ECC[v]*BLK[v]>=bytes.length+2){ver=v;break}}
+ if(!ver)throw new Error('QR: texto muy largo');
+ const size=ver*4+17,dataCw=Math.floor(raw(ver)/8)-ECC[ver]*BLK[ver];
+ // datos
+ let bits=[];const put=(v,n)=>{for(let i=n-1;i>=0;i--)bits.push((v>>>i)&1)};
+ put(4,4);put(bytes.length,8);bytes.forEach(b=>put(b,8));
+ put(0,Math.min(4,dataCw*8-bits.length));while(bits.length%8)bits.push(0);
+ const data=[];for(let i=0;i<bits.length;i+=8)data.push(parseInt(bits.slice(i,i+8).join(''),2));
+ for(let p=0xEC;data.length<dataCw;p^=0xEC^0x11)data.push(p);
+ // Reed-Solomon
+ const EXP=new Array(512),LOG=new Array(256);for(let i=0,x=1;i<255;i++){EXP[i]=x;LOG[x]=i;x<<=1;if(x&256)x^=0x11D}for(let i=255;i<512;i++)EXP[i]=EXP[i-255];
+ const mul=(a,b)=>a&&b?EXP[LOG[a]+LOG[b]]:0;
+ const gen=n=>{let g=[1];for(let i=0;i<n;i++){const h=new Array(g.length+1).fill(0);g.forEach((c,j)=>{h[j]^=c;h[j+1]^=mul(c,EXP[i])});g=h}return g};
+ const rs=(d,n)=>{const g=gen(n),r=new Array(n).fill(0);d.forEach(b=>{const f=b^r.shift();r.push(0);for(let i=0;i<n;i++)r[i]^=mul(g[i+1],f)});return r};
+ // bloques
+ const nb=BLK[ver],short=nb-dataCw%nb,bl=Math.floor(dataCw/nb),blocks=[];let k=0;
+ for(let i=0;i<nb;i++){const len=bl+(i<short?0:1);const d=data.slice(k,k+len);k+=len;blocks.push({d,e:rs(d,ECC[ver])})}
+ const all=[];for(let i=0;i<bl+1;i++)blocks.forEach(b=>{if(i<b.d.length)all.push(b.d[i])});
+ for(let i=0;i<ECC[ver];i++)blocks.forEach(b=>all.push(b.e[i]));
+ // matriz
+ const M=[],F=[];for(let i=0;i<size;i++){M.push(new Array(size).fill(0));F.push(new Array(size).fill(false))}
+ const set=(x,y,v)=>{if(x>=0&&y>=0&&x<size&&y<size){M[y][x]=v?1:0;F[y][x]=true}};
+ const finder=(cx,cy)=>{for(let dy=-4;dy<=4;dy++)for(let dx=-4;dx<=4;dx++){const d=Math.max(Math.abs(dx),Math.abs(dy));set(cx+dx,cy+dy,d!==2&&d!==4)}};
+ finder(3,3);finder(size-4,3);finder(3,size-4);
+ for(let i=0;i<size;i++){if(!F[6][i])set(i,6,i%2===0);if(!F[i][6])set(6,i,i%2===0)}
+ if(ver>=2){const n=Math.floor(ver/7)+2,st=Math.floor((ver*8+n*3+5)/(n*4-4))*2,pos=[6];for(let p=size-7;pos.length<n;p-=st)pos.splice(1,0,p);
+  pos.forEach((x,i)=>pos.forEach((y,j)=>{if((i===0&&j===0)||(i===0&&j===n-1)||(i===n-1&&j===0))return;for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++)set(x+dx,y+dy,Math.max(Math.abs(dx),Math.abs(dy))!==1)}))}
+ // reservar formato
+ const fmt=m=>{const d=(0<<3|m);let r=d;for(let i=0;i<10;i++)r=(r<<1)^((r>>>9)*0x537);return((d<<10|r)^0x5412)};
+ const drawFmt=m=>{const b=fmt(m),g=i=>(b>>>i)&1;
+  for(let i=0;i<=5;i++)set(8,i,g(i));set(8,7,g(6));set(8,8,g(7));set(7,8,g(8));for(let i=9;i<15;i++)set(14-i,8,g(i));
+  for(let i=0;i<8;i++)set(size-1-i,8,g(i));for(let i=8;i<15;i++)set(8,size-15+i,g(i));set(8,size-8,1)};
+ drawFmt(0);
+ // colocar datos
+ const dm=[];let bi=0;
+ for(let r=size-1;r>=1;r-=2){if(r===6)r=5;for(let v=0;v<size;v++)for(let j=0;j<2;j++){const x=r-j,up=((r+1)&2)===0,y=up?size-1-v:v;if(!F[y][x]){dm.push([x,y]);}}}
+ const total=all.length*8;
+ const build=m=>{const Q=M.map(r=>r.slice());dm.forEach(([x,y],i)=>{let b=i<total?(all[i>>>3]>>>(7-(i&7)))&1:0;const f=[(x+y)%2===0,y%2===0,x%3===0,(x+y)%3===0,(Math.floor(y/2)+Math.floor(x/3))%2===0,(x*y)%2+(x*y)%3===0,((x*y)%2+(x*y)%3)%2===0,((x+y)%2+(x*y)%3)%2===0][m];Q[y][x]=b^(f?1:0)});return Q};
+ const fm=(Q,m)=>{const b=fmt(m),g=i=>(b>>>i)&1,s=(x,y,v)=>{Q[y][x]=v};
+  for(let i=0;i<=5;i++)s(8,i,g(i));s(8,7,g(6));s(8,8,g(7));s(7,8,g(8));for(let i=9;i<15;i++)s(14-i,8,g(i));
+  for(let i=0;i<8;i++)s(size-1-i,8,g(i));for(let i=8;i<15;i++)s(8,size-15+i,g(i));s(8,size-8,1)};
+ const pen=Q=>{let p=0;for(let a=0;a<2;a++){for(let i=0;i<size;i++){let run=1;for(let j=1;j<size;j++){const c=a?Q[j][i]:Q[i][j],d=a?Q[j-1][i]:Q[i][j-1];if(c===d){run++;if(run===5)p+=3;else if(run>5)p++}else run=1}}}
+  for(let y=0;y<size-1;y++)for(let x=0;x<size-1;x++){const c=Q[y][x];if(c===Q[y][x+1]&&c===Q[y+1][x]&&c===Q[y+1][x+1])p+=3}
+  let dark=0;Q.forEach(r=>r.forEach(c=>dark+=c));p+=Math.floor(Math.abs(dark*20-size*size*10)/(size*size))*10;return p};
+ let best=null,bp=1e9;for(let m=0;m<8;m++){const Q=build(m);fm(Q,m);const p=pen(Q);if(p<bp){bp=p;best=Q}}
+ const q=4,n=size+q*2;let d='';best.forEach((r,y)=>r.forEach((c,x)=>{if(c)d+=`M${x+q},${y+q}h1v1h-1z`}));
+ return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${n} ${n}" width="${px||240}" height="${px||240}" shape-rendering="crispEdges" role="img" aria-label="Código QR de la invitación"><rect width="${n}" height="${n}" fill="#fff"/><path d="${d}" fill="#000"/></svg>`;
+}
+
+function showQr(){let svg='';try{svg=qrSvg(inviteLink(),248)}catch(e){toast('No se pudo crear el código QR');return}
+ showSheet(`<h2>Invita en persona</h2><p class="mu">Pídele a quien tengas al lado que abra la cámara de su celular y apunte aquí. Se une a “${esc(S.group.name)}” al instante.</p><div class="qrb">${svg}</div><p class="mu c">O dile el código: <b>${esc(S.group.code)}</b></p><button class="btn s w" onclick="cl()">Cerrar</button>`);S.inv=1;save()}
 const inviteLink=()=>location.origin+location.pathname.replace(/index\.html$/,'')+'?codigo='+S.group.code;
 function inviteText(){return 'Te invito a "'+S.group.name+'" en Cápsula 💗 Toca este enlace para entrar (o usa el código '+S.group.code+'): '+inviteLink()}
 async function shareInvite(){S.inv=1;save();
@@ -767,6 +825,7 @@ function fam(){
  <div class="card"><span class="mu">Código del grupo</span><div class="code">${esc(S.group.code)}</div>
   <button class="btn w" onclick="shareInvite()">Compartir invitación</button>
   <button class="btn s w" onclick="copyLink()">Copiar enlace</button>
+  <button class="btn s w" onclick="showQr()">Invitar en persona (QR)</button>
   <a class="btn s w" href="https://wa.me/?text=${encodeURIComponent(inviteText())}" target="_blank" rel="noopener">Enviar por WhatsApp</a></div>
 ${helpCard()}
  <div class="card"><h3>Liga de la familia</h3><span class="mu">${L.length} ${L.length>1?'miembros':'miembro'} en el grupo</span>
