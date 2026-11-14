@@ -267,7 +267,8 @@ textarea.in{resize:vertical;line-height:1.4}
 .act .mo{animation:up .5s both}.act .o1{animation:up .5s .3s both,wrong 6s 1.7s infinite}.act .o2{animation:up .5s .45s both,right 6s 1.7s infinite}.act .o3{animation:up .5s .6s both}
 .act .sg i{animation:slot 7.2s infinite;animation-delay:calc(var(--i)*.4s)}
 .act .bk2{animation:hop 2.4s infinite}
-.logo svg{animation:bob 3.4s ease-in-out infinite}
+.logo svg,.logo img{animation:bob 3.4s ease-in-out infinite}
+.logo img{border-radius:12px;box-shadow:0 4px 14px rgba(120,60,160,.22)}
 .eye{transform-box:fill-box;transform-origin:center;animation:blink 4.5s infinite}
 .flick{display:inline-flex;transform-origin:50% 90%;animation:flick 1.4s ease-in-out infinite}
 .days .now{animation:ring 1.6s ease-in-out infinite}
@@ -479,7 +480,7 @@ function welcome(){
  ];
  CR.n=cards.length;
  return `<div class="wl">
-  <div class="pad"><div class="logo">${pet('nube',40)}Cápsula</div>
+  <div class="pad"><div class="logo"><img src="icons/icon-192.png" width="48" height="48" alt="" decoding="async">Cápsula</div>
    <h1>Las historias de tu familia, guardadas para siempre</h1></div>
   <div class="cr" id="cr" tabindex="0" aria-label="Cómo jugar">${cards.map((c,i)=>`<div class="ct${i?'':' act'}"><span class="mu k">Cómo jugar · ${i+1} de ${cards.length}</span><h2>${c[0]}</h2><div class="ill" aria-label="${esc(c[1])}">${c[2]}</div><p class="mu">${c[3]}</p></div>`).join('')}</div>
   <div class="dots">${cards.map((_,i)=>`<button class="${i?'':'on'}" onclick="CR.go(${i})" aria-label="Ir a la tarjeta ${i+1}"></button>`).join('')}</div>
