@@ -1,6 +1,6 @@
 /* Service worker de Cápsula: funciona sin internet.
    Los archivos se piden primero a la red, así que las actualizaciones llegan solas. */
-const VERSION = 'capsula-v8';
+const VERSION = 'capsula-v9';
 const SHELL = [
   './', './index.html', './manifest.json', './config.js', './cloud.js',
   './icons/icon-192.png', './icons/icon-512.png',
