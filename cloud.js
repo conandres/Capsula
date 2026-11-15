@@ -4,7 +4,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/fireba
 import { getAuth, onAuthStateChanged, signInWithCredential, GoogleAuthProvider, signOut }
   from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager,
-  doc, collection, getDoc, getDocs, setDoc, updateDoc, addDoc, deleteDoc, writeBatch, onSnapshot, query, orderBy, limit,
+  doc, collection, getDoc, getDocs, setDoc, updateDoc, addDoc, deleteDoc, writeBatch, onSnapshot, query, where, orderBy, limit,
   serverTimestamp, arrayUnion, arrayRemove }
   from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
@@ -274,6 +274,17 @@ function start() {
     const fam = families.find(f => f.id === fid) || null;
     active = fam ? fam.id : null; plim = 60;
     A.setGroup(fam); A.switched(); subscribe(active); CLOUD.dirty();
+  };
+
+  /* Borra solo lo que escribiste tú en esa cápsula (las reglas ya lo permiten: autor y miembro). */
+  CLOUD.deleteMyPosts = async fid => {
+    const snap = await getDocs(query(collection(db, 'families', fid, 'posts'), where('authorUid', '==', me.uid)));
+    for (let i = 0; i < snap.docs.length; i += 400) {
+      const b = writeBatch(db);
+      snap.docs.slice(i, i + 400).forEach(d => b.delete(d.ref));
+      await b.commit();
+    }
+    return snap.docs.length;
   };
 
   CLOUD.leaveFamily = async fid => {

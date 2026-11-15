@@ -76,3 +76,15 @@ MODOS DE GRUPO, PERFIL, "EN LÍNEA" Y PREGUNTA DEL DÍA
   En modo solo, la respuesta se guarda como carta en el diario personal.
 - REGLAS: firestore.rules cambió. Hay que pegarlas en Firebase (Firestore > Reglas > Publicar) ANTES de publicar la app.
   La versión anterior está en firestore.rules.fase1.txt por si hay que volver atrás.
+
+------------------------------------------------------------
+DISEÑO NUEVO (v4): NAVEGACIÓN Y ESPACIOS
+------------------------------------------------------------
+- Menú de 5 destinos: Inicio · Mi mundo · Mis cápsulas · Actividad · Perfil. Ya no existe el botón central "Contar".
+- Mi mundo = espacio personal (users/{uid}); las mascotas viven solo aquí.
+- Mis cápsulas = espacios compartidos (families/{id}); sin mascotas ni ligas dentro. Todo aporte muestra su autor.
+- Contar/Escribir pregunta siempre dónde se guarda (Mi mundo o una cápsula).
+- Al salir de una cápsula se elige: dejar mis aportes o borrar mis aportes (solo se borran los propios; las reglas ya lo permiten).
+- "Conversaciones" aparece como "Pronto" (reservado para un chat futuro).
+- Sin cambios en el modelo de datos ni en las reglas de Firestore: no hay que tocar la consola.
+- Pendiente (requiere cambio de reglas): tipo "Personalizada", roles/bloqueo/reporte, portada y descripción.
