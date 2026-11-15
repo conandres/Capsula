@@ -102,3 +102,4 @@ AMIGO CON IA (v6) - Gemini por Firebase AI Logic
 - Para que funcione, el dueño debe activar en consola Firebase -> AI Logic (Gemini Developer API, plan Spark) y, recomendado, App Check.
 - Si no está activado o falla, la app muestra un mensaje amable y todo lo demás sigue igual.
 - Modelo en index.html: AI_MODEL (cámbialo si Google lo retira).
+- App Check (v7): la conexión de IA usa reCAPTCHA Enterprise (clave de sitio AI_SK en index.html, es pública). Registrada en Firebase -> App Check -> App web. NO activar "Aplicar" en Firestore/Auth. Para AI Logic, solo activarlo cuando se confirme que llegan tokens.
