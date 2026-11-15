@@ -88,3 +88,8 @@ DISEÑO NUEVO (v4): NAVEGACIÓN Y ESPACIOS
 - "Conversaciones" aparece como "Pronto" (reservado para un chat futuro).
 - Sin cambios en el modelo de datos ni en las reglas de Firestore: no hay que tocar la consola.
 - Pendiente (requiere cambio de reglas): tipo "Personalizada", roles/bloqueo/reporte, portada y descripción.
+
+MASCOTAS 3D (v5)
+- En Mi mundo la mascota se dibuja en 3D (lab3d/capsula-pets.js + Three.js 0.170.0 desde cdn.jsdelivr.net).
+- Si no hay internet, WebGL o falla la carga, se muestra la mascota 2D de siempre. Fuera de Mi mundo (Inicio, ventanas, selección inicial) se sigue usando la 2D.
+- Usa los mismos accesorios (S.wear), mimar/comer/subir de nivel disparan animaciones. No toca datos ni reglas.

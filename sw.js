@@ -1,6 +1,6 @@
 /* Service worker de Cápsula: funciona sin internet.
    Los archivos se piden primero a la red, así que las actualizaciones llegan solas. */
-const VERSION = 'capsula-v4';
+const VERSION = 'capsula-v5';
 const SHELL = [
   './', './index.html', './manifest.json', './config.js', './cloud.js',
   './icons/icon-192.png', './icons/icon-512.png',
@@ -27,8 +27,9 @@ self.addEventListener('fetch', e => {
 
   // Google Sign-In y cualquier otro dominio: directo a la red, sin caché.
   // Fuentes y librería de Firebase se guardan para que la app abra sin internet.
+  const isLib = url.hostname === 'cdn.jsdelivr.net' && url.pathname.startsWith('/npm/three@');
   const isFont = url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com' ||
-    (url.hostname === 'www.gstatic.com' && url.pathname.startsWith('/firebasejs/'));
+    (url.hostname === 'www.gstatic.com' && url.pathname.startsWith('/firebasejs/')) || isLib;
   if (url.origin !== location.origin && !isFont) return;
 
   // Fuentes: usa la guardada y actualiza en segundo plano

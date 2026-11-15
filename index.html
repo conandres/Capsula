@@ -1,10 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><script>try{var t=localStorage.getItem("capsula_theme");if(t==="rosa"||t==="negro"||t==="azul")document.documentElement.dataset.theme=t}catch(e){}</script><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:var(--color-bg,#F7F5F0);color:var(--color-text,#292B2A)}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.ms{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid var(--soft2)}
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script><script>try{var t=localStorage.getItem("capsula_theme");if(t==="rosa"||t==="negro"||t==="azul")document.documentElement.dataset.theme=t}catch(e){}</script><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:var(--color-bg,#F7F5F0);color:var(--color-text,#292B2A)}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.ms{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid var(--soft2)}
 .cl{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
 .cli{border:2px solid var(--soft2);background:var(--card);border-radius:16px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;font:inherit;color:var(--tx);cursor:pointer;min-height:44px}
 .cli.on{border-color:var(--pd);background:var(--soft)}
 .cli.lk{opacity:.5;cursor:default}
 .cli span{font-weight:600;font-size:13px}.cli small{font-size:11px;color:var(--mu);text-align:center}
-</style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
+.p3{position:relative;display:inline-block;width:min(78vw,260px);height:230px}.p3 .f2{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}.p3.on .f2{display:none}.p3 .h3d{position:absolute;inset:0}.fl.d3{animation:none}</style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -505,8 +505,28 @@ function legacy(){try{const o=JSON.parse(localStorage.getItem(LEGACY)||'null');i
 async function logout(){try{if(window.google&&google.accounts)google.accounts.id.disableAutoSelect()}catch(e){}try{localStorage.removeItem(KEY)}catch(e){}try{if(window.CLOUD&&CLOUD.signOut)await CLOUD.signOut()}catch(e){}location.reload()}
 function burst(n=28,em=['💗','✨','⭐','🎉','💖']){const a=$('.app');for(let i=0;i<n;i++){const e=document.createElement('span');e.className='cf';e.textContent=em[i%em.length];e.style.cssText=`left:${50+(Math.random()-.5)*20}%;--dx:${(Math.random()-.5)*360}px;--dy:${-120-Math.random()*320}px;--r:${(Math.random()-.5)*720}deg;animation-delay:${Math.random()*.2}s`;a.appendChild(e);setTimeout(()=>e.remove(),1900)}}
 function floatH(t){const e=document.createElement('div');e.className='fh';e.textContent=t;$('.app').appendChild(e);setTimeout(()=>e.remove(),1300)}
+/* ---------- mascota 3D (Mi mundo). Si falla, queda la 2D ---------- */
+const P3={st:'idle',v:null,host:null,t:0};
+const P3K={nube:'capsule',gato:'cat',perro:'dog',conejo:'bunny',oso:'bear'};
+const p3expr=()=>asleep()?'sleepy':S.pt.love<30?'sad':S.pt.love>=85?'happy':'neutral';
+function p3off(){P3.st='fail';const e=$('#pet3d');if(e)e.classList.remove('on');const f=$('.hero .fl');if(f)f.classList.remove('d3');try{P3.v&&P3.v.destroy()}catch(e){}P3.v=null}
+function p3sync(){const v=P3.v;if(!v)return;try{const k=P3K[S.pet.kind];if(k&&v.current!==k)v.setPet(k);v.setAccessories(S.wear.filter(x=>typeof x==='string'));v.setExpression(p3expr())}catch(e){p3off()}}
+function p3play(a){if(P3.st==='ok'&&P3.v&&$('#pet3d'))try{P3.v.play(a)}catch(e){}}
+function p3mount(){const ph=$('#pet3d');if(!ph||P3.st==='fail')return;
+ if(P3.st==='ok'){if(P3.host.parentNode!==ph)ph.appendChild(P3.host);ph.classList.add('on');const f=$('.hero .fl');if(f)f.classList.add('d3');p3sync();
+  const n=Date.now();if(n-P3.t>20000)setTimeout(()=>p3play('hello'),400);P3.t=n;return}
+ if(P3.st!=='idle')return;P3.st='loading';
+ import('./lab3d/capsula-pets.js').then(m=>{
+  const ph2=$('#pet3d');if(!ph2){P3.st='idle';return}
+  const host=document.createElement('div');host.className='h3d';ph2.appendChild(host);
+  const k=P3K[S.pet.kind]||'capsule';
+  const v=new m.CapsulaPetViewer(host,{pet:k,maxPixelRatio:1.5});
+  v.canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();p3off()});
+  P3.v=v;P3.host=host;P3.st='ok';P3.t=0;p3mount();
+ }).catch(()=>{P3.st='fail'});
+}
 function hopPet(){const f=$('.hero .fl');if(f){f.classList.remove('hop');void f.offsetWidth;f.classList.add('hop')}}
-function levelUp(l){const o=document.createElement('div');o.className='lvup';o.innerHTML=`<div class="lvc"><div class="lvp">${pet(S.pet.kind,150,S.wear)}</div><h1>¡${esc(S.pet.name)} subió de nivel!</h1><p><b>Nivel ${l+1}</b> · ${STAGE[Math.min(l,3)]}</p><p class="mu">${l===1?'Estrenó una estrellita ✨':l===2?'Estrenó un moño 🎀':l>=3?'¡Ahora lleva corona! 👑':''}</p><button class="btn" onclick="this.closest('.lvup').remove()">¡Qué orgullo!</button></div>`;$('.app').appendChild(o);burst(44)}
+function levelUp(l){p3play('levelup');const o=document.createElement('div');o.className='lvup';o.innerHTML=`<div class="lvc"><div class="lvp">${pet(S.pet.kind,150,S.wear)}</div><h1>¡${esc(S.pet.name)} subió de nivel!</h1><p><b>Nivel ${l+1}</b> · ${STAGE[Math.min(l,3)]}</p><p class="mu">${l===1?'Estrenó una estrellita ✨':l===2?'Estrenó un moño 🎀':l>=3?'¡Ahora lleva corona! 👑':''}</p><button class="btn" onclick="this.closest('.lvup').remove()">¡Qué orgullo!</button></div>`;$('.app').appendChild(o);burst(44)}
 
 /* ---------- helpers ---------- */
 function toast(m){const t=$('#ts');t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),2000)}
@@ -643,10 +663,10 @@ function shell(){return `<div class="top" id="hd">${hdr()}</div><main id="mn">${
 function navSync(){document.querySelectorAll('nav [data-t]').forEach(b=>{const on=b.dataset.t===NK();b.classList.toggle('on',on);on?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')})}
 function render(){
  checkUnl();save();
- if(S.scr==='main'&&$('#mn')){$('#mn').innerHTML=VIEW[S.tab]();$('#hd').innerHTML=hdr();navSync();return}
+ if(S.scr==='main'&&$('#mn')){$('#mn').innerHTML=VIEW[S.tab]();$('#hd').innerHTML=hdr();navSync();p3mount();return}
  $('#scr').innerHTML=({boot,welcome,group:groupScr,pet:petScr,main:shell})[S.scr]();
  if(S.scr==='welcome')bindCr();else clearTimeout(CR.t);
- if(S.scr==='main'){navSync();enterAnim($('#mn'))}
+ if(S.scr==='main'){navSync();enterAnim($('#mn'));p3mount()}
  const key=S.scr+':'+S.gstep;if(key!==render.k){render.k=key;if(S.scr==='group'||S.scr==='pet')enterAnim($('.ob'))}
 }
 function go(t){if(t==='mundo')spaceTo(null);S.tab=t;render();const mn=$('#mn');if(mn){mn.scrollTop=0;enterAnim(mn)}if(t==='mundo')setTimeout(()=>petIdle(true),4000)}
@@ -729,18 +749,18 @@ function bubSay(t,o,q){S.bub={t,o:o||null,q:q||null};S.bubT=Date.now();petUI()}
 function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=greet(away);
  const lvl=Math.floor(S.xp/100),sz=Math.round(110+Math.min(S.xp,600)*.16),sl=asleep();
  return `<section class="card hero">
-  <div class="fl ${sl?'sleep':''}" onclick="petTap()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}">${pet(S.pet.kind,sz,S.wear)}${sl?'<span class="zz">Zzz</span>':''}</div>
+  <div class="fl ${sl?'sleep':''}" onclick="petTap()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3"><span class="f2">${pet(S.pet.kind,sz,S.wear)}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div>
   <h2>${esc(S.pet.name)}</h2>
   <div class="mu">${STAGE[Math.min(lvl,3)]} · nivel ${lvl+1} · crece con tus corazones</div>
   <div id="bubw" class="bw" aria-live="polite">${bubHTML()}</div>
   <div class="stw" id="stw">${statsHTML()}</div>
   <div class="acts"><button class="btn s" onclick="petTap()">${ic('heart',18)}Mimar</button><button class="btn s" onclick="feed()">${ic('cup',18)}Comer</button><button class="btn s" onclick="chat()">${ic('star',18)}Charlar</button></div>
   <div class="mu">Faltan ${100-S.xp%100} corazones para que ${esc(S.pet.name)} crezca</div></section>`}
-function petTap(){ptTick();const p=S.pt,now=Date.now(),wait=3*H-(now-p.lr);p.love=Math.min(100,p.love+12);burst(8,['💗','✨']);
+function petTap(){ptTick();p3play('love');const p=S.pt,now=Date.now(),wait=3*H-(now-p.lr);p.love=Math.min(100,p.love+12);burst(8,['💗','✨']);
  if(asleep()){bubSay('🥱 ¡Me despertaste! Pero con mimos te perdono.');hopPet();return}
  if(wait<=0){p.lr=now;S.bub={t:['¡Qué rico mimo! 💗','Me encantas, '+S.me.name+' 💕','¡Soy la mascota más feliz! ☁️'][Math.floor(Math.random()*3)],o:null,q:null};S.bubT=now;track('mimo');add(5)}
  else{bubSay('Mmm, qué rico 🥹 Mi próximo premio de mimos llega en '+fmtWait(wait));hopPet()}}
-function feed(){ptTick();const p=S.pt,now=Date.now();if(p.food>=92){bubSay('Estoy llenita 🥹 Gracias, más tarde me da hambre.');return}
+function feed(){ptTick();p3play('eat');const p=S.pt,now=Date.now();if(p.food>=92){bubSay('Estoy llenita 🥹 Gracias, más tarde me da hambre.');return}
  p.food=Math.min(100,p.food+40);burst(8,['🍪','💗']);
  if(now-p.lf>4*H){p.lf=now;S.bub={t:'¡Ñam ñam! Estaba riquísimo 🍪',o:null,q:null};S.bubT=now;add(8)}else{bubSay('¡Ñam ñam! Gracias 🍪');hopPet()}}
 function chat(){const now=Date.now(),el=QS.filter(q=>!q.cond||q.cond());let c=el.filter(q=>now-(S.pt.asked[q.k]||0)>6*H);if(!c.length)c=el;const q=c[Math.floor(Math.random()*c.length)];S.pt.asked[q.k]=now;bubSay(q.t(),q.o,q)}
