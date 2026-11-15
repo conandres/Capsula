@@ -4,34 +4,34 @@
 .cli.on{border-color:var(--pd);background:var(--soft)}
 .cli.lk{opacity:.5;cursor:default}
 .cli span{font-weight:600;font-size:13px}.cli small{font-size:11px;color:var(--mu);text-align:center}
-</style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F5F5F7"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
+</style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* Layout: one phone-width column. Intro cards + Google sign-in, group, pet, then 4 tabs with a center "Contar" button.
    Single light look by choice: warm ivory ground, sage actions, pink only as a brand accent. No dark mode. */
 :root{
   /* Paleta cálida minimalista (DIRECCION_VISUAL_CAPSULA.md). Todos los colores de la interfaz salen de aquí. */
-  --color-bg:#F5F5F7; --color-surface:#FFFFFF; --color-surface-soft:#F0F0F3; --color-paper:#FBFBFD;
-  --color-text:#1D1D1F; --color-text-muted:#68686D;      /* contraste >= 4.5:1 sobre el fondo */
-  --color-border:#E8E8ED; --color-border-input:#C7C7CC;
-  --color-primary:#0066CC; --color-primary-hover:#0057AD; --color-on-primary:#FFFFFF;
-  --color-accent-pink:#D98FA5; --color-accent-lilac:#A99BCB; --color-accent-sand:#D9BD91; --color-sand-soft:#F6F0E4;
+  --color-bg:#F6F3FF; --color-surface:#FFFFFF; --color-surface-soft:#EDE8FF; --color-paper:#FBF9FF;
+  --color-text:#231B4A; --color-text-muted:#5B5481;      /* contraste >= 4.5:1 sobre el fondo */
+  --color-border:#E3DCFA; --color-border-input:#C9BFF0;
+  --color-primary:#6A4CD6; --color-primary-hover:#4F36B0; --color-on-primary:#FFFFFF;
+  --color-accent-pink:#F27BB5; --color-accent-lilac:#8E7BE0; --color-accent-sand:#D9BD91; --color-sand-soft:#F6F0E4;
   --color-success:#2E9E6F; --color-success-bg:#E6F4EC; --color-success-text:#1E6B4A;
   --color-warning:#B78343;
   --color-danger:#B85F59; --color-danger-bg:#F5E2E0; --color-danger-text:#9A423B;
   --radius-card:22px; --shadow-soft:0 6px 18px rgba(0,0,0,.10); --overlay:rgba(0,0,0,.42);
-  --tint:rgba(0,0,0,.05); --tint-2:rgba(0,0,0,.09); --line-soft:rgba(0,0,0,.05); --line-mid:rgba(0,0,0,.07);
-  --nav-bg:rgba(255,255,255,.74); --top-bg:rgba(245,245,247,.8); --chip-bg:rgba(255,255,255,.8);
-  --shadow-card:0 1px 2px rgba(0,0,0,.04),0 10px 30px rgba(0,0,0,.05); --shadow-hero:0 1px 2px rgba(0,0,0,.04),0 16px 40px rgba(0,0,0,.07); --shadow-pn:0 -10px 40px rgba(0,0,0,.12);
+  --tint:rgba(79,54,176,.06); --tint-2:rgba(79,54,176,.10); --line-soft:rgba(79,54,176,.06); --line-mid:rgba(79,54,176,.09);
+  --nav-bg:rgba(255,255,255,.74); --top-bg:rgba(246,243,255,.85); --chip-bg:rgba(255,255,255,.8);
+  --shadow-card:0 1px 2px rgba(79,54,176,.05),0 10px 30px rgba(79,54,176,.08); --shadow-hero:0 1px 2px rgba(79,54,176,.05),0 16px 40px rgba(79,54,176,.12); --shadow-pn:0 -10px 40px rgba(0,0,0,.12);
   /* Nombres anteriores: apuntan a los nuevos tokens para no tocar cada regla ni el JavaScript. */
   --bg:var(--color-bg); --card:var(--color-surface); --soft:var(--color-surface-soft); --soft2:var(--color-border); --line:var(--color-border);
   --tx:var(--color-text); --mu:var(--color-text-muted);
   --p:var(--color-primary); --p2:var(--color-primary); --pd:var(--color-primary);
   --ok:var(--color-success); --okbg:var(--color-success-bg); --bad:var(--color-danger); --badbg:var(--color-danger-bg);
-  --f:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Inter','Segoe UI',Roboto,system-ui,sans-serif;
+  --f:'Nunito',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,system-ui,sans-serif;
   color-scheme:light;
 }
 /* ---- Temas: azul es el predeterminado (:root). El elegido se guarda en la cuenta (users/{uid}.theme). ---- */
@@ -349,6 +349,43 @@ html[data-theme="negro"] .btn:not(.s):not(:disabled){box-shadow:none}
 .pfp{display:flex;align-items:center;gap:12px}
 .pfp .in{flex:1}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ===== Rediseño: dos mundos (Mi mundo / Mis cápsulas) ===== */
+h1,h2,.brand .bn,.spch h2{font-family:'Fredoka','Nunito',var(--f);font-weight:600}
+nav button{position:relative}
+nav button.on::after{content:"";position:absolute;bottom:2px;width:18px;height:4px;border-radius:4px;background:var(--color-accent-pink)}
+nav button .ic{width:26px;height:26px}
+.spch{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.tag.spc{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:12px;font-weight:700;white-space:nowrap}
+.tag.spc.priv{background:#2E2370;color:#fff}.tag.spc.shr{background:#FFE0EF;color:#8A1F5C}
+.tag.soon{background:var(--soft);color:var(--mu);padding:4px 10px;border-radius:99px;font-size:12px;font-weight:700}
+.hw{position:relative;overflow:hidden;background:linear-gradient(180deg,#34277F,#1B1445);color:#fff;border:0;min-height:150px}
+.hw .mu{color:#D9D1FA}.hw .btn{background:#fff;color:#2E2370}.hw::before{content:"";position:absolute;inset:0;background-image:radial-gradient(2px 2px at 20px 24px,#fff,transparent),radial-gradient(1.5px 1.5px at 130px 14px,#fff,transparent),radial-gradient(2px 2px at 300px 40px,#FFE9A8,transparent),radial-gradient(1.5px 1.5px at 340px 110px,#fff,transparent);opacity:.9;pointer-events:none}
+.hw>*{position:relative}.hw .hp{position:absolute;right:8px;bottom:4px;display:flex}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile2{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:14px;border-radius:22px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-card);color:var(--tx);font:inherit;text-align:left;cursor:pointer;min-height:104px}
+.tile2 .ic{color:var(--pd)}.tile2 b{font-size:16px}.tile2 .mu{font-size:13px}
+.tile2.off{opacity:.7;cursor:default;background:var(--soft)}.tile2.off .ic{color:var(--mu)}
+.cpc{display:flex;align-items:center;gap:12px;padding:10px;border-radius:22px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-card);width:100%;text-align:left;font:inherit;color:var(--tx);cursor:pointer;min-height:76px}
+.cpc .cvs{width:64px;height:64px;border-radius:18px;flex:none}.cpc .tx{flex:1;min-width:0;display:flex;flex-direction:column}.cpc .tx b{font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cpc>.ic{color:var(--mu);flex:none}
+.amb-familia{background:linear-gradient(135deg,#FFD79A,#FF9F7A 60%,#F27BB5)}
+.amb-pareja{background:linear-gradient(135deg,#FFB8D8,#F27BB5 55%,#B07BF2)}
+.amb-amigos{background:linear-gradient(135deg,#8FD0FF,#7C9BFF 55%,#A98BFF)}
+.cvr{border-radius:26px;padding:12px 16px 14px;display:flex;flex-direction:column;gap:10px;color:#3A1230;position:relative}
+.cvr .cvt h2{font-size:26px}.cvr .cvt span{font-size:15px;font-weight:700}
+.cvr .bk2{align-self:flex-start;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.85);border:0;display:grid;place-items:center;color:#3A1230;cursor:pointer}
+.avs{display:flex}.avs .pav{margin-left:-8px;border:2px solid #fff}.avs .pav:first-child{margin-left:0}
+.tabs2{display:flex;gap:6px;overflow-x:auto;flex:none;padding:2px 0}
+.tabs2 button{min-height:44px;padding:0 16px;border-radius:99px;border:0;background:none;font:inherit;font-weight:700;font-size:14px;color:var(--mu);cursor:pointer;white-space:nowrap}
+.tabs2 button.on{background:var(--card);color:#8A1F5C;box-shadow:var(--shadow-card)}
+.pav{position:relative;display:inline-grid;place-items:center;border-radius:50%;background:#EDE8FF;color:#4F36B0;font-weight:800;flex:none;overflow:hidden}
+.pav img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.dst{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.afc{display:flex;gap:8px;overflow-x:auto;flex:none}
+.afc button{min-height:44px;padding:0 16px;border-radius:99px;border:1.5px solid var(--line);background:var(--card);font:inherit;font-weight:700;font-size:14px;color:var(--tx);cursor:pointer;white-space:nowrap}
+.afc button.on{background:var(--p);border-color:var(--p);color:var(--color-on-primary)}
+.sec3{display:flex;flex-direction:column;gap:6px}
 </style>
 
 <div class="app">
@@ -383,6 +420,15 @@ const I={
  plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
  back:'<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>',
  check:'<polyline points="20 6 9 17 4 12"/>',
+ world:'<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>',
+ caps:'<circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/>',
+ bell:'<path d="M6 9a6 6 0 0 1 12 0c0 6 2 7 2 7H4s2-1 2-7"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+ user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
+ lock:'<rect x="5" y="11" width="14" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+ mail:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3.5 7l8.5 6 8.5-6"/>',
+ image:'<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M3 17l5-4 4 3 3-2 6 4"/>',
+ chat:'<path d="M4 5h16v11H9l-5 4z"/>',
+ gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v8h14v-8M12 8v12M12 8c-3 0-4-4-1.5-4S12 8 12 8c3 0 4-4 1.5-4"/>',
  crown:'<path d="M2 20h20"/><path d="M3 17L2 7l6 4 4-7 4 7 6-4-1 10z"/>'
 };
 const ic=(n,s=24,sw=2)=>`<svg class="ic" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
@@ -437,7 +483,7 @@ const libName=()=>S.group?GT[gtype()].lib:'Mi libro';
 const famLabel=()=>S.group?GT[gtype()].n:'Grupo';
 const today=()=>new Date().toDateString(),KEY='capsula_v3',LEGACY='capsula_v2';
 const PT0=()=>({love:80,food:75,t:Date.now(),lr:0,lf:0,ans:0,ad:'',asked:{},moods:[],seen:{},tv:{d:'',n:0},tvb:''});
-const THEMES=[{id:'rosa',n:'Rosa',bg:'#FFF6FA',pr:'#B5336E',bar:'#FFF6FA'},{id:'azul',n:'Azul',bg:'#F5F5F7',pr:'#0066CC',bar:'#F5F5F7'},{id:'negro',n:'Negro',bg:'#000000',pr:'#F5F5F7',bar:'#000000'}];
+const THEMES=[{id:'rosa',n:'Rosa',bg:'#FFF6FA',pr:'#B5336E',bar:'#FFF6FA'},{id:'azul',n:'Cápsula',bg:'#F6F3FF',pr:'#6A4CD6',bar:'#F6F3FF'},{id:'negro',n:'Negro',bg:'#000000',pr:'#F5F5F7',bar:'#000000'}];
 const S={showSeen:true,qd:'',qaN:0,qa:null,gtype:'familia',gname:'',qtx:'',theme:document.documentElement.dataset.theme||'azul',bub:null,bubT:0,pt:PT0(),scr:'boot',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,group:null,
  user:null,families:[],members:{},solo:false,cloudErr:'',bootSlow:0,joinCode:'',
  xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,prompt:null,posts:[],plim:60};
@@ -466,7 +512,8 @@ function levelUp(l){const o=document.createElement('div');o.className='lvup';o.i
 function toast(m){const t=$('#ts');t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),2000)}
 function add(n){const a=Math.floor(S.xp/100);S.xp+=n;const b=Math.floor(S.xp/100);toast('+'+n+' corazones para '+S.pet.name);render();floatH('+'+n+' 💗');hopPet();{const ch=$('.chip');if(ch){ch.classList.remove('bump');void ch.offsetWidth;ch.classList.add('bump')}}if(b>a)setTimeout(()=>levelUp(b),500)}
 function copy(t){try{navigator.clipboard.writeText(t).then(()=>toast('Copiado')).catch(()=>toast('Copia este texto: '+t))}catch(e){toast('Copia este texto: '+t)}}
-function av(id,s=44){const k=id==='me'?S.pet.kind:((S.members[id]||{}).petKind||'nube');return `<span class="av" style="width:${s}px;height:${s}px">${pet(PETS[k]?k:'nube',s-4)}</span>`}
+function pAv(id,s=40){const mine=id==='me'||(S.user&&id===S.user.uid),m=mine?{name:S.me.name,photo:S.me.pic}:(S.members[id]||{});const ini=esc(((m.name||'?').trim().charAt(0)||'?').toUpperCase());return `<span class="pav" style="width:${s}px;height:${s}px;font-size:${Math.round(s*.4)}px">${ini}${m.photo?`<img src="${esc(m.photo)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:''}</span>`}
+const av=pAv;
 const who=(id,p)=>id==='me'?S.me.name:((S.members[id]||{}).name||(p&&p.an)||'Familiar');
 const rel=t=>{const m=Math.floor((Date.now()-t)/6e4);if(m<1)return'ahora';if(m<60)return'hace '+m+' min';const h=Math.floor(m/60);if(h<24)return'hace '+h+(h>1?' horas':' hora');const d=Math.floor(h/24);if(d<7)return'hace '+d+(d>1?' días':' día');if(d<30){const w=Math.floor(d/7);return'hace '+w+(w>1?' semanas':' semana')}if(d<365){const mo=Math.floor(d/30);return'hace '+mo+(mo>1?' meses':' mes')}const y=Math.floor(d/365);return'hace '+y+(y>1?' años':' año')};
 const bars=(n=16,anim)=>Array.from({length:n},(_,i)=>`<i style="${anim?`animation-delay:${(i*.07).toFixed(2)}s;`:''}height:${8+(i*7)%30}px"></i>`).join('');
@@ -532,23 +579,23 @@ async function gCred(r){const g=$('#gst');if(g)g.textContent='Entrando…';try{a
 
 function groupScr(){
  const back=`<button class="bk" onclick="S.gstep='pick';render()">${ic('back',18)} Atrás</button>`;let b='';
- if(S.gstep==='pick')b=`${S.petSet?`<button class="bk" onclick="nextScr()">${ic('back',18)} Volver</button>`:''}<h1>Hola, ${esc(S.me.name)}. ¿Con quién juegas?</h1><p class="mu">Puedes tener varios grupos (familia, pareja, amigos) y cambiar entre ellos cuando quieras.</p>
-  <button class="opc" onclick="S.gstep='create';render()"><span class="ti">${ic('users',24)}</span><span class="tx"><b>Crear un grupo</b><span class="mu">Familia, pareja o amigos. Tú invitas con un enlace o QR.</span></span></button>
-  <button class="opc" onclick="S.gstep='join';render()"><span class="ti">${ic('heart',24)}</span><span class="tx"><b>Unirme a un grupo</b><span class="mu">Si alguien ya creó uno, usa su código.</span></span></button>
-  ${S.petSet||S.families.length?'':`<button class="lnk" onclick="soloGo()">Jugar solo por ahora</button>`}`;
- if(S.gstep==='create')b=`${back}<h1>Crea tu grupo</h1><label class="lb" id="gtl">¿Con quién juegas?</label>
+ if(S.gstep==='pick')b=`${S.petSet?`<button class="bk" onclick="nextScr()">${ic('back',18)} Volver</button>`:''}<h1>Hola, ${esc(S.me.name)}. ¿Con quién compartes?</h1><p class="mu">Una cápsula es un espacio compartido (familia, pareja o amigos). Puedes tener varias y entrar a cada una desde Mis cápsulas.</p>
+  <button class="opc" onclick="S.gstep='create';render()"><span class="ti">${ic('users',24)}</span><span class="tx"><b>Crear una cápsula</b><span class="mu">Familia, pareja o amigos. Tú invitas con un enlace o QR.</span></span></button>
+  <button class="opc" onclick="S.gstep='join';render()"><span class="ti">${ic('heart',24)}</span><span class="tx"><b>Unirme a una cápsula</b><span class="mu">Si alguien ya creó una, usa su código.</span></span></button>
+  ${S.petSet||S.families.length?'':`<button class="lnk" onclick="soloGo()">Empezar solo con Mi mundo</button>`}`;
+ if(S.gstep==='create')b=`${back}<h1>Crea tu cápsula</h1><label class="lb" id="gtl">¿Con quién juegas?</label>
   <div class="gt" role="radiogroup" aria-labelledby="gtl">${Object.keys(GT).map(k=>`<button class="gtb ${S.gtype===k?'on':''}" role="radio" aria-checked="${S.gtype===k}" onclick="S.gname=$('#gname').value;S.gtype='${k}';render()"><b>${GT[k].n}</b><span class="mu">${GT[k].d}</span></button>`).join('')}</div>
-  <label class="lb" for="gname">Nombre del grupo</label>
+  <label class="lb" for="gname">Nombre de la cápsula</label>
   <input id="gname" class="in" maxlength="30" placeholder="${GT[S.gtype].ph}" value="${esc(S.gname)}" onkeydown="if(event.key==='Enter')mk()">
   <p class="err" id="err"></p>
-  <button class="btn w" id="mkb" onclick="mk()">Crear grupo</button>`;
+  <button class="btn w" id="mkb" onclick="mk()">Crear cápsula</button>`;
  if(S.gstep==='created')b=`<h1>¡Listo, ${esc(S.group.name)}!</h1><p class="mu">Comparte el enlace o el código con quien quieras que se una.</p>
   <div class="code">${esc(S.group.code)}</div>
   <button class="btn w" onclick="shareInvite()">Compartir invitación</button>
   <button class="btn s w" onclick="copyLink()">Copiar enlace</button>
   <button class="btn s w" onclick="showQr()">Mostrar código QR</button>
-  <button class="btn s w" onclick="nextScr()">Continuar</button>`;
- if(S.gstep==='join')b=`${back}<h1>Únete a un grupo</h1><label class="lb" for="gc">Código del grupo</label>
+  <button class="btn s w" onclick="const id=S.group.id;nextScr();openCap(id)">Continuar</button>`;
+ if(S.gstep==='join')b=`${back}<h1>Únete a una cápsula</h1><label class="lb" for="gc">Código de la cápsula</label>
   <input id="gc" class="in" maxlength="8" placeholder="K7M2QX9P" value="${esc(S.joinCode)}" autocapitalize="characters" autocomplete="off" onkeydown="if(event.key==='Enter')jn()">
   <p class="err" id="err"></p>
   <button class="btn w" id="jnb" onclick="jn()">Unirme</button>`;
@@ -578,16 +625,22 @@ function selPet(k){S.pet.kind=k;if(!S.pe)S.pet.name=PETS[k].n;render()}
 function startGame(){S.pet.name=S.pet.name.trim()||PETS[S.pet.kind].n;S.petSet=true;S.scr='main';S.tab='home';render();toast('¡'+S.pet.name+' ya está contigo!')}
 
 /* ---------- main shell ---------- */
-const hdr=()=>`<div class="brand"><img class="bi" src="icons/icon-192.png" width="38" height="38" alt="" decoding="async"><span class="bn">Cápsula<small>${S.group?esc(S.group.name):'Mi diario'}</small></span></div><div class="row" style="gap:6px;flex:none"><span class="chip">${pet(S.pet.kind,30)}${ic('heart',14)}<b>${S.xp}</b></span><button class="pf${syncOff()||SYNC.pend>0?' unsaved':''}" onclick="profile()" aria-label="Mi perfil">${pfIn()}</button></div>`;
+const spaceId=()=>S.group?S.group.id:null;
+function spaceTo(id){id=id||null;if(spaceId()===id)return;if(window.CLOUD&&CLOUD.ready&&CLOUD.switchFamily)CLOUD.switchFamily(id);else S.group=id?(S.families.find(f=>f.id===id)||null):null}
+const NK=()=>({home:'home',mundo:'mundo',caps:'caps',cap:'caps',act:'act',perfil:'perfil'})[S.tab]||(S.group?'caps':'mundo');
+const nMem=()=>Math.max(1,Object.keys(S.members).length);
+const spaceTag=()=>S.group?`<span class="tag spc shr">${ic('users',14)}Compartido con ${nMem()} ${nMem()===1?'persona':'personas'}</span>`:`<span class="tag spc priv">${ic('lock',14)}Solo tú</span>`;
+const hsub=()=>({home:'Hola, '+esc(S.me.name),mundo:'Mi mundo · solo tú',caps:'Mis cápsulas',cap:S.group?esc(S.group.name):'Mis cápsulas',act:'Actividad',perfil:'Perfil'})[S.tab]||(S.group?esc(S.group.name):'Mi mundo · solo tú');
+const hdr=()=>`<div class="brand"><img class="bi" src="icons/icon-192.png" width="38" height="38" alt="" decoding="async"><span class="bn">Cápsula<small>${hsub()}</small></span></div><div class="row" style="gap:6px;flex:none"><button class="pf${syncOff()||SYNC.pend>0?' unsaved':''}" onclick="go('perfil')" aria-label="Mi perfil">${pfIn()}</button></div>`;
 function shell(){return `<div class="top" id="hd">${hdr()}</div><main id="mn">${VIEW[S.tab]()}</main>
 <nav aria-label="Principal">
  <button data-t="home" onclick="go('home')">${ic('home')}Inicio</button>
- <button data-t="triv" onclick="go('triv')">${ic('star')}Pregunta</button>
- <button class="pub" onclick="chooser()" aria-label="Contar una historia"><span class="pb">${ic('plus',28,2.4)}</span>Contar</button>
- <button data-t="arc" onclick="go('arc')">${ic('book')}Archivo</button>
- <button data-t="fam" onclick="go('fam')">${ic('users')}<span id="nvf">${famLabel()}</span></button>
+ <button data-t="mundo" onclick="go('mundo')">${ic('world')}Mi mundo</button>
+ <button data-t="caps" onclick="go('caps')">${ic('caps')}Mis cápsulas</button>
+ <button data-t="act" onclick="go('act')">${ic('bell')}Actividad</button>
+ <button data-t="perfil" onclick="go('perfil')">${ic('user')}Perfil</button>
 </nav>`}
-function navSync(){const nf=$('#nvf');if(nf)nf.textContent=famLabel();document.querySelectorAll('nav [data-t]').forEach(b=>{const on=b.dataset.t===S.tab;b.classList.toggle('on',on);on?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')})}
+function navSync(){document.querySelectorAll('nav [data-t]').forEach(b=>{const on=b.dataset.t===NK();b.classList.toggle('on',on);on?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')})}
 function render(){
  checkUnl();save();
  if(S.scr==='main'&&$('#mn')){$('#mn').innerHTML=VIEW[S.tab]();$('#hd').innerHTML=hdr();navSync();return}
@@ -596,7 +649,10 @@ function render(){
  if(S.scr==='main'){navSync();enterAnim($('#mn'))}
  const key=S.scr+':'+S.gstep;if(key!==render.k){render.k=key;if(S.scr==='group'||S.scr==='pet')enterAnim($('.ob'))}
 }
-function go(t){S.tab=t;render();$('#mn').scrollTop=0;enterAnim($('#mn'));if(t==='home')setTimeout(()=>petIdle(true),4000)}
+function go(t){if(t==='mundo')spaceTo(null);S.tab=t;render();const mn=$('#mn');if(mn){mn.scrollTop=0;enterAnim(mn)}if(t==='mundo')setTimeout(()=>petIdle(true),4000)}
+const openCap=id=>{spaceTo(id);S.sub='inicio';S.af='';go('cap')};
+const goArc=()=>{spaceTo(null);S.af='';go('arc')};
+const goTriv=()=>{spaceTo(null);go('triv')};
 function enterAnim(m){if(!m)return;[...m.children].forEach((e,i)=>e.style.setProperty('--i',Math.min(i,8)));m.classList.remove('enter');void m.offsetWidth;m.classList.add('enter');clearTimeout(m._h);m._h=setTimeout(()=>m.classList.remove('enter'),1400)}
 
 /* ---------- semana: misiones y pregunta (cambian cada lunes) ---------- */
@@ -623,17 +679,33 @@ function claimM(id){const w=wkEnsure(),m=MPOOL.find(x=>x.id===id);if(!m||w.claim
 function missionsHTML(){const w=wkEnsure();return `<section class="card"><h3>Misiones de la semana</h3><span class="mu">Cambian cada lunes</span>${wkMissions().map(m=>{const v=Math.min(m.g,m.p(w)),done=w.claimed.includes(m.id),ok=v>=m.g;return `<div class="ms"><div class="row sp"><b>${esc(m.t)}</b><span class="mu">${v}/${m.g}</span></div><div class="bar"><i style="width:${v/m.g*100}%"></i></div>${done?`<p class="row" style="color:var(--color-success-text);font-weight:500">${ic('check',18)} Cobrada · +${m.r} corazones</p>`:ok?`<button class="btn" onclick="claimM('${m.id}')">Cobrar ${m.r} corazones</button>`:`<span class="mu">Recompensa: ${m.r} corazones</span>`}</div>`}).join('')}</section>`}
 
 /* ---------- home ---------- */
+const VERB={voz:'grabó una nota de voz',foto:'compartió una foto',carta:'dejó una carta',dibujo:'hizo un dibujo',receta:'compartió una receta'};
+function recentHTML(n){const L=S.posts.filter(p=>p.a!=='me'&&TY[p.k]).slice(0,n);
+ return L.map(p=>`<div class="card row" style="flex-direction:row;align-items:center;gap:12px">${pAv(p.a,40)}<span class="tx" style="flex:1;min-width:0"><b>${esc(who(p.a,p))} ${VERB[p.k]||'compartió algo'}</b><span class="mu">${rel(p.ts)} · ${S.group?esc(S.group.name):'Mi mundo'}</span></span></div>`).join('')}
 function home(){
+ const n=S.families.length,rc=recentHTML(3);
+ return `<section class="card hw"><div style="max-width:200px"><span class="mu">Hola, ${esc(S.me.name)}</span><h2>Tu mundo te espera</h2><p class="mu" style="margin:4px 0 10px">${esc(S.pet.name)} te echa de menos.</p><button class="btn" onclick="go('mundo')">Entrar</button></div><span class="hp">${pet(S.pet.kind,104,S.wear)}</span></section>
+ <div class="duo"><button class="tile2" onclick="go('mundo')">${ic('world',26)}<b>Mi mundo</b><span class="mu">Tu espacio personal</span></button><button class="tile2" onclick="go('caps')">${ic('caps',26)}<b>Mis cápsulas</b><span class="mu">${n?n+(n>1?' espacios compartidos':' espacio compartido'):'Crea la primera'}</span></button></div>
+ <section class="card"><span class="mu">Para ti, hoy</span><h2>${esc(qaToday(true))}</h2><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn" onclick="goTriv()">Responder</button><button class="btn s" onclick="dest()">Escribir o guardar</button></div></section>
+ ${rc?`<div class="row sp"><h3>Actividad reciente</h3><button class="lnk" onclick="go('act')">Ver todo</button></div>${rc}`:''}`}
+function dest(){showSheet(`<h2>¿Dónde lo guardas?</h2><p class="mu">Elige el lugar antes de escribir.</p>
+ <button class="opc" onclick="cl();spaceTo(null);chooser()"><span class="ti">${ic('world',24)}</span><span class="tx"><b>Mi mundo</b><span class="mu">Solo tú lo ves</span></span></button>
+ ${S.families.map(f=>`<button class="opc" onclick="cl();spaceTo('${esc(f.id)}');chooser()"><span class="ti">${ic('caps',24)}</span><span class="tx"><b>${esc(f.name)}</b><span class="mu">Compartido · ${GT[GT[f.type]?f.type:'familia'].n}</span></span></button>`).join('')}`)}
+function badgesHTML(){const B=[['pen','Primera historia',S.total>0||S.posts.some(p=>p.a==='me')],['flame','Racha de 3',S.streak>=3],['brush','Multiformato',S.types.size>=3],['star','Pregunta del día',(S.qaN||0)>=1||!!S.perfect],['users','Invitador',!!S.inv],['book','Libro listo',S.posts.length>=12]];
+ return `<div class="card"><h3>Insignias</h3><div class="bd">${B.map(b=>`<div class="${b[2]?'':'lk'}">${ic(b[0],28)}${b[1]}</div>`).join('')}</div></div>`}
+function mundo(){
  const lvl=Math.floor(S.xp/100),n=S.posts.length;
  const wq=S.group?'Cuéntale a '+fm()+' cómo lo viviste.':'Respóndela para tu diario.';
  return `
+ <div class="spch"><h2>Mi mundo</h2>${spaceTag()}</div>
  ${heroHTML()}
  ${S.chest===today()?`<section class="card c"><span class="mu">Cofre de hoy abierto. Vuelve mañana por otro 🎁</span></section>`:`<section class="card c hero"><div class="chest">🎁</div><h3>¡${esc(S.pet.name)} te trajo un regalo!</h3><button class="btn" onclick="chest()">Abrir cofre</button></section>`}
  <section class="card"><div class="row sp"><h3 class="row" style="gap:6px;color:var(--pd)"><span class="${S.streak?'flick':''}" style="display:inline-flex">${ic('flame',20)}</span><span style="color:var(--tx)">${S.streak?'Racha de '+S.streak+(S.streak>1?' días':' día'):'Empieza tu racha hoy'}</span></h3><span class="mu">${S.posted?'Hoy ya cuentas':'Cuenta algo hoy'}</span></div><div class="days">${strip()}</div></section>
  <section class="card"><span class="mu">Pregunta de la semana</span><h2>${esc(wqNow())}</h2><p class="mu">${wq}</p><button class="btn" onclick="chooser(wqNow())">Responder</button></section>
  <section class="card"><h3>¿Cómo quieres contar hoy?</h3><div class="qp">${Object.entries(TY).map(([k,v])=>`<button onclick="compose('${k}')">${ic(v.i,18)}${v.l}</button>`).join('')}</div></section>
+ <div class="duo"><button class="tile2" onclick="goArc()">${ic('book',26)}<b>Mi archivo</b><span class="mu">${n} ${n===1?'historia':'historias'}</span></button><button class="tile2" onclick="go('triv')">${ic('star',26)}<b>Pregunta del día</b><span class="mu">Una para ti</span></button></div>
  ${missionsHTML()}${closetHTML()}
- ${moodCard()}<section class="card"><h3>${libName()}</h3><div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div><p class="mu">${Math.min(n,12)} de 12 historias. Con 12 se arma el libro.</p></section>`}
+ ${moodCard()}${badgesHTML()}<section class="card"><h3>${libName()}</h3><div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div><p class="mu">${Math.min(n,12)} de 12 historias. Con 12 se arma el libro.</p></section>`}
 function chest(){const r=(10+Math.floor(Math.random()*21));S.chest=today();burst(32);add(r)}
 const H=3600e3;
 const QS=[
@@ -675,9 +747,9 @@ function chat(){const now=Date.now(),el=QS.filter(q=>!q.cond||q.cond());let c=el
 function reply(i){const q=S.bub&&S.bub.q;if(!q)return;const o=q.o[i],p=S.pt,d=today();if(p.ad!==d){p.ad=d;p.ans=0}
  if(q.mood&&o[2])p.moods=(p.moods||[]).filter(m=>m.d!==d).concat({d,v:o[2]}).slice(-14);
  S.bub={t:o[1],o:null,q:null};S.bubT=Date.now();
- if(o[3]==='chooser')setTimeout(()=>chooser(),900);if(o[3]==='fam')setTimeout(()=>go('fam'),1100);
+ if(o[3]==='chooser')setTimeout(()=>chooser(),900);if(o[3]==='fam')setTimeout(()=>{if(S.group){S.sub='personas';go('cap')}else go('caps')},1100);
  if(p.ans<5){p.ans++;add(2)}else render()}
-function petIdle(force){if(S.scr!=='main'||S.tab!=='home'||document.hidden||$('#sh.open')||$('.lvup'))return;ptTick();const now=Date.now();
+function petIdle(force){if(S.scr!=='main'||S.tab!=='mundo'||document.hidden||$('#sh.open')||$('.lvup'))return;ptTick();const now=Date.now();
  if(S.bub&&S.bub.q)return;if(!force&&now-(S.bubT||0)<14000)return;
  if(asleep()){if(!S.bub||!/Zzz/.test(S.bub.t))bubSay('Zzz… estoy soñando con tus historias 💤');return}
  const p=S.pt;if(p.food<35&&Math.random()<.7){bubSay('Tengo hambre… ¿me das de comer? 🍪');return}
@@ -686,21 +758,21 @@ function petIdle(force){if(S.scr!=='main'||S.tab!=='home'||document.hidden||$('#
 function moodCard(){const m=S.pt.moods||[];if(!m.length)return'';const E=['','😢','😕','🙂','😄'],L='DLMXJVS';
  return `<section class="card"><h3>Tu ánimo esta semana</h3><div class="days">${Array.from({length:7},(_,i)=>{const dt=new Date(Date.now()-(6-i)*864e5),e=m.find(x=>x.d===dt.toDateString());return `<span style="${e?'font-size:20px;background:var(--soft2)':''}">${e?E[e.v]:L[dt.getDay()]}</span>`}).join('')}</div><p class="mu">${esc(S.pet.name)} lo recuerda cada vez que le cuentas cómo te fue.</p></section>`}
 
-function helpCard(){if(!S.group||Object.keys(S.members).length>1)return'';return `<div class="card"><h3>¿Aún no se une nadie?</h3><p class="mu">Puedes empezar sin ellos. Tu mascota y tu diario funcionan solos, y todo se comparte cuando entren.</p><ul class="mu"><li>Invítalos con un mensaje listo para enviar.</li><li>Entrevístalos y publica la historia por ellos: al contar, escribe quién la cuenta.</li><li>${esc(S.pet.name)} te recordará invitarlos.</li></ul><a class="btn w" href="https://wa.me/?text=${encodeURIComponent(inviteText())}" target="_blank" rel="noopener">Enviar invitación por WhatsApp</a></div>`}
+function helpCard(){if(!S.group||Object.keys(S.members).length>1)return'';return `<div class="card"><h3>¿Aún no se une nadie?</h3><p class="mu">Puedes empezar sin ellos. Tu mundo funciona solo, y todo se comparte cuando entren.</p><ul class="mu"><li>Invítalos con un mensaje listo para enviar.</li><li>Entrevístalos y publica la historia por ellos: al contar, escribe quién la cuenta.</li></ul><a class="btn w" href="https://wa.me/?text=${encodeURIComponent(inviteText())}" target="_blank" rel="noopener">Enviar invitación por WhatsApp</a></div>`}
 
 /* ---------- pregunta del día ---------- */
 const QD_G=["¿Qué comida te recuerda a tu infancia?", "¿Cuál es el mejor consejo que te han dado?", "¿Qué canción te hace sentir en casa?", "¿Cuál fue el mejor regalo que has recibido?", "¿Qué travesura recuerdas con más cariño?", "¿A qué lugar te gustaría volver?", "¿Qué te hizo reír hoy?", "¿Cuál es tu recuerdo favorito de unas vacaciones?", "¿Qué película podrías ver mil veces?", "¿Qué le dirías a tu yo de hace diez años?", "¿Cuál es tu plato favorito para celebrar?", "¿Qué es lo más valiente que has hecho?", "¿Qué tradición no quisieras que se perdiera?", "¿Quién te enseñó algo que nunca olvidaste?", "¿Qué pequeño detalle te alegra el día?", "¿Cuál fue tu primer trabajo y qué aprendiste?", "¿Qué apodo te han puesto y de dónde salió?", "¿Cuál es tu rincón favorito para descansar?", "¿Qué te gustaría aprender este año?", "¿Qué olor te lleva directo a un recuerdo?", "¿Qué es lo más bonito que alguien ha hecho por ti?", "¿Cuál es tu mejor recuerdo de la escuela?", "¿Qué plan perfecto harías un domingo?", "¿Qué cosa pequeña te hace sentir agradecido?", "¿Qué historia siempre cuentas en las reuniones?", "¿Qué sueño de niño todavía te hace ilusión?", "¿Qué te da paz cuando el día es difícil?", "¿Cuál fue la mejor sorpresa que te llevaste?", "¿Qué viaje te gustaría hacer algún día?", "¿Qué es lo que más valoras de las personas?"];
 const QD_P=["¿Cuál es tu recuerdo favorito de nosotros?", "¿Qué fue lo primero que pensaste cuando nos conocimos?", "¿Qué pequeño gesto mío te hace sentir querido?", "¿Cuál ha sido nuestro mejor día juntos?", "¿Qué te gustaría que hiciéramos este año?", "¿Qué canción nos representa?", "¿Qué plan perfecto haríamos tú y yo?", "¿Qué es lo que más admiras de mí?", "¿Cuál fue tu primera impresión de mí?", "¿Qué lugar te gustaría que conociéramos juntos?", "¿Qué te hizo sonreír de mí esta semana?", "¿Qué cosa nueva te gustaría que probáramos?", "¿Qué comida nos recuerda a algo especial?", "¿Qué momento de nuestra historia repetirías?", "¿Qué sueño te gustaría que cumpliéramos juntos?", "¿Qué te gustaría decirme que no te he dicho?", "¿Cuál es nuestra mejor anécdota?", "¿Qué tradición de pareja te gustaría empezar?", "¿Qué te da tranquilidad cuando estamos juntos?", "¿Qué película o serie sería la nuestra?", "¿Qué apodo cariñoso te gusta más?", "¿Qué es lo más divertido que hemos hecho?", "¿Qué aprendiste de mí que no esperabas?", "¿Qué detalle de nuestra casa o rutina te encanta?", "¿Cómo te imaginas nuestro próximo aniversario?"];
 const dayKey=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
-const qaToday=()=>{const P=S.group&&S.group.type==='pareja'?QD_P:QD_G,n=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5);return P[n%P.length]};
+const qaToday=solo=>{const P=!solo&&S.group&&S.group.type==='pareja'?QD_P:QD_G,n=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5);return P[n%P.length]};
 function qaForm(solo){return `<textarea id="qat" class="in paper" rows="4" maxlength="300" placeholder="Escribe tu respuesta…" oninput="S.qtx=this.value;$('#qab').disabled=!this.value.trim()">${esc(S.qtx||'')}</textarea>
  <button class="btn w" id="qab" onclick="qaSend()" ${S.qtx&&S.qtx.trim()?'':'disabled'}>${solo?'Guardar en mi diario':'Responder'}</button>
  <p class="mu c">${solo?'Tu respuesta se guarda en tu Archivo.':'Cuando respondas, verás lo que contestaron los demás.'}</p>`}
 function triv(){
- const day=dayKey(),q=qaToday(),g=S.group;
+ const day=dayKey(),q=qaToday(!S.group),g=S.group;
  if(g&&window.CLOUD&&CLOUD.qaOpen)CLOUD.qaOpen(day);
  const st=S.qa&&S.qa.day===day?S.qa:{mine:null,all:null},done=S.qd===day;
- const head=`<h2>Pregunta del día</h2><div class="card c">${pet(S.pet.kind,80,S.wear)}<span class="mu">Hoy para ${g?fm():'ti'}</span><h2 style="margin:6px 0 0">${esc(q)}</h2></div>`;
+ const head=`<button class="bk" onclick="go('${g?'cap':'mundo'}')">${ic('back',18)} ${g?esc(g.name):'Mi mundo'}</button><div class="spch"><h2>Pregunta del día</h2>${spaceTag()}</div><div class="card c">${g?ic('star',44):pet(S.pet.kind,80,S.wear)}<span class="mu">Hoy para ${g?fm():'ti'}</span><h2 style="margin:6px 0 0">${esc(q)}</h2></div>`;
  if(!g)return head+`<div class="card">${done?'<p class="mu c">Ya la respondiste hoy. Tu respuesta quedó en tu Archivo. Vuelve mañana por otra.</p>':qaForm(true)}</div>`;
  if(!st.mine&&!done)return head+`<div class="card">${qaForm(false)}</div>`;
  if(!st.all)return head+`<div class="card"><p class="mu c">${st.mine?'Cargando las respuestas…':'Guardando tu respuesta…'}</p></div>`;
@@ -725,13 +797,19 @@ function postBody(p){
  if(p.k==='carta')return `<div class="paperbox">${esc(x.tx||'')}</div>`;
  if(p.k==='receta')return `<div class="rcp">${x.by?`<span class="mu">Te la enseñó ${esc(x.by)}</span>`:''}<b>Ingredientes</b><ul>${(Array.isArray(x.ing)?x.ing:[]).map(i=>`<li>${esc(i)}</li>`).join('')}</ul><b>Preparación</b><p>${esc(x.stp||'')}</p></div>`;
  return ''}
-function arc(){
- const n=S.posts.length;
- const head=`<h2>Archivo</h2><div class="card"><span class="mu">${libName()}: ${Math.min(n,12)} de 12 historias</span><div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div></div>`;
- if(!n)return head+`<div class="card c">${pet(S.pet.kind,90)}<h3>Aún no hay historias</h3><p class="mu">Cuenta la primera y ${esc(S.pet.name)} te lo agradecerá.</p><button class="btn" onclick="chooser()">Contar la primera</button></div>`;
- return head+S.posts.filter(p=>TY[p.k]).map(p=>`<article class="card"><div class="row">${av(p.a)}<div class="tx"><b>${esc(p.t)}</b><span class="mu">${esc(who(p.a,p))} · ${rel(p.ts)}${p.by?' · contada por '+esc(p.by):''}</span></div><span class="tag">${ic(TY[p.k].i,14)}${TY[p.k].l}</span></div>
-  ${postBody(p)}
+const AFL=()=>Object.entries(TY).filter(([k])=>k!=='video');
+const afChips=()=>`<div class="afc" role="group" aria-label="Filtrar">${[['', 'Todo'],...AFL().map(([k,v])=>[k,v.l])].map(([k,l])=>`<button class="${(S.af||'')===k?'on':''}" aria-pressed="${(S.af||'')===k}" onclick="S.af='${k}';soft()">${l}</button>`).join('')}</div>`;
+function arcList(kind){
+ const all=S.posts.filter(p=>TY[p.k]),L=kind?all.filter(p=>p.k===kind):all;
+ if(!all.length)return `<div class="card c">${S.group?ic('book',48):pet(S.pet.kind,90)}<h3>Aún no hay historias</h3><p class="mu">${S.group?'Cuenta la primera y quedará aquí para todos.':'Cuenta la primera y '+esc(S.pet.name)+' te lo agradecerá.'}</p><button class="btn" onclick="chooser()">Contar la primera</button></div>`;
+ if(!L.length)return `<div class="card c"><p class="mu">Aún no hay ${(TY[kind]||{l:'historias'}).l.toLowerCase()} aquí.</p>${kind==='carta'?'<button class="btn" onclick="compose(\'carta\')">Escribir una carta</button>':''}</div>`;
+ return L.map(p=>`<article class="card"><div class="row">${pAv(p.a,40)}<div class="tx"><b>${esc(who(p.a,p))}</b><span class="mu">${rel(p.ts)}${p.by?' · contada por '+esc(p.by):''}</span></div><span class="tag">${ic(TY[p.k].i,14)}${TY[p.k].l}</span></div>
+  <h3>${esc(p.t)}</h3>${postBody(p)}
   <div class="rx">${['💗','😂','🥹'].map((e,j)=>`<button class="${p.m[j]?'on':''}" aria-pressed="${!!p.m[j]}" onclick="react('${p.id}',${j})">${e} ${p.r[j]+p.m[j]}</button>`).join('')}</div>${p.a==='me'?`<button class="lnk" style="min-height:32px;font-size:13px;align-self:flex-end" onclick="delPost('${p.id}')">Eliminar</button>`:''}</article>`).join('')+(S.posts.length>=S.plim?`<button class="btn s w" onclick="CLOUD.more()">Ver más historias</button>`:'')}
+function arc(){
+ if(S.group){S.tab='cap';S.sub='recuerdos';return cap()}
+ const n=S.posts.length;
+ return `<button class="bk" onclick="go('mundo')">${ic('back',18)} Mi mundo</button><div class="spch"><h2>Mi archivo</h2>${spaceTag()}</div><div class="card"><span class="mu">${libName()}: ${Math.min(n,12)} de 12 historias</span><div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div></div>${afChips()}${arcList(S.af)}<button class="btn w" onclick="chooser()">${ic('plus',18)} Contar algo</button>`}
 function delPost(id){if(!confirm('¿Eliminar esta historia'+(S.group?' para todo el grupo':'')+'?'))return;CLOUD.deletePost(id).then(()=>toast('Historia eliminada')).catch(()=>toast('No se pudo eliminar. Intenta de nuevo.'))}
 function react(id,j){const p=S.posts.find(q=>q.id===id);if(p&&window.CLOUD&&CLOUD.ready)CLOUD.react(id,j,!p.m[j]).catch(()=>toast('No se pudo guardar tu reacción'))}
 
@@ -802,86 +880,108 @@ function copyLink(){S.inv=1;save();copy(inviteLink());soft()}
 function applyTheme(id){const t=THEMES.find(x=>x.id===id)||THEMES[1];S.theme=t.id;document.documentElement.dataset.theme=t.id;
  try{localStorage.setItem('capsula_theme',t.id)}catch(e){}
  const m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t.bar)}
-function setTheme(id){if(!THEMES.some(t=>t.id===id))return;applyTheme(id);save();render();if($('#sh.open')&&S.profileOpen)profile()}
-function setName(v){v=String(v||'').trim().slice(0,24);if(!v){toast('Escribe un nombre');profile();return}S.me.name=v;save();render();const n=$('#sh .pfc .tx b'),f=$('#sh .pfc .pf');if(n)n.textContent=v;if(f)f.innerHTML=pfIn();toast('Nombre guardado')}
+function setTheme(id){if(!THEMES.some(t=>t.id===id))return;applyTheme(id);save();render()}
+function setName(v){v=String(v||'').trim().slice(0,24);if(!v){toast('Escribe un nombre');profile();return}S.me.name=v;save();render();const n=$('.pfc .tx b'),f=$('.pfc .pf');if(n)n.textContent=v;if(f)f.innerHTML=pfIn();toast('Nombre guardado')}
 function setPetName(v){v=String(v||'').trim().slice(0,14);if(!v){toast('Escribe un nombre');profile();return}S.pet={kind:S.pet.kind,name:v};save();render();toast('Nombre guardado')}
 const pfIn=()=>`${esc((S.me.name||'?').trim().charAt(0).toUpperCase())}${S.me.pic?`<img src="${esc(S.me.pic)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:''}`;
 const pfAv=()=>`<span class="pf" aria-hidden="true">${pfIn()}</span>`;
 const isOn=m=>!!(m&&m.showSeen!==false&&m.lastSeen&&Date.now()-m.lastSeen<6*6e4);
 const presTxt=m=>{if(!m||m.showSeen===false||!m.lastSeen)return'';const mi=Math.floor((Date.now()-m.lastSeen)/6e4);if(mi<6)return'En línea';if(mi<60)return'Activo hace '+mi+' min';const h=Math.floor(mi/60);if(h<24)return'Activo hace '+h+' h';const d=Math.floor(h/24);return d===1?'Activo ayer':'Activo hace '+d+' días'};
 function memberCard(id){
- const mine=id==='me'||(S.user&&id===S.user.uid),M0=S.members[mine&&S.user?S.user.uid:id]||{};
- const m=mine?{name:S.me.name,petKind:S.pet.kind,petName:S.pet.name,xp:S.xp,streak:S.streak,total:S.total,wear:S.wear,joinedAt:M0.joinedAt||0,showSeen:S.showSeen,lastSeen:Date.now()}:M0;
+ const mine=id==='me'||(S.user&&id===S.user.uid),uid=mine&&S.user?S.user.uid:id,M0=S.members[uid]||{};
+ const m=mine?{name:S.me.name,joinedAt:M0.joinedAt||0,showSeen:S.showSeen,lastSeen:Date.now()}:M0;
  if(!m||(!mine&&!m.name))return;
- const lv=Math.floor((m.xp||0)/100),k=PETS[m.petKind]?m.petKind:'nube',wear=Array.isArray(m.wear)?m.wear.filter(x=>typeof x==='string'):[];
- const np=typeof m.total==='number'?m.total:S.posts.filter(p=>p.a===(mine?'me':id)).length,pt=presTxt(m),on=isOn(m);
- showSheet(`<div class="mcd"><span class="mpet">${pet(k,132,wear)}${on?'<i class="odot"></i>':''}</span>
+ const np=S.posts.filter(p=>p.a===(mine?'me':id)).length,pt=presTxt(m),on=isOn(m),own=S.group&&uid===S.group.ownerUid;
+ showSheet(`<div class="mcd"><span class="mpet">${pAv(mine?'me':id,96)}${on?'<i class="odot"></i>':''}</span>
  <h2>${esc(m.name||'Miembro')}${mine?' (tú)':''}</h2>
- <p class="mu">${esc(m.petName||'')} · ${STAGE[Math.min(lv,3)]} · nivel ${lv+1}</p>
+ <p class="mu">${own?'Administra la cápsula':'Miembro'}${S.group?' · '+esc(S.group.name):''}</p>
  ${pt?`<p class="pres ${on?'on':''}">${pt}</p>`:''}
- <div class="mst"><div><b>${m.xp||0}</b><span class="mu">corazones</span></div><div><b>${m.streak||0}</b><span class="mu">racha</span></div><div><b>${np}</b><span class="mu">historias</span></div></div>
- ${m.joinedAt?`<p class="mu">En el grupo desde ${new Date(m.joinedAt).toLocaleDateString('es',{day:'numeric',month:'long',year:'numeric'})}</p>`:''}
- ${mine?'<button class="btn s w" onclick="profile()">Editar mi perfil</button>':''}
+ <div class="mst"><div><b>${np}</b><span class="mu">${np===1?'aporte':'aportes'} aquí</span></div></div>
+ ${m.joinedAt?`<p class="mu">En la cápsula desde ${new Date(m.joinedAt).toLocaleDateString('es',{day:'numeric',month:'long',year:'numeric'})}</p>`:''}
+ ${mine?'<button class="btn s w" onclick="cl();go(\'perfil\')">Editar mi perfil</button>':''}
  <button class="btn w" onclick="cl()">Cerrar</button></div>`)}
 function setSeen(v){S.showSeen=!!v;save();toast(v?'Ahora se ve cuando estás activo':'Ya no se ve cuando estás activo')}
-function profile(){S.profileOpen=true;
- showSheet(`<h2>Mi perfil</h2>
- <div class="pfc">${pfAv()}<span class="tx"><b>${esc(S.me.name)}</b><span class="mu" style="overflow-wrap:anywhere">${esc(S.user?S.user.email:'')}</span></span></div>
- <label class="lb" for="pfn">Tu nombre</label><input id="pfn" class="in" maxlength="24" value="${esc(S.me.name)}" onchange="setName(this.value)">
- <label class="lb" id="thl">Apariencia</label>
+function perfil(){
+ return `<div class="spch"><h2>Perfil</h2></div>
+ <div class="card"><div class="pfc">${pfAv()}<span class="tx"><b>${esc(S.me.name)}</b><span class="mu" style="overflow-wrap:anywhere">${esc(S.user?S.user.email:'')}</span></span></div>
+ <label class="lb" for="pfn">Tu nombre</label><input id="pfn" class="in" maxlength="24" value="${esc(S.me.name)}" onchange="setName(this.value)"></div>
+ <div class="card"><label class="lb" id="thl">Apariencia</label>
  <div class="th" role="radiogroup" aria-labelledby="thl">${THEMES.map(t=>`<button class="thb ${S.theme===t.id?'on':''}" role="radio" aria-checked="${S.theme===t.id}" onclick="setTheme('${t.id}')"><span class="sw" style="background:${t.bg}"><i style="background:${t.pr}"></i></span>${t.n}</button>`).join('')}</div>
- <p class="mu">Tu apariencia y tu nombre se guardan en tu cuenta y te acompañan en todos tus dispositivos.</p>
- <p id="sy" class="sy mu${syncOff()||SYNC.pend>0?' w':''}"><i></i><span>${syncTxt()}</span></p>
- <label class="chk"><input type="checkbox" ${S.showSeen!==false?'checked':''} onchange="setSeen(this.checked)"> Mostrar cuando estoy activo</label>
- <p class="mu">Si lo apagas, los demás no verán "en línea" ni tu última vez.</p>
- <label class="lb" for="pfm">Nombre de tu mascota</label>
- <div class="pfp">${pet(S.pet.kind,52)}<input id="pfm" class="in" maxlength="14" value="${esc(S.pet.name)}" onchange="setPetName(this.value)"></div>
+ <p class="mu">Tu apariencia y tu nombre se guardan en tu cuenta y te acompañan en todos tus dispositivos.</p></div>
+ <div class="card"><h3>Privacidad</h3><label class="chk"><input type="checkbox" ${S.showSeen!==false?'checked':''} onchange="setSeen(this.checked)"> Mostrar cuando estoy activo</label>
+ <p class="mu">Si lo apagas, los demás no verán "en línea" ni tu última vez.</p></div>
+ <div class="card"><h3>Mi mascota</h3><div class="pfp">${pet(S.pet.kind,52)}<input id="pfm" class="in" aria-label="Nombre de tu mascota" maxlength="14" value="${esc(S.pet.name)}" onchange="setPetName(this.value)"></div><p class="mu">Vive en Mi mundo. No aparece dentro de las cápsulas.</p></div>
+ <div class="card"><h3>Mis datos</h3><p id="sy" class="sy mu${syncOff()||SYNC.pend>0?' w':''}"><i></i><span>${syncTxt()}</span></p>
  <button class="btn s w" onclick="exportMem()">Descargar mis recuerdos</button>
- <p class="mu">Un archivo con todas tus historias (fotos, voz, cartas y recetas) para guardarlo donde quieras.</p>
- <button class="btn s w" onclick="logout()">Cerrar sesión</button>`)}
-const acct=()=>`<div class="card"><span class="mu">Sesión iniciada con</span><b style="overflow-wrap:anywhere">${esc(S.user?S.user.email:'')}</b><button class="btn s w" onclick="logout()">Cerrar sesión</button></div>`;
-async function leave(){if(!confirm('¿Salir de '+S.group.name+'? Tus historias se quedan en el archivo de la familia.'))return;try{await CLOUD.leaveFamily(S.group.id);toast('Saliste del grupo');render()}catch(e){toast('No se pudo salir. Intenta de nuevo.')}}
-function fam(){
- if(!S.group)return `<h2>Tu grupo</h2><div class="card c">${pet(S.pet.kind,90)}<h3>Estás jugando solo</h3><p class="mu">Crea un grupo o únete a uno para compartir historias, ver la liga y responder la pregunta del día.</p><button class="btn w" onclick="S.scr='group';S.gstep='pick';render()">Crear o unirme a un grupo</button></div>${S.families.length?famList():''}${acct()}`;
+ <p class="mu">Un archivo con todas tus historias (fotos, voz, cartas y recetas) para guardarlo donde quieras.</p></div>
+ <button class="btn s w" onclick="logout()">Cerrar sesión</button>`}
+function profile(){go('perfil')}
+function leave(){showSheet(`<h2>Salir de ${esc(S.group.name)}</h2><p class="mu">Perderás el acceso a esta cápsula. Tu mascota, tu diario y tu archivo personal no se tocan.</p><p class="mu"><b>¿Qué pasa con lo que aportaste?</b></p>
+ <button class="btn w" onclick="doLeave(false)">Salir y dejar mis aportes</button><p class="mu">Se quedan en la cápsula con tu nombre.</p>
+ <button class="btn s w" onclick="doLeave(true)">Salir y borrar mis aportes</button>
+ <button class="btn s w" onclick="cl()">Cancelar</button>`)}
+async function doLeave(del){const g=S.group;if(!g)return;if(del&&!confirm('¿Borrar para siempre lo que aportaste a '+g.name+'? No se puede deshacer.'))return;cl();
+ try{if(del)await CLOUD.deleteMyPosts(g.id)}catch(e){toast('No se pudieron borrar tus aportes. Revisa tu conexión e intenta de nuevo.');return}
+ try{await CLOUD.leaveFamily(g.id);toast('Saliste de la cápsula');go('caps')}catch(e){toast('No se pudo salir. Intenta de nuevo.')}}
+function personas(){
  const me=S.user.uid;
- const L=Object.entries(S.members).filter(([id])=>id!==me).map(([id,m])=>({id,n:m.name||'Miembro',xp:m.xp||0,m})).concat([{id:'me',n:S.me.name+' (tú)',xp:S.xp,m:{showSeen:S.showSeen,lastSeen:Date.now()}}]).sort((a,b)=>b.xp-a.xp);
- const B=[['pen','Primera historia',S.posts.some(p=>p.a==='me')],['flame','Racha de 3',S.streak>=3],['brush','Multiformato',S.types.size>=3],['star','Pregunta del día',(S.qaN||0)>=1||!!S.perfect],['users','Invitador',!!S.inv],['book','Libro listo',S.posts.length>=12]];
- return `<h2>${esc(S.group.name)}</h2>
- 
- ${S.families.length>1?famList():''}
- <div class="card"><span class="mu">Código del grupo</span><div class="code">${esc(S.group.code)}</div>
+ const L=Object.entries(S.members).filter(([id])=>id!==me).map(([id,m])=>({id,n:m.name||'Miembro',m})).concat([{id:'me',n:S.me.name+' (tú)',m:{showSeen:S.showSeen,lastSeen:Date.now()}}]);
+ return `<div class="card"><h3>Personas</h3><span class="mu">${L.length} ${L.length>1?'personas':'persona'} en la cápsula</span>
+  ${L.map(r=>{const pt=presTxt(r.m),own=(r.id==='me'?me:r.id)===S.group.ownerUid;return `<button class="row sp mrow" onclick="memberCard('${esc(r.id)}')" aria-label="Ver perfil de ${esc(r.n)}"><div class="row"><span class="avw">${pAv(r.id,40)}${isOn(r.m)?'<i class="odot"></i>':''}</span><span class="mt"><b>${esc(r.n)}</b><span class="mu">${own?'Administra la cápsula':'Miembro'}${pt?' · '+pt:''}</span></span></div></button>`}).join('')}</div>
+ <div class="card"><span class="mu">Código de la cápsula</span><div class="code">${esc(S.group.code)}</div>
   <button class="btn w" onclick="shareInvite()">Compartir invitación</button>
   <button class="btn s w" onclick="copyLink()">Copiar enlace</button>
   <button class="btn s w" onclick="showQr()">Invitar en persona (QR)</button>
   <a class="btn s w" href="https://wa.me/?text=${encodeURIComponent(inviteText())}" target="_blank" rel="noopener">Enviar por WhatsApp</a></div>
-${helpCard()}
- <div class="card"><h3>${gtype()==='familia'?'Liga de la familia':gtype()==='pareja'?'Nosotros':'Liga de amigos'}</h3><span class="mu">${L.length} ${L.length>1?'miembros':'miembro'} en el grupo</span>
-  ${L.map((r,i)=>{const pt=presTxt(r.m);return `<button class="row sp mrow" onclick="memberCard('${esc(r.id)}')" aria-label="Ver perfil de ${esc(r.n)}"><div class="row"><span class="rk ${i===0?'g':''}">${i+1}</span><span class="avw">${av(r.id,40)}${isOn(r.m)?'<i class="odot"></i>':''}</span><span class="mt"><b>${esc(r.n)}</b>${pt?`<span class="mu">${pt}</span>`:''}</span></div><span class="row" style="gap:4px">${r.xp}${ic('heart',14)}</span></button>`}).join('')}</div>
- <div class="card"><h3>Insignias</h3><div class="bd">${B.map(b=>`<div class="${b[2]?'':'lk'}">${ic(b[0],28)}${b[1]}</div>`).join('')}</div></div>
- <button class="btn s w" onclick="S.scr='group';S.gstep='pick';render()">Crear o unirme a otra familia</button>
- ${S.group.ownerUid!==me?`<button class="btn s w" onclick="leave()">Salir de esta familia</button>`:''}
- ${acct()}`}
-const famList=()=>`<div class="card"><h3>Mis familias</h3>${S.families.map(f=>`<button class="opc" style="min-height:56px" onclick="CLOUD.switchFamily('${esc(f.id)}')"><span class="tx"><b>${esc(f.name)}</b></span>${S.group&&S.group.id===f.id?`<span class="tag">${ic('check',14)}Activa</span>`:''}</button>`).join('')}</div>`;
-const VIEW={home,triv,arc,fam};
+ ${helpCard()}
+ <button class="btn s w" onclick="S.scr='group';S.gstep='pick';render()">Crear o unirme a otra cápsula</button>
+ ${S.group.ownerUid!==me?`<button class="btn s w" onclick="leave()">Salir de esta cápsula</button>`:''}`}
+function caps(){
+ const L=S.families;
+ return `<div class="spch"><h2>Mis cápsulas</h2><span class="tag spc shr">${ic('users',14)}Compartido</span></div>
+ <p class="mu">Tus espacios compartidos con las personas que quieres. Lo que escribes en Mi mundo no se mezcla con ellos.</p>
+ ${L.length?L.map(f=>{const t=GT[f.type]?f.type:'familia';return `<button class="cpc" onclick="openCap('${esc(f.id)}')"><span class="cvs amb-${t}"></span><span class="tx"><b>${esc(f.name)}</b><span class="mu">${GT[t].n}</span></span>${ic('back',18).replace('class="ic"','class="ic" style="transform:rotate(180deg)"')}</button>`}).join(''):`<div class="card c">${ic('caps',48)}<h3>Aún no tienes cápsulas</h3><p class="mu">Crea una con quien quieras o únete con un código.</p></div>`}
+ <button class="btn w" onclick="S.gname='';S.scr='group';S.gstep='create';render()">${ic('plus',18)} Crear una cápsula</button>
+ <button class="btn s w" onclick="S.scr='group';S.gstep='join';render()">Unirme con código o enlace</button>`}
+function capHome(){
+ return `<section class="card"><span class="mu">Pregunta de esta cápsula</span><h3 style="font-size:17px">${esc(qaToday())}</h3><button class="btn" onclick="go('triv')">Responder</button></section>
+ <div class="duo"><button class="tile2" onclick="chooser()">${ic('pen',26)}<b>Escribir aquí</b><span class="mu">Se guarda en ${esc(S.group.name)}</span></button><button class="tile2" onclick="S.sub='recuerdos';soft()">${ic('image',26)}<b>Recuerdos</b><span class="mu">${S.posts.length} ${S.posts.length===1?'historia':'historias'}</span></button></div>
+ <div class="duo"><button class="tile2" onclick="S.sub='cartas';soft()">${ic('mail',26)}<b>Cartas</b><span class="mu">${S.posts.filter(p=>p.k==='carta').length} escritas</span></button><button class="tile2 off" disabled aria-disabled="true">${ic('chat',26)}<b>Conversaciones</b><span class="tag soon">Pronto</span></button></div>
+ ${recentHTML(3)?`<h3>Actividad reciente</h3>${recentHTML(3)}`:''}`}
+function cap(){
+ if(!S.group)return caps();
+ const g=S.group,t=gtype(),sub=S.sub||'inicio',TB=[['inicio','Inicio'],['cartas','Cartas'],['recuerdos','Recuerdos'],['personas','Personas']];
+ const av4=Object.keys(S.members).slice(0,4).map(id=>pAv(id,30)).join('');
+ const body=sub==='cartas'?arcList('carta'):sub==='recuerdos'?afChips()+arcList(S.af):sub==='personas'?personas():capHome();
+ return `<section class="cvr amb-${t}"><button class="bk2" onclick="go('caps')" aria-label="Volver a Mis cápsulas">${ic('back',18)}</button><div class="cvt"><h2>${esc(g.name)}</h2><span>${GT[t].d}</span></div><div class="row sp">${spaceTag()}<span class="avs">${av4}</span></div></section>
+ <div class="tabs2" role="tablist">${TB.map(([k,l])=>`<button role="tab" aria-selected="${sub===k}" class="${sub===k?'on':''}" onclick="S.sub='${k}';soft()">${l}</button>`).join('')}</div>${body}`}
+function act(){
+ const rc=recentHTML(10);
+ return `<div class="spch"><h2>Actividad</h2></div>
+ ${rc?`<span class="lab">${S.group?esc(S.group.name):'Mi mundo'}</span>${rc}`:`<div class="card c">${ic('bell',44)}<h3>Todo al día</h3><p class="mu">Aquí verás las cartas, respuestas e invitaciones de tus cápsulas.</p></div>`}
+ <div class="card"><h3>Tu mundo</h3><p class="mu">${S.xp} corazones · ${S.streak?'racha de '+S.streak+(S.streak>1?' días':' día'):'sin racha todavía'}</p></div>
+ <p class="mu c">Por ahora ves la actividad de la cápsula abierta. Los avisos al teléfono llegarán más adelante.</p>`}
+const VIEW={home,mundo,caps,cap,act,perfil,arc,triv};
 
 /* ---------- publish ---------- */
 function showSheet(h){const s=$('#sh');s.innerHTML=`<div class="pn" role="dialog" aria-modal="true"><button class="x" onclick="cl()" aria-label="Cerrar">${ic('x',18)}</button>${h}</div>`;s.classList.add('open')}
 function cl(){clearInterval(C.tm);if(C.rec&&C.rec.state!=='inactive'){C.discard=true;try{C.rec.stop()}catch(e){}}if(C.stream)C.stream.getTracks().forEach(t=>t.stop());S.profileOpen=false;$('#sh').classList.remove('open')}
 $('#sh').addEventListener('click',e=>{if(e.target.id==='sh')cl()});
+const toDef=()=>S.group?({familia:'Toda la familia',pareja:'Mi pareja',amigos:'Mis amigos'})[gtype()]:'Mi yo del futuro';
 function chooser(p){S.prompt=p||null;
- showSheet(`<h2>${p?'Responder la pregunta':'¿Cómo quieres contarlo?'}</h2>${p?`<p class="q">${esc(p)}</p>`:'<p class="mu">Elige la forma que más te guste.</p>'}
+ showSheet(`<h2>${p?'Responder la pregunta':'¿Cómo quieres contarlo?'}</h2><div class="dst">${spaceTag()}<span class="mu">${S.group?'en '+esc(S.group.name):'en Mi mundo'}</span></div>${p?`<p class="q">${esc(p)}</p>`:'<p class="mu">Elige la forma que más te guste.</p>'}
  <div class="tg">${Object.entries(TY).map(([k,v])=>`<button class="tile" onclick="compose('${k}')"><span class="ti">${ic(v.i,24)}</span><b>${v.l}</b><span class="mu">${v.h}</span></button>`).join('')}</div>`)}
 function compose(k){
  if(k==='video'){showSheet(`<div class="ch"><span class="ti">${ic('video',22)}</span><h2>Videos muy pronto</h2></div><p class="mu">Estamos preparando el almacenamiento en la nube para los videos de tu familia. Mientras tanto, cuenta tu historia con foto, voz, carta, dibujo o receta.</p><button class="btn w" onclick="chooser()">Elegir otra forma</button>`);return}
  C={k,ph:0,sec:0,ok:false,drawn:false,url:null,col:'#ff8dbb',sz:8};
  const v=TY[k],pr=S.prompt?`<p class="q">${esc(S.prompt)}</p>`:'';
- const head=`<div class="ch"><span class="ti">${ic(v.i,22)}</span><h2>${v.l}</h2></div>${pr}<label class="lb" for="by2">¿Quién la cuenta? (opcional)</label><input id="by2" class="in" maxlength="30" placeholder="Yo, o por ejemplo: Abuela Rosa">`;
- const go=`<button class="btn w" id="go" onclick="doPub('${k}')" disabled>Publicar en la familia</button>`;
+ const head=`<div class="ch"><span class="ti">${ic(v.i,22)}</span><h2>${v.l}</h2></div><div class="dst">${spaceTag()}<span class="mu">${S.group?'en '+esc(S.group.name):'en Mi mundo'}</span></div>${pr}<label class="lb" for="by2">¿Quién la cuenta? (opcional)</label><input id="by2" class="in" maxlength="30" placeholder="Yo, o por ejemplo: Abuela Rosa">`;
+ const go=`<button class="btn w" id="go" onclick="doPub('${k}')" disabled>${S.group?'Publicar en '+esc(S.group.name):'Guardar en Mi mundo'}</button>`;
  const ttl=ph=>`<label class="lb" for="ttl">Título</label><input id="ttl" class="in" maxlength="60" placeholder="${ph}" oninput="chk()">`;
  const B={
   voz:`<div id="vb">${voz()}</div>`,
   foto:`<label class="drop" for="ph-f"><span class="ti">${ic('camera',24)}</span><b>Elegir una foto</b><span class="mu">De tu galería o de la cámara</span></label><input id="ph-f" type="file" accept="image/*" hidden onchange="pick(this,'img')"><img id="pv" class="pv" alt="Vista previa de tu foto" hidden>${ttl('Ponle un nombre al recuerdo')}<label class="lb" for="cap">¿Qué pasó ahí?</label><textarea id="cap" class="in" rows="3" maxlength="300" placeholder="Cuenta quiénes salen y qué recuerdas"></textarea>${go}`,
-  carta:`<label class="lb" for="to">Para</label><input id="to" class="in" maxlength="40" placeholder="Toda la familia"><label class="lb" for="tx">Tu carta</label><textarea id="tx" class="in paper" rows="7" maxlength="800" placeholder="Querida familia..." oninput="chk()"></textarea>${go}`,
+  carta:`<label class="lb" for="to">Para</label><input id="to" class="in" maxlength="40" placeholder="${toDef()}"><label class="lb" for="tx">Tu carta</label><textarea id="tx" class="in paper" rows="7" maxlength="800" placeholder="Querido(a)…" oninput="chk()"></textarea>${go}`,
   dibujo:`<canvas id="cv" class="cv" width="600" height="440" aria-label="Lienzo para dibujar"></canvas><div class="tools"><div class="row" style="gap:8px">${[['#ff8dbb','Rosa'],['#c43d7a','Fucsia'],['#ffb1d0','Rosa pastel'],['#7ccfae','Verde'],['#7fb8f5','Azul'],['#4a2336','Ciruela'],['#ffffff','Borrador']].map((c,i)=>`<button class="swb ${i?'':'on'}" style="background:${c[0]}" data-c="${c[0]}" onclick="setCol(this)" aria-label="${c[1]}"></button>`).join('')}</div><div class="row" style="gap:8px">${[4,8,16].map((s,i)=>`<button class="szb ${i===1?'on':''}" onclick="setSz(this,${s})" aria-label="Grosor ${s}"><i style="width:${s+2}px;height:${s+2}px"></i></button>`).join('')}<button class="btn s" onclick="clr()">Borrar todo</button></div></div>${ttl('Ponle un nombre a tu dibujo')}${go}`,
   video:`<label class="drop" for="vd-f"><span class="ti">${ic('video',24)}</span><b>Elegir o grabar un video</b><span class="mu">Hasta 60 segundos</span></label><input id="vd-f" type="file" accept="video/*" hidden onchange="pick(this,'vid')"><video id="pv" class="pv" controls playsinline hidden></video><p class="err" id="err"></p>${ttl('Ponle un nombre a tu video')}<label class="lb" for="cap">¿Qué cuenta el video?</label><textarea id="cap" class="in" rows="2" maxlength="300"></textarea>${go}`,
   receta:`<label class="lb" for="ttl">Nombre del plato</label><input id="ttl" class="in" maxlength="60" placeholder="Sancocho del domingo" oninput="chk()"><label class="lb" for="by">¿Quién te la enseñó?</label><input id="by" class="in" maxlength="40" placeholder="Abuela Rosa"><label class="lb" for="ing">Ingredientes (uno por línea)</label><textarea id="ing" class="in" rows="4" maxlength="1500" oninput="chk()"></textarea><label class="lb" for="stp">Preparación</label><textarea id="stp" class="in" rows="4" maxlength="3000" oninput="chk()"></textarea>${go}`
@@ -942,7 +1042,7 @@ function doPub(k){
  if(k==='voz'){if(!C.audio){toast('Primero graba tu nota de voz.');return}p.t=g('ttl')||S.prompt||'Nota de voz';p.x={d:fmt(C.sec),src:C.audio,mime:C.mime}}
  if(k==='foto'){if(!C.url||C.url.startsWith('blob:')){toast('Un momento, preparando la foto…');return}p.t=g('ttl')||S.prompt||'Foto sin título';p.x={src:C.url,cap:g('cap')}}
  if(k==='dibujo'){p.t=g('ttl')||S.prompt||'Mi dibujo';p.x={src:$('#cv').toDataURL('image/png')}}
- if(k==='carta'){const to=g('to')||'Toda la familia';p.t='Carta para '+to;p.x={to,tx:g('tx')}}
+ if(k==='carta'){const to=g('to')||toDef();p.t='Carta para '+to;p.x={to,tx:g('tx')}}
  if(k==='receta'){p.t=g('ttl');p.x={by:g('by'),ing:g('ing').split('\n').map(s=>s.trim()).filter(Boolean).slice(0,60),stp:g('stp')}}
  {const by=g('by2');if(by)p.by=by}
  if(JSON.stringify(p.x).length>850000){toast('Ese archivo pesa demasiado. Prueba con uno más liviano.');return}
@@ -950,7 +1050,7 @@ function doPub(k){
  CLOUD.publish(p).then(()=>{track('post',k);soft()}).catch(()=>toast('No se pudo guardar la historia. Revisa tu conexión.'));
  S.types.add(k);S.total=(S.total||0)+1;
  if(!S.posted){S.posted=true;S.streak++;S.best=Math.max(S.best||0,S.streak);S.last=today();setTimeout(()=>{toast('🔥 ¡Racha de '+S.streak+(S.streak>1?' días':' día')+'!');burst(26,['🔥','✨'])},1100)}
- S.prompt=null;cl();S.tab='arc';add(TY[k].xp);
+ S.prompt=null;cl();if(S.group){S.tab='cap';S.sub='recuerdos'}else S.tab='arc';add(TY[k].xp);
 }
 
 /* ---------- estado de guardado ---------- */
@@ -989,7 +1089,7 @@ async function exportMem(){if(!window.CLOUD||!CLOUD.exportAll||!CLOUD.ready){toa
  catch(e){toast('No se pudo preparar la descarga. Revisa tu conexión.')}}
 
 /* ---------- puente con cloud.js ---------- */
-const soft=()=>{if(S.scr==='main'){const a=document.activeElement;if(a&&a.id==='qat')return;render()}};
+const soft=()=>{if(S.scr==='main'){const a=document.activeElement;if(a&&(a.id==='qat'||a.id==='pfn'||a.id==='pfm'))return;render()}};
 const boot=()=>`<div class="wl" style="justify-content:center;align-items:center;text-align:center"><div class="fl"><img class="bl" src="icons/icon-192.png" width="96" height="96" alt=""></div><h2>Cápsula</h2>${S.cloudErr?`<p class="err" style="display:block;max-width:300px">${esc(S.cloudErr)}</p><button class="btn" style="align-self:center" onclick="location.reload()">Reintentar</button>`:S.bootSlow?`<p class="mu">Tarda más de lo normal… revisa tu conexión.</p><button class="btn s" style="align-self:center" onclick="location.reload()">Reintentar</button>`:'<p class="mu">Cargando tu espacio…</p>'}</div>`;
 window.APP={
  personal,legacy,
