@@ -268,7 +268,7 @@ function makeAccessory(id, P) {
     const m = mat(PAL.gold, 0.25, 0.3);
     for (let i = 0; i < 5; i++) { const a = (i / 5) * Math.PI * 2; mesh(new THREE.ConeGeometry(0.045, 0.12, 12), m, g, [Math.sin(a) * 0.13, 0.06, Math.cos(a) * 0.1]); }
     const ring = mesh(new THREE.TorusGeometry(0.125, 0.025, 10, 32), m, g); ring.rotation.x = Math.PI / 2; ring.scale.set(1, 0.8, 1);
-    g.position.set(0, ry * 0.9, 0); g.rotation.x = -0.15;
+    g.scale.setScalar(2.3); g.position.set(0, ry * 1.0, 0); g.rotation.x = -0.15;
   } else if (id === "flor") {
     const pm = mat(PAL.pink, 0.4);
     for (let i = 0; i < 5; i++) { const a = (i / 5) * Math.PI * 2; ball(g, "petal", 0, [Math.cos(a) * 0.075, Math.sin(a) * 0.075, 0], [0.055, 0.055, 0.03], { material: pm }); }

@@ -486,7 +486,7 @@ const PT0=()=>({love:80,food:75,t:Date.now(),lr:0,lf:0,ans:0,ad:'',asked:{},mood
 const THEMES=[{id:'rosa',n:'Rosa',bg:'#FFF6FA',pr:'#B5336E',bar:'#FFF6FA'},{id:'azul',n:'Cápsula',bg:'#F6F3FF',pr:'#6A4CD6',bar:'#F6F3FF'},{id:'negro',n:'Negro',bg:'#000000',pr:'#F5F5F7',bar:'#000000'}];
 const S={ai:null,showSeen:true,qd:'',qaN:0,qa:null,gtype:'familia',gname:'',qtx:'',theme:document.documentElement.dataset.theme||'azul',bub:null,bubT:0,pt:PT0(),scr:'boot',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,group:null,
  user:null,families:[],members:{},solo:false,cloudErr:'',bootSlow:0,joinCode:'',
- xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,prompt:null,posts:[],plim:60};
+ xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,prompt:null,posts:[],plim:25};
 let T={i:0,s:0,a:null},C={};const LIVE=new Set();
 try{const c=new URLSearchParams(location.search).get('codigo');if(c){S.joinCode=c.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);history.replaceState(null,'',location.pathname)}}catch(e){}
 
@@ -754,9 +754,16 @@ function recentHTML(n){const L=S.posts.filter(p=>p.a!=='me'&&TY[p.k]).slice(0,n)
 function home(){
  const n=S.families.length,rc=recentHTML(3);
  return `<section class="card hw"><div style="max-width:200px"><span class="mu">Hola, ${esc(S.me.name)}</span><h2>Tu mundo te espera</h2><p class="mu" style="margin:4px 0 10px">${esc(S.pet.name)} te echa de menos.</p><button class="btn" onclick="go('mundo')">Entrar</button></div><span class="hp">${pet(S.pet.kind,104,S.wear)}</span></section>
+ ${fpCard()}
  <div class="duo"><button class="tile2" onclick="go('mundo')">${ic('world',26)}<b>Mi mundo</b><span class="mu">Tu espacio personal</span></button><button class="tile2" onclick="go('caps')">${ic('caps',26)}<b>Mis cápsulas</b><span class="mu">${n?n+(n>1?' espacios compartidos':' espacio compartido'):'Crea la primera'}</span></button></div>
  <section class="card"><span class="mu">Para ti, hoy</span><h2>${esc(qaToday(true))}</h2><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn" onclick="goTriv()">Responder</button><button class="btn s" onclick="dest()">Escribir o guardar</button></div></section>
  ${rc?`<div class="row sp"><h3>Actividad reciente</h3><button class="lnk" onclick="go('act')">Ver todo</button></div>${rc}`:''}`}
+function fpCard(){let off=0;try{off=localStorage.getItem('capsula_fp')==='1'}catch(e){}
+ const mem=Object.keys(S.members||{}).length,f0=S.families[0];
+ const L=[['Cuenta tu primera historia',S.total>0||S.posts.some(p=>p.a==='me'),'dest()'],['Responde la pregunta del día',(S.qaN||0)>=1,'goTriv()'],['Invita a una persona',!!S.inv||mem>1,f0?`openCap('${esc(f0.id)}');S.sub='personas';render()`:"go('caps')"]];
+ const d=L.filter(x=>x[1]).length;if(off||d===L.length)return'';
+ return `<section class="card" id="fp"><div class="row sp"><h3>Primeros pasos</h3><button class="lnk" onclick="fpOff()">Ocultar</button></div><span class="mu">${d} de ${L.length} · son 30 segundos cada uno</span>${L.map(x=>`<button class="opc" ${x[1]?'disabled':''} onclick="${x[2]}"><span class="ti">${ic(x[1]?'star':'pen',22)}</span><span class="tx"><b style="${x[1]?'text-decoration:line-through;opacity:.6':''}">${x[0]}</b></span></button>`).join('')}</section>`}
+function fpOff(){try{localStorage.setItem('capsula_fp','1')}catch(e){}render()}
 function dest(){showSheet(`<h2>¿Dónde lo guardas?</h2><p class="mu">Elige el lugar antes de escribir.</p>
  <button class="opc" onclick="cl();spaceTo(null);chooser()"><span class="ti">${ic('world',24)}</span><span class="tx"><b>Mi mundo</b><span class="mu">Solo tú lo ves</span></span></button>
  ${S.families.map(f=>`<button class="opc" onclick="cl();spaceTo('${esc(f.id)}');chooser()"><span class="ti">${ic('caps',24)}</span><span class="tx"><b>${esc(f.name)}</b><span class="mu">Compartido · ${GT[GT[f.type]?f.type:'familia'].n}</span></span></button>`).join('')}`)}
@@ -1185,8 +1192,8 @@ window.APP={
  setGroup(g){S.group=g?{id:g.id,name:g.name,code:g.code,ownerUid:g.ownerUid,type:g.type||'familia'}:null},
  group(g){if(S.group&&S.group.id===g.id){Object.assign(S.group,{name:g.name,code:g.code,ownerUid:g.ownerUid,type:g.type||'familia'});S.families=S.families.map(f=>f.id===g.id?{...f,name:g.name}:f);soft()}},
  qa(st){const c=S.qa&&S.qa.day===st.day?S.qa:{day:st.day,mine:null,all:null};S.qa={...c,...st};if(S.tab==='triv')soft()},
- switched(){S.qa=null;S.posts=[];S.plim=60;S.members={};T={i:0,s:0,a:null};soft()},
- posts(l,lim){S.posts=l;S.plim=lim||60;soft()},
+ switched(){S.qa=null;S.posts=[];S.plim=25;S.members={};T={i:0,s:0,a:null};soft()},
+ posts(l,lim){S.posts=l;S.plim=lim||25;soft()},
  members(m){S.members=m;soft()},
  afterLogin(){cl();S.cloudErr='';try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}const pc=S.joinCode;
   if(pc&&!S.families.some(f=>f.code===pc)){S.scr='group';S.gstep='join'}

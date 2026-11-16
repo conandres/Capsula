@@ -104,3 +104,8 @@ AMIGO CON IA (v6) - Gemini por Firebase AI Logic
 - Modelos en index.html: AI_MODELS (primero gemini-3.8-flash, respaldo gemini-flash-latest; Google retiró gemini-2.5-flash para cuentas nuevas).
 - App Check (v7): la conexión de IA usa reCAPTCHA Enterprise (clave de sitio AI_SK en index.html, es pública). Registrada en Firebase -> App Check -> App web. NO activar "Aplicar" en Firestore/Auth. Para AI Logic, solo activarlo cuando se confirme que llegan tokens.
 - v11: modelos en orden gemini-3.5-flash-lite, 3.1-flash-lite, 3.8-flash, flash-latest (la cuota gratis es por proyecto y modelo; si uno se agota o no existe pasa al siguiente).
+
+MEJORAS (v13)
+- Inicio: tarjeta "Primeros pasos" (contar una historia, responder la pregunta del día, invitar a alguien); se oculta al completarla o con "Ocultar" (localStorage). No escribe en la nube.
+- Carga inicial de historias 60 -> 25 (botón "Ver más" suma 25): menos lecturas y menos transferencia de Firestore. Sin cambio de datos ni reglas.
+- Corona 3D más grande y encima de la cabeza.

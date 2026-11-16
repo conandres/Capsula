@@ -35,7 +35,7 @@ function start() {
   CLOUD.configured = true;
 
   let me = null, famIds = [], families = [], active = null, subs = [];
-  let lastP = '', lastM = '', lastE = '', lastPing = 0, timer = null, gen = 0, ready = false, plim = 60;
+  let lastP = '', lastM = '', lastE = '', lastPing = 0, timer = null, gen = 0, ready = false, plim = 25;
 
   const userRef = () => doc(db, 'users', me.uid);
   const base = () => (active ? ['families', active] : ['users', me.uid]);
@@ -212,7 +212,7 @@ function start() {
     if (!famIds.includes(fam.id)) famIds.push(fam.id);
     families = families.filter(f => f.id !== fam.id).concat(fam);
     A.families(families);
-    active = fam.id; plim = 60;
+    active = fam.id; plim = 25;
     A.setGroup(fam);
     A.switched();
     subscribe(active);
@@ -272,7 +272,7 @@ function start() {
 
   CLOUD.switchFamily = fid => {
     const fam = families.find(f => f.id === fid) || null;
-    active = fam ? fam.id : null; plim = 60;
+    active = fam ? fam.id : null; plim = 25;
     A.setGroup(fam); A.switched(); subscribe(active); CLOUD.dirty();
   };
 
@@ -304,7 +304,7 @@ function start() {
     createdAt: serverTimestamp(), rx0: [], rx1: [], rx2: []
   }));
 
-  CLOUD.more = () => { plim += 60; subscribe(active); };
+  CLOUD.more = () => { plim += 25; subscribe(active); };
   CLOUD.deletePost = id => track(deleteDoc(doc(db, ...base(), 'posts', id)));
 
   CLOUD.react = (id, j, on) => track(
