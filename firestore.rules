@@ -94,10 +94,11 @@ service cloud.firestore {
         && request.resource.data.name is string && request.resource.data.name.size() >= 1 && request.resource.data.name.size() <= 30
         && request.resource.data.code is string && request.resource.data.code.matches('[A-Z0-9]{8}')
         && request.resource.data.createdAt == request.time;
-      // El dueño solo puede cambiar el nombre.
+      // El dueño solo puede cambiar el nombre y la portada (foto pequeña, texto de hasta 100.000 caracteres).
       allow update: if signedIn() && resource.data.ownerUid == request.auth.uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name'])
-        && request.resource.data.name is string && request.resource.data.name.size() >= 1 && request.resource.data.name.size() <= 30;
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'cover'])
+        && request.resource.data.name is string && request.resource.data.name.size() >= 1 && request.resource.data.name.size() <= 30
+        && (!('cover' in request.resource.data) || (request.resource.data.cover is string && request.resource.data.cover.size() <= 100000));
       allow delete: if false;
 
       match /members/{uid} {

@@ -40,7 +40,7 @@ function start() {
   const userRef = () => doc(db, 'users', me.uid);
   const base = () => (active ? ['families', active] : ['users', me.uid]);
   const TYPES = ['familia', 'pareja', 'amigos'];
-  const pick = (id, d) => ({ id, name: d.name || 'Familia', code: d.code || '', ownerUid: d.ownerUid || '', type: TYPES.includes(d.type) ? d.type : 'familia' });
+  const pick = (id, d) => ({ id, name: d.name || 'Familia', code: d.code || '', ownerUid: d.ownerUid || '', type: TYPES.includes(d.type) ? d.type : 'familia', cover: typeof d.cover === 'string' && d.cover.startsWith('data:image/') ? d.cover : '' });
 
   /* ---------- estado de guardado: cuántas escrituras esperan confirmación de la nube ---------- */
   let pend = 0;
@@ -304,6 +304,7 @@ function start() {
     createdAt: serverTimestamp(), rx0: [], rx1: [], rx2: []
   }));
 
+  CLOUD.setCover = async (fid, url) => { await updateDoc(doc(db, 'families', fid), { cover: url }); };
   CLOUD.more = () => { plim += 25; subscribe(active); };
   CLOUD.deletePost = id => track(deleteDoc(doc(db, ...base(), 'posts', id)));
 

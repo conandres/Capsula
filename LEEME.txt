@@ -109,3 +109,8 @@ MEJORAS (v13)
 - Inicio: tarjeta "Primeros pasos" (contar una historia, responder la pregunta del día, invitar a alguien); se oculta al completarla o con "Ocultar" (localStorage). No escribe en la nube.
 - Carga inicial de historias 60 -> 25 (botón "Ver más" suma 25): menos lecturas y menos transferencia de Firestore. Sin cambio de datos ni reglas.
 - Corona 3D más grande y encima de la cabeza.
+
+PORTADA DE CÁPSULA (v15) - REQUIERE PUBLICAR REGLAS
+- El administrador (dueño) puede poner o quitar una foto de portada desde Personas. Se guarda en families/{id}.cover (JPEG reducido, <= 100.000 caracteres).
+- Regla nueva en firestore.rules: el dueño puede cambiar solo 'name' y 'cover'. HAY QUE PUBLICARLA en Firebase -> Firestore -> Reglas. Hasta entonces la app muestra "Falta publicar las reglas nuevas en Firebase" y nada se rompe.
+- Mascota 3D también en Inicio; la 2D solo aparece si el 3D falla.
