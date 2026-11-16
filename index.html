@@ -4,7 +4,7 @@
 .cli.on{border-color:var(--pd);background:var(--soft)}
 .cli.lk{opacity:.5;cursor:default}
 .cli span{font-weight:600;font-size:13px}.cli small{font-size:11px;color:var(--mu);text-align:center}
-.p3{position:relative;display:inline-block;width:min(78vw,260px);height:230px}.p3 .f2{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}.p3.on .f2{display:none}.p3 .h3d{position:absolute;inset:0}.fl.d3{animation:none}.aic{display:flex;flex-direction:column;gap:8px;max-height:46vh;overflow:auto;margin:10px 0;padding:2px}.aim{max-width:85%;padding:9px 13px;border-radius:18px;font-size:15px;line-height:1.35;overflow-wrap:anywhere}.aim.u{align-self:flex-end;background:#6A4CD6;color:#fff;border-bottom-right-radius:6px}.aim.p{align-self:flex-start;background:var(--soft2,#EDE8FF);border-bottom-left-radius:6px}.aif{display:flex;gap:8px}.aif .in{flex:1}.aid{font-size:12px;margin-top:6px}.dots{display:inline-flex;gap:5px;align-items:center;height:18px}.dots i{width:8px;height:8px;border-radius:50%;background:#B8317A;opacity:.35;animation:dt 1.1s infinite ease-in-out}.dots i:nth-child(2){animation-delay:.18s}.dots i:nth-child(3){animation-delay:.36s}@keyframes dt{0%,80%,100%{transform:translateY(0);opacity:.35}40%{transform:translateY(-6px);opacity:1}}@media(prefers-reduced-motion:reduce){.dots i{animation:none;opacity:.7}}</style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
+.p3{position:relative;display:inline-block;width:min(78vw,260px);height:230px}.p3 .f2{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}.p3.on .f2{display:none}.p3 .h3d{position:absolute;inset:0}.fl.d3{animation:none}.aic{display:flex;flex-direction:column;gap:8px;max-height:46vh;overflow:auto;margin:10px 0;padding:2px}.aim{max-width:85%;padding:9px 13px;border-radius:18px;font-size:15px;line-height:1.35;overflow-wrap:anywhere}.aim.u{align-self:flex-end;background:#6A4CD6;color:#fff;border-bottom-right-radius:6px}.aim.p{align-self:flex-start;background:var(--soft2,#EDE8FF);border-bottom-left-radius:6px}.aif{display:flex;gap:8px}.aif .in{flex:1}.aid{font-size:12px;margin-top:6px}.dots{display:inline-flex;gap:5px;align-items:center;height:18px}.dots i{width:8px;height:8px;border-radius:50%;background:#B8317A;opacity:.35;animation:dt 1.1s infinite ease-in-out}.dots i:nth-child(2){animation-delay:.18s}.dots i:nth-child(3){animation-delay:.36s}@keyframes dt{0%,80%,100%{transform:translateY(0);opacity:.35}40%{transform:translateY(-6px);opacity:1}}@media(prefers-reduced-motion:reduce){.dots i{animation:none;opacity:.7}}.p3:not(.on):not(.fb) .f2{visibility:hidden}.p3h{width:132px;height:124px}</style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -506,18 +506,19 @@ async function logout(){try{if(window.google&&google.accounts)google.accounts.id
 function burst(n=28,em=['💗','✨','⭐','🎉','💖']){const a=$('.app');for(let i=0;i<n;i++){const e=document.createElement('span');e.className='cf';e.textContent=em[i%em.length];e.style.cssText=`left:${50+(Math.random()-.5)*20}%;--dx:${(Math.random()-.5)*360}px;--dy:${-120-Math.random()*320}px;--r:${(Math.random()-.5)*720}deg;animation-delay:${Math.random()*.2}s`;a.appendChild(e);setTimeout(()=>e.remove(),1900)}}
 function floatH(t){const e=document.createElement('div');e.className='fh';e.textContent=t;$('.app').appendChild(e);setTimeout(()=>e.remove(),1300)}
 /* ---------- mascota 3D (Mi mundo). Si falla, queda la 2D ---------- */
-const P3={st:'idle',v:null,host:null,t:0};
+const P3={st:'idle',v:null,host:null,t:0,slow:false};
 const P3K={nube:'capsule',gato:'cat',perro:'dog',conejo:'bunny',oso:'bear'};
 const p3expr=()=>asleep()?'sleepy':S.pt.love<30?'sad':S.pt.love>=85?'happy':'neutral';
-function p3off(){P3.st='fail';const e=$('#pet3d');if(e)e.classList.remove('on');const f=$('.hero .fl');if(f)f.classList.remove('d3');try{P3.v&&P3.v.destroy()}catch(e){}P3.v=null}
+function p3fb(){document.querySelectorAll('.p3').forEach(e=>e.classList.add('fb'))}
+function p3off(){P3.st='fail';document.querySelectorAll('.p3').forEach(e=>{e.classList.remove('on');e.classList.add('fb')});const f=$('.hero .fl');if(f)f.classList.remove('d3');try{P3.v&&P3.v.destroy()}catch(e){}P3.v=null}
 function p3sync(){const v=P3.v;if(!v)return;try{const k=P3K[S.pet.kind];if(k&&v.current!==k)v.setPet(k);v.setAccessories(S.wear.filter(x=>typeof x==='string'));v.setExpression(p3expr())}catch(e){p3off()}}
-function p3play(a){if(P3.st==='ok'&&P3.v&&$('#pet3d'))try{P3.v.play(a)}catch(e){}}
-function p3mount(){const ph=$('#pet3d');if(!ph||P3.st==='fail')return;
+function p3play(a){if(P3.st==='ok'&&P3.v&&$('.p3'))try{P3.v.play(a)}catch(e){}}
+function p3mount(){const ph=$('#pet3d')||$('#pet3dh');if(!ph||P3.st==='fail')return;
  if(P3.st==='ok'){if(P3.host.parentNode!==ph)ph.appendChild(P3.host);ph.classList.add('on');const f=$('.hero .fl');if(f)f.classList.add('d3');p3sync();
   const n=Date.now();if(n-P3.t>20000)setTimeout(()=>p3play('hello'),400);P3.t=n;return}
- if(P3.st!=='idle')return;P3.st='loading';
+ if(P3.st!=='idle')return;P3.st='loading';setTimeout(()=>{if(P3.st!=='ok'){P3.slow=true;p3fb()}},7000);
  import('./lab3d/capsula-pets.js').then(m=>{
-  const ph2=$('#pet3d');if(!ph2){P3.st='idle';return}
+  const ph2=$('#pet3d')||$('#pet3dh');if(!ph2){P3.st='idle';return}
   const host=document.createElement('div');host.className='h3d';ph2.appendChild(host);
   const k=P3K[S.pet.kind]||'capsule';
   const v=new m.CapsulaPetViewer(host,{pet:k,maxPixelRatio:1.5});
@@ -753,7 +754,7 @@ function recentHTML(n){const L=S.posts.filter(p=>p.a!=='me'&&TY[p.k]).slice(0,n)
  return L.map(p=>`<div class="card row" style="flex-direction:row;align-items:center;gap:12px">${pAv(p.a,40)}<span class="tx" style="flex:1;min-width:0"><b>${esc(who(p.a,p))} ${VERB[p.k]||'compartió algo'}</b><span class="mu">${rel(p.ts)} · ${S.group?esc(S.group.name):'Mi mundo'}</span></span></div>`).join('')}
 function home(){
  const n=S.families.length,rc=recentHTML(3);
- return `<section class="card hw"><div style="max-width:200px"><span class="mu">Hola, ${esc(S.me.name)}</span><h2>Tu mundo te espera</h2><p class="mu" style="margin:4px 0 10px">${esc(S.pet.name)} te echa de menos.</p><button class="btn" onclick="go('mundo')">Entrar</button></div><span class="hp">${pet(S.pet.kind,104,S.wear)}</span></section>
+ return `<section class="card hw"><div style="max-width:200px"><span class="mu">Hola, ${esc(S.me.name)}</span><h2>Tu mundo te espera</h2><p class="mu" style="margin:4px 0 10px">${esc(S.pet.name)} te echa de menos.</p><button class="btn" onclick="go('mundo')">Entrar</button></div><span class="hp"><span id="pet3dh" class="p3 p3h${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet(S.pet.kind,104,S.wear)}</span></span></span></section>
  ${fpCard()}
  <div class="duo"><button class="tile2" onclick="go('mundo')">${ic('world',26)}<b>Mi mundo</b><span class="mu">Tu espacio personal</span></button><button class="tile2" onclick="go('caps')">${ic('caps',26)}<b>Mis cápsulas</b><span class="mu">${n?n+(n>1?' espacios compartidos':' espacio compartido'):'Crea la primera'}</span></button></div>
  <section class="card"><span class="mu">Para ti, hoy</span><h2>${esc(qaToday(true))}</h2><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn" onclick="goTriv()">Responder</button><button class="btn s" onclick="dest()">Escribir o guardar</button></div></section>
@@ -805,7 +806,7 @@ function bubSay(t,o,q){S.bub={t,o:o||null,q:q||null};S.bubT=Date.now();petUI()}
 function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=greet(away);
  const lvl=Math.floor(S.xp/100),sz=Math.round(110+Math.min(S.xp,600)*.16),sl=asleep();
  return `<section class="card hero">
-  <div class="fl ${sl?'sleep':''}" onclick="petTap()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3"><span class="f2">${pet(S.pet.kind,sz,S.wear)}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div>
+  <div class="fl ${sl?'sleep':''}" onclick="petTap()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet(S.pet.kind,sz,S.wear)}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div>
   <h2>${esc(S.pet.name)}</h2>
   <div class="mu">${STAGE[Math.min(lvl,3)]} · nivel ${lvl+1} · crece con tus corazones</div>
   <div id="bubw" class="bw" aria-live="polite">${bubHTML()}</div>

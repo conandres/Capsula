@@ -1,6 +1,6 @@
 /* Service worker de Cápsula: funciona sin internet.
    Los archivos se piden primero a la red, así que las actualizaciones llegan solas. */
-const VERSION = 'capsula-v13';
+const VERSION = 'capsula-v14';
 const SHELL = [
   './', './index.html', './manifest.json', './config.js', './cloud.js',
   './icons/icon-192.png', './icons/icon-512.png',
@@ -8,8 +8,12 @@ const SHELL = [
   './icons/apple-touch-icon.png', './icons/favicon-32.png'
 ];
 
+/* Mascota 3D: se guarda para que también cargue sin internet (si falla, no se detiene la instalación). */
+const EXTRA = ['./lab3d/capsula-pets.js', 'https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js'];
+
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL).then(() =>
+    Promise.all(EXTRA.map(u => c.add(new Request(u, { mode: 'cors' })).catch(() => {}))))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', e => {
