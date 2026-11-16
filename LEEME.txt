@@ -97,7 +97,7 @@ MASCOTAS 3D (v5)
 AMIGO CON IA (v6) - Gemini por Firebase AI Logic
 - Botón "Conversar con <mascota>" en Mi mundo. Edad mínima 13 (se declara y se acepta antes de empezar; se guarda en users/{uid}.ai, sin cambio de reglas).
 - Se envía a Google lo que la persona escribe y la charla previa (para que la mascota recuerde). Nunca cápsulas ni historias. La charla se guarda solo en el teléfono (localStorage capsula_aichat_<uid>), con botón Borrar charla. Consentimiento v2.
-- Se puede apagar en Perfil -> Amigo con IA. Tope local de 30 mensajes por día.
+- Se puede apagar en Perfil -> Amigo con IA. Tope local de 15 mensajes por día.
 - Usa una app Firebase aparte ("capsula-ai", SDK 11.10.0) solo para la IA: no toca Auth ni Firestore.
 - Para que funcione, el dueño debe activar en consola Firebase -> AI Logic (Gemini Developer API, plan Spark) y, recomendado, App Check.
 - Si no está activado o falla, la app muestra un mensaje amable y todo lo demás sigue igual.

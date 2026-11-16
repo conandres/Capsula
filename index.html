@@ -528,7 +528,7 @@ function p3mount(){const ph=$('#pet3d');if(!ph||P3.st==='fail')return;
 /* ---------- amigo con IA (Gemini vía Firebase AI Logic). Solo mayores de 13. Solo lo que se escribe en esta charla ---------- */
 const AI={m:null,c:null,busy:false,mi:0,ti:0};
 const AI_TC=[{thinkingLevel:'minimal'},{thinkingBudget:0},null];
-const AI_VER='11.10.0',AI_MODELS=['gemini-3.5-flash-lite','gemini-3.1-flash-lite','gemini-3.8-flash','gemini-flash-latest'],AI_MAX=30;
+const AI_VER='11.10.0',AI_MODELS=['gemini-3.5-flash-lite','gemini-3.1-flash-lite','gemini-3.8-flash','gemini-flash-latest'],AI_MAX=15;
 const AI_SK='6Lc2ECIuAAAAAOHgDC6mMbJjj4PYE7Iv7iCI2-yF';/* clave de sitio reCAPTCHA Enterprise (pública) para App Check */
 const aiKey=()=>'capsula_aichat_'+((S.user&&S.user.uid)||'x');
 const aiHist=()=>{try{const a=JSON.parse(localStorage.getItem(aiKey())||'[]');return Array.isArray(a)?a.filter(m=>m&&(m.r==='u'||m.r==='p')&&typeof m.t==='string').slice(-40):[]}catch(e){return[]}};
