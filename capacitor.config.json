@@ -2,11 +2,19 @@
   "appId": "io.github.conandres.twa",
   "appName": "Cápsula",
   "webDir": "www",
-  "android": { "allowMixedContent": false },
+  "android": {
+    "allowMixedContent": false
+  },
   "plugins": {
     "FirebaseAuthentication": {
       "skipNativeAuth": true,
-      "providers": ["google.com"]
+      "providers": [
+        "google.com"
+      ]
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_capsula",
+      "iconColor": "#6A4CD6"
     }
   }
 }

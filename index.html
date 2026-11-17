@@ -600,20 +600,23 @@ async function nativeLogin(){const g=$('#gst');if(g)g.textContent='Entrando…';
 const remGet=()=>{try{return JSON.parse(localStorage.getItem('capsula_rem')||'null')||{on:true,h:20,fresh:true}}catch(e){return{on:true,h:20,fresh:true}}};
 /* Al abrir la app: el recordatorio nace activado y se vuelve a programar (Android pide el permiso una sola vez). */
 async function remInit(){if(!NATIVE)return;const c=remGet();if(c.fresh){delete c.fresh;try{localStorage.setItem('capsula_rem',JSON.stringify(c))}catch(e){}}await remApply().catch(()=>{})}
-async function remTest(){const P=NP('LocalNotifications');if(!P)return;try{const pr=await P.requestPermissions();if(pr.display!=='granted'){toast('Activa los avisos de Cápsula en los ajustes del teléfono');return}
- await P.schedule({notifications:[{id:2,title:'Cápsula',body:'¡Así se verá tu recordatorio! 💗',schedule:{at:new Date(Date.now()+5000),allowWhileIdle:true}}]});toast('Te llegará en 5 segundos')}catch(e){toast('No se pudo probar el aviso')}}
+const REM_IDS=Array.from({length:15},(_,i)=>({id:i+100})).concat([{id:1},{id:2}]);
+function remText(k){ /* texto del aviso del día k (0 = hoy): la pregunta de ese día */
+ const P=S.group&&S.group.type==='pareja'?QD_P:QD_G,n=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5)+k,q=P[n%P.length],nm=(S.pet&&S.pet.name)||'Tu mascota',who=(S.me.name||'').split(' ')[0];
+ return k%3===2?{title:nm+' te espera 🐾',body:'Hoy toca: '+q}:{title:'¿Qué recuerdas hoy'+(who?', '+who:'')+'?',body:q}}
 async function remApply(){const P=NP('LocalNotifications');if(!P)return false;const c=remGet();
- try{await P.cancel({notifications:[{id:1}]})}catch(e){}
+ try{await P.cancel({notifications:REM_IDS})}catch(e){}
  if(!c.on)return true;
- const pr=await P.requestPermissions();if(pr.display!=='granted'){c.on=false;try{localStorage.setItem('capsula_rem',JSON.stringify(c))}catch(e){}return false}
- const nm=(S.pet&&S.pet.name)||'Tu mascota';
- await P.schedule({notifications:[{id:1,title:'Cápsula',body:'¿Qué recuerdas hoy? '+nm+' y tu pregunta del día te esperan 💗',schedule:{on:{hour:c.h,minute:0},allowWhileIdle:true}}]});return true}
+ let pr=await P.checkPermissions().catch(()=>({display:'prompt'}));if(pr.display!=='granted')pr=await P.requestPermissions();
+ if(pr.display!=='granted')return false;
+ const now=new Date(),list=[];for(let k=0;k<14;k++){const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+k,c.h,0,0);if(d<=now)continue;
+  const x=remText(k);list.push({id:100+k,title:x.title,body:x.body,largeBody:x.body,schedule:{at:d,allowWhileIdle:true}})}
+ if(list.length)await P.schedule({notifications:list});return true}
 async function remSet(on,h){const c=remGet();if(on!==null)c.on=!!on;if(h!==null)c.h=+h;try{localStorage.setItem('capsula_rem',JSON.stringify(c))}catch(e){}
  const ok=await remApply();toast(c.on?(ok?'Recordatorio diario activado':'No diste permiso para avisos'):'Recordatorio apagado');render()}
 const remCard=()=>{if(!NATIVE)return'';const c=remGet();return `<div class="card"><h3>Recordatorio diario</h3><label class="chk"><input type="checkbox" ${c.on?'checked':''} onchange="remSet(this.checked,null)"> Avisarme cada día</label>
  <label class="lb" for="remh">Hora del aviso</label><select id="remh" class="in" onchange="remSet(null,this.value)">${Array.from({length:17},(_,i)=>i+6).map(h=>`<option value="${h}" ${c.h===h?'selected':''}>${h>12?h-12:h}:00 ${h>=12?'p. m.':'a. m.'}</option>`).join('')}</select>
- <button class="btn s w" onclick="remTest()">Probar aviso ahora</button>
- <p class="mu">Te recordamos tu pregunta del día. El aviso se programa en tu teléfono; no usa internet ni se envía a ningún servidor.</p></div>`};
+ <p class="mu">Cada día te mostramos la pregunta del día. Los avisos se programan en tu teléfono; no usan internet ni se envían a ningún servidor.</p></div>`};
 function gsheet(){
  const id=CFG().googleClientId,ok=!!(id&&!/^PEGA/i.test(id)&&window.CLOUD&&CLOUD.configured);
  showSheet(`<div class="ch">${GLOGO}<h2>Inicia sesión</h2></div>

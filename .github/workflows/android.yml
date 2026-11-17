@@ -35,6 +35,9 @@ jobs:
           npx cap add android
           npx cap sync android
 
+      - name: Íconos de la app y de las notificaciones
+        run: cp -r ci/android-res/* android/app/src/main/res/
+
       - name: Archivo google-services.json (secreto)
         env:
           GSJ: ${{ secrets.GOOGLE_SERVICES_JSON }}
