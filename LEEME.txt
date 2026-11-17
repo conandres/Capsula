@@ -120,3 +120,5 @@ v16 (16 nov 2026) - Privacidad y políticas
 - Páginas /legal/terminos.html, privacidad.html, eliminar-cuenta.html (borradores con marcadores [NOMBRE DEL RESPONSABLE], [CORREO DE CONTACTO], [CIUDAD, COLOMBIA]; revisar con abogado).
 - Perfil: Cuenta y privacidad + Eliminar mi cuenta y mis datos (CLOUD.deleteAccount).
 - Amigo con IA solo 18+ (términos de Gemini gratis).
+
+v17: se elimina el Amigo con IA (Gemini). Datos del responsable completados en /legal.
