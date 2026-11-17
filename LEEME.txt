@@ -114,3 +114,9 @@ PORTADA DE CÁPSULA (v15) - REQUIERE PUBLICAR REGLAS
 - El administrador (dueño) puede poner o quitar una foto de portada desde Personas. Se guarda en families/{id}.cover (JPEG reducido, <= 100.000 caracteres).
 - Regla nueva en firestore.rules: el dueño puede cambiar solo 'name' y 'cover'. HAY QUE PUBLICARLA en Firebase -> Firestore -> Reglas. Hasta entonces la app muestra "Falta publicar las reglas nuevas en Firebase" y nada se rompe.
 - Mascota 3D también en Inicio; la 2D solo aparece si el 3D falla.
+
+v16 (16 nov 2026) - Privacidad y políticas
+- Pantalla "Antes de empezar" tras Google: nombre, mes/año de nacimiento, aceptar términos y privacidad. 13-17 requiere autorización del representante. Menor de 13: se elimina la cuenta y se bloquea.
+- Páginas /legal/terminos.html, privacidad.html, eliminar-cuenta.html (borradores con marcadores [NOMBRE DEL RESPONSABLE], [CORREO DE CONTACTO], [CIUDAD, COLOMBIA]; revisar con abogado).
+- Perfil: Cuenta y privacidad + Eliminar mi cuenta y mis datos (CLOUD.deleteAccount).
+- Amigo con IA solo 18+ (términos de Gemini gratis).

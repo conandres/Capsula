@@ -1,11 +1,11 @@
 /* Capa de nube de Cápsula: inicio de sesión con Google + Firestore.
    Se carga desde index.html con import(). Expone window.CLOUD y llama a window.APP. */
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
-import { getAuth, onAuthStateChanged, signInWithCredential, GoogleAuthProvider, signOut }
+import { getAuth, onAuthStateChanged, signInWithCredential, GoogleAuthProvider, signOut, reauthenticateWithCredential, deleteUser }
   from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager,
   doc, collection, getDoc, getDocs, setDoc, updateDoc, addDoc, deleteDoc, writeBatch, onSnapshot, query, where, orderBy, limit,
-  serverTimestamp, arrayUnion, arrayRemove }
+  serverTimestamp, arrayUnion, arrayRemove, terminate, clearIndexedDbPersistence }
   from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
 const A = window.APP;
@@ -285,6 +285,36 @@ function start() {
       await b.commit();
     }
     return snap.docs.length;
+  };
+
+
+  /* Eliminar cuenta y datos propios. Orden importante: primero lo que las reglas
+     solo permiten a un miembro (aportes y respuestas), luego la membresía, luego el perfil y la cuenta. */
+  CLOUD.deleteAccount = async (idToken, onStep) => {
+    const step = t => { try { onStep && onStep(t); } catch (e) {} };
+    const user = auth.currentUser;
+    if (!user) throw new Error('nouser');
+    if (idToken) { step('Confirmando que eres tú…'); await reauthenticateWithCredential(user, GoogleAuthProvider.credential(idToken)); }
+    ready = false; CLOUD.ready = false; clearTimeout(timer); teardown();
+    const uid = user.uid;
+    const days = []; { const d = new Date(Date.UTC(2026, 10, 10)), e = Date.now() + 864e5 * 2; while (d.getTime() < e) { days.push(d.toISOString().slice(0, 10)); d.setUTCDate(d.getUTCDate() + 1); } }
+    for (const f of families) {
+      step('Borrando tus aportes en ' + (f.name || 'una cápsula') + '…');
+      await CLOUD.deleteMyPosts(f.id);
+      for (const day of days) { try { await deleteDoc(doc(db, 'families', f.id, 'qa', day, 'answers', uid)); } catch (e) {} }
+      await deleteDoc(doc(db, 'families', f.id, 'members', uid));
+    }
+    step('Borrando tu mundo y tu mascota…');
+    for (;;) {
+      const snap = await getDocs(query(collection(db, 'users', uid, 'posts'), limit(400)));
+      if (!snap.docs.length) break;
+      const b = writeBatch(db); snap.docs.forEach(d => b.delete(d.ref)); await b.commit();
+    }
+    await deleteDoc(userRef());
+    step('Cerrando tu cuenta…');
+    await deleteUser(user);
+    try { Object.keys(localStorage).filter(k => /^capsula/i.test(k)).forEach(k => localStorage.removeItem(k)); } catch (e) {}
+    try { await terminate(db); await clearIndexedDbPersistence(db); } catch (e) {}
   };
 
   CLOUD.leaveFamily = async fid => {

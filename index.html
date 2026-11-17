@@ -484,20 +484,20 @@ const famLabel=()=>S.group?GT[gtype()].n:'Grupo';
 const today=()=>new Date().toDateString(),KEY='capsula_v3',LEGACY='capsula_v2';
 const PT0=()=>({love:80,food:75,t:Date.now(),lr:0,lf:0,ans:0,ad:'',asked:{},moods:[],seen:{},tv:{d:'',n:0},tvb:''});
 const THEMES=[{id:'rosa',n:'Rosa',bg:'#FFF6FA',pr:'#B5336E',bar:'#FFF6FA'},{id:'azul',n:'Cápsula',bg:'#F6F3FF',pr:'#6A4CD6',bar:'#F6F3FF'},{id:'negro',n:'Negro',bg:'#000000',pr:'#F5F5F7',bar:'#000000'}];
-const S={ai:null,showSeen:true,qd:'',qaN:0,qa:null,gtype:'familia',gname:'',qtx:'',theme:document.documentElement.dataset.theme||'azul',bub:null,bubT:0,pt:PT0(),scr:'boot',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,group:null,
+const S={birth:'',legal:null,ai:null,showSeen:true,qd:'',qaN:0,qa:null,gtype:'familia',gname:'',qtx:'',theme:document.documentElement.dataset.theme||'azul',bub:null,bubT:0,pt:PT0(),scr:'boot',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,group:null,
  user:null,families:[],members:{},solo:false,cloudErr:'',bootSlow:0,joinCode:'',
  xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,prompt:null,posts:[],plim:25};
 let T={i:0,s:0,a:null},C={};const LIVE=new Set();
 try{const c=new URLSearchParams(location.search).get('codigo');if(c){S.joinCode=c.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);history.replaceState(null,'',location.pathname)}}catch(e){}
 
 /* Lo personal (mascota, corazones, racha...) viaja a la nube; la copia local sirve de respaldo sin internet */
-const personal=()=>({name:S.me.name,pet:S.pet,petSet:S.petSet,xp:S.xp,streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,best:S.best,total:S.total,types:[...S.types],pt:S.pt,solo:S.solo,theme:S.theme,showSeen:S.showSeen,ai:S.ai,qd:S.qd,qaN:S.qaN,active:S.group?S.group.id:null});
+const personal=()=>({name:S.me.name,pet:S.pet,petSet:S.petSet,xp:S.xp,streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,best:S.best,total:S.total,types:[...S.types],pt:S.pt,solo:S.solo,theme:S.theme,showSeen:S.showSeen,ai:S.ai,birth:S.birth,legal:S.legal,qd:S.qd,qaN:S.qaN,active:S.group?S.group.id:null});
 function save(){if(S.user){try{localStorage.setItem(KEY,JSON.stringify({...personal(),uid:S.user.uid,familyIds:S.families.map(f=>f.id)}))}catch(e){}}
  if(window.CLOUD&&CLOUD.ready)CLOUD.dirty()}
-function resetPersonal(){Object.assign(S,{ai:null,xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,pt:PT0(),pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,solo:false,showSeen:true,qd:'',qaN:0,qa:null,group:null,bub:null,posts:[],members:{},families:[]});T={i:0,s:0,a:null}}
+function resetPersonal(){Object.assign(S,{birth:'',legal:null,ai:null,xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,pt:PT0(),pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,solo:false,showSeen:true,qd:'',qaN:0,qa:null,group:null,bub:null,posts:[],members:{},families:[]});T={i:0,s:0,a:null}}
 function applyPersonal(o){if(!o)return;
  if(THEMES.some(t=>t.id===o.theme))applyTheme(o.theme);
- ['petSet','xp','streak','last','chest','mis','petDone','inv','perfect','solo','best','total','showSeen','ai','qd','qaN'].forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
+ ['petSet','xp','streak','last','chest','mis','petDone','inv','perfect','solo','best','total','showSeen','ai','qd','qaN','birth','legal'].forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
  if(o.pet&&PETS[o.pet.kind])S.pet={kind:o.pet.kind,name:String(o.pet.name||PETS[o.pet.kind].n).slice(0,14)};
  S.types=new Set(o.types||[]);S.wk=o.wk||null;S.unl=Array.isArray(o.unl)?o.unl.filter(x=>typeof x==='string'):[];S.wear=Array.isArray(o.wear)?o.wear.filter(x=>typeof x==='string'):[];S.pt=Object.assign(PT0(),o.pt||{});S.pt.t=S.pt.t||Date.now();S.bub=null;
  const y=new Date(Date.now()-864e5).toDateString();S.posted=S.last===today();if(!S.posted&&S.last!==y)S.streak=0}
@@ -547,11 +547,12 @@ async function aiChat(){if(AI.c)return AI.c;
  const ai=B.getAI(app,{backend:new B.GoogleAIBackend()});
  const m=B.getGenerativeModel(ai,{model:AI_MODELS[AI.mi],systemInstruction:aiSys(),generationConfig:Object.assign({maxOutputTokens:800,temperature:.9},AI_TC[AI.ti]?{thinkingConfig:AI_TC[AI.ti]}:{})});
  AI.c=m.startChat({history:aiHist().slice(-20).map(h=>({role:h.r==='u'?'user':'model',parts:[{text:h.t}]}))});return AI.c}
-function aiOpen(){if(S.ai&&S.ai.ok&&S.ai.off){toast('Lo apagaste en Perfil → Amigo con IA');return}
+function aiOpen(){if(!isAdult()){showSheet(`<h2>Amigo con IA</h2><p class="mu">Por ahora esta función es solo para mayores de 18 años, porque el servicio de inteligencia artificial que usamos (Google Gemini, versión gratuita) no permite que lo usen menores de edad. ${esc(S.pet.name)} sigue contigo en Mi mundo para jugar, cuidarlo y personalizarlo.</p><button class="btn w" onclick="cl()">Entendido</button>`);return}
+if(S.ai&&S.ai.ok&&S.ai.off){toast('Lo apagaste en Perfil → Amigo con IA');return}
  if(S.ai&&S.ai.ok&&S.ai.v===2)return aiSheet();
  showSheet(`<h2>Conversar con ${esc(S.pet.name)}</h2><p class="mu">${esc(S.pet.name)} puede charlar contigo con inteligencia artificial de Google (Gemini).</p>
- <ul class="mu" style="margin:8px 0 12px;padding-left:18px"><li>Se envía a Google lo que escribas en esta charla, junto con lo conversado antes, para que ${esc(S.pet.name)} te recuerde. Tus cápsulas e historias no se envían.</li><li>La charla se guarda solo en este teléfono. Puedes borrarla cuando quieras.</li><li>Puede equivocarse. No sustituye a una persona.</li><li>Puedes apagarlo cuando quieras en Perfil.</li></ul>
- <label class="chk"><input id="ai13" type="checkbox" onchange="$('#aiok').disabled=!this.checked"> Tengo 13 años o más y acepto esto</label>
+ <ul class="mu" style="margin:8px 0 12px;padding-left:18px"><li>Se envía a Google lo que escribas en esta charla, junto con lo conversado antes, para que ${esc(S.pet.name)} te recuerde. Tus cápsulas e historias no se envían.</li><li>La charla se guarda solo en este teléfono. Puedes borrarla cuando quieras.</li><li>Google puede usar lo que escribas para mejorar sus productos y personas de su equipo pueden leerlo. No escribas datos privados ni de otras personas.</li><li>Puede equivocarse. No sustituye a una persona.</li><li>Puedes apagarlo cuando quieras en Perfil.</li></ul>
+ <label class="chk"><input id="ai13" type="checkbox" onchange="$('#aiok').disabled=!this.checked"> Tengo 18 años o más y acepto esto</label>
  <button id="aiok" class="btn w" disabled onclick="aiAccept()" style="margin-top:10px">Empezar</button>`)}
 function aiAccept(){S.ai={ok:true,v:2,t:Date.now(),off:false};save();aiSheet()}
 function setAi(v){if(v){if(S.ai&&S.ai.ok&&S.ai.v===2){S.ai.off=false;save();toast('Amigo con IA activado')}else{aiOpen();render()}}else{if(S.ai)S.ai.off=true;AI.c=null;save();toast('Amigo con IA apagado')}}
@@ -645,7 +646,44 @@ function gsheet(){
  if(ok)loadG(id)}
 function loadG(id){const go=()=>{try{google.accounts.id.initialize({client_id:id,callback:gCred,ux_mode:'popup'});google.accounts.id.renderButton($('#gbox'),{theme:'outline',size:'large',shape:'pill',width:300,text:'continue_with',locale:'es'})}catch(e){gerr('Google no respondió. Intenta de nuevo.')}};
  if(window.google&&google.accounts)return go();const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.async=true;s.onload=go;s.onerror=()=>gerr('Sin conexión con Google. Revisa tu internet.');document.head.appendChild(s)}
-async function gCred(r){const g=$('#gst');if(g)g.textContent='Entrando…';try{await CLOUD.signIn(r.credential)}catch(e){if(g)g.textContent='';gerr('No pudimos iniciar sesión. Intenta de nuevo.')}}
+async function gCred(r){if(RA&&S.user){return RA(r)}const g=$('#gst');if(g)g.textContent='Entrando…';try{await CLOUD.signIn(r.credential)}catch(e){if(g)g.textContent='';gerr('No pudimos iniciar sesión. Intenta de nuevo.')}}
+
+/* ---------- registro legal: edad, términos y privacidad ---------- */
+const LEGAL_V=1,LEGAL_URL=new URL('legal/',location.href).href;
+const ageOf=b=>{const m=/^(\d{4})-(\d{2})$/.exec(b||'');if(!m)return null;const n=new Date();let a=n.getFullYear()-(+m[1]);if(n.getMonth()+1<+m[2])a--;return a};
+const legalOk=()=>!!(S.legal&&S.legal.v===LEGAL_V&&ageOf(S.birth)!==null);
+const isAdult=()=>{const a=ageOf(S.birth);return a!==null&&a>=18};
+function legalScr(){
+ const y=new Date().getFullYear(),M=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+ const [by,bm]=(S.birth||'').split('-');
+ return `<div class="wl" style="justify-content:flex-start;overflow:auto"><h1 style="margin-top:18px">Antes de empezar</h1>
+ <p class="mu">Cápsula es para personas de <b>13 años o más</b>. Cuéntanos lo básico para cuidarte mejor.</p>
+ <label class="lb" for="lgn">¿Cómo te llamamos?</label><input id="lgn" class="in" maxlength="24" value="${esc(S.me.name)}" autocomplete="off">
+ <label class="lb" id="lgbl">¿Cuándo naciste? <span class="mu">(solo guardamos mes y año)</span></label>
+ <div style="display:flex;gap:8px" role="group" aria-labelledby="lgbl"><select id="lgm" class="in" aria-label="Mes" onchange="lgChk()"><option value="">Mes</option>${M.map((n,i)=>`<option value="${String(i+1).padStart(2,'0')}" ${bm==String(i+1).padStart(2,'0')?'selected':''}>${n}</option>`).join('')}</select>
+ <select id="lgy" class="in" aria-label="Año" onchange="lgChk()"><option value="">Año</option>${Array.from({length:90},(_,i)=>y-i).map(v=>`<option ${by==v?'selected':''}>${v}</option>`).join('')}</select></div>
+ <div id="lgg" style="display:none"><label class="chk"><input id="lggc" type="checkbox" onchange="lgChk()"> Soy menor de 18 años y mi mamá, papá o representante legal sabe que uso Cápsula y me autoriza.</label>
+ <p class="mu">Es tu responsabilidad contar con esa autorización. Tu representante puede pedir que borremos tu cuenta cuando quiera.</p></div>
+ <label class="chk" style="margin-top:12px"><input id="lgt" type="checkbox" onchange="lgChk()"> Leí y acepto los <a href="${LEGAL_URL}terminos.html" target="_blank" rel="noopener">Términos y condiciones</a> y la <a href="${LEGAL_URL}privacidad.html" target="_blank" rel="noopener">Política de privacidad y tratamiento de datos</a>.</label>
+ <p class="err" id="lge" style="display:${S.lerr?'block':'none'}" role="alert">${esc(S.lerr||'')}</p>
+ <button class="btn w" id="lgb" disabled onclick="lgGo()" style="margin-top:10px">Continuar</button>
+ <button class="lnk" onclick="logout()">Salir</button></div>`}
+function lgChk(){const m=$('#lgm').value,y=$('#lgy').value,a=y&&m?ageOf(y+'-'+m):null;
+ $('#lgg').style.display=a!==null&&a>=13&&a<18?'block':'none';
+ const ok=a!==null&&(a<13||($('#lgt').checked&&(a>=18||$('#lggc').checked)));$('#lgb').disabled=!ok}
+async function lgGo(){const nm=$('#lgn').value.trim().slice(0,24),m=$('#lgm').value,y=$('#lgy').value;
+ if(!nm){S.lerr='Escribe tu nombre.';render();return}
+ const a=ageOf(y+'-'+m),err=t=>{S.lerr=t;const e=$('#lge');if(e){e.textContent=t;e.style.display='block'}};
+ if(a===null)return;
+ if(a<13){$('#lgb').disabled=true;S.u13=true;
+  try{if(window.CLOUD&&CLOUD.deleteAccount)await CLOUD.deleteAccount(null)}catch(e){}
+  try{localStorage.clear()}catch(e){}
+  S.user=null;S.scr='under13';render();return}
+ if(!$('#lgt').checked)return;
+ const minor=a<18;if(minor&&!$('#lggc').checked)return;
+ S.me.name=nm;S.birth=y+'-'+m;S.legal={v:LEGAL_V,t:Date.now(),minor:minor,guard:minor};S.lerr='';save();
+ APP.goAfter()}
+const under13=()=>`<div class="wl" style="justify-content:center;text-align:center"><h1>Todavía no puedes usar Cápsula</h1><p class="mu">Cápsula es para personas de 13 años o más. No guardamos tus datos: tu cuenta quedó eliminada. ¡Te esperamos cuando cumplas 13!</p><button class="btn w" onclick="location.reload()">Entendido</button></div>`;
 
 function groupScr(){
  const back=`<button class="bk" onclick="S.gstep='pick';render()">${ic('back',18)} Atrás</button>`;let b='';
@@ -714,7 +752,7 @@ function navSync(){document.querySelectorAll('nav [data-t]').forEach(b=>{const o
 function render(){
  checkUnl();save();
  if(S.scr==='main'&&$('#mn')){$('#mn').innerHTML=VIEW[S.tab]();$('#hd').innerHTML=hdr();navSync();p3mount();return}
- $('#scr').innerHTML=({boot,welcome,group:groupScr,pet:petScr,main:shell})[S.scr]();
+ $('#scr').innerHTML=({boot,welcome,deleted,under13,legal:legalScr,group:groupScr,pet:petScr,main:shell})[S.scr]();
  if(S.scr==='welcome')bindCr();else clearTimeout(CR.t);
  if(S.scr==='main'){navSync();enterAnim($('#mn'));p3mount()}
  const key=S.scr+':'+S.gstep;if(key!==render.k){render.k=key;if(S.scr==='group'||S.scr==='pet')enterAnim($('.ob'))}
@@ -987,13 +1025,34 @@ function perfil(){
  <p class="mu">Tu apariencia y tu nombre se guardan en tu cuenta y te acompañan en todos tus dispositivos.</p></div>
  <div class="card"><h3>Privacidad</h3><label class="chk"><input type="checkbox" ${S.showSeen!==false?'checked':''} onchange="setSeen(this.checked)"> Mostrar cuando estoy activo</label>
  <p class="mu">Si lo apagas, los demás no verán "en línea" ni tu última vez.</p></div>
- <div class="card"><h3>Amigo con IA</h3><label class="chk"><input type="checkbox" ${S.ai&&S.ai.ok&&!S.ai.off?'checked':''} onchange="setAi(this.checked)"> Dejar que ${esc(S.pet.name)} converse conmigo</label>
- <p class="mu">Solo para mayores de 13 años. Lo que le escribas a tu mascota (y lo conversado antes) se envía a Google (Gemini) para responderte. La charla se guarda solo en este teléfono. Tus cápsulas y tus historias nunca se envían.</p></div>
+ <div class="card"><h3>Amigo con IA</h3><label class="chk"><input type="checkbox" ${S.ai&&S.ai.ok&&!S.ai.off?'checked':''} onchange="setAi(this.checked)" ${isAdult()?'':'disabled'}> Dejar que ${esc(S.pet.name)} converse conmigo</label>
+ <p class="mu">${isAdult()?'Solo para mayores de 18 años. Lo que le escribas a tu mascota (y lo conversado antes) se envía a Google (Gemini) para responderte; Google puede usarlo para mejorar sus productos y revisarlo. No escribas datos privados. La charla se guarda solo en este teléfono. Tus cápsulas y tus historias nunca se envían.':'No disponible para menores de 18 años: el servicio de IA que usamos no lo permite.'}</p></div>
  <div class="card"><h3>Mi mascota</h3><div class="pfp">${pet(S.pet.kind,52)}<input id="pfm" class="in" aria-label="Nombre de tu mascota" maxlength="14" value="${esc(S.pet.name)}" onchange="setPetName(this.value)"></div><p class="mu">Vive en Mi mundo. No aparece dentro de las cápsulas.</p></div>
  <div class="card"><h3>Mis datos</h3><p id="sy" class="sy mu${syncOff()||SYNC.pend>0?' w':''}"><i></i><span>${syncTxt()}</span></p>
  <button class="btn s w" onclick="exportMem()">Descargar mis recuerdos</button>
  <p class="mu">Un archivo con todas tus historias (fotos, voz, cartas y recetas) para guardarlo donde quieras.</p></div>
+ <div class="card"><h3>Cuenta y privacidad</h3>
+ <p class="mu"><a href="${LEGAL_URL}terminos.html" target="_blank" rel="noopener">Términos y condiciones</a> · <a href="${LEGAL_URL}privacidad.html" target="_blank" rel="noopener">Privacidad y datos</a> · <a href="${LEGAL_URL}eliminar-cuenta.html" target="_blank" rel="noopener">Eliminar cuenta</a></p>
+ <button class="btn s w" onclick="delAsk()" style="color:#B3261E">Eliminar mi cuenta y mis datos</button></div>
  <button class="btn s w" onclick="logout()">Cerrar sesión</button>`}
+let RA=null;
+function delAsk(){RA=null;showSheet(`<h2>Eliminar mi cuenta</h2><p class="mu">Se borrarán para siempre: tu perfil, tu mascota, tu diario y archivo personal, y lo que aportaste en tus cápsulas. <b>No se puede deshacer.</b></p>
+ <p class="mu">Lo que otras personas escribieron en tus cápsulas no se toca. Si eres quien creó una cápsula, esta seguirá existiendo para los demás.</p>
+ <p class="mu">Si quieres, antes descarga tus recuerdos (Perfil → Mis datos).</p>
+ <label class="lb" for="delt">Escribe ELIMINAR para continuar</label><input id="delt" class="in" autocomplete="off" oninput="delChk()">
+ <div id="delg" style="display:none;margin-top:10px"><p class="mu">Por seguridad, confirma con tu cuenta de Google:</p><div id="gbox2"></div></div>
+ <p class="err" id="dele" role="alert" style="display:none"></p><p class="mu" id="delp"></p>
+ <button class="btn s w" onclick="cl()">Cancelar</button>`)}
+function delChk(){const ok=$('#delt').value.trim().toUpperCase()==='ELIMINAR',g=$('#delg');if(!g)return;g.style.display=ok?'block':'none';
+ if(ok&&!g.dataset.r){g.dataset.r=1;RA=async r=>{RA=null;await delRun(r.credential)};gsheet2()}}
+function gsheet2(){const go=()=>{try{google.accounts.id.initialize({client_id:CFG().googleClientId,callback:gCred,ux_mode:'popup'});google.accounts.id.renderButton($('#gbox2'),{theme:'outline',size:'large',width:300,text:'continue_with',shape:'pill',locale:'es'})}catch(e){}};
+ if(window.google&&google.accounts)go();else{const sc=document.createElement('script');sc.src='https://accounts.google.com/gsi/client';sc.async=true;sc.onload=go;document.head.appendChild(sc)}}
+async function delRun(tok){const e=$('#dele'),p=$('#delp');if(e)e.style.display='none';
+ try{await CLOUD.deleteAccount(tok,t=>{const q=$('#delp');if(q)q.textContent=t});
+  try{localStorage.clear()}catch(x){}
+  S.u13=false;S.user=null;S.scr='deleted';cl();render()}
+ catch(x){console.error(x);if(e){e.textContent=(x&&/credential|auth\//i.test(String(x.code||x.message)))?'No pudimos confirmar tu identidad. Intenta de nuevo.':'No se pudo completar. Revisa tu conexión e intenta de nuevo; nada se borra a medias sin que puedas repetirlo.';e.style.display='block'}if(p)p.textContent=''}}
+const deleted=()=>`<div class="wl" style="justify-content:center;text-align:center"><h1>Tu cuenta fue eliminada</h1><p class="mu">Borramos tus datos de Cápsula. Gracias por haber estado aquí.</p><button class="btn w" onclick="location.reload()">Cerrar</button></div>`;
 function profile(){go('perfil')}
 function leave(){showSheet(`<h2>Salir de ${esc(S.group.name)}</h2><p class="mu">Perderás el acceso a esta cápsula. Tu mascota, tu diario y tu archivo personal no se tocan.</p><p class="mu"><b>¿Qué pasa con lo que aportaste?</b></p>
  <button class="btn w" onclick="doLeave(false)">Salir y dejar mis aportes</button><p class="mu">Se quedan en la cápsula con tu nombre.</p>
@@ -1193,7 +1252,7 @@ window.APP={
   return{data:d,changed:ch}},
  noConfig(){S.cloudErr='Falta configurar Firebase: abre config.js y pega tus datos (mira el LEEME).';S.scr='welcome';render()},
  cloudError(m){S.cloudErr=m;render()},
- signedOut(){resetPersonal();S.user=null;S.cloudErr='';S.scr='welcome';cl();render()},
+ signedOut(){resetPersonal();S.user=null;S.cloudErr='';S.scr=S.u13?'under13':'welcome';cl();render()},
  applyUser(d,u){resetPersonal();S.user=u;S.me.name=String(d.name||u.name||'Amigo').slice(0,24);S.me.email=u.email;S.me.pic=u.photo;applyPersonal(d)},
  families(l){S.families=l},
  setGroup(g){S.group=g?{id:g.id,name:g.name,code:g.code,ownerUid:g.ownerUid,type:g.type||'familia'}:null},
@@ -1202,7 +1261,10 @@ window.APP={
  switched(){S.qa=null;S.posts=[];S.plim=25;S.members={};T={i:0,s:0,a:null};soft()},
  posts(l,lim){S.posts=l;S.plim=lim||25;soft()},
  members(m){S.members=m;soft()},
- afterLogin(){cl();S.cloudErr='';try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}const pc=S.joinCode;
+ afterLogin(){cl();S.cloudErr='';try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+  if(!legalOk()){S.scr='legal';S.lerr='';render();return}
+  APP.goAfter()},
+ goAfter(){const pc=S.joinCode;
   if(pc&&!S.families.some(f=>f.code===pc)){S.scr='group';S.gstep='join'}
   else{S.joinCode='';S.scr=S.petSet?'main':((S.group||S.solo||S.families.length)?'pet':'group');S.gstep='pick'}
   S.tab='home';render()}
