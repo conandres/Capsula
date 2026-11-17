@@ -78,6 +78,20 @@ service cloud.firestore {
       }
     }
 
+    // ---------- Reportes de contenido o de personas: cualquiera envía; solo el administrador lee y cierra ----------
+    match /reports/{rid} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['by', 'fid', 'pid', 'tu', 'r', 'n', 't'])
+        && request.resource.data.by == request.auth.uid
+        && request.resource.data.fid is string && request.resource.data.fid.size() <= 40
+        && request.resource.data.get('pid', '') is string && request.resource.data.get('pid', '').size() <= 40
+        && request.resource.data.tu is string && request.resource.data.tu.size() <= 40
+        && request.resource.data.r in ['sexual', 'violencia', 'acoso', 'privado', 'menor', 'otro']
+        && request.resource.data.get('n', '') is string && request.resource.data.get('n', '').size() <= 300
+        && request.resource.data.t == request.time;
+      allow read, delete: if isAdmin();
+    }
+
     // ---------- Presencia anónima: solo la hora de la última vez. La lee únicamente el administrador ----------
     match /presence/{uid} {
       allow create, update: if signedIn() && request.auth.uid == uid
@@ -175,7 +189,9 @@ service cloud.firestore {
           && onlyMine(request.resource.data.get('rx0', []), resource.data.get('rx0', []))
           && onlyMine(request.resource.data.get('rx1', []), resource.data.get('rx1', []))
           && onlyMine(request.resource.data.get('rx2', []), resource.data.get('rx2', []));
-        allow delete: if isMember(fid) && resource.data.authorUid == request.auth.uid;
+        // Cada quien borra lo suyo; el administrador de la cápsula puede retirar cualquier historia (moderación).
+        allow delete: if isMember(fid) && (resource.data.authorUid == request.auth.uid
+          || get(/databases/$(database)/documents/families/$(fid)).data.ownerUid == request.auth.uid);
       }
     }
   }

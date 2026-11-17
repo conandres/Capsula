@@ -484,7 +484,7 @@ const famLabel=()=>S.group?GT[gtype()].n:'Grupo';
 const today=()=>new Date().toDateString(),KEY='capsula_v3',LEGACY='capsula_v2';
 const PT0=()=>({love:80,food:75,t:Date.now(),lr:0,lf:0,ans:0,ad:'',asked:{},moods:[],seen:{},tv:{d:'',n:0},tvb:''});
 const THEMES=[{id:'rosa',n:'Rosa',bg:'#FFF6FA',pr:'#B5336E',bar:'#FFF6FA'},{id:'azul',n:'Cápsula',bg:'#F6F3FF',pr:'#6A4CD6',bar:'#F6F3FF'},{id:'negro',n:'Negro',bg:'#000000',pr:'#F5F5F7',bar:'#000000'}];
-const S={birth:'',legal:null,refC:0,invD:[],adm:(()=>{try{return localStorage.getItem('capsula_adm')==='1'}catch(e){return false}})(),showSeen:true,qd:'',qaN:0,qa:null,gtype:'familia',gname:'',qtx:'',theme:document.documentElement.dataset.theme||'azul',bub:null,bubT:0,pt:PT0(),scr:'boot',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,group:null,
+const S={birth:'',legal:null,blk:[],refC:0,invD:[],adm:(()=>{try{return localStorage.getItem('capsula_adm')==='1'}catch(e){return false}})(),showSeen:true,qd:'',qaN:0,qa:null,gtype:'familia',gname:'',qtx:'',theme:document.documentElement.dataset.theme||'azul',bub:null,bubT:0,pt:PT0(),scr:'boot',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,group:null,
  user:null,families:[],members:{},solo:false,cloudErr:'',bootSlow:0,joinCode:'',
  xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,prompt:null,posts:[],plim:25};
 let T={i:0,s:0,a:null},C={};const LIVE=new Set();
@@ -494,15 +494,15 @@ try{const q=new URLSearchParams(location.search),c=q.get('codigo'),sf=v=>String(
  if(c||rf||de)history.replaceState(null,'',location.pathname)}catch(e){}
 
 /* Lo personal (mascota, corazones, racha...) viaja a la nube; la copia local sirve de respaldo sin internet */
-const personal=()=>({name:S.me.name,pet:S.pet,petSet:S.petSet,xp:S.xp,streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,best:S.best,total:S.total,types:[...S.types],pt:S.pt,solo:S.solo,theme:S.theme,showSeen:S.showSeen,birth:S.birth,legal:S.legal,refC:S.refC,invD:S.invD,qd:S.qd,qaN:S.qaN,active:S.group?S.group.id:null});
+const personal=()=>({name:S.me.name,pet:S.pet,petSet:S.petSet,xp:S.xp,streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,best:S.best,total:S.total,types:[...S.types],pt:S.pt,solo:S.solo,theme:S.theme,showSeen:S.showSeen,birth:S.birth,legal:S.legal,blk:S.blk,refC:S.refC,invD:S.invD,qd:S.qd,qaN:S.qaN,active:S.group?S.group.id:null});
 let remK='',remT=0;
 function save(){try{if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()){const k=(S.me.name||'')+'|'+((S.pet&&S.pet.name)||'');if(k!==remK){remK=k;clearTimeout(remT);remT=setTimeout(()=>{try{remApply()}catch(e){}},2500)}}}catch(e){}
  if(S.user){try{localStorage.setItem(KEY,JSON.stringify({...personal(),uid:S.user.uid,familyIds:S.families.map(f=>f.id)}))}catch(e){}}
  if(window.CLOUD&&CLOUD.ready)CLOUD.dirty()}
-function resetPersonal(){Object.assign(S,{birth:'',legal:null,refC:0,invD:[],xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,pt:PT0(),pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,solo:false,showSeen:true,qd:'',qaN:0,qa:null,group:null,bub:null,posts:[],members:{},families:[]});T={i:0,s:0,a:null}}
+function resetPersonal(){Object.assign(S,{birth:'',legal:null,blk:[],refC:0,invD:[],xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,pt:PT0(),pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,solo:false,showSeen:true,qd:'',qaN:0,qa:null,group:null,bub:null,posts:[],members:{},families:[]});T={i:0,s:0,a:null}}
 function applyPersonal(o){if(!o)return;
  if(THEMES.some(t=>t.id===o.theme))applyTheme(o.theme);
- ['petSet','xp','streak','last','chest','mis','petDone','inv','perfect','solo','best','total','showSeen','qd','qaN','birth','legal','refC','invD'].forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
+ ['petSet','xp','streak','last','chest','mis','petDone','inv','perfect','solo','best','total','showSeen','qd','qaN','birth','legal','blk','refC','invD'].forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
  if(o.pet&&PETS[o.pet.kind])S.pet={kind:o.pet.kind,name:String(o.pet.name||PETS[o.pet.kind].n).slice(0,14)};
  S.types=new Set(o.types||[]);S.wk=o.wk||null;S.unl=Array.isArray(o.unl)?o.unl.filter(x=>typeof x==='string'):[];S.wear=Array.isArray(o.wear)?o.wear.filter(x=>typeof x==='string'):[];S.pt=Object.assign(PT0(),o.pt||{});S.pt.t=S.pt.t||Date.now();S.bub=null;
  const y=new Date(Date.now()-864e5).toDateString();S.posted=S.last===today();if(!S.posted&&S.last!==y)S.streak=0}
@@ -769,7 +769,7 @@ function missionsHTML(){const w=wkEnsure();return `<section class="card"><h3>Mis
 
 /* ---------- home ---------- */
 const VERB={voz:'grabó una nota de voz',foto:'compartió una foto',carta:'dejó una carta',dibujo:'hizo un dibujo',receta:'compartió una receta'};
-function recentHTML(n){const L=S.posts.filter(p=>p.a!=='me'&&TY[p.k]).slice(0,n);
+function recentHTML(n){const L=S.posts.filter(p=>p.a!=='me'&&TY[p.k]&&!isBlk(p.a)).slice(0,n);
  return L.map(p=>`<div class="card row" style="flex-direction:row;align-items:center;gap:12px">${pAv(p.a,40)}<span class="tx" style="flex:1;min-width:0"><b>${esc(who(p.a,p))} ${VERB[p.k]||'compartió algo'}</b><span class="mu">${rel(p.ts)} · ${S.group?esc(S.group.name):'Mi mundo'}</span></span></div>`).join('')}
 function home(){
  const n=S.families.length,rc=recentHTML(3);
@@ -873,7 +873,7 @@ function triv(){
  if(!g)return head+`<div class="card">${done?'<p class="mu c">Ya la respondiste hoy. Tu respuesta quedó en tu Archivo. Vuelve mañana por otra.</p>':qaForm(true)}</div>`;
  if(!st.mine&&!done)return head+`<div class="card">${qaForm(false)}</div>`;
  if(!st.all)return head+`<div class="card"><p class="mu c">${st.mine?'Cargando las respuestas…':'Guardando tu respuesta…'}</p></div>`;
- const me=S.user.uid,l=st.all.slice().sort((a,b)=>(a.uid===me?-1:b.uid===me?1:0)),tot=Object.keys(S.members).length||1;
+ const me=S.user.uid,l=st.all.slice().sort((a,b)=>(a.uid===me?-1:b.uid===me?1:0)),tot=Object.keys(S.members).length||1;l.splice(0,l.length,...l.filter(a=>!isBlk(a.uid)));
  return head+`<section class="card"><h3>Respuestas de hoy</h3><span class="mu">${st.all.length} de ${tot} ${tot===1?'persona':'personas'}</span>${l.map(a=>`<div class="qans"><b>${a.uid===me?'Tú':esc(a.name||'Alguien')}</b><p>${esc(a.tx)}</p></div>`).join('')}</section>${st.all.length<2?`<div class="card c"><p class="mu">Aún nadie más ha respondido. ¡Invítalos!</p><button class="btn s w" onclick="shareInvite()">Compartir invitación</button></div>`:''}`}
 async function qaSend(){const el=$('#qat'),t=(el?el.value:'').trim().slice(0,300);if(!t)return;
  if(!window.CLOUD||!CLOUD.ready){toast('Sin conexión con tu cuenta. Intenta de nuevo en un momento.');return}
@@ -896,13 +896,33 @@ function postBody(p){
  return ''}
 const AFL=()=>Object.entries(TY).filter(([k])=>k!=='video');
 const afChips=()=>`<div class="afc" role="group" aria-label="Filtrar">${[['', 'Todo'],...AFL().map(([k,v])=>[k,v.l])].map(([k,l])=>`<button class="${(S.af||'')===k?'on':''}" aria-pressed="${(S.af||'')===k}" onclick="S.af='${k}';soft()">${l}</button>`).join('')}</div>`;
+/* ---------- moderación: reportar y bloquear ---------- */
+const isBlk=u=>!!u&&u!=='me'&&(S.blk||[]).includes(u);
+const RSN=[['sexual','Contenido sexual o desnudez'],['violencia','Violencia o algo peligroso'],['acoso','Acoso, burla o insultos'],['privado','Muestra información privada'],['menor','Pone en riesgo a un menor'],['otro','Otro motivo']];
+const isCapOwner=()=>!!(S.group&&S.user&&S.group.ownerUid===S.user.uid);
+function postActs(p){const st='min-height:32px;font-size:13px';
+ if(p.a==='me')return `<button class="lnk" style="${st};align-self:flex-end" onclick="delPost('${p.id}')">Eliminar</button>`;
+ if(!S.group)return '';
+ return `<div class="row" style="justify-content:flex-end;gap:4px"><button class="lnk" style="${st}" onclick="reportOpen('${p.id}','${esc(p.a)}')">Reportar</button>${isCapOwner()?`<button class="lnk" style="${st}" onclick="delPost('${p.id}')">Quitar</button>`:''}</div>`}
+function reportOpen(pid,uid){const nm=(S.members[uid]&&S.members[uid].name)||'esta persona';
+ showSheet(`<h2>Reportar</h2><p class="mu">Cuéntanos qué pasó con ${pid?'esta historia':'<b>'+esc(nm)+'</b>'}. Lo revisa el equipo de Cápsula. La otra persona no sabrá que fuiste tú.</p>
+ <div id="rsn" role="radiogroup" aria-label="Motivo">${RSN.map(([k,l])=>`<label class="chk"><input type="radio" name="rs" value="${k}" onchange="$('#rsb').disabled=false"> ${l}</label>`).join('')}</div>
+ <label class="lb" for="rsn2">Detalle (opcional)</label><input id="rsn2" class="in" maxlength="300" autocomplete="off">
+ <p class="err" id="rse" role="alert" style="display:none"></p>
+ <button class="btn w" id="rsb" disabled onclick="reportSend('${pid}','${esc(uid)}')">Enviar reporte</button><button class="btn s w" onclick="cl()">Cancelar</button>`)}
+async function reportSend(pid,uid){const v=document.querySelector('input[name=rs]:checked');if(!v)return;const b=$('#rsb');b.disabled=true;
+ try{await CLOUD.report({fid:S.group&&S.group.id,pid,tu:uid,r:v.value,n:$('#rsn2').value.trim()});
+  showSheet(`<h2>Gracias por avisar</h2><p class="mu">Revisaremos el reporte. Mientras tanto puedes dejar de ver a esa persona.</p><button class="btn w" onclick="blockSet('${esc(uid)}',true);cl()">Bloquear a esta persona</button><button class="btn s w" onclick="cl()">Ahora no</button><p class="mu">Si hay peligro inmediato, llama al 123. La línea 141 atiende a niños, niñas y adolescentes.</p>`)}
+ catch(e){b.disabled=false;const q=$('#rse');q.textContent='No se pudo enviar. Revisa tu conexión e intenta de nuevo.';q.style.display='block'}}
+function blockSet(uid,on){S.blk=S.blk||[];const i=S.blk.indexOf(uid);if(on&&i<0)S.blk.push(uid);if(!on&&i>=0)S.blk.splice(i,1);save();toast(on?'Persona bloqueada. Ya no verás lo que publique.':'Persona desbloqueada');soft()}
+function blkList(){const L=S.blk||[];showSheet(`<h2>Personas bloqueadas</h2>${L.length?L.map(u=>`<div class="row sp"><span class="tx"><b>${esc((S.members[u]&&S.members[u].name)||'Persona')}</b></span><button class="btn s" onclick="blockSet('${esc(u)}',false);blkList()">Desbloquear</button></div>`).join(''):'<p class="mu">No has bloqueado a nadie.</p>'}<button class="btn s w" onclick="cl()">Cerrar</button>`)}
 function arcList(kind){
- const all=S.posts.filter(p=>TY[p.k]),L=kind?all.filter(p=>p.k===kind):all;
+ const all=S.posts.filter(p=>TY[p.k]&&!isBlk(p.a)),L=kind?all.filter(p=>p.k===kind):all;
  if(!all.length)return `<div class="card c">${S.group?ic('book',48):pet(S.pet.kind,90)}<h3>Aún no hay historias</h3><p class="mu">${S.group?'Cuenta la primera y quedará aquí para todos.':'Cuenta la primera y '+esc(S.pet.name)+' te lo agradecerá.'}</p><button class="btn" onclick="chooser()">Contar la primera</button></div>`;
  if(!L.length)return `<div class="card c"><p class="mu">Aún no hay ${(TY[kind]||{l:'historias'}).l.toLowerCase()} aquí.</p>${kind==='carta'?'<button class="btn" onclick="compose(\'carta\')">Escribir una carta</button>':''}</div>`;
  return L.map(p=>`<article class="card"><div class="row">${pAv(p.a,40)}<div class="tx"><b>${esc(who(p.a,p))}</b><span class="mu">${rel(p.ts)}${p.by?' · contada por '+esc(p.by):''}</span></div><span class="tag">${ic(TY[p.k].i,14)}${TY[p.k].l}</span></div>
   <h3>${esc(p.t)}</h3>${postBody(p)}
-  <div class="rx">${['💗','😂','🥹'].map((e,j)=>`<button class="${p.m[j]?'on':''}" aria-pressed="${!!p.m[j]}" onclick="react('${p.id}',${j})">${e} ${p.r[j]+p.m[j]}</button>`).join('')}</div>${p.a==='me'?`<button class="lnk" style="min-height:32px;font-size:13px;align-self:flex-end" onclick="delPost('${p.id}')">Eliminar</button>`:''}</article>`).join('')+(S.posts.length>=S.plim?`<button class="btn s w" onclick="CLOUD.more()">Ver más historias</button>`:'')}
+  <div class="rx">${['💗','😂','🥹'].map((e,j)=>`<button class="${p.m[j]?'on':''}" aria-pressed="${!!p.m[j]}" onclick="react('${p.id}',${j})">${e} ${p.r[j]+p.m[j]}</button>`).join('')}</div>${postActs(p)}</article>`).join('')+(S.posts.length>=S.plim?`<button class="btn s w" onclick="CLOUD.more()">Ver más historias</button>`:'')}
 function arc(){
  if(S.group){S.tab='cap';S.sub='recuerdos';return cap()}
  const n=S.posts.length;
@@ -1007,7 +1027,7 @@ function memberCard(id){
  ${pt?`<p class="pres ${on?'on':''}">${pt}</p>`:''}
  <div class="mst"><div><b>${np}</b><span class="mu">${np===1?'aporte':'aportes'} aquí</span></div></div>
  ${m.joinedAt?`<p class="mu">En la cápsula desde ${new Date(m.joinedAt).toLocaleDateString('es',{day:'numeric',month:'long',year:'numeric'})}</p>`:''}
- ${mine?'<button class="btn s w" onclick="cl();go(\'perfil\')">Editar mi perfil</button>':''}
+ ${mine?'<button class="btn s w" onclick="cl();go(\'perfil\')">Editar mi perfil</button>':(S.group?`<button class="btn s w" onclick="blockSet('${esc(uid)}',${!isBlk(uid)});cl()">${isBlk(uid)?'Desbloquear':'Bloquear'}</button><button class="btn s w" onclick="reportOpen('','${esc(uid)}')">Reportar a esta persona</button>`:'')}
  <button class="btn w" onclick="cl()">Cerrar</button></div>`)}
 function setSeen(v){S.showSeen=!!v;save();toast(v?'Ahora se ve cuando estás activo':'Ya no se ve cuando estás activo')}
 function perfil(){
@@ -1025,16 +1045,21 @@ function perfil(){
  <p class="mu">Un archivo con todas tus historias (fotos, voz, cartas y recetas) para guardarlo donde quieras.</p></div>
  <div class="card"><h3>Cuenta y privacidad</h3>
  <p class="mu"><a href="${LEGAL_URL}terminos.html" target="_blank" rel="noopener">Términos y condiciones</a> · <a href="${LEGAL_URL}privacidad.html" target="_blank" rel="noopener">Privacidad y datos</a> · <a href="${LEGAL_URL}eliminar-cuenta.html" target="_blank" rel="noopener">Eliminar cuenta</a></p>
+ ${(S.blk||[]).length?`<button class="btn s w" onclick="blkList()">Personas bloqueadas (${S.blk.length})</button>`:''}
  <button class="btn s w" onclick="delAsk()" style="color:#B3261E">Eliminar mi cuenta y mis datos</button></div>
  ${remCard()}
  ${admCard()}
  <button class="btn s w" onclick="logout()">Cerrar sesión</button>
  <p class="mu c" onclick="admTap()" style="user-select:none;padding:8px">Cápsula · versión 19</p>`}
 let admN=0;
-const admCard=()=>S.adm?`<div class="card"><h3>Panel de administrador</h3><div id="adm" class="mu">Cargando…</div><p class="mu">Se cuenta desde que cada persona abre la versión nueva. Solo tú puedes ver esto.</p><button class="btn s w" onclick="admLoad()">Actualizar</button></div>${(setTimeout(admLoad,80),'')}`:'';
+const admCard=()=>S.adm?`<div class="card"><h3>Panel de administrador</h3><div id="adm" class="mu">Cargando…</div><p class="mu">Se cuenta desde que cada persona abre la versión nueva. Solo tú puedes ver esto.</p><h3>Reportes</h3><div id="admr" class="mu">Cargando…</div><button class="btn s w" onclick="admLoad()">Actualizar</button></div>${(setTimeout(admLoad,80),'')}`:'';
 function admTap(){if(++admN<7)return;admN=0;admTry()}
 async function admTry(){try{await CLOUD.adminStats();S.adm=true;try{localStorage.setItem('capsula_adm','1')}catch(e){}toast('Panel de administrador activado');render()}catch(e){toast('Esta cuenta no es de administrador')}}
-async function admLoad(){const e=$('#adm');if(!e)return;
+const RL=Object.fromEntries(RSN);
+async function admRep(){const e=$('#admr');if(!e)return;try{const L=await CLOUD.adminReports();
+ e.innerHTML=L.length?L.map(x=>`<div class="qans"><b>${esc(RL[x.r]||x.r)}</b><p>${x.n?esc(x.n)+'<br>':''}<span class="mu">${x.t?new Date(x.t).toLocaleString('es'):''} · cápsula ${esc(x.fid.slice(0,6))} · persona ${esc(x.tu.slice(0,6))}${x.pid?' · historia '+esc(x.pid.slice(0,6)):''}</span></p><button class="btn s" onclick="admClose('${esc(x.id)}')">Marcar revisado</button></div>`).join(''):'Sin reportes pendientes 🎉'}catch(x){e.textContent='No se pudieron leer los reportes.'}}
+async function admClose(id){try{await CLOUD.adminCloseReport(id);admRep()}catch(e){toast('No se pudo cerrar')}}
+async function admLoad(){const e=$('#adm');if(!e)return;admRep();
  try{const d=await CLOUD.adminStats();e.innerHTML=`<div style="font-size:44px;font-weight:800;line-height:1.1;color:var(--tx)">${d.now}</div><div>activos ahora (últimos 7 min)</div><div class="duo" style="margin-top:10px"><div><b style="color:var(--tx);font-size:20px">${d.h1}</b><br>última hora</div><div><b style="color:var(--tx);font-size:20px">${d.d1}</b><br>últimas 24 h</div><div><b style="color:var(--tx);font-size:20px">${d.d7}</b><br>últimos 7 días</div><div><b style="color:var(--tx);font-size:20px">${d.total}</b><br>personas contadas</div></div>`}
  catch(x){e.textContent='No se pudo leer. Revisa que publicaste las reglas nuevas y que entraste con la cuenta de administrador.'}}
 setInterval(()=>{if(S.scr==='main'&&S.tab==='perfil'&&S.adm)admLoad()},30000);

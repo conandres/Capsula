@@ -361,6 +361,13 @@ function start() {
 
   CLOUD.setCover = async (fid, url) => { await updateDoc(doc(db, 'families', fid), { cover: url }); };
   CLOUD.more = () => { plim += 25; subscribe(active); };
+  /* Moderación: reportar y (admin) leer o cerrar reportes */
+  CLOUD.report = ({ fid, pid, tu, r, n }) => addDoc(collection(db, 'reports'), { by: me.uid, fid: fid || '', pid: pid || '', tu: tu || '', r, n: (n || '').slice(0, 300), t: serverTimestamp() });
+  CLOUD.adminReports = async () => {
+    const s = await getDocs(query(collection(db, 'reports'), orderBy('t', 'desc'), limit(30)));
+    return s.docs.map(d => { const x = d.data({ serverTimestamps: 'estimate' }); return { id: d.id, fid: x.fid, pid: x.pid, tu: x.tu, r: x.r, n: x.n || '', t: x.t && x.t.toMillis ? x.t.toMillis() : 0 }; });
+  };
+  CLOUD.adminCloseReport = id => deleteDoc(doc(db, 'reports', id));
   CLOUD.deletePost = id => track(deleteDoc(doc(db, ...base(), 'posts', id)));
 
   CLOUD.react = (id, j, on) => track(
