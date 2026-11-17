@@ -597,7 +597,11 @@ const NP=n=>(window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins[n])||null;
 async function nativeGoogle(){const P=NP('FirebaseAuthentication');if(!P)throw new Error('sin plugin');
  const r=await P.signInWithGoogle({skipNativeAuth:true});const t=r&&r.credential&&r.credential.idToken;if(!t)throw new Error('sin token');return t}
 async function nativeLogin(){const g=$('#gst');if(g)g.textContent='Entrando…';try{await CLOUD.signIn(await nativeGoogle())}catch(e){console.error(e);if(g)g.textContent='';gerr('No pudimos iniciar sesión. Intenta de nuevo. (Detalle: '+String((e&&(e.code||e.message))||e).slice(0,160)+')')}}
-const remGet=()=>{try{return JSON.parse(localStorage.getItem('capsula_rem')||'null')||{on:false,h:20}}catch(e){return{on:false,h:20}}};
+const remGet=()=>{try{return JSON.parse(localStorage.getItem('capsula_rem')||'null')||{on:true,h:20,fresh:true}}catch(e){return{on:true,h:20,fresh:true}}};
+/* Al abrir la app: el recordatorio nace activado y se vuelve a programar (Android pide el permiso una sola vez). */
+async function remInit(){if(!NATIVE)return;const c=remGet();if(c.fresh){delete c.fresh;try{localStorage.setItem('capsula_rem',JSON.stringify(c))}catch(e){}}await remApply().catch(()=>{})}
+async function remTest(){const P=NP('LocalNotifications');if(!P)return;try{const pr=await P.requestPermissions();if(pr.display!=='granted'){toast('Activa los avisos de Cápsula en los ajustes del teléfono');return}
+ await P.schedule({notifications:[{id:2,title:'Cápsula',body:'¡Así se verá tu recordatorio! 💗',schedule:{at:new Date(Date.now()+5000),allowWhileIdle:true}}]});toast('Te llegará en 5 segundos')}catch(e){toast('No se pudo probar el aviso')}}
 async function remApply(){const P=NP('LocalNotifications');if(!P)return false;const c=remGet();
  try{await P.cancel({notifications:[{id:1}]})}catch(e){}
  if(!c.on)return true;
@@ -608,6 +612,7 @@ async function remSet(on,h){const c=remGet();if(on!==null)c.on=!!on;if(h!==null)
  const ok=await remApply();toast(c.on?(ok?'Recordatorio diario activado':'No diste permiso para avisos'):'Recordatorio apagado');render()}
 const remCard=()=>{if(!NATIVE)return'';const c=remGet();return `<div class="card"><h3>Recordatorio diario</h3><label class="chk"><input type="checkbox" ${c.on?'checked':''} onchange="remSet(this.checked,null)"> Avisarme cada día</label>
  <label class="lb" for="remh">Hora del aviso</label><select id="remh" class="in" onchange="remSet(null,this.value)">${Array.from({length:17},(_,i)=>i+6).map(h=>`<option value="${h}" ${c.h===h?'selected':''}>${h>12?h-12:h}:00 ${h>=12?'p. m.':'a. m.'}</option>`).join('')}</select>
+ <button class="btn s w" onclick="remTest()">Probar aviso ahora</button>
  <p class="mu">Te recordamos tu pregunta del día. El aviso se programa en tu teléfono; no usa internet ni se envía a ningún servidor.</p></div>`};
 function gsheet(){
  const id=CFG().googleClientId,ok=!!(id&&!/^PEGA/i.test(id)&&window.CLOUD&&CLOUD.configured);
@@ -1261,7 +1266,7 @@ window.APP={
  afterLogin(){cl();S.cloudErr='';try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
   if(!legalOk()){S.scr='legal';S.lerr='';render();return}
   APP.goAfter()},
- goAfter(){setTimeout(refSync,2500);const pc=S.joinCode;
+ goAfter(){setTimeout(refSync,2500);setTimeout(remInit,1500);const pc=S.joinCode;
   if(pc&&!S.families.some(f=>f.code===pc)){S.scr='group';S.gstep='join'}
   else{S.joinCode='';S.scr=S.petSet?'main':((S.group||S.solo||S.families.length)?'pet':'group');S.gstep='pick'}
   S.tab='home';render()}
