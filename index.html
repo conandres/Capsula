@@ -505,7 +505,7 @@ function applyPersonal(o){if(!o)return;
  S.types=new Set(o.types||[]);S.wk=o.wk||null;S.unl=Array.isArray(o.unl)?o.unl.filter(x=>typeof x==='string'):[];S.wear=Array.isArray(o.wear)?o.wear.filter(x=>typeof x==='string'):[];S.pt=Object.assign(PT0(),o.pt||{});S.pt.t=S.pt.t||Date.now();S.bub=null;
  const y=new Date(Date.now()-864e5).toDateString();S.posted=S.last===today();if(!S.posted&&S.last!==y)S.streak=0}
 function legacy(){try{const o=JSON.parse(localStorage.getItem(LEGACY)||'null');if(o&&o.me&&o.me.name)return{pet:o.pet,petSet:o.petSet,xp:o.xp,streak:o.streak,last:o.last,chest:o.chest,mis:o.mis,petDone:o.petDone,inv:o.inv,perfect:o.perfect,types:o.types,pt:o.pt}}catch(e){}return null}
-async function logout(){try{if(window.google&&google.accounts)google.accounts.id.disableAutoSelect()}catch(e){}try{localStorage.removeItem(KEY);localStorage.removeItem('capsula_adm')}catch(e){}try{if(window.CLOUD&&CLOUD.signOut)await CLOUD.signOut()}catch(e){}location.reload()}
+async function logout(){try{if(window.google&&google.accounts)google.accounts.id.disableAutoSelect()}catch(e){}try{localStorage.removeItem(KEY);localStorage.removeItem('capsula_adm')}catch(e){}try{if(window.CLOUD&&CLOUD.signOut)await CLOUD.signOut()}catch(e){}try{const P=NP('FirebaseAuthentication');if(P)await P.signOut()}catch(e){}location.reload()}
 function burst(n=28,em=['💗','✨','⭐','🎉','💖']){const a=$('.app');for(let i=0;i<n;i++){const e=document.createElement('span');e.className='cf';e.textContent=em[i%em.length];e.style.cssText=`left:${50+(Math.random()-.5)*20}%;--dx:${(Math.random()-.5)*360}px;--dy:${-120-Math.random()*320}px;--r:${(Math.random()-.5)*720}deg;animation-delay:${Math.random()*.2}s`;a.appendChild(e);setTimeout(()=>e.remove(),1900)}}
 function floatH(t){const e=document.createElement('div');e.className='fh';e.textContent=t;$('.app').appendChild(e);setTimeout(()=>e.remove(),1300)}
 /* ---------- mascota 3D (Mi mundo). Si falla, queda la 2D ---------- */
@@ -591,12 +591,30 @@ function bindCr(){const c=$('#cr');if(!c)return;clearTimeout(CR.t);CR.i=0;CR.hol
 
 const CFG=()=>window.CAPSULA_CONFIG||{};
 const gerr=m=>{const e=$('#err');if(e)e.textContent=m};
+/* ---------- app nativa (Capacitor): login de Google nativo y recordatorios ---------- */
+const NATIVE=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
+const NP=n=>(window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins[n])||null;
+async function nativeGoogle(){const P=NP('FirebaseAuthentication');if(!P)throw new Error('sin plugin');
+ const r=await P.signInWithGoogle({skipNativeAuth:true});const t=r&&r.credential&&r.credential.idToken;if(!t)throw new Error('sin token');return t}
+async function nativeLogin(){const g=$('#gst');if(g)g.textContent='Entrando…';try{await CLOUD.signIn(await nativeGoogle())}catch(e){console.error(e);if(g)g.textContent='';gerr('No pudimos iniciar sesión. Intenta de nuevo.')}}
+const remGet=()=>{try{return JSON.parse(localStorage.getItem('capsula_rem')||'null')||{on:false,h:20}}catch(e){return{on:false,h:20}}};
+async function remApply(){const P=NP('LocalNotifications');if(!P)return false;const c=remGet();
+ try{await P.cancel({notifications:[{id:1}]})}catch(e){}
+ if(!c.on)return true;
+ const pr=await P.requestPermissions();if(pr.display!=='granted'){c.on=false;try{localStorage.setItem('capsula_rem',JSON.stringify(c))}catch(e){}return false}
+ const nm=(S.pet&&S.pet.name)||'Tu mascota';
+ await P.schedule({notifications:[{id:1,title:'Cápsula',body:'¿Qué recuerdas hoy? '+nm+' y tu pregunta del día te esperan 💗',schedule:{on:{hour:c.h,minute:0},allowWhileIdle:true}}]});return true}
+async function remSet(on,h){const c=remGet();if(on!==null)c.on=!!on;if(h!==null)c.h=+h;try{localStorage.setItem('capsula_rem',JSON.stringify(c))}catch(e){}
+ const ok=await remApply();toast(c.on?(ok?'Recordatorio diario activado':'No diste permiso para avisos'):'Recordatorio apagado');render()}
+const remCard=()=>{if(!NATIVE)return'';const c=remGet();return `<div class="card"><h3>Recordatorio diario</h3><label class="chk"><input type="checkbox" ${c.on?'checked':''} onchange="remSet(this.checked,null)"> Avisarme cada día</label>
+ <label class="lb" for="remh">Hora del aviso</label><select id="remh" class="in" onchange="remSet(null,this.value)">${Array.from({length:17},(_,i)=>i+6).map(h=>`<option value="${h}" ${c.h===h?'selected':''}>${h>12?h-12:h}:00 ${h>=12?'p. m.':'a. m.'}</option>`).join('')}</select>
+ <p class="mu">Te recordamos tu pregunta del día. El aviso se programa en tu teléfono; no usa internet ni se envía a ningún servidor.</p></div>`};
 function gsheet(){
  const id=CFG().googleClientId,ok=!!(id&&!/^PEGA/i.test(id)&&window.CLOUD&&CLOUD.configured);
  showSheet(`<div class="ch">${GLOGO}<h2>Inicia sesión</h2></div>
- ${ok?`<p class="mu">Con tu cuenta de Google guardamos tu progreso, tu familia y sus historias. Las recuperas en cualquier celular.</p><div id="gbox" style="min-height:44px;display:flex;justify-content:center"></div><p class="mu c" id="gst"></p>`:`<p class="err" style="display:block">${esc(S.cloudErr||'El inicio de sesión todavía no está configurado. Abre config.js y sigue el README.')}</p>`}
+ ${ok?`<p class="mu">Con tu cuenta de Google guardamos tu progreso, tu familia y sus historias. Las recuperas en cualquier celular.</p>${NATIVE?`<button class="btn w" onclick="nativeLogin()">Continuar con Google</button>`:`<div id="gbox" style="min-height:44px;display:flex;justify-content:center"></div>`}<p class="mu c" id="gst"></p>`:`<p class="err" style="display:block">${esc(S.cloudErr||'El inicio de sesión todavía no está configurado. Abre config.js y sigue el README.')}</p>`}
  <p class="err" id="err"></p>`);
- if(ok)loadG(id)}
+ if(ok&&!NATIVE)loadG(id)}
 function loadG(id){const go=()=>{try{google.accounts.id.initialize({client_id:id,callback:gCred,ux_mode:'popup'});google.accounts.id.renderButton($('#gbox'),{theme:'outline',size:'large',shape:'pill',width:300,text:'continue_with',locale:'es'})}catch(e){gerr('Google no respondió. Intenta de nuevo.')}};
  if(window.google&&google.accounts)return go();const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.async=true;s.onload=go;s.onerror=()=>gerr('Sin conexión con Google. Revisa tu internet.');document.head.appendChild(s)}
 async function gCred(r){if(RA&&S.user){return RA(r)}const g=$('#gst');if(g)g.textContent='Entrando…';try{await CLOUD.signIn(r.credential)}catch(e){if(g)g.textContent='';gerr('No pudimos iniciar sesión. Intenta de nuevo.')}}
@@ -998,6 +1016,7 @@ function perfil(){
  <div class="card"><h3>Cuenta y privacidad</h3>
  <p class="mu"><a href="${LEGAL_URL}terminos.html" target="_blank" rel="noopener">Términos y condiciones</a> · <a href="${LEGAL_URL}privacidad.html" target="_blank" rel="noopener">Privacidad y datos</a> · <a href="${LEGAL_URL}eliminar-cuenta.html" target="_blank" rel="noopener">Eliminar cuenta</a></p>
  <button class="btn s w" onclick="delAsk()" style="color:#B3261E">Eliminar mi cuenta y mis datos</button></div>
+ ${remCard()}
  ${admCard()}
  <button class="btn s w" onclick="logout()">Cerrar sesión</button>
  <p class="mu c" onclick="admTap()" style="user-select:none;padding:8px">Cápsula · versión 19</p>`}
@@ -1017,8 +1036,9 @@ function delAsk(){RA=null;showSheet(`<h2>Eliminar mi cuenta</h2><p class="mu">Se
  <div id="delg" style="display:none;margin-top:10px"><p class="mu">Por seguridad, confirma con tu cuenta de Google:</p><div id="gbox2"></div></div>
  <p class="err" id="dele" role="alert" style="display:none"></p><p class="mu" id="delp"></p>
  <button class="btn s w" onclick="cl()">Cancelar</button>`)}
+async function delNative(){try{await delRun(await nativeGoogle())}catch(e){const q=$('#dele');if(q){q.textContent='No pudimos confirmar tu identidad. Intenta de nuevo.';q.style.display='block'}}}
 function delChk(){const ok=$('#delt').value.trim().toUpperCase()==='ELIMINAR',g=$('#delg');if(!g)return;g.style.display=ok?'block':'none';
- if(ok&&!g.dataset.r){g.dataset.r=1;RA=async r=>{RA=null;await delRun(r.credential)};gsheet2()}}
+ if(ok&&!g.dataset.r){g.dataset.r=1;if(NATIVE){$('#gbox2').innerHTML='<button class="btn w" onclick="delNative()">Confirmar con Google</button>'}else{RA=async r=>{RA=null;await delRun(r.credential)};gsheet2()}}}
 function gsheet2(){const go=()=>{try{google.accounts.id.initialize({client_id:CFG().googleClientId,callback:gCred,ux_mode:'popup'});google.accounts.id.renderButton($('#gbox2'),{theme:'outline',size:'large',width:300,text:'continue_with',shape:'pill',locale:'es'})}catch(e){}};
  if(window.google&&google.accounts)go();else{const sc=document.createElement('script');sc.src='https://accounts.google.com/gsi/client';sc.async=true;sc.onload=go;document.head.appendChild(sc)}}
 async function delRun(tok){const e=$('#dele'),p=$('#delp');if(e)e.style.display='none';
@@ -1252,5 +1272,5 @@ import('./cloud.js').catch(e=>{console.error(e);APP.cloudError('No pudimos conec
 </script>
 
 
-<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
+<script>if('serviceWorker' in navigator&&!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform())){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}</script>
 </body></html>

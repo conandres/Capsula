@@ -1,0 +1,14 @@
+{
+  "name": "capsula",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Cápsula: app Android (Capacitor) que envuelve la web.",
+  "dependencies": {
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/cli": "^7.0.0",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/local-notifications": "^7.0.0",
+    "@capacitor-firebase/authentication": "^7.0.0",
+    "firebase": "^11.0.0"
+  }
+}

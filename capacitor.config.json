@@ -1,0 +1,12 @@
+{
+  "appId": "io.github.conandres.twa",
+  "appName": "Cápsula",
+  "webDir": "www",
+  "android": { "allowMixedContent": false },
+  "plugins": {
+    "FirebaseAuthentication": {
+      "skipNativeAuth": true,
+      "providers": ["google.com"]
+    }
+  }
+}
