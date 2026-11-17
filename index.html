@@ -591,7 +591,7 @@ const gerr=m=>{const e=$('#err');if(e)e.textContent=m};
 function gsheet(){
  const id=CFG().googleClientId,ok=!!(id&&!/^PEGA/i.test(id)&&window.CLOUD&&CLOUD.configured);
  showSheet(`<div class="ch">${GLOGO}<h2>Inicia sesión</h2></div>
- ${ok?`<p class="mu">Con tu cuenta de Google guardamos tu progreso, tu familia y sus historias. Las recuperas en cualquier celular.</p><div id="gbox" style="min-height:44px;display:flex;justify-content:center"></div><p class="mu c" id="gst"></p>`:`<p class="err" style="display:block">${esc(S.cloudErr||'El inicio de sesión todavía no está configurado. Abre config.js y sigue el LEEME.')}</p>`}
+ ${ok?`<p class="mu">Con tu cuenta de Google guardamos tu progreso, tu familia y sus historias. Las recuperas en cualquier celular.</p><div id="gbox" style="min-height:44px;display:flex;justify-content:center"></div><p class="mu c" id="gst"></p>`:`<p class="err" style="display:block">${esc(S.cloudErr||'El inicio de sesión todavía no está configurado. Abre config.js y sigue el README.')}</p>`}
  <p class="err" id="err"></p>`);
  if(ok)loadG(id)}
 function loadG(id){const go=()=>{try{google.accounts.id.initialize({client_id:id,callback:gCred,ux_mode:'popup'});google.accounts.id.renderButton($('#gbox'),{theme:'outline',size:'large',shape:'pill',width:300,text:'continue_with',locale:'es'})}catch(e){gerr('Google no respondió. Intenta de nuevo.')}};
@@ -1197,7 +1197,7 @@ window.APP={
   else if(tl===tc&&(+l.streak||0)>(+c.streak||0)){d.streak=l.streak;ch=true}
   d.best=Math.max(+d.best||0,+d.streak||0);
   return{data:d,changed:ch}},
- noConfig(){S.cloudErr='Falta configurar Firebase: abre config.js y pega tus datos (mira el LEEME).';S.scr='welcome';render()},
+ noConfig(){S.cloudErr='Falta configurar Firebase: abre config.js y pega tus datos (mira el README).';S.scr='welcome';render()},
  cloudError(m){S.cloudErr=m;render()},
  signedOut(){resetPersonal();S.user=null;S.cloudErr='';S.scr=S.u13?'under13':'welcome';cl();render()},
  applyUser(d,u){resetPersonal();try{Object.keys(localStorage).filter(k=>/^capsula_ai/.test(k)).forEach(k=>localStorage.removeItem(k))}catch(e){}S.user=u;S.me.name=String(d.name||u.name||'Amigo').slice(0,24);S.me.email=u.email;S.me.pic=u.photo;applyPersonal(d)},

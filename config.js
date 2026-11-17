@@ -1,4 +1,4 @@
-/* Configuración de Cápsula. Rellena estos datos (ver LEEME.txt, paso 1 y 2).
+/* Configuración de Cápsula. Rellena estos datos (ver README.md, Puesta en marcha).
    Estos valores NO son secretos: van en la web pública. La seguridad la dan las reglas de Firestore. */
 window.CAPSULA_CONFIG = {
   /* Firebase Console > Configuración del proyecto > Tus apps > App web > "Config" */
