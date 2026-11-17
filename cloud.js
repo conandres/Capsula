@@ -40,7 +40,7 @@ function start() {
   const userRef = () => doc(db, 'users', me.uid);
   const base = () => (active ? ['families', active] : ['users', me.uid]);
   const TYPES = ['familia', 'pareja', 'amigos'];
-  const pick = (id, d) => ({ id, name: d.name || 'Familia', code: d.code || '', ownerUid: d.ownerUid || '', type: TYPES.includes(d.type) ? d.type : 'familia', cover: typeof d.cover === 'string' && d.cover.startsWith('data:image/') ? d.cover : '' });
+  const pick = (id, d) => ({ id, name: d.name || 'Familia', code: d.code || '', ownerUid: d.ownerUid || '', type: TYPES.includes(d.type) ? d.type : 'familia', plan: d.plan === 'plus' ? 'plus' : 'free', cover: typeof d.cover === 'string' && d.cover.startsWith('data:image/') ? d.cover : '' });
 
   /* ---------- estado de guardado: cuántas escrituras esperan confirmación de la nube ---------- */
   let pend = 0;
@@ -192,6 +192,7 @@ function start() {
     active = data.active && famIds.includes(data.active) ? data.active : famIds[0] || null;
     ready = true; CLOUD.ready = true;
     A.setGroup(families.find(f => f.id === active) || null);
+    CLOUD.myEntitlement().then(e => A.ent && A.ent(e)).catch(() => {});
     if (isNew) {
       setDoc(userRef(), { createdAt: serverTimestamp(), familyIds: [] }, { merge: true }).catch(() => {});
       flush(true); A.legacyDone();
@@ -261,6 +262,18 @@ function start() {
     }
     const fs = await getDoc(doc(db, 'families', fid));
     const fam = pick(fid, fs.data());
+    if (!wasIn && A.plusOn && A.plusOn() && fam.plan !== 'plus') {
+      /* Límite de miembros del plan gratis (5). Si se pasa, se revierte la unión. */
+      const cnt = (await getCountFromServer(collection(db, 'families', fid, 'members'))).data().count;
+      if (cnt > (A.limits().members)) {
+        const b = writeBatch(db);
+        b.delete(doc(db, 'families', fid, 'members', me.uid));
+        b.set(userRef(), { familyIds: arrayRemove(fid) }, { merge: true });
+        await b.commit();
+        famIds = famIds.filter(i => i !== fid);
+        return { err: 'members' };
+      }
+    }
     if (fam.type === 'pareja' && !wasIn) {
       const ms = await getDocs(collection(db, 'families', fid, 'members'));
       if (ms.size > 2) {
@@ -340,6 +353,24 @@ function start() {
     const n = ms => getCountFromServer(query(collection(db, 'presence'), where('t', '>', new Date(Date.now() - ms))));
     const [a, b, c, d, t] = await Promise.all([n(7 * 60e3), n(60 * 60e3), n(24 * 3600e3), n(7 * 24 * 3600e3), getCountFromServer(collection(db, 'presence'))]);
     return { now: a.data().count, h1: b.data().count, d1: c.data().count, d7: d.data().count, total: t.data().count };
+  };
+
+  /* ---------- Plus: suscripción y límites ---------- */
+  CLOUD.myEntitlement = async () => {
+    const s = await getDoc(doc(db, 'entitlements', me.uid));
+    if (!s.exists()) return { tier: 'free', until: 0 };
+    const d = s.data(), u = d.until && d.until.toMillis ? d.until.toMillis() : Number(d.until) || 0;
+    return { tier: d.tier === 'plus' ? 'plus' : 'free', until: u };
+  };
+  CLOUD.adminGrant = async (uid, tier, days) => {
+    const until = tier === 'plus' ? new Date(Date.now() + Math.max(1, days | 0) * 864e5) : new Date(0);
+    await setDoc(doc(db, 'entitlements', uid), { tier, until, by: me.uid, at: serverTimestamp() });
+  };
+  CLOUD.syncPlan = async (fid, plan) => { await updateDoc(doc(db, 'families', fid), { plan }); };
+  CLOUD.mediaCount = async () => {
+    if (!active) return 0;
+    const q = query(collection(db, 'families', active, 'posts'), where('k', 'in', ['foto', 'dibujo', 'voz']));
+    return (await getCountFromServer(q)).data().count;
   };
 
   CLOUD.leaveFamily = async fid => {

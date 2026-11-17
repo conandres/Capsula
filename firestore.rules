@@ -92,6 +92,12 @@ service cloud.firestore {
       allow read, delete: if isAdmin();
     }
 
+    // ---------- Cápsula Plus: solo el administrador (o, a futuro, un servidor de verificación) concede el plan; cada persona lee el suyo ----------
+    match /entitlements/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow write: if isAdmin();
+    }
+
     // ---------- Presencia anónima: solo la hora de la última vez. La lee únicamente el administrador ----------
     match /presence/{uid} {
       allow create, update: if signedIn() && request.auth.uid == uid
@@ -137,7 +143,8 @@ service cloud.firestore {
         && request.resource.data.createdAt == request.time;
       // El dueño solo puede cambiar el nombre y la portada (foto pequeña, texto de hasta 100.000 caracteres).
       allow update: if signedIn() && resource.data.ownerUid == request.auth.uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'cover'])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'cover', 'plan'])
+        && (!('plan' in request.resource.data) || request.resource.data.plan == 'free' || (request.resource.data.plan == 'plus' && exists(/databases/$(database)/documents/entitlements/$(request.auth.uid)) && get(/databases/$(database)/documents/entitlements/$(request.auth.uid)).data.tier == 'plus'))
         && request.resource.data.name is string && request.resource.data.name.size() >= 1 && request.resource.data.name.size() <= 30
         && (!('cover' in request.resource.data) || (request.resource.data.cover is string && request.resource.data.cover.size() <= 100000));
       allow delete: if false;

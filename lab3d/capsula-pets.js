@@ -24,7 +24,7 @@ export const PETS = {
 };
 export const EXPRESSIONS = ["neutral", "happy", "sleepy", "surprised", "sad", "wink"];
 export const ACTIONS = ["hello", "happy", "love", "surprise", "dance", "eat", "levelup"];
-export const ACCESSORIES = ["estrella", "mono", "corona", "flor", "lentes", "gorro", "bufanda"];
+export const ACCESSORIES = ["estrella", "mono", "corona", "flor", "lentes", "gorro", "bufanda", "sombrero", "audifonos", "alas"];
 const DUR = { hello: 0.9, happy: 1.3, love: 1.4, surprise: 1.0, dance: 3.0, eat: 2.4, levelup: 1.8 };
 
 /* Cada expresión son números hacia los que la cara se suaviza. */
@@ -298,6 +298,22 @@ function makeAccessory(id, P) {
   } else if (id === "mono") {
     parent = "body";
     const m = makeMonkey(); g.add(m); g.position.set(0.52, -0.05, 0.02); g.rotation.y = -0.3;
+  } else if (id === "sombrero") {
+    const m = mat(PAL.dark, 0.5), rb = mat(PAL.pink, 0.5);
+    mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.04, 28), m, g, [0, 0, 0]);
+    mesh(new THREE.CylinderGeometry(0.19, 0.2, 0.3, 24), m, g, [0, 0.17, 0]);
+    mesh(new THREE.CylinderGeometry(0.205, 0.205, 0.05, 24), rb, g, [0, 0.07, 0]);
+    g.position.set(0, ry * 0.95, -0.02); g.rotation.set(-0.1, 0, 0.12);
+  } else if (id === "audifonos") {
+    const m = mat(PAL.dark, 0.4, 0.1), cm = mat(PAL.pink, 0.4);
+    const band = mesh(new THREE.TorusGeometry(rx * 1.0, 0.03, 10, 32, Math.PI), m, g); band.position.y = 0;
+    for (const sg of [-1, 1]) ball(g, "cup", 0, [sg * rx * 1.0, 0, 0], [0.09, 0.12, 0.07], { material: cm });
+    g.position.set(0, ry * 0.15, 0);
+  } else if (id === "alas") {
+    parent = "body";
+    const m = mat(0xffffff, 0.6);
+    for (const sg of [-1, 1]) { const w = ball(g, "wing", 0, [sg * 0.34, 0.1, -0.2], [0.04, 0.2, 0.12], { material: m }); w.rotation.z = sg * -0.5; }
+    g.position.set(0, 0, 0);
   }
   return { g, parent };
 }
