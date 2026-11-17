@@ -61,6 +61,10 @@ service cloud.firestore {
         && (!('wear' in d) || (d.wear is list && d.wear.size() <= 12))
         && (!('showSeen' in d) || d.showSeen is bool);
     }
+    // Administrador: solo este correo verificado puede leer las estadísticas de uso.
+    function isAdmin() {
+      return signedIn() && request.auth.token.email_verified == true && request.auth.token.email == 'CORREO_ADMIN';
+    }
     function typeOk(v) { return v in ['familia', 'pareja', 'amigos']; }
 
     // ---------- Progreso personal y diario individual (solo el dueño) ----------
@@ -72,6 +76,29 @@ service cloud.firestore {
         allow update: if signedIn() && request.auth.uid == uid
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rx0', 'rx1', 'rx2']);
       }
+    }
+
+    // ---------- Presencia anónima: solo la hora de la última vez. La lee únicamente el administrador ----------
+    match /presence/{uid} {
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['t'])
+        && request.resource.data.t == request.time;
+      allow delete: if signedIn() && request.auth.uid == uid;
+      allow read: if isAdmin();
+    }
+
+    // ---------- Invitaciones a la app: una por cuenta nueva (dentro de sus primeros 2 días) ----------
+    match /referrals/{uid} {
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['by', 'createdAt'])
+        && request.resource.data.by is string && request.resource.data.by.size() <= 40
+        && request.resource.data.by != uid
+        && request.resource.data.createdAt == request.time
+        && exists(/databases/$(database)/documents/users/$(request.resource.data.by))
+        && get(/databases/$(database)/documents/users/$(uid)).data.createdAt is timestamp
+        && request.time < get(/databases/$(database)/documents/users/$(uid)).data.createdAt + duration.value(2, 'd');
+      allow read: if signedIn() && (request.auth.uid == uid || resource.data.by == request.auth.uid);
+      allow delete: if signedIn() && request.auth.uid == uid;
     }
 
     // ---------- Código de invitación -> familia. Se consulta uno por uno, no se puede listar ----------
@@ -105,8 +132,9 @@ service cloud.firestore {
         allow read: if isMember(fid);
         // Entra el creador de la familia, o quien trae el código correcto.
         allow create: if signedIn() && request.auth.uid == uid
-          && request.resource.data.keys().hasOnly(['name', 'petKind', 'petName', 'xp', 'photo', 'joinCode', 'joinedAt', 'streak', 'total', 'wear', 'showSeen', 'lastSeen'])
+          && request.resource.data.keys().hasOnly(['name', 'petKind', 'petName', 'xp', 'photo', 'joinCode', 'joinedAt', 'streak', 'total', 'wear', 'showSeen', 'lastSeen', 'invBy'])
           && memberExtraOk(request.resource.data)
+          && str(request.resource.data.get('invBy', ''), 40)
           && (!('lastSeen' in request.resource.data) || request.resource.data.lastSeen == request.time)
           && request.resource.data.keys().hasAll(['name', 'petKind', 'petName', 'xp', 'joinCode', 'joinedAt'])
           && memberFieldsOk(request.resource.data)

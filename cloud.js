@@ -5,7 +5,7 @@ import { getAuth, onAuthStateChanged, signInWithCredential, GoogleAuthProvider, 
   from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager,
   doc, collection, getDoc, getDocs, setDoc, updateDoc, addDoc, deleteDoc, writeBatch, onSnapshot, query, where, orderBy, limit,
-  serverTimestamp, arrayUnion, arrayRemove, terminate, clearIndexedDbPersistence }
+  serverTimestamp, arrayUnion, arrayRemove, getCountFromServer, terminate, clearIndexedDbPersistence }
   from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
 const A = window.APP;
@@ -79,7 +79,12 @@ function start() {
     famIds.forEach(fid => track(updateDoc(doc(db, 'families', fid, 'members', me.uid), d)
       .catch(e => console.warn('No se actualizó tu perfil de grupo', e))));
   }
-  CLOUD.ping = () => { if (!me || !ready || Date.now() - lastPing < 60000) return; lastPing = Date.now(); pushExtra(true); };
+  CLOUD.ping = () => {
+    if (!me || !ready || Date.now() - lastPing < 60000 || !(A.okLegal && A.okLegal())) return;
+    lastPing = Date.now(); pushExtra(true);
+    /* Presencia anónima: solo la hora de la última vez. Sirve para contar usuarios activos (solo la lee el administrador). */
+    setDoc(doc(db, 'presence', me.uid), { t: serverTimestamp() }).catch(() => {});
+  };
   setInterval(() => { if (!document.hidden) CLOUD.ping(); }, 5 * 60 * 1000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) CLOUD.ping(); });
 
@@ -205,7 +210,8 @@ function start() {
   /* ---------- familias ---------- */
   const memberData = code => ({
     name: A.personal().name, petKind: A.personal().pet.kind, petName: A.personal().pet.name,
-    xp: A.personal().xp, photo: me.photo || '', joinCode: code, joinedAt: serverTimestamp()
+    xp: A.personal().xp, photo: me.photo || '', joinCode: code, joinedAt: serverTimestamp(),
+    ...(A.inviter && A.inviter() ? { invBy: A.inviter() } : {})
   });
 
   function enter(fam) {
@@ -310,11 +316,30 @@ function start() {
       if (!snap.docs.length) break;
       const b = writeBatch(db); snap.docs.forEach(d => b.delete(d.ref)); await b.commit();
     }
+    for (const c of ['presence', 'referrals']) { try { await deleteDoc(doc(db, c, uid)); } catch (e) {} }
     await deleteDoc(userRef());
     step('Cerrando tu cuenta…');
     await deleteUser(user);
     try { Object.keys(localStorage).filter(k => /^capsula/i.test(k)).forEach(k => localStorage.removeItem(k)); } catch (e) {}
     try { await terminate(db); await clearIndexedDbPersistence(db); } catch (e) {}
+  };
+
+  /* ---------- invitar a la app (referidos) y panel del administrador ---------- */
+  CLOUD.refer = async by => {
+    if (!me || !by || by === me.uid) return false;
+    for (let i = 0; i < 3; i++) {
+      try { await setDoc(doc(db, 'referrals', me.uid), { by, createdAt: serverTimestamp() }); return true; }
+      catch (e) { if (i === 2) return false; await new Promise(r => setTimeout(r, 2500)); }
+    }
+  };
+  CLOUD.myReferrals = async () => {
+    const s = await getDocs(query(collection(db, 'referrals'), where('by', '==', me.uid), limit(60)));
+    return s.docs.map(d => d.id);
+  };
+  CLOUD.adminStats = async () => {
+    const n = ms => getCountFromServer(query(collection(db, 'presence'), where('t', '>', new Date(Date.now() - ms))));
+    const [a, b, c, d, t] = await Promise.all([n(7 * 60e3), n(60 * 60e3), n(24 * 3600e3), n(7 * 24 * 3600e3), getCountFromServer(collection(db, 'presence'))]);
+    return { now: a.data().count, h1: b.data().count, d1: c.data().count, d7: d.data().count, total: t.data().count };
   };
 
   CLOUD.leaveFamily = async fid => {

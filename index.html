@@ -484,25 +484,28 @@ const famLabel=()=>S.group?GT[gtype()].n:'Grupo';
 const today=()=>new Date().toDateString(),KEY='capsula_v3',LEGACY='capsula_v2';
 const PT0=()=>({love:80,food:75,t:Date.now(),lr:0,lf:0,ans:0,ad:'',asked:{},moods:[],seen:{},tv:{d:'',n:0},tvb:''});
 const THEMES=[{id:'rosa',n:'Rosa',bg:'#FFF6FA',pr:'#B5336E',bar:'#FFF6FA'},{id:'azul',n:'Cápsula',bg:'#F6F3FF',pr:'#6A4CD6',bar:'#F6F3FF'},{id:'negro',n:'Negro',bg:'#000000',pr:'#F5F5F7',bar:'#000000'}];
-const S={birth:'',legal:null,showSeen:true,qd:'',qaN:0,qa:null,gtype:'familia',gname:'',qtx:'',theme:document.documentElement.dataset.theme||'azul',bub:null,bubT:0,pt:PT0(),scr:'boot',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,group:null,
+const S={birth:'',legal:null,refC:0,invD:[],adm:(()=>{try{return localStorage.getItem('capsula_adm')==='1'}catch(e){return false}})(),showSeen:true,qd:'',qaN:0,qa:null,gtype:'familia',gname:'',qtx:'',theme:document.documentElement.dataset.theme||'azul',bub:null,bubT:0,pt:PT0(),scr:'boot',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,group:null,
  user:null,families:[],members:{},solo:false,cloudErr:'',bootSlow:0,joinCode:'',
  xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,prompt:null,posts:[],plim:25};
 let T={i:0,s:0,a:null},C={};const LIVE=new Set();
-try{const c=new URLSearchParams(location.search).get('codigo');if(c){S.joinCode=c.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);history.replaceState(null,'',location.pathname)}}catch(e){}
+try{const q=new URLSearchParams(location.search),c=q.get('codigo'),sf=v=>String(v||'').replace(/[^A-Za-z0-9_-]/g,'').slice(0,40),rf=sf(q.get('ref')),de=sf(q.get('de'));
+ if(rf)localStorage.setItem('capsula_ref',rf);if(de)localStorage.setItem('capsula_de',de);
+ if(c)S.joinCode=c.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);
+ if(c||rf||de)history.replaceState(null,'',location.pathname)}catch(e){}
 
 /* Lo personal (mascota, corazones, racha...) viaja a la nube; la copia local sirve de respaldo sin internet */
-const personal=()=>({name:S.me.name,pet:S.pet,petSet:S.petSet,xp:S.xp,streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,best:S.best,total:S.total,types:[...S.types],pt:S.pt,solo:S.solo,theme:S.theme,showSeen:S.showSeen,birth:S.birth,legal:S.legal,qd:S.qd,qaN:S.qaN,active:S.group?S.group.id:null});
+const personal=()=>({name:S.me.name,pet:S.pet,petSet:S.petSet,xp:S.xp,streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,best:S.best,total:S.total,types:[...S.types],pt:S.pt,solo:S.solo,theme:S.theme,showSeen:S.showSeen,birth:S.birth,legal:S.legal,refC:S.refC,invD:S.invD,qd:S.qd,qaN:S.qaN,active:S.group?S.group.id:null});
 function save(){if(S.user){try{localStorage.setItem(KEY,JSON.stringify({...personal(),uid:S.user.uid,familyIds:S.families.map(f=>f.id)}))}catch(e){}}
  if(window.CLOUD&&CLOUD.ready)CLOUD.dirty()}
-function resetPersonal(){Object.assign(S,{birth:'',legal:null,xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,pt:PT0(),pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,solo:false,showSeen:true,qd:'',qaN:0,qa:null,group:null,bub:null,posts:[],members:{},families:[]});T={i:0,s:0,a:null}}
+function resetPersonal(){Object.assign(S,{birth:'',legal:null,refC:0,invD:[],xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,pt:PT0(),pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,solo:false,showSeen:true,qd:'',qaN:0,qa:null,group:null,bub:null,posts:[],members:{},families:[]});T={i:0,s:0,a:null}}
 function applyPersonal(o){if(!o)return;
  if(THEMES.some(t=>t.id===o.theme))applyTheme(o.theme);
- ['petSet','xp','streak','last','chest','mis','petDone','inv','perfect','solo','best','total','showSeen','qd','qaN','birth','legal'].forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
+ ['petSet','xp','streak','last','chest','mis','petDone','inv','perfect','solo','best','total','showSeen','qd','qaN','birth','legal','refC','invD'].forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
  if(o.pet&&PETS[o.pet.kind])S.pet={kind:o.pet.kind,name:String(o.pet.name||PETS[o.pet.kind].n).slice(0,14)};
  S.types=new Set(o.types||[]);S.wk=o.wk||null;S.unl=Array.isArray(o.unl)?o.unl.filter(x=>typeof x==='string'):[];S.wear=Array.isArray(o.wear)?o.wear.filter(x=>typeof x==='string'):[];S.pt=Object.assign(PT0(),o.pt||{});S.pt.t=S.pt.t||Date.now();S.bub=null;
  const y=new Date(Date.now()-864e5).toDateString();S.posted=S.last===today();if(!S.posted&&S.last!==y)S.streak=0}
 function legacy(){try{const o=JSON.parse(localStorage.getItem(LEGACY)||'null');if(o&&o.me&&o.me.name)return{pet:o.pet,petSet:o.petSet,xp:o.xp,streak:o.streak,last:o.last,chest:o.chest,mis:o.mis,petDone:o.petDone,inv:o.inv,perfect:o.perfect,types:o.types,pt:o.pt}}catch(e){}return null}
-async function logout(){try{if(window.google&&google.accounts)google.accounts.id.disableAutoSelect()}catch(e){}try{localStorage.removeItem(KEY)}catch(e){}try{if(window.CLOUD&&CLOUD.signOut)await CLOUD.signOut()}catch(e){}location.reload()}
+async function logout(){try{if(window.google&&google.accounts)google.accounts.id.disableAutoSelect()}catch(e){}try{localStorage.removeItem(KEY);localStorage.removeItem('capsula_adm')}catch(e){}try{if(window.CLOUD&&CLOUD.signOut)await CLOUD.signOut()}catch(e){}location.reload()}
 function burst(n=28,em=['💗','✨','⭐','🎉','💖']){const a=$('.app');for(let i=0;i<n;i++){const e=document.createElement('span');e.className='cf';e.textContent=em[i%em.length];e.style.cssText=`left:${50+(Math.random()-.5)*20}%;--dx:${(Math.random()-.5)*360}px;--dy:${-120-Math.random()*320}px;--r:${(Math.random()-.5)*720}deg;animation-delay:${Math.random()*.2}s`;a.appendChild(e);setTimeout(()=>e.remove(),1900)}}
 function floatH(t){const e=document.createElement('div');e.className='fh';e.textContent=t;$('.app').appendChild(e);setTimeout(()=>e.remove(),1300)}
 /* ---------- mascota 3D (Mi mundo). Si falla, queda la 2D ---------- */
@@ -631,6 +634,7 @@ async function lgGo(){const nm=$('#lgn').value.trim().slice(0,24),m=$('#lgm').va
  if(!$('#lgt').checked)return;
  const minor=a<18;if(minor&&!$('#lggc').checked)return;
  S.me.name=nm;S.birth=y+'-'+m;S.legal={v:LEGAL_V,t:Date.now(),minor:minor,guard:minor};S.lerr='';save();
+ try{if(window.CLOUD){CLOUD.ping();const rf=localStorage.getItem('capsula_ref');if(rf){localStorage.removeItem('capsula_ref');CLOUD.refer(rf)}}}catch(e){}
  APP.goAfter()}
 const under13=()=>`<div class="wl" style="justify-content:center;text-align:center"><h1>Todavía no puedes usar Cápsula</h1><p class="mu">Cápsula es para personas de 13 años o más. No guardamos tus datos: tu cuenta quedó eliminada. ¡Te esperamos cuando cumplas 13!</p><button class="btn w" onclick="location.reload()">Entendido</button></div>`;
 
@@ -769,7 +773,8 @@ function mundo(){
  <section class="card"><h3>¿Cómo quieres contar hoy?</h3><div class="qp">${Object.entries(TY).map(([k,v])=>`<button onclick="compose('${k}')">${ic(v.i,18)}${v.l}</button>`).join('')}</div></section>
  <div class="duo"><button class="tile2" onclick="goArc()">${ic('book',26)}<b>Mi archivo</b><span class="mu">${n} ${n===1?'historia':'historias'}</span></button><button class="tile2" onclick="go('triv')">${ic('star',26)}<b>Pregunta del día</b><span class="mu">Una para ti</span></button></div>
  ${missionsHTML()}${closetHTML()}
- ${moodCard()}${badgesHTML()}<section class="card"><h3>${libName()}</h3><div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div><p class="mu">${Math.min(n,12)} de 12 historias. Con 12 se arma el libro.</p></section>`}
+ ${moodCard()}${badgesHTML()}<section class="card"><h3>${libName()}</h3><div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div><p class="mu">${Math.min(n,12)} de 12 historias. Con 12 se arma el libro.</p></section>
+ ${inviteApp()}`}
 function chest(){const r=(10+Math.floor(Math.random()*21));S.chest=today();burst(32);add(r)}
 const H=3600e3;
 const QS=[
@@ -822,7 +827,7 @@ function petIdle(force){if(S.scr!=='main'||S.tab!=='mundo'||document.hidden||$('
 function moodCard(){const m=S.pt.moods||[];if(!m.length)return'';const E=['','😢','😕','🙂','😄'],L='DLMXJVS';
  return `<section class="card"><h3>Tu ánimo esta semana</h3><div class="days">${Array.from({length:7},(_,i)=>{const dt=new Date(Date.now()-(6-i)*864e5),e=m.find(x=>x.d===dt.toDateString());return `<span style="${e?'font-size:20px;background:var(--soft2)':''}">${e?E[e.v]:L[dt.getDay()]}</span>`}).join('')}</div><p class="mu">${esc(S.pet.name)} lo recuerda cada vez que le cuentas cómo te fue.</p></section>`}
 
-function helpCard(){if(!S.group||Object.keys(S.members).length>1)return'';return `<div class="card"><h3>¿Aún no se une nadie?</h3><p class="mu">Puedes empezar sin ellos. Tu mundo funciona solo, y todo se comparte cuando entren.</p><ul class="mu"><li>Invítalos con un mensaje listo para enviar.</li><li>Entrevístalos y publica la historia por ellos: al contar, escribe quién la cuenta.</li></ul><a class="btn w" href="https://wa.me/?text=${encodeURIComponent(inviteText())}" target="_blank" rel="noopener">Enviar invitación por WhatsApp</a></div>`}
+function helpCard(){if(!S.group||Object.keys(S.members).length>1)return'';return `<div class="card"><h3>¿Aún no se une nadie?</h3><p class="mu">Puedes empezar sin ellos. Tu mundo funciona solo, y todo se comparte cuando entren.</p><ul class="mu"><li>Invítalos con un mensaje listo para enviar.</li><li>Entrevístalos y publica la historia por ellos: al contar, escribe quién la cuenta.</li></ul></div>`}
 
 /* ---------- pregunta del día ---------- */
 const QD_G=["¿Qué comida te recuerda a tu infancia?", "¿Cuál es el mejor consejo que te han dado?", "¿Qué canción te hace sentir en casa?", "¿Cuál fue el mejor regalo que has recibido?", "¿Qué travesura recuerdas con más cariño?", "¿A qué lugar te gustaría volver?", "¿Qué te hizo reír hoy?", "¿Cuál es tu recuerdo favorito de unas vacaciones?", "¿Qué película podrías ver mil veces?", "¿Qué le dirías a tu yo de hace diez años?", "¿Cuál es tu plato favorito para celebrar?", "¿Qué es lo más valiente que has hecho?", "¿Qué tradición no quisieras que se perdiera?", "¿Quién te enseñó algo que nunca olvidaste?", "¿Qué pequeño detalle te alegra el día?", "¿Cuál fue tu primer trabajo y qué aprendiste?", "¿Qué apodo te han puesto y de dónde salió?", "¿Cuál es tu rincón favorito para descansar?", "¿Qué te gustaría aprender este año?", "¿Qué olor te lleva directo a un recuerdo?", "¿Qué es lo más bonito que alguien ha hecho por ti?", "¿Cuál es tu mejor recuerdo de la escuela?", "¿Qué plan perfecto harías un domingo?", "¿Qué cosa pequeña te hace sentir agradecido?", "¿Qué historia siempre cuentas en las reuniones?", "¿Qué sueño de niño todavía te hace ilusión?", "¿Qué te da paz cuando el día es difícil?", "¿Cuál fue la mejor sorpresa que te llevaste?", "¿Qué viaje te gustaría hacer algún día?", "¿Qué es lo que más valoras de las personas?"];
@@ -934,7 +939,19 @@ function qrSvg(text,px){
 
 function showQr(){let svg='';try{svg=qrSvg(inviteLink(),248)}catch(e){toast('No se pudo crear el código QR');return}
  showSheet(`<h2>Invita en persona</h2><p class="mu">Pídele a quien tengas al lado que abra la cámara de su celular y apunte aquí. Se une a “${esc(S.group.name)}” al instante.</p><div class="qrb">${svg}</div><p class="mu c">O dile el código: <b>${esc(S.group.code)}</b></p><button class="btn s w" onclick="cl()">Cerrar</button>`);S.inv=1;save()}
-const inviteLink=()=>location.origin+location.pathname.replace(/index\.html$/,'')+'?codigo='+S.group.code;
+const baseUrl=()=>location.origin+location.pathname.replace(/index\.html$/,'');
+const inviteLink=()=>baseUrl()+'?codigo='+S.group.code+(S.user?'&de='+encodeURIComponent(S.user.uid):'');
+const appLink=()=>baseUrl()+'?ref='+encodeURIComponent(S.user.uid);
+const appText=()=>'Estoy usando Cápsula 💗 para guardar historias con mi gente y cuidar una mascota. Únete con mi enlace: '+appLink();
+async function shareApp(){if(navigator.share){try{await navigator.share({title:'Cápsula',text:appText()});return}catch(e){if(e&&e.name==='AbortError')return}}copy(appText())}
+function copyApp(){copy(appLink())}
+function inviteApp(){const n=Math.min(S.refC||0,99);return `<section class="card"><h3>Invita a un amigo a Cápsula</h3><p class="mu">Por cada amigo que se una con tu enlace ganas <b>50 corazones</b> para tu mascota.${n?' '+(n===1?'Ya se unió 1 amigo 🎉':'Ya se unieron '+n+' amigos 🎉'):''}</p><button class="btn w" onclick="shareApp()">Compartir mi enlace</button><button class="btn s w" onclick="copyApp()">Copiar enlace</button></section>`}
+let refT=0;
+async function refSync(){if(S.scr!=='main'||!S.user||!window.CLOUD||!CLOUD.ready||!legalOk()||Date.now()-refT<30000)return;refT=Date.now();
+ try{const ids=await CLOUD.myReferrals(),n=Math.min(ids.length,40);if(n>(S.refC||0)){const g=n-(S.refC||0);S.refC=n;S.inv=1;save();add(g*50);setTimeout(()=>toast('¡'+(g>1?g+' amigos se unieron':'Un amigo se unió')+' con tu enlace! +'+g*50+' corazones'),900)}}catch(e){}}
+function rewardInv(m){if(!S.user||!legalOk())return;const me=S.user.uid;let n=0;S.invD=S.invD||[];
+ for(const id of Object.keys(m||{})){if(id!==me&&m[id]&&m[id].invBy===me&&!S.invD.includes(id)&&n<10){S.invD.push(id);n++}}
+ if(n){S.invD=S.invD.slice(-200);S.inv=1;save();setTimeout(()=>{add(n*30);setTimeout(()=>toast(n>1?n+' personas se unieron a tu cápsula 🎉 +'+n*30+' corazones':'Alguien se unió con tu invitación 🎉 +30 corazones'),900)},300)}}
 function inviteText(){return 'Te invito a "'+S.group.name+'" en Cápsula 💗 Toca este enlace para entrar (o usa el código '+S.group.code+'): '+inviteLink()}
 async function shareInvite(){S.inv=1;save();
  if(navigator.share){try{await navigator.share({title:'Cápsula',text:inviteText()});return}catch(e){if(e&&e.name==='AbortError')return}}
@@ -981,7 +998,17 @@ function perfil(){
  <div class="card"><h3>Cuenta y privacidad</h3>
  <p class="mu"><a href="${LEGAL_URL}terminos.html" target="_blank" rel="noopener">Términos y condiciones</a> · <a href="${LEGAL_URL}privacidad.html" target="_blank" rel="noopener">Privacidad y datos</a> · <a href="${LEGAL_URL}eliminar-cuenta.html" target="_blank" rel="noopener">Eliminar cuenta</a></p>
  <button class="btn s w" onclick="delAsk()" style="color:#B3261E">Eliminar mi cuenta y mis datos</button></div>
- <button class="btn s w" onclick="logout()">Cerrar sesión</button>`}
+ ${admCard()}
+ <button class="btn s w" onclick="logout()">Cerrar sesión</button>
+ <p class="mu c" onclick="admTap()" style="user-select:none;padding:8px">Cápsula · versión 19</p>`}
+let admN=0;
+const admCard=()=>S.adm?`<div class="card"><h3>Panel de administrador</h3><div id="adm" class="mu">Cargando…</div><p class="mu">Se cuenta desde que cada persona abre la versión nueva. Solo tú puedes ver esto.</p><button class="btn s w" onclick="admLoad()">Actualizar</button></div>${(setTimeout(admLoad,80),'')}`:'';
+function admTap(){if(++admN<7)return;admN=0;admTry()}
+async function admTry(){try{await CLOUD.adminStats();S.adm=true;try{localStorage.setItem('capsula_adm','1')}catch(e){}toast('Panel de administrador activado');render()}catch(e){toast('Esta cuenta no es de administrador')}}
+async function admLoad(){const e=$('#adm');if(!e)return;
+ try{const d=await CLOUD.adminStats();e.innerHTML=`<div style="font-size:44px;font-weight:800;line-height:1.1;color:var(--tx)">${d.now}</div><div>activos ahora (últimos 7 min)</div><div class="duo" style="margin-top:10px"><div><b style="color:var(--tx);font-size:20px">${d.h1}</b><br>última hora</div><div><b style="color:var(--tx);font-size:20px">${d.d1}</b><br>últimas 24 h</div><div><b style="color:var(--tx);font-size:20px">${d.d7}</b><br>últimos 7 días</div><div><b style="color:var(--tx);font-size:20px">${d.total}</b><br>personas contadas</div></div>`}
+ catch(x){e.textContent='No se pudo leer. Revisa que publicaste las reglas nuevas y que entraste con la cuenta de administrador.'}}
+setInterval(()=>{if(S.scr==='main'&&S.tab==='perfil'&&S.adm)admLoad()},30000);
 let RA=null;
 function delAsk(){RA=null;showSheet(`<h2>Eliminar mi cuenta</h2><p class="mu">Se borrarán para siempre: tu perfil, tu mascota, tu diario y archivo personal, y lo que aportaste en tus cápsulas. <b>No se puede deshacer.</b></p>
  <p class="mu">Lo que otras personas escribieron en tus cápsulas no se toca. Si eres quien creó una cápsula, esta seguirá existiendo para los demás.</p>
@@ -1017,7 +1044,7 @@ function personas(){
   <button class="btn w" onclick="shareInvite()">Compartir invitación</button>
   <button class="btn s w" onclick="copyLink()">Copiar enlace</button>
   <button class="btn s w" onclick="showQr()">Invitar en persona (QR)</button>
-  <a class="btn s w" href="https://wa.me/?text=${encodeURIComponent(inviteText())}" target="_blank" rel="noopener">Enviar por WhatsApp</a></div>
+  <p class="mu">Ganas 30 corazones por cada persona que se una con tu invitación.</p></div>
  ${S.group.ownerUid===me?`<div class="card"><h3>Portada de la cápsula</h3><p class="mu">Una foto que verán todas las personas de la cápsula.</p><button class="btn s w" onclick="coverPick()">${ic('image',18)} ${S.group.cover?'Cambiar portada':'Poner portada'}</button>${S.group.cover?`<button class="btn s w" onclick="coverSet('')">Quitar portada</button>`:''}</div>`:''}
  ${helpCard()}
  <button class="btn s w" onclick="S.scr='group';S.gstep='pick';render()">Crear o unirme a otra cápsula</button>
@@ -1038,6 +1065,7 @@ function capHome(){
  return `<section class="card"><span class="mu">Pregunta de esta cápsula</span><h3 style="font-size:17px">${esc(qaToday())}</h3><button class="btn" onclick="go('triv')">Responder</button></section>
  <div class="duo"><button class="tile2" onclick="chooser()">${ic('pen',26)}<b>Escribir aquí</b><span class="mu">Se guarda en ${esc(S.group.name)}</span></button><button class="tile2" onclick="S.sub='recuerdos';soft()">${ic('image',26)}<b>Recuerdos</b><span class="mu">${S.posts.length} ${S.posts.length===1?'historia':'historias'}</span></button></div>
  <div class="duo"><button class="tile2" onclick="S.sub='cartas';soft()">${ic('mail',26)}<b>Cartas</b><span class="mu">${S.posts.filter(p=>p.k==='carta').length} escritas</span></button><button class="tile2 off" disabled aria-disabled="true">${ic('chat',26)}<b>Conversaciones</b><span class="tag soon">Pronto</span></button></div>
+ <section class="card"><div class="row sp"><span class="tx"><b>Invita a alguien</b><span class="mu">Ganas 30 corazones por cada persona que se una</span></span><button class="btn" onclick="shareInvite()">Invitar</button></div></section>
  ${recentHTML(3)?`<h3>Actividad reciente</h3>${recentHTML(3)}`:''}`}
 function cap(){
  if(!S.group)return caps();
@@ -1207,11 +1235,13 @@ window.APP={
  qa(st){const c=S.qa&&S.qa.day===st.day?S.qa:{day:st.day,mine:null,all:null};S.qa={...c,...st};if(S.tab==='triv')soft()},
  switched(){S.qa=null;S.posts=[];S.plim=25;S.members={};T={i:0,s:0,a:null};soft()},
  posts(l,lim){S.posts=l;S.plim=lim||25;soft()},
- members(m){S.members=m;soft()},
+ members(m){S.members=m;rewardInv(m);soft()},
+ inviter:()=>{try{return localStorage.getItem('capsula_de')||''}catch(e){return''}},
+ okLegal:()=>legalOk(),
  afterLogin(){cl();S.cloudErr='';try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
   if(!legalOk()){S.scr='legal';S.lerr='';render();return}
   APP.goAfter()},
- goAfter(){const pc=S.joinCode;
+ goAfter(){setTimeout(refSync,2500);const pc=S.joinCode;
   if(pc&&!S.families.some(f=>f.code===pc)){S.scr='group';S.gstep='join'}
   else{S.joinCode='';S.scr=S.petSet?'main':((S.group||S.solo||S.families.length)?'pet':'group');S.gstep='pick'}
   S.tab='home';render()}
