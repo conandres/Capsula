@@ -32,5 +32,6 @@ Cápsula convierte los recuerdos en un hábito diario y compartido. Cada persona
 **Pregunta del día:** solo ves las respuestas de los demás después de responder la tuya.
 
 ---
+<div align="center">Sebastian Barba</div>
 
 <div align="center">Hecho con 💜 en Bogotá, Colombia</div>
