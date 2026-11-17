@@ -98,6 +98,16 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // ---------- Compras por verificar: la persona registra su compra; solo el administrador la lee y la cierra ----------
+    match /purchases/{pid} {
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['uid', 'sku', 'token', 'at'])
+        && request.resource.data.sku is string && request.resource.data.sku.size() <= 40
+        && request.resource.data.token is string && request.resource.data.token.size() <= 400
+        && request.resource.data.at == request.time;
+      allow read, delete: if isAdmin();
+    }
+
     // ---------- Presencia anónima: solo la hora de la última vez. La lee únicamente el administrador ----------
     match /presence/{uid} {
       allow create, update: if signedIn() && request.auth.uid == uid

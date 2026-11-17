@@ -366,6 +366,10 @@ function start() {
     const until = tier === 'plus' ? new Date(Date.now() + Math.max(1, days | 0) * 864e5) : new Date(0);
     await setDoc(doc(db, 'entitlements', uid), { tier, until, by: me.uid, at: serverTimestamp() });
   };
+  /* Compras: la app registra la compra de Google Play y el administrador la verifica y concede Plus (hasta tener servidor de verificación) */
+  CLOUD.submitPurchase = async (sku, token) => { await addDoc(collection(db, 'purchases'), { uid: me.uid, sku: String(sku).slice(0, 40), token: String(token).slice(0, 400), at: serverTimestamp() }); };
+  CLOUD.adminPurchases = async () => (await getDocs(query(collection(db, 'purchases'), limit(40)))).docs.map(d => ({ id: d.id, ...d.data() }));
+  CLOUD.adminApprove = async (pid, uid, days) => { await CLOUD.adminGrant(uid, 'plus', days); await deleteDoc(doc(db, 'purchases', pid)); };
   CLOUD.syncPlan = async (fid, plan) => { await updateDoc(doc(db, 'families', fid), { plan }); };
   CLOUD.mediaCount = async () => {
     if (!active) return 0;

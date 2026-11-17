@@ -470,8 +470,8 @@ function checkUnl(){if(!S.user||!S.petSet)return;const lvl=Math.floor(S.xp/100);
  nu.forEach(a=>{S.unl.push(a.id);S.wear.push(a.id)});toast('🎀 ¡Nuevo accesorio: '+nu.map(a=>a.n).join(', ')+'!')}
 function wear(id){if(!ownedId(id))return;S.wear=S.wear.includes(id)?S.wear.filter(x=>x!==id):S.wear.concat(id);render()}
 const closetHTML=()=>`<section class="card"><h3>Armario de ${esc(S.pet.name)}</h3><span class="mu">Desbloquea accesorios y elige cuáles usar</span><div class="cl">${ACCS.filter(accVisible).map(a=>{const un=owned(a),on=S.wear.includes(a.id);
- const act=un?`onclick="wear('${a.id}')" aria-pressed="${on}"`:a.src==='ad'?`onclick="adUnlock('${a.id}')"`:a.src==='plus'?`onclick="plusOpen('acc')"`:a.src==='pago'?`onclick="toast('La tienda llega pronto con Google Play.')"`:'disabled';
- const tag=un?(on?'Puesto':'Toca para ponerlo'):a.src==='ad'?(adult()?(ADS.ok()?'▶ Ver un anuncio':'Anuncios · pronto'):'Solo mayores de 18'):a.src==='plus'?'✨ Plus':a.src==='pago'?'🛍 Tienda · pronto':a.u;
+ const act=un?`onclick="wear('${a.id}')" aria-pressed="${on}"`:a.src==='ad'?`onclick="adUnlock('${a.id}')"`:a.src==='plus'?`onclick="plusOpen('acc')"`:a.src==='pago'?`onclick="BILLING.buy(SKU.alas)"`:'disabled';
+ const tag=un?(on?'Puesto':'Toca para ponerlo'):a.src==='ad'?(adult()?(ADS.ok()?'▶ Ver un anuncio':'Anuncios · pronto'):'Solo mayores de 18'):a.src==='plus'?'✨ Plus':a.src==='pago'?(BILLING.ok()?'🛍 Comprar':'🛍 Tienda · pronto'):a.u;
  return `<button class="cli ${on?'on':''} ${un||a.src?'':'lk'}" ${act}><svg viewBox="0 0 120 100" width="56" height="47" aria-hidden="true">${PETS[S.pet.kind].draw()}${a.s(S.pet.kind)}</svg><span>${a.n}</span><small>${tag}</small></button>`}).join('')}</div></section>`;
 /* ---------- Cápsula Plus: límites, tienda y anuncios. Apagado para todos hasta que plusOn sea true (ver PLAN-PLUS.md) ---------- */
 const LIM={free:{caps:3,members:5,media:40},plus:{caps:999,members:999,media:400}};
@@ -488,9 +488,20 @@ function applyAccent(){const r=document.documentElement.style,on=!!(S.accent&&pl
  ['--color-primary','--color-primary-hover','--color-on-primary'].forEach(v=>r.removeProperty(v));
  if(on){r.setProperty('--color-primary',S.accent);r.setProperty('--color-primary-hover','color-mix(in srgb,'+S.accent+' 80%,#000)');r.setProperty('--color-on-primary','#FFFFFF')}}
 function setAccent(c){if(!plusLive())return;if(!isPlus()){plusOpen('col');return}S.accent=c||'';applyAccent();save();render()}
-const ADS={ok:()=>prevOn(),
- show(cb){let n=5;showSheet(`<h2>Anuncio de prueba</h2><p class="mu">Así se verá un anuncio. Solo lo ve quien tiene 18 años o más.</p><p class="c" style="font-size:40px;font-weight:700" id="adc">${n}</p>`);
+/* Anuncios: adaptador. Con el plugin de AdMob instalado (ver PLAN-PLUS.md) usa anuncios reales con trato para menores; sin él, solo la simulación del administrador. */
+const ADM=()=>{try{return window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.AdMob||null}catch(e){return null}};
+const ADS={real:()=>!!(ADM()&&CFG().admobRewardedId),ok:()=>ADS.real()||prevOn(),
+ async show(cb){
+  if(ADS.real()){const P=ADM();try{let got=false;const h=await P.addListener('onRewardedVideoAdReward',()=>{got=true});
+   await P.prepareRewardVideoAd({adId:CFG().admobRewardedId});await P.showRewardVideoAd();try{h.remove()}catch(e){}if(got)cb();else toast('Mira el anuncio completo para desbloquearlo.')}catch(e){toast('No hay anuncios ahora. Intenta en un rato.')}return}
+  let n=5;showSheet(`<h2>Anuncio de prueba</h2><p class="mu">Así se verá un anuncio. Solo lo ve quien tiene 18 años o más.</p><p class="c" style="font-size:40px;font-weight:700" id="adc">${n}</p>`);
   const t=setInterval(()=>{const e=$('#adc');if(!e){clearInterval(t);return}n--;if(n<=0){clearInterval(t);cl();cb()}else e.textContent=n},1000)}};
+/* Compras: adaptador de Google Play Billing. Sin el plugin de compras, los botones quedan en "Próximamente". */
+const SKU={mes:'plus_mensual',anio:'plus_anual',alas:'accesorio_alas'};
+const BPL=()=>{try{return window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.CapacitorPurchases||null}catch(e){return null}};
+const BILLING={ok:()=>!!BPL()&&!!CFG().billingOn,
+ async buy(sku){if(!BILLING.ok()){toast('Las compras llegan pronto con Google Play.');return}
+  try{const r=await BPL().purchase({productId:sku});await CLOUD.submitPurchase(sku,(r&&(r.purchaseToken||r.token))||'');cl();toast('¡Gracias! Estamos confirmando tu compra; tu Plus se activa en unos minutos.')}catch(e){toast('No se completó la compra. No se te cobró.')}}};
 function adUnlock(id){const a=ACCS.find(x=>x.id===id);if(!a||a.src!=='ad'||owned(a))return;
  if(!adult()){toast('Los anuncios son solo para mayores de 18 años.');return}
  if(!ADS.ok()){toast('Los anuncios llegan pronto.');return}
@@ -500,7 +511,7 @@ function plusOpen(why){
  showSheet(`<h2>✨ Cápsula Plus</h2>${R?`<p><b>${R}</b></p>`:''}
  <ul class="mu" style="padding-left:18px;line-height:1.7"><li>Cápsulas ilimitadas</li><li>Sin límite de personas en tus cápsulas</li><li>Más espacio: ${LIM.plus.media} fotos, dibujos, videos y audios por cápsula</li><li>Colores a tu gusto, sin límites</li><li>Accesorios exclusivos para tu mascota</li><li>Sin anuncios</li></ul>
  <p class="mu">Tus recuerdos nunca se borran: si llegas a un límite solo no podrás añadir más hasta que liberes espacio o te pases a Plus.</p>
- <button class="btn w" disabled>Próximamente en Google Play</button>
+ ${BILLING.ok()?`<button class="btn w" onclick="BILLING.buy(SKU.anio)">Plus anual</button><button class="btn s w" onclick="BILLING.buy(SKU.mes)">Plus mensual</button><p class="mu">El precio final lo ves en Google Play antes de pagar. Cancelas cuando quieras desde Google Play.</p>`:'<button class="btn w" disabled>Próximamente en Google Play</button>'}
  <button class="btn s w" onclick="cl()">Ahora no</button>`)}
 function plusSync(){if(!S.user||!window.CLOUD||!CLOUD.ready||!plusLive())return;
  S.families.forEach(f=>{if(f.ownerUid!==S.user.uid||!S.ent)return;const want=realPlus()?'plus':'free';if((f.plan||'free')!==want)CLOUD.syncPlan(f.id,want).then(()=>{f.plan=want}).catch(()=>{})})}
@@ -517,7 +528,10 @@ function admPlus(){if(!S.adm)return'';
  <label class="chk"><input type="checkbox" ${lsGet('capsula_plussim')==='1'?'checked':''} onchange="prevSet('capsula_plussim',this.checked)"> Simular que tengo Plus</label>
  <p class="mu">Nadie más ve los límites ni la tienda mientras no se active en la configuración.</p>
  <label class="lb" for="gu">Código de ayuda de la persona</label><input id="gu" class="in" autocomplete="off"><label class="lb" for="gd">Días de Plus</label><input id="gd" class="in" inputmode="numeric" value="30">
- <button class="btn w" onclick="admGrant('plus')">Dar Plus</button><button class="btn s w" onclick="admGrant('free')">Quitar Plus</button></div>`}
+ <button class="btn w" onclick="admGrant('plus')">Dar Plus</button><button class="btn s w" onclick="admGrant('free')">Quitar Plus</button>
+ <h3>Compras por verificar</h3><div id="admb" class="mu">Cargando…</div></div>`}
+async function admBuy(){const e=$('#admb');if(!e||!window.CLOUD)return;try{const l=await CLOUD.adminPurchases();e.innerHTML=l.length?l.map(x=>`<div class="mu" style="overflow-wrap:anywhere;margin:6px 0">${esc(x.sku)} · ${esc(x.uid)}<br><button class="btn s" onclick="admOk('${esc(x.id)}','${esc(x.uid)}',${x.sku===SKU.anio?365:31})">Confirmé el pago: dar Plus</button></div>`).join(''):'Sin compras por verificar.'}catch(x){e.textContent='No se pudo cargar.'}}
+function admOk(id,u,d){CLOUD.adminApprove(id,u,d).then(()=>{toast('Plus concedido');admBuy()}).catch(()=>toast('No se pudo'))}
 function prevSet(k,v){try{localStorage.setItem(k,v?'1':'0')}catch(e){}applyAccent();render()}
 function admGrant(t){const u=($('#gu').value||'').trim(),d=parseInt($('#gd').value,10)||30;if(u.length<10){toast('Escribe el código de ayuda completo.');return}
  CLOUD.adminGrant(u,t,d).then(()=>toast(t==='plus'?'Plus concedido por '+d+' días.':'Plus retirado.')).catch(()=>toast('No se pudo. ¿Publicaste las reglas nuevas?'))}
@@ -1122,7 +1136,7 @@ const RL=Object.fromEntries(RSN);
 async function admRep(){const e=$('#admr');if(!e)return;try{const L=await CLOUD.adminReports();
  e.innerHTML=L.length?L.map(x=>`<div class="qans"><b>${esc(RL[x.r]||x.r)}</b><p>${x.n?esc(x.n)+'<br>':''}<span class="mu">${x.t?new Date(x.t).toLocaleString('es'):''} · cápsula ${esc(x.fid.slice(0,6))} · persona ${esc(x.tu.slice(0,6))}${x.pid?' · historia '+esc(x.pid.slice(0,6)):''}</span></p><button class="btn s" onclick="admClose('${esc(x.id)}')">Marcar revisado</button></div>`).join(''):'Sin reportes pendientes 🎉'}catch(x){e.textContent='No se pudieron leer los reportes.'}}
 async function admClose(id){try{await CLOUD.adminCloseReport(id);admRep()}catch(e){toast('No se pudo cerrar')}}
-async function admLoad(){const e=$('#adm');if(!e)return;admRep();
+async function admLoad(){const e=$('#adm');if(!e)return;admRep();admBuy();
  try{const d=await CLOUD.adminStats();e.innerHTML=`<div style="font-size:44px;font-weight:800;line-height:1.1;color:var(--tx)">${d.now}</div><div>activos ahora (últimos 7 min)</div><div class="duo" style="margin-top:10px"><div><b style="color:var(--tx);font-size:20px">${d.h1}</b><br>última hora</div><div><b style="color:var(--tx);font-size:20px">${d.d1}</b><br>últimas 24 h</div><div><b style="color:var(--tx);font-size:20px">${d.d7}</b><br>últimos 7 días</div><div><b style="color:var(--tx);font-size:20px">${d.total}</b><br>personas contadas</div></div>`}
  catch(x){e.textContent='No se pudo leer. Revisa que publicaste las reglas nuevas y que entraste con la cuenta de administrador.'}}
 setInterval(()=>{if(S.scr==='main'&&S.tab==='perfil'&&S.adm)admLoad()},30000);

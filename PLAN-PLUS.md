@@ -16,3 +16,11 @@ Todo está **apagado** para los usuarios (`plusOn: false` en `config.js`). Nadie
 4. Verificar compras en servidor (Cloud Functions, requiere Blaze) para que el Plan no se pueda falsear. Hoy los límites se aplican en la app: son una barrera de producto, no de seguridad.
 5. Actualizar Términos y Privacidad con precios, renovación y anuncios; subir `LEGAL_V`.
 6. Poner `plusOn: true`.
+
+## Piezas ya listas (solo falta conectar)
+- **Anuncios (AdMob)**: `ADS` usa el plugin `@capacitor-community/admob` si está instalado y `admobRewardedId` está en `config.js`. Falta: cuenta AdMob, plugin en `package.json`, ID de app en el manifiesto (en `ci/patch-gradle.py`), marcar `tagForChildDirectedTreatment`/contenido para adultos y el mensaje de consentimiento (UMP).
+- **Compras (Play Billing)**: `BILLING` usa un plugin de compras (`CapacitorPurchases`) cuando `billingOn: true`. Productos: `plus_mensual`, `plus_anual`, `accesorio_alas`. Cada compra se registra en `purchases`; en Perfil → panel de administrador → "Compras por verificar" confirmas el pago en Play Console y das Plus con un toque (verificación manual, sin Blaze).
+- **Reglas**: `entitlements`, `purchases` y `plan` en cápsulas ya están en `firestore.rules`.
+
+## Otras tiendas
+- **Huawei AppGallery**: registro gratis (identidad + tarjeta, 1–2 días). Pero los Huawei nuevos no tienen servicios de Google: el inicio de sesión con Google y Play Billing no funcionan allí. Antes haría falta un inicio de sesión alternativo (correo y contraseña).
