@@ -596,7 +596,7 @@ const NATIVE=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNative
 const NP=n=>(window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins[n])||null;
 async function nativeGoogle(){const P=NP('FirebaseAuthentication');if(!P)throw new Error('sin plugin');
  const r=await P.signInWithGoogle({skipNativeAuth:true});const t=r&&r.credential&&r.credential.idToken;if(!t)throw new Error('sin token');return t}
-async function nativeLogin(){const g=$('#gst');if(g)g.textContent='Entrando…';try{await CLOUD.signIn(await nativeGoogle())}catch(e){console.error(e);if(g)g.textContent='';gerr('No pudimos iniciar sesión. Intenta de nuevo.')}}
+async function nativeLogin(){const g=$('#gst');if(g)g.textContent='Entrando…';try{await CLOUD.signIn(await nativeGoogle())}catch(e){console.error(e);if(g)g.textContent='';gerr('No pudimos iniciar sesión. Intenta de nuevo. (Detalle: '+String((e&&(e.code||e.message))||e).slice(0,160)+')')}}
 const remGet=()=>{try{return JSON.parse(localStorage.getItem('capsula_rem')||'null')||{on:false,h:20}}catch(e){return{on:false,h:20}}};
 async function remApply(){const P=NP('LocalNotifications');if(!P)return false;const c=remGet();
  try{await P.cancel({notifications:[{id:1}]})}catch(e){}
