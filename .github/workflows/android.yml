@@ -1,6 +1,7 @@
 name: Construir app Android
 
 # Se ejecuta a mano desde la pestaña Actions ("Run workflow").
+# Genera UNA sola versión: firmada con la llave de tienda. Se publica como borrador privado (solo la ves tú).
 on:
   workflow_dispatch:
 
@@ -47,56 +48,35 @@ jobs:
           if [ -z "$GSJ" ]; then echo "::error::Falta el secreto GOOGLE_SERVICES_JSON"; exit 1; fi
           printf '%s' "$GSJ" > android/app/google-services.json
 
-      - name: Llave de tienda (si existe el secreto) y firma de depuración fija
+      - name: Llave de tienda (secretos) y configuración de firma
         env:
           RELKS: ${{ secrets.RELEASE_KEYSTORE_B64 }}
           REL_PW: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
           ADMOB_APP_ID: ${{ secrets.ADMOB_APP_ID }}
         run: |
-          if [ -n "$RELKS" ] && [ -n "$REL_PW" ]; then printf '%s' "$RELKS" | tr -d ' \r\n"' | base64 -d > android/app/release.keystore; echo "HAY_TIENDA=1" >> $GITHUB_ENV; else export REL_PW=""; fi
-          cp ci/debug.keystore android/app/debug.keystore
+          if [ -z "$RELKS" ] || [ -z "$REL_PW" ]; then echo "::error::Faltan los secretos RELEASE_KEYSTORE_B64 y RELEASE_KEYSTORE_PASSWORD"; exit 1; fi
+          printf '%s' "$RELKS" | tr -d ' \r\n"' | base64 -d > android/app/release.keystore
           python3 ci/patch-gradle.py
 
-      - name: Compilar APK
-        working-directory: android
-        run: ./gradlew assembleDebug --no-daemon
-
-      - name: Compilar versión de tienda (APK firmado y paquete AAB)
-        if: env.HAY_TIENDA == '1'
+      - name: Compilar APK y paquete AAB firmados
         working-directory: android
         run: ./gradlew assembleRelease bundleRelease --no-daemon
 
-      - name: Preparar archivos de tienda
-        if: env.HAY_TIENDA == '1'
+      - name: Preparar archivos
         run: |
           mkdir -p tienda
-          cp android/app/build/outputs/apk/release/app-release.apk tienda/Capsula-tienda.apk
-          cp android/app/build/outputs/bundle/release/app-release.aab tienda/Capsula-tienda.aab
-          keytool -printcert -jarfile tienda/Capsula-tienda.apk | grep -E "SHA1|SHA-1" || true
+          cp android/app/build/outputs/apk/release/app-release.apk tienda/Capsula.apk
+          cp android/app/build/outputs/bundle/release/app-release.aab tienda/Capsula.aab
+          keytool -printcert -jarfile tienda/Capsula.apk | tee firma.txt
+          grep -q "05:1D:86:8F:29:71" firma.txt || { echo "::error::El APK no quedó firmado con la llave de tienda"; exit 1; }
 
-      - name: Publicar versión de tienda
-        if: env.HAY_TIENDA == '1'
+      - name: Publicar (borrador privado, siempre el mismo)
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: android-tienda
-          name: Cápsula Android (para tiendas)
+          tag_name: capsula-firmada
+          name: Cápsula Android (versión firmada)
           draft: true
-          prerelease: true
-          body: "APK y AAB firmados con la llave de tienda. Para subir a Samsung Galaxy Store, AppGallery y Google Play."
+          body: "Única versión: APK y AAB firmados con la llave de tienda. Para Samsung Galaxy Store, AppGallery y Google Play."
           files: |
-            tienda/Capsula-tienda.apk
-            tienda/Capsula-tienda.aab
-
-      - name: Comprobar la firma del APK
-        run: |
-          keytool -printcert -jarfile android/app/build/outputs/apk/debug/app-debug.apk | tee firma.txt
-          grep -q "36:22:E8:D4:1C:A8" firma.txt || { echo "::error::El APK no quedó firmado con la llave fija"; exit 1; }
-
-      - name: Publicar APK descargable
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: android-latest
-          name: Cápsula Android (prueba)
-          prerelease: true
-          body: "APK de prueba. Descárgalo desde el teléfono e instálalo."
-          files: android/app/build/outputs/apk/debug/app-debug.apk
+            tienda/Capsula.apk
+            tienda/Capsula.aab

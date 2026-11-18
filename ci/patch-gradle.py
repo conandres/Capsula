@@ -8,12 +8,6 @@ if raw.strip() and not rel:
     raise SystemExit('El secreto RELEASE_KEYSTORE_PASSWORD no tiene el formato esperado (24 letras/números).')
 blk = """
     signingConfigs {
-        debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
-        }
 """ + ("""        release {
             storeFile file('release.keystore')
             storePassword '%s'
