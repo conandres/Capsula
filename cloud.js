@@ -1,7 +1,8 @@
 /* Capa de nube de Cápsula: inicio de sesión con Google + Firestore.
    Se carga desde index.html con import(). Expone window.CLOUD y llama a window.APP. */
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
-import { getAuth, onAuthStateChanged, signInWithCredential, GoogleAuthProvider, signOut, reauthenticateWithCredential, deleteUser }
+import { getAuth, onAuthStateChanged, signInWithCredential, GoogleAuthProvider, signOut, reauthenticateWithCredential, deleteUser,
+  createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, EmailAuthProvider }
   from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager,
   doc, collection, getDoc, getDocs, setDoc, updateDoc, addDoc, deleteDoc, writeBatch, onSnapshot, query, where, orderBy, limit,
@@ -206,6 +207,11 @@ function start() {
   });
 
   CLOUD.signIn = idToken => signInWithCredential(auth, GoogleAuthProvider.credential(idToken));
+  /* Correo y contraseña (alternativa a Google; funciona también en celulares sin servicios de Google) */
+  CLOUD.emailIn = (e, p) => signInWithEmailAndPassword(auth, e, p);
+  CLOUD.emailUp = async (e, p) => { const c = await createUserWithEmailAndPassword(auth, e, p); try { await sendEmailVerification(c.user); } catch (x) {} };
+  CLOUD.emailReset = e => sendPasswordResetEmail(auth, e);
+  CLOUD.isPwd = () => !!(auth.currentUser && (auth.currentUser.providerData || []).some(x => x.providerId === 'password'));
   CLOUD.signOut = async () => { flush(false); await signOut(auth); };
 
   /* ---------- familias ---------- */
@@ -313,7 +319,7 @@ function start() {
     const step = t => { try { onStep && onStep(t); } catch (e) {} };
     const user = auth.currentUser;
     if (!user) throw new Error('nouser');
-    if (idToken) { step('Confirmando que eres tú…'); await reauthenticateWithCredential(user, GoogleAuthProvider.credential(idToken)); }
+    if (idToken) { step('Confirmando que eres tú…'); await reauthenticateWithCredential(user, typeof idToken === 'object' ? EmailAuthProvider.credential(user.email, idToken.pw) : GoogleAuthProvider.credential(idToken)); }
     ready = false; CLOUD.ready = false; clearTimeout(timer); teardown();
     const uid = user.uid;
     const days = []; { const d = new Date(Date.UTC(2026, 10, 10)), e = Date.now() + 864e5 * 2; while (d.getTime() < e) { days.push(d.toISOString().slice(0, 10)); d.setUTCDate(d.getUTCDate() + 1); } }

@@ -13,5 +13,8 @@ window.CAPSULA_CONFIG = {
   /* Firebase Console > Authentication > Método de acceso > Google > "ID de cliente web" */
   /* Cápsula Plus: false = los límites, anuncios y tienda están apagados para todos. Ver PLAN-PLUS.md */
   plusOn: false,
+  /* AdMob: estos son los IDs de PRUEBA oficiales de Google. Cuando tengas tu cuenta de AdMob, cámbialos por los tuyos y pon admobProd: true */
+  admobRewardedId: 'ca-app-pub-3940256099942544/5224354917',
+  admobProd: false,
   googleClientId: '440518399932-vulhk1efet3tv6s22dtce23kk4qk0afl.apps.googleusercontent.com'
 };
