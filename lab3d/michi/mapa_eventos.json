@@ -1,0 +1,60 @@
+{
+  "version": "1.0",
+  "nota": "Audios independientes del GLB. El motor del juego debe reproducirlos mediante eventos.",
+  "eventos": [
+    {
+      "evento": "evolution_start",
+      "archivo": "evolucion_magica.wav",
+      "loop": false,
+      "volumen": 0.8
+    },
+    {
+      "evento": "evolution_complete",
+      "archivo": "celebracion.wav",
+      "loop": false,
+      "volumen": 0.85
+    },
+    {
+      "evento": "pet_touched",
+      "archivo": "caricia.wav",
+      "loop": false,
+      "volumen": 0.45
+    },
+    {
+      "evento": "pet_happy",
+      "archivo": "michi_feliz.wav",
+      "loop": false,
+      "volumen": 0.7
+    },
+    {
+      "evento": "purr_start",
+      "archivo": "ronroneo.wav",
+      "loop": true,
+      "volumen": 0.35
+    },
+    {
+      "evento": "food_bite",
+      "archivo": "comer.wav",
+      "loop": false,
+      "volumen": 0.5
+    },
+    {
+      "evento": "food_request",
+      "archivo": "pidiendo_comida.wav",
+      "loop": false,
+      "volumen": 0.7
+    },
+    {
+      "evento": "sleep_start",
+      "archivo": "dormir.wav",
+      "loop": true,
+      "volumen": 0.25
+    },
+    {
+      "evento": "walk_step",
+      "archivo": "caminar.wav",
+      "loop": false,
+      "volumen": 0.25
+    }
+  ]
+}
