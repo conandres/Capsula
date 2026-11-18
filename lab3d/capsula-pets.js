@@ -432,13 +432,23 @@ export class CapsulaPetViewer {
     this.current = id;
     this.character = new THREE.Group(); this.pivot.add(this.character);
     this.parts = BUILDERS[id](this.character);
-    this.charBase = id === "capsule" ? 1.05 : 1;
+    this.charBase = (id === "capsule" ? 1.05 : 1) * (this.stageK || 1);
+    if (this.stageHead && this.parts.head) { this.parts.head.scale.x = this.stageHead; this.parts.head.scale.z = this.stageHead; }
     this.character.scale.setScalar(this.charBase);
     this.character.position.y = -0.12;
     this.act = null; this.tmp = null; this.accGroups = [];
     this.blink = { next: this.t + 1.5 + Math.random() * 2, start: -1, double: false };
     this.setAccessories(this.accList);
     this.container.dispatchEvent(new CustomEvent("capsulapetchange", { detail: { id, ...PETS[id] } }));
+    this.renderOnce();
+  }
+  /* Etapas de crecimiento: 0 bebé, 1 pequeño, 2 joven, 3 adulto (más chico y cabezón al inicio) */
+  setStage(n) {
+    n = Math.max(0, Math.min(3, n | 0));
+    if (this.stage === n) return;
+    this.stage = n; this.stageK = [0.68, 0.82, 0.93, 1][n]; this.stageHead = [1.22, 1.1, 1.04, 1][n];
+    this.charBase = (this.current === "capsule" ? 1.05 : 1) * this.stageK;
+    if (this.parts && this.parts.head) { this.parts.head.scale.x = this.stageHead; this.parts.head.scale.z = this.stageHead; }
     this.renderOnce();
   }
   setExpression(name) { this.expr = EXPR[name] ? name : "neutral"; }
@@ -605,8 +615,8 @@ export class CapsulaPetViewer {
     }
     P.arms.forEach((a, i) => { a.rotation.z = a.userData.baseZ + armZ[i]; a.rotation.x = a.userData.baseX + armX[i]; });
     P.head.rotation.z = headTilt * (P.arms.length ? 1 : 0.5);
-    P.head.scale.y = headScaleY;
-    this.character.position.set(x, y, 0);
+    P.head.scale.y = headScaleY * (this.stageHead || 1);
+    this.character.position.set(x, y - (1 - (this.stageK || 1)) * 0.9, 0);
     this.character.rotation.z = rz;
     this.character.scale.set(this.charBase * sx, this.charBase * sy, this.charBase * sx);
 

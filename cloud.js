@@ -49,8 +49,8 @@ function start() {
   const track = p => { pend++; notify(); Promise.resolve(p).catch(() => {}).then(() => { pend--; notify(); }); return p; };
 
   /* ---------- guardado del progreso personal (con espera para no escribir de más) ---------- */
-  const pHash = p => JSON.stringify({ ...p, pt: { ...p.pt, t: 0, love: Math.round(p.pt.love), food: Math.round(p.pt.food) } });
-  const mHash = p => [p.xp, p.pet.kind, p.pet.name, p.name].join('|');
+  const pHash = p => JSON.stringify({ ...p, pt: { ...p.pt, t: 0, love: Math.round(p.pt.love), food: Math.round(p.pt.food), clean: Math.round(p.pt.clean || 0), fun: Math.round(p.pt.fun || 0), en: Math.round(p.pt.en || 0) } });
+  const mHash = p => [p.xp, p.pet.kind, p.pet.name, p.name, p.ln].join('|');
 
   function flush(force) {
     if (!me || !ready) return;
@@ -58,7 +58,9 @@ function start() {
     const p = A.personal(), ph = pHash(p), mh = mHash(p);
     if (force || ph !== lastP) {
       lastP = ph;
-      track(setDoc(userRef(), { ...p, email: me.email, photo: me.photo, updatedAt: serverTimestamp() }, { merge: true })
+      const np = A.nameP && A.nameP();
+      track(setDoc(userRef(), { ...p, email: me.email, photo: me.photo, updatedAt: serverTimestamp(), ...(np ? { nameAt: serverTimestamp() } : {}) }, { merge: true })
+        .then(() => { if (np && A.nameP) A.nameP(false); })
         .catch(e => { lastP = ''; console.warn('No se guardó el progreso', e); }));
     }
     const eh = [p.streak, (p.wear || []).join(','), p.total || 0, p.showSeen !== false].join('|');
@@ -67,7 +69,7 @@ function start() {
       lastM = mh;
       famIds.forEach(fid =>
         track(updateDoc(doc(db, 'families', fid, 'members', me.uid),
-          { name: p.name, petKind: p.pet.kind, petName: p.pet.name, xp: p.xp })
+          { name: A.fullName ? A.fullName() : p.name, petKind: p.pet.kind, petName: p.pet.name, xp: p.xp })
           .catch(e => console.warn('No se actualizó tu ficha de familia', e))));
     }
   }
@@ -216,7 +218,7 @@ function start() {
 
   /* ---------- familias ---------- */
   const memberData = code => ({
-    name: A.personal().name, petKind: A.personal().pet.kind, petName: A.personal().pet.name,
+    name: A.fullName ? A.fullName() : A.personal().name, petKind: A.personal().pet.kind, petName: A.personal().pet.name,
     xp: A.personal().xp, photo: me.photo || '', joinCode: code, joinedAt: serverTimestamp(),
     ...(A.inviter && A.inviter() ? { invBy: A.inviter() } : {})
   });

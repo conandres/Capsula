@@ -200,7 +200,7 @@ nav .pub .pb{width:56px;height:56px;border-radius:50%;background:var(--p);displa
 .in{width:100%;border:2px solid var(--color-border-input);border-radius:16px;padding:11px 14px;background:var(--card);font-size:16px;min-width:0}
 .in:focus{border-color:var(--pd);outline:none;box-shadow:0 0 0 3px rgba(89,107,93,.22)}
 .in::placeholder{color:var(--mu);opacity:1}
-textarea.in{resize:vertical;line-height:1.4}
+textarea.in{resize:vertical;line-height:1.45;min-height:132px;padding-top:12px}textarea.in.tall{min-height:200px}
 .paper{line-height:28px;background-image:repeating-linear-gradient(transparent,transparent 27px,var(--soft2) 27px,var(--soft2) 28px);background-color:var(--color-paper)}
 .lb{font-weight:500;font-size:13px;color:var(--mu);margin-bottom:-4px}
 .err{color:var(--color-danger-text);font-size:13px}.err:empty{display:none}
@@ -364,6 +364,12 @@ nav button .ic{width:26px;height:26px}
 .hw{position:relative;overflow:hidden;background:linear-gradient(180deg,#34277F,#1B1445);color:#fff;border:0;min-height:150px}
 .hw .mu{color:#D9D1FA}.hw .btn{background:#fff;color:#2E2370}.hw::before{content:"";position:absolute;inset:0;background-image:radial-gradient(2px 2px at 20px 24px,#fff,transparent),radial-gradient(1.5px 1.5px at 130px 14px,#fff,transparent),radial-gradient(2px 2px at 300px 40px,#FFE9A8,transparent),radial-gradient(1.5px 1.5px at 340px 110px,#fff,transparent);opacity:.9;pointer-events:none}
 .hw>*{position:relative}.hw .hp{position:absolute;right:8px;bottom:4px;display:flex}
+.hw{background:linear-gradient(180deg,var(--soft2),var(--card));color:var(--tx);border:1px solid var(--line-mid)}.hw::before{display:none}.hw .mu{color:var(--mu)}.hw .btn{background:var(--color-primary);color:var(--color-on-primary)}
+.bkr{min-height:300px;padding:6px 2px 14px}.bkr img,.bkr video{max-width:100%;border-radius:12px}.bkc{text-align:center;padding:34px 0 20px}.bkc h2{margin:10px 0 4px}
+.bkn{display:flex;align-items:center;justify-content:space-between;gap:8px}.bkn .btn{min-width:110px}
+.acts{flex-wrap:wrap;justify-content:center}.acts .btn{flex:1 1 30%;min-width:92px;padding-inline:8px}
+.stw2{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;width:100%}.stw2 .st span{width:62px}
+.fdg{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:8px 0}.fdg button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;border:1px solid var(--line-mid);border-radius:14px;background:var(--card);cursor:pointer;min-height:84px;font-size:13px}.fdg button b{font-size:26px}
 .duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .tile2{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:14px;border-radius:22px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-card);color:var(--tx);font:inherit;text-align:left;cursor:pointer;min-height:104px}
 .tile2 .ic{color:var(--pd)}.tile2 b{font-size:16px}.tile2 .mu{font-size:13px}
@@ -465,7 +471,8 @@ const owned=a=>!!a&&(!a.src&&S.unl.includes(a.id)||S.unl.includes(a.id)||(a.src=
 const ownedId=id=>owned(ACCS.find(a=>a.id===id));
 const accVisible=a=>!a.src||plusLive();
 const accSvg=(ids,k)=>ACCS.filter(a=>ids.includes(a.id)&&owned(a)).map(a=>a.s(k)).join('');
-const pet=(k,w,wear=[])=>`<svg viewBox="0 0 120 100" width="${w}" height="${w*100/120}" aria-hidden="true">${PETS[k].draw()}${accSvg(wear,k)}</svg>`;
+const PSC=[.66,.8,.92,1];
+const pet=(k,w,wear=[],st)=>{const b=`${PETS[k].draw()}${accSvg(wear,k)}`,sc=st==null?1:PSC[st];return `<svg viewBox="0 0 120 100" width="${w}" height="${w*100/120}" aria-hidden="true">${sc===1?b:`<g transform="translate(60 98) scale(${sc}) translate(-60 -98)">${b}</g>`}</svg>`};
 function checkUnl(){if(!S.user||!S.petSet)return;const lvl=Math.floor(S.xp/100);
  const t={estrella:lvl>=1,mono:lvl>=2,corona:lvl>=3,flor:S.types.size>=1,lentes:!!S.perfect||(S.qaN||0)>=7,gorro:(S.total||0)>=10,bufanda:(S.best||0)>=7};
  const nu=ACCS.filter(a=>t[a.id]&&!S.unl.includes(a.id));if(!nu.length)return;
@@ -544,7 +551,9 @@ function admOk(id,u,d){CLOUD.adminApprove(id,u,d).then(()=>{toast('Plus concedid
 function prevSet(k,v){try{localStorage.setItem(k,v?'1':'0')}catch(e){}applyAccent();render()}
 function admGrant(t){const u=($('#gu').value||'').trim(),d=parseInt($('#gd').value,10)||30;if(u.length<10){toast('Escribe el código de ayuda completo.');return}
  CLOUD.adminGrant(u,t,d).then(()=>toast(t==='plus'?'Plus concedido por '+d+' días.':'Plus retirado.')).catch(()=>toast('No se pudo. ¿Publicaste las reglas nuevas?'))}
-const STAGE=['Recién llegado','Juguetón','Consentido','Leyenda de la familia'];
+const STG=['Bebé','Pequeño','Joven','Adulto'];
+const stgL=l=>l<2?0:l<5?1:l<9?2:3;
+const stg=()=>stgL(Math.floor(S.xp/100));
 
 /* ---------- data ---------- */
 const TY={
@@ -563,7 +572,7 @@ const fm=()=>GT[gtype()].fm;
 const libName=()=>S.group?GT[gtype()].lib:'Mi libro';
 const famLabel=()=>S.group?GT[gtype()].n:'Grupo';
 const today=()=>new Date().toDateString(),KEY='capsula_v3',LEGACY='capsula_v2';
-const PT0=()=>({love:80,food:75,t:Date.now(),lr:0,lf:0,ans:0,ad:'',asked:{},moods:[],seen:{},tv:{d:'',n:0},tvb:''});
+const PT0=()=>({love:80,food:75,clean:80,fun:70,en:90,rest:0,said:[],lb:0,lp:0,lz:0,t:Date.now(),lr:0,lf:0,ans:0,ad:'',asked:{},moods:[],seen:{},tv:{d:'',n:0},tvb:''});
 const THEMES=[{id:'rosa',n:'Rosa',bg:'#FFF6FA',pr:'#B5336E',bar:'#FFF6FA'},{id:'azul',n:'Cápsula',bg:'#F6F3FF',pr:'#6A4CD6',bar:'#F6F3FF'},{id:'negro',n:'Negro',bg:'#000000',pr:'#F5F5F7',bar:'#000000'}];
 const S={birth:'',legal:null,blk:[],refC:0,invD:[],adm:(()=>{try{return localStorage.getItem('capsula_adm')==='1'}catch(e){return false}})(),showSeen:true,qd:'',qaN:0,qa:null,gtype:'familia',gname:'',qtx:'',theme:document.documentElement.dataset.theme||'azul',bub:null,bubT:0,pt:PT0(),scr:'boot',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,group:null,
  user:null,families:[],members:{},solo:false,cloudErr:'',bootSlow:0,joinCode:'',
@@ -575,12 +584,12 @@ try{const q=new URLSearchParams(location.search),c=q.get('codigo'),sf=v=>String(
  if(c||rf||de)history.replaceState(null,'',location.pathname)}catch(e){}
 
 /* Lo personal (mascota, corazones, racha...) viaja a la nube; la copia local sirve de respaldo sin internet */
-const personal=()=>({name:S.me.name,pet:S.pet,petSet:S.petSet,xp:S.xp,streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,best:S.best,total:S.total,types:[...S.types],pt:S.pt,solo:S.solo,theme:S.theme,showSeen:S.showSeen,birth:S.birth,legal:S.legal,blk:S.blk,refC:S.refC,invD:S.invD,qd:S.qd,qaN:S.qaN,accent:S.accent||'',active:S.group?S.group.id:null});
+const personal=()=>({name:S.me.name,ln:S.me.ln||'',pet:S.pet,petSet:S.petSet,xp:S.xp,streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,best:S.best,total:S.total,types:[...S.types],pt:S.pt,solo:S.solo,theme:S.theme,showSeen:S.showSeen,birth:S.birth,legal:S.legal,blk:S.blk,refC:S.refC,invD:S.invD,qd:S.qd,qaN:S.qaN,accent:S.accent||'',active:S.group?S.group.id:null});
 let remK='',remT=0;
 function save(){try{if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()){const k=(S.me.name||'')+'|'+((S.pet&&S.pet.name)||'');if(k!==remK){remK=k;clearTimeout(remT);remT=setTimeout(()=>{try{remApply()}catch(e){}},2500)}}}catch(e){}
  if(S.user){try{localStorage.setItem(KEY,JSON.stringify({...personal(),uid:S.user.uid,familyIds:S.families.map(f=>f.id)}))}catch(e){}}
  if(window.CLOUD&&CLOUD.ready)CLOUD.dirty()}
-function resetPersonal(){Object.assign(S,{accent:'',ent:null,birth:'',legal:null,blk:[],refC:0,invD:[],xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,pt:PT0(),pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,solo:false,showSeen:true,qd:'',qaN:0,qa:null,group:null,bub:null,posts:[],members:{},families:[]});T={i:0,s:0,a:null}}
+function resetPersonal(){S.nameAt=0;S.nameP=0;Object.assign(S,{accent:'',ent:null,birth:'',legal:null,blk:[],refC:0,invD:[],xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,pt:PT0(),pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,solo:false,showSeen:true,qd:'',qaN:0,qa:null,group:null,bub:null,posts:[],members:{},families:[]});T={i:0,s:0,a:null}}
 function applyPersonal(o){if(!o)return;
  if(THEMES.some(t=>t.id===o.theme))applyTheme(o.theme);
  if(typeof o.accent==='string')S.accent=o.accent;
@@ -595,12 +604,13 @@ function floatH(t){const e=document.createElement('div');e.className='fh';e.text
 /* ---------- mascota 3D (Mi mundo). Si falla, queda la 2D ---------- */
 const P3={st:'idle',v:null,host:null,t:0,slow:false};
 const P3K={nube:'capsule',gato:'cat',perro:'dog',conejo:'bunny',oso:'bear'};
-const p3expr=()=>asleep()?'sleepy':S.pt.love<30?'sad':S.pt.love>=85?'happy':'neutral';
+const p3expr=()=>asleep()?'sleepy':S.pt.clean<25||S.pt.en<15?'sad':S.pt.love<30?'sad':S.pt.love>=85?'happy':'neutral';
+const pet3=(id,w,cls)=>`<span id="${id}" class="p3 ${cls||''}${P3.st==='fail'||P3.slow?' fb':''}" style="${w?`width:${w}px;height:${Math.round(w*.9)}px`:''}"><span class="f2">${pet(S.pet.kind,Math.round((w||200)*.8),S.wear,stg())}</span></span>`;
 function p3fb(){document.querySelectorAll('.p3').forEach(e=>e.classList.add('fb'))}
 function p3off(){P3.st='fail';document.querySelectorAll('.p3').forEach(e=>{e.classList.remove('on');e.classList.add('fb')});const f=$('.hero .fl');if(f)f.classList.remove('d3');try{P3.v&&P3.v.destroy()}catch(e){}P3.v=null}
-function p3sync(){const v=P3.v;if(!v)return;try{const k=P3K[S.pet.kind];if(k&&v.current!==k)v.setPet(k);v.setAccessories(S.wear.filter(x=>typeof x==='string'&&ownedId(x)));v.setExpression(p3expr())}catch(e){p3off()}}
+function p3sync(){const v=P3.v;if(!v)return;try{const k=P3K[S.pet.kind];if(k&&v.current!==k)v.setPet(k);v.setAccessories(S.wear.filter(x=>typeof x==='string'&&ownedId(x)));if(v.setStage)v.setStage(stg());v.setExpression(p3expr())}catch(e){p3off()}}
 function p3play(a){if(P3.st==='ok'&&P3.v&&$('.p3'))try{P3.v.play(a)}catch(e){}}
-function p3mount(){const ph=$('#pet3d')||$('#pet3dh');if(!ph||P3.st==='fail')return;
+function p3mount(){const ph=$('#pet3dx')||$('#pet3d')||$('#pet3dh');if(!ph||P3.st==='fail')return;
  if(P3.st==='ok'){if(P3.host.parentNode!==ph)ph.appendChild(P3.host);ph.classList.add('on');const f=$('.hero .fl');if(f)f.classList.add('d3');p3sync();
   const n=Date.now();if(n-P3.t>20000)setTimeout(()=>p3play('hello'),400);P3.t=n;return}
  if(P3.st!=='idle')return;P3.st='loading';setTimeout(()=>{if(P3.st!=='ok'){P3.slow=true;p3fb()}},7000);
@@ -614,7 +624,7 @@ function p3mount(){const ph=$('#pet3d')||$('#pet3dh');if(!ph||P3.st==='fail')ret
  }).catch(()=>{P3.st='fail'});
 }
 function hopPet(){const f=$('.hero .fl');if(f){f.classList.remove('hop');void f.offsetWidth;f.classList.add('hop')}}
-function levelUp(l){p3play('levelup');const o=document.createElement('div');o.className='lvup';o.innerHTML=`<div class="lvc"><div class="lvp">${pet(S.pet.kind,150,S.wear)}</div><h1>¡${esc(S.pet.name)} subió de nivel!</h1><p><b>Nivel ${l+1}</b> · ${STAGE[Math.min(l,3)]}</p><p class="mu">${l===1?'Estrenó una estrellita ✨':l===2?'Estrenó un moño 🎀':l>=3?'¡Ahora lleva corona! 👑':''}</p><button class="btn" onclick="this.closest('.lvup').remove()">¡Qué orgullo!</button></div>`;$('.app').appendChild(o);burst(44)}
+function levelUp(l){p3play('levelup');const o=document.createElement('div');o.className='lvup';o.innerHTML=`<div class="lvc"><div class="lvp">${pet3('pet3dx',200)}</div><h1>¡${esc(S.pet.name)} subió de nivel!</h1><p><b>Nivel ${l+1}</b> · ${STG[stgL(l)]}</p><p class="mu">${stgL(l)>stgL(l-1)?'🌱 ¡Evolucionó! Ahora es '+STG[stgL(l)].toLowerCase()+'.':l===1?'Estrenó una estrellita ✨':l===2?'Estrenó un moño 🎀':l>=3?'¡Ahora lleva corona! 👑':''}</p><button class="btn" onclick="this.closest('.lvup').remove();p3mount()">¡Qué orgullo!</button></div>`;$('.app').appendChild(o);p3mount();burst(44)}
 
 /* ---------- helpers ---------- */
 function toast(m){const t=$('#ts');t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),2000)}
@@ -681,18 +691,28 @@ const NP=n=>(window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins[n])||null;
 async function nativeGoogle(){const P=NP('FirebaseAuthentication');if(!P)throw new Error('sin plugin');
  const r=await P.signInWithGoogle({skipNativeAuth:true});const t=r&&r.credential&&r.credential.idToken;if(!t)throw new Error('sin token');return t}
 let LM='in';
-function lmSw(){LM=LM==='in'?'up':'in';const g=$('#lgo'),w=$('#lsw'),p=$('#lpw');if(g)g.textContent=LM==='up'?'Crear cuenta':'Continuar';if(w)w.textContent=LM==='up'?'Ya tengo cuenta':'Crear cuenta';if(p)p.autocomplete=LM==='up'?'new-password':'current-password';gerr('')}
-async function emailGo(mode){const e=($('#lem').value||'').trim(),p=$('#lpw').value||'',g=$('#gst');
+function lmSw(){lSet(LM==='in'?'up':'in');gerr('')}
+let LF=0,LT=0;
+const isGm=e=>/@(gmail|googlemail)\.com$/i.test(e);
+function lSet(m){LM=m;const g=$('#lgo'),w=$('#lsw'),p=$('#lpw');if(g)g.textContent=m==='up'?'Crear cuenta':'Continuar';if(w)w.textContent=m==='up'?'Ya tengo cuenta':'Crear cuenta';if(p)p.autocomplete=m==='up'?'new-password':'current-password'}
+async function emailGo(mode){const e=($('#lem').value||'').trim().toLowerCase(),p=$('#lpw').value||'',g=$('#gst');
  if(!/^\S+@\S+\.\S+$/.test(e)){gerr('Escribe un correo válido.');return}
  if(!navigator.onLine){gerr('Necesitas internet para entrar.');return}
+ if(Date.now()<LT){gerr('Espera unos segundos antes de intentar de nuevo. Mientras tanto puedes tocar «¿Olvidaste tu contraseña?».');return}
  gerr('');
  try{
-  if(mode==='reset'){await CLOUD.emailReset(e);if(g)g.textContent='Te enviamos un correo para cambiar tu contraseña. Revisa también el spam.';return}
+  if(mode==='reset'){await CLOUD.emailReset(e);if(g)g.textContent='Si ese correo tiene contraseña, te enviamos un enlace para cambiarla. Revisa también el spam.'+(isGm(e)?' Si creaste tu cuenta con Google, no tiene contraseña: toca «Continuar con Google».':'');return}
   if(p.length<6){gerr('La contraseña debe tener al menos 6 caracteres.');return}
   if(g)g.textContent='Entrando…';
-  if(mode==='up')await CLOUD.emailUp(e,p);else await CLOUD.emailIn(e,p)}
- catch(x){if(g)g.textContent='';const c=String(x&&x.code||'');
-  gerr(/already-in-use/.test(c)?'Ese correo ya tiene cuenta. Toca Entrar.':/weak/.test(c)?'Esa contraseña es muy débil. Usa al menos 6 caracteres.':/invalid-credential|wrong-password|user-not-found/.test(c)?'Correo o contraseña incorrectos. Si es tu primera vez, toca Crear cuenta.':/operation-not-allowed/.test(c)?'El acceso con correo todavía no está activado.':/too-many/.test(c)?'Demasiados intentos. Espera unos minutos.':'No pudimos entrar. Revisa tus datos e intenta de nuevo.')}}
+  if(mode==='up')await CLOUD.emailUp(e,p);else await CLOUD.emailIn(e,p);LF=0}
+ catch(x){if(g)g.textContent='';const c=String(x&&x.code||'');LF++;
+  if(LF>=3){LT=Date.now()+20000;LF=0}
+  if(/already-in-use/.test(c)){lSet('in');gerr('Ese correo ya tiene una cuenta. Escribe tu contraseña y toca Continuar. Si la creaste con Google, usa «Continuar con Google».')}
+  else if(/weak/.test(c))gerr('Esa contraseña es muy débil. Usa al menos 6 caracteres.');
+  else if(/invalid-credential|wrong-password|user-not-found|invalid-login/.test(c))gerr('No pudimos entrar con ese correo y contraseña. '+(isGm(e)?'Si tu cuenta es de Google, toca «Continuar con Google». ':'')+'Si es tu primera vez, toca «Crear cuenta»; si olvidaste la contraseña, toca «¿Olvidaste tu contraseña?».');
+  else if(/too-many/.test(c)){LT=Date.now()+60000;gerr('Hubo muchos intentos con este correo. Espera un minuto o restablece tu contraseña con «¿Olvidaste tu contraseña?».')}
+  else if(/operation-not-allowed/.test(c))gerr('El acceso con correo todavía no está activado.');
+  else gerr('No pudimos entrar. Revisa tus datos e intenta de nuevo.')}}
 async function nativeLogin(){const g=$('#gst');if(g)g.textContent='Entrando…';try{await CLOUD.signIn(await nativeGoogle())}catch(e){console.error(e);if(g)g.textContent='';gerr('No pudimos iniciar sesión. Intenta de nuevo. (Detalle: '+String((e&&(e.code||e.message))||e).slice(0,160)+')')}}
 const remGet=()=>{try{return JSON.parse(localStorage.getItem('capsula_rem')||'null')||{on:true,h:20,fresh:true}}catch(e){return{on:true,h:20,fresh:true}}};
 /* Al abrir la app: el recordatorio nace activado y se vuelve a programar (Android pide el permiso una sola vez). */
@@ -721,6 +741,7 @@ function gsheet(){
  <div class="osep"><span>o</span></div>
  <div class="ig"><input id="lem" type="email" autocomplete="email" inputmode="email" placeholder="Correo electrónico" aria-label="Correo electrónico"><input id="lpw" type="password" autocomplete="current-password" placeholder="Contraseña" aria-label="Contraseña"></div>
  <button class="btn w" id="lgo" onclick="emailGo(LM)">Continuar</button>
+ <p class="mu c" style="margin:0">¿Entraste antes con Google? Usa siempre el botón de Google.</p>
  <p class="mu c"><button class="lnk" style="text-decoration:none" id="lsw" onclick="lmSw()">Crear cuenta</button> · <button class="lnk" style="text-decoration:none" onclick="emailGo('reset')">¿Olvidaste tu contraseña?</button></p>`:`<p class="err" style="display:block">${esc(S.cloudErr||'El inicio de sesión todavía no está configurado. Abre config.js y sigue el README.')}</p>`}
  <p class="err" id="err"></p>`);
  if(ok&&!NATIVE)loadG(id)}
@@ -874,7 +895,7 @@ function recentHTML(n){const L=S.posts.filter(p=>p.a!=='me'&&TY[p.k]&&!isBlk(p.a
  return L.map(p=>`<div class="card row" style="flex-direction:row;align-items:center;gap:12px">${pAv(p.a,40)}<span class="tx" style="flex:1;min-width:0"><b>${esc(who(p.a,p))} ${VERB[p.k]||'compartió algo'}</b><span class="mu">${rel(p.ts)} · ${S.group?esc(S.group.name):'Mi mundo'}</span></span></div>`).join('')}
 function home(){
  const n=S.families.length,rc=recentHTML(3);
- return `<section class="card hw"><div style="max-width:200px"><span class="mu">Hola, ${esc(S.me.name)}</span><h2>Tu mundo te espera</h2><p class="mu" style="margin:4px 0 10px">Tu mascota ${esc(S.pet.name)} te espera. Cuídala y gana corazones.</p><button class="btn" onclick="go('mundo')">Entrar</button></div><span class="hp"><span id="pet3dh" class="p3 p3h${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet(S.pet.kind,104,S.wear)}</span></span></span></section>
+ return `<section class="card hw"><div style="max-width:200px"><span class="mu">Hola, ${esc(S.me.name)}</span><h2>Tu mundo te espera</h2><p class="mu" style="margin:4px 0 10px">Tu mascota ${esc(S.pet.name)} te espera. Cuídala y gana corazones.</p><button class="btn" onclick="go('mundo')">Entrar</button></div><span class="hp"><span id="pet3dh" class="p3 p3h${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet(S.pet.kind,104,S.wear,stg())}</span></span></span></section>
  ${fpCard()}
  <div class="duo"><button class="tile2" onclick="go('mundo')">${ic('world',26)}<b>Mi mundo</b><span class="mu">Solo tuyo: tu mascota y tu diario</span></button><button class="tile2" onclick="go('caps')">${ic('caps',26)}<b>Mis cápsulas</b><span class="mu">${n?'Compartes historias en '+n+(n>1?' espacios':' espacio'):'Comparte historias con tu familia o amigos'}</span></button></div>
  <section class="card"><span class="mu">Pregunta del día · una nueva cada día</span><h2>${esc(qaToday(true))}</h2><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn" onclick="goTriv()">Responder</button><button class="btn s" onclick="dest()">Contar una historia</button></div></section>
@@ -902,7 +923,7 @@ function mundo(){
  <section class="card"><h3>¿Cómo quieres contar hoy?</h3><div class="qp">${Object.entries(TY).map(([k,v])=>`<button onclick="compose('${k}')">${ic(v.i,18)}${v.l}</button>`).join('')}</div></section>
  <div class="duo"><button class="tile2" onclick="goArc()">${ic('book',26)}<b>Mi archivo</b><span class="mu">${n} ${n===1?'historia':'historias'}</span></button><button class="tile2" onclick="go('triv')">${ic('star',26)}<b>Pregunta del día</b><span class="mu">Una para ti</span></button></div>
  ${missionsHTML()}${closetHTML()}
- ${moodCard()}${badgesHTML()}<section class="card"><h3>${libName()}</h3><div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div><p class="mu">${Math.min(n,12)} de 12 historias. Con 12 se arma el libro.</p></section>
+ ${moodCard()}${badgesHTML()}${bookCard(n)}
  ${inviteApp()}`}
 function chest(){const r=(10+Math.floor(Math.random()*21));S.chest=today();burst(32);add(r)}
 const H=3600e3;
@@ -914,45 +935,86 @@ const QS=[
  {k:'hist',t:()=>'¿Me cuentas una historia hoy?',o:[['Sí, vamos','¡Sí! Elige cómo quieres contarla 🎉',0,'chooser'],['Luego','Dale, aquí estaré 💗']]},
  {k:'inv',cond:()=>S.group&&Object.keys(S.members).length<2,t:()=>'¿Ya invitaste a alguien a tu grupo?',o:[['Sí','¡Genial! Con ellos todo es más lindo 💗'],['Aún no','Comparte el código desde Familia, ¡quiero conocerlos!',0,'fam']]}
 ];
-const asleep=()=>new Date().getHours()<6;
+const asleep=()=>new Date().getHours()<6||S.pt.rest>Date.now();
 const fmtWait=ms=>{const m=Math.ceil(ms/60000);return m>=60?Math.floor(m/60)+' h '+(m%60)+' min':m+' min'};
-function ptTick(){const p=S.pt,now=Date.now(),m=Math.max(0,(now-p.t)/60000);p.love=Math.max(0,p.love-m/9);p.food=Math.max(0,p.food-m/7);p.t=now}
-function greet(away){if(asleep())return{t:'Zzz… (tócame para despertarme)',o:null,q:null};const h=new Date().getHours(),g=h<12?'Buenos días':h<19?'Buenas tardes':'Buenas noches';
- let t=g+', '+S.me.name+' 💗';if(away>6)t='¡Te extrañé! Pasaron '+Math.floor(away)+' horas. '+t;if(S.pt.food<30)t+=' Tengo hambre 🍪';return{t,o:null,q:null}}
+function ptTick(){const p=S.pt,now=Date.now(),m=Math.max(0,(now-p.t)/60000),sl=p.rest>now;
+ p.love=Math.max(0,p.love-m/(sl?20:9));p.food=Math.max(0,p.food-m/(sl?14:7));
+ p.clean=Math.max(0,(p.clean??80)-m/16);p.fun=Math.max(0,(p.fun??70)-m/(sl?30:11));
+ p.en=sl?Math.min(100,(p.en??90)+m*1.2):Math.max(0,(p.en??90)-m/18);p.t=now}
+function say(pool){const L=S.pt.said||(S.pt.said=[]);let c=pool.filter(x=>!L.includes(x));if(!c.length)c=pool;const t=c[Math.floor(Math.random()*c.length)];L.push(t);if(L.length>8)L.shift();return t}
+const tod=()=>{const h=new Date().getHours();return h<6?'noche':h<12?'mañana':h<19?'tarde':'noche'};
+function greet(away){if(asleep())return{t:'Zzz… (tócame para despertarme)',o:null,q:null};const n=S.me.name,t0=tod(),p=S.pt;
+ const P={mañana:['Buenos días, '+n+' ☀️','¡Arriba, '+n+'! Hoy huele a historia nueva','Buen día, '+n+' 💗 ¿desayunaste?'],tarde:['Buenas tardes, '+n+' 💗','¡Hola, '+n+'! Te estaba esperando','¿Qué tal va tu tarde, '+n+'?'],noche:['Buenas noches, '+n+' 🌙','Qué bueno verte antes de dormir, '+n,'La noche es perfecta para recordar ✨']}[t0];
+ let t=say(P);if(away>6)t='¡Te extrañé! Pasaron '+Math.floor(away)+' horas. '+t;
+ if(p.food<30)t+=' Tengo hambre 🍪';else if(p.clean<30)t+=' Necesito un baño 🫧';else if(p.fun<30)t+=' ¿Jugamos un rato?';return{t,o:null,q:null}}
 const bubHTML=()=>`<div class="bub">${esc(S.bub.t)}</div>${S.bub.o?`<div class="qr">${S.bub.o.map((o,i)=>`<button onclick="reply(${i})">${esc(o[0])}</button>`).join('')}</div>`:''}`;
 const statsHTML=()=>{const p=S.pt,st=(n,v,c)=>`<div class="st"><span>${n}</span><div class="bar sm ${c?'low':''}"><i style="width:${Math.round(v)}%"></i></div></div>`;
- return st('Ánimo',p.love,p.love<30)+st('Panza',p.food,p.food<30)+st('Nivel',S.xp%100)};
+ return `<div class="stw2">${st('Ánimo',p.love,p.love<30)}${st('Panza',p.food,p.food<30)}${st('Limpieza',p.clean,p.clean<30)}${st('Diversión',p.fun,p.fun<30)}${st('Energía',p.en,p.en<25)}${st('Nivel',S.xp%100)}</div>`};
 function petUI(){const b=$('#bubw');if(b)b.innerHTML=bubHTML();const x=$('#stw');if(x)x.innerHTML=statsHTML()}
 function bubSay(t,o,q){S.bub={t,o:o||null,q:q||null};S.bubT=Date.now();petUI()}
 function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=greet(away);
- const lvl=Math.floor(S.xp/100),sz=Math.round(110+Math.min(S.xp,600)*.16),sl=asleep();
+ const lvl=Math.floor(S.xp/100),sz=150,sl=asleep();
  return `<section class="card hero">
-  <div class="fl ${sl?'sleep':''}" onclick="petTap()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet(S.pet.kind,sz,S.wear)}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div>
+  <div class="fl ${sl?'sleep':''}" onclick="petTap()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div>
   <h2>${esc(S.pet.name)}</h2>
-  <div class="mu">${STAGE[Math.min(lvl,3)]} · nivel ${lvl+1} · crece con tus corazones</div>
+  <div class="mu">${STG[stg()]} · nivel ${lvl+1} · crece con tus corazones</div>
   <div id="bubw" class="bw" aria-live="polite">${bubHTML()}</div>
   <div class="stw" id="stw">${statsHTML()}</div>
-  <div class="acts"><button class="btn s" onclick="petTap()">${ic('heart',18)}Mimar</button><button class="btn s" onclick="feed()">${ic('cup',18)}Comer</button><button class="btn s" onclick="chat()">${ic('star',18)}Charlar</button></div>
+  <div class="acts"><button class="btn s" onclick="petTap()">${ic('heart',18)}Mimar</button><button class="btn s" onclick="feed()">${ic('cup',18)}Comer</button><button class="btn s" onclick="playOpen()">${ic('star',18)}Jugar</button><button class="btn s" onclick="bath()">🫧 Bañar</button><button class="btn s" onclick="rest()">💤 Dormir</button><button class="btn s" onclick="chat()">${ic('chat',18)}Charlar</button></div>
   <div class="mu">Faltan ${100-S.xp%100} corazones para que ${esc(S.pet.name)} crezca</div></section>`}
-function petTap(){ptTick();p3play('love');const p=S.pt,now=Date.now(),wait=3*H-(now-p.lr);p.love=Math.min(100,p.love+12);burst(8,['💗','✨']);
- if(asleep()){bubSay('🥱 ¡Me despertaste! Pero con mimos te perdono.');hopPet();return}
- if(wait<=0){p.lr=now;S.bub={t:['¡Qué rico mimo! 💗','Me encantas, '+S.me.name+' 💕','¡Soy la mascota más feliz! ☁️'][Math.floor(Math.random()*3)],o:null,q:null};S.bubT=now;track('mimo');add(5)}
+function petTap(){ptTick();const p=S.pt,now=Date.now();
+ if(p.rest>now){p.rest=0;p.love=Math.min(100,p.love+4);p3sync();bubSay('🥱 ¡Me despertaste! Pero con mimos te perdono.');hopPet();return}
+ p3play('love');const wait=3*H-(now-p.lr),need=p.love<70;p.love=Math.min(100,p.love+12);burst(8,['💗','✨']);
+ if(new Date().getHours()<6){bubSay('🥱 ¡Me despertaste! Pero con mimos te perdono.');hopPet();return}
+ if(wait<=0&&need){p.lr=now;S.bub={t:say(['¡Qué rico mimo! 💗','Me encantas, '+S.me.name+' 💕','¡Soy la mascota más feliz! ☁️','Eso era justo lo que necesitaba 🥹','Ronroneo por dentro… 💗']),o:null,q:null};S.bubT=now;track('mimo');add(5)}
+ else if(!need){bubSay(say(['Ya estoy rebosante de cariño 💗 ¡pero no pares!','Mmm, qué rico. Hoy me siento muy querido.','¡Más mimos no caben en mi corazón, pero igual me gustan! 🥹']));hopPet()}
  else{bubSay('Mmm, qué rico 🥹 Mi próximo premio de mimos llega en '+fmtWait(wait));hopPet()}}
-function feed(){ptTick();p3play('eat');const p=S.pt,now=Date.now();if(p.food>=92){bubSay('Estoy llenita 🥹 Gracias, más tarde me da hambre.');return}
- p.food=Math.min(100,p.food+40);burst(8,['🍪','💗']);
- if(now-p.lf>4*H){p.lf=now;S.bub={t:'¡Ñam ñam! Estaba riquísimo 🍪',o:null,q:null};S.bubT=now;add(8)}else{bubSay('¡Ñam ñam! Gracias 🍪');hopPet()}}
-function chat(){const now=Date.now(),el=QS.filter(q=>!q.cond||q.cond());let c=el.filter(q=>now-(S.pt.asked[q.k]||0)>6*H);if(!c.length)c=el;const q=c[Math.floor(Math.random()*c.length)];S.pt.asked[q.k]=now;bubSay(q.t(),q.o,q)}
+const FOODS=[{k:'galleta',e:'🍪',n:'Galleta',f:30,l:3,c:-3,u:0},{k:'manzana',e:'🍎',n:'Manzana',f:22,l:6,c:0,u:6},{k:'pastel',e:'🍰',n:'Pastel',f:42,l:10,c:-10,u:-4}];
+function feed(){ptTick();const p=S.pt;
+ if(asleep()){bubSay('Zzz… tengo sueño, ahora no 💤');return}
+ if(p.food>=90){bubSay(say(['Estoy llenita 🥹 Gracias, más tarde me da hambre.','Ya no me cabe ni una migaja 🍪','Mi panza dice: «gracias, luego»']));return}
+ showSheet(`<h2>¿Qué le das de comer a ${esc(S.pet.name)}?</h2><div class="fdg">${FOODS.map(f=>`<button onclick="eat('${f.k}')"><b>${f.e}</b>${f.n}</button>`).join('')}</div><p class="mu">Cada comida le da distinta energía. El pastel es rico, pero ensucia.</p>`)}
+function eat(k){const f=FOODS.find(x=>x.k===k);if(!f)return;cl();ptTick();const p=S.pt,now=Date.now(),need=p.food<60;p3play('eat');
+ p.food=Math.min(100,p.food+f.f);p.love=Math.min(100,p.love+f.l);p.clean=Math.max(0,p.clean+f.c);p.en=Math.min(100,p.en+f.u);burst(8,[f.e,'💗']);
+ if(need&&now-p.lf>3*H){p.lf=now;S.bub={t:say(['¡Ñam ñam! Estaba riquísimo '+f.e,'¡Delicioso! Eres el mejor cocinero '+f.e,'Mmm… '+f.n.toLowerCase()+', mi favorita del día '+f.e]),o:null,q:null};S.bubT=now;add(8)}else{bubSay(say(['¡Ñam ñam! Gracias '+f.e,'Qué rico '+f.e+' ¡repito mañana!']));hopPet();petUI()}}
+function playOpen(){ptTick();const p=S.pt;
+ if(asleep()){bubSay('Zzz… tengo sueño, ahora no 💤');return}
+ if(p.en<20){bubSay(say(['Estoy muy cansada… ¿una siesta primero? 💤','Se me cierran los ojitos 🥱 Mejor dormimos un rato']));return}
+ showSheet(`<h2>¿A qué juegan?</h2><div class="fdg"><button onclick="playG('pelota')"><b>⚽</b>Pelota</button><button onclick="playG('baile')"><b>💃</b>Bailar</button><button onclick="playG('escondidas')"><b>🙈</b>Escondidas</button></div><p class="mu">Jugar da diversión pero gasta energía.</p>`)}
+function playG(k){const G={pelota:[28,14,'dance','⚽'],baile:[22,10,'dance','🎵'],escondidas:[34,20,'surprise','🙈']}[k];if(!G)return;cl();ptTick();const p=S.pt,now=Date.now(),need=p.fun<65;
+ p.fun=Math.min(100,p.fun+G[0]);p.en=Math.max(0,p.en-G[1]);p.love=Math.min(100,p.love+4);p.food=Math.max(0,p.food-5);p3play(G[2]);burst(10,[G[3],'✨']);
+ if(need&&now-p.lp>2*H){p.lp=now;S.bub={t:say(['¡Qué divertido! Otra vez mañana '+G[3],'¡Me encantó jugar contigo! 💗','¡Jajaja! Eres muy bueno en esto '+G[3]]),o:null,q:null};S.bubT=now;add(6)}else{bubSay(say(['¡Jugamos! 🎉','Wiii '+G[3]+' pero me estoy cansando','¡Otra partida cuando quieras!']));hopPet();petUI()}}
+function bath(){ptTick();const p=S.pt,now=Date.now();
+ if(asleep()){bubSay('Zzz… ahora no, estoy durmiendo 💤');return}
+ if(p.clean>=90){bubSay(say(['¡Ya estoy limpio y brillante! ✨','Hoy ya me bañé, mira cómo huelo 🫧','Más tarde, ahora estoy impecable']));return}
+ const need=p.clean<60;p.clean=100;p.love=Math.min(100,p.love+4);p3play('surprise');burst(18,['🫧','💦','✨']);
+ if(need&&now-p.lb>6*H){p.lb=now;S.bub={t:say(['¡Qué fresquito! Huelo a nube 🫧','Burbujas, burbujas… ¡gracias! 🛁','¡Quedé como nuevo! ✨']),o:null,q:null};S.bubT=now;add(6)}else{bubSay('¡Chap chap! Qué rico 🫧');hopPet();petUI()}}
+function rest(){ptTick();const p=S.pt,now=Date.now();
+ if(p.rest>now){bubSay('Zzz… (ya estoy descansando) 💤');return}
+ if(p.en>=88){bubSay(say(['No tengo sueño todavía 😄 Juguemos un rato.','Estoy lleno de energía, ¡aún no!']));return}
+ const need=p.en<55;p.rest=now+6*60000;p3sync();burst(6,['💤','🌙']);
+ if(need&&now-p.lz>4*H){p.lz=now;S.bub={t:'Zzz… voy a dormir una siestita 🌙 Descansaré unos minutos y despertaré con energía.',o:null,q:null};S.bubT=now;add(5)}else{bubSay('Zzz… una siestita corta 💤')}
+ petUI();setTimeout(()=>{ptTick();p3sync();petUI()},6*60000+500)}
+const FACTS=['¿Sabías que cada historia me hace crecer? 🌱','Me gusta cuando cuentas cosas de tu infancia','Hoy es buen día para una historia ✨','Las recetas de la abuela son mis favoritas 🍲','Una carta escrita a mano es un tesoro; una aquí también 💌','Si grabas tu voz, tu familia la escuchará siempre 🎙️','Pregúntale hoy a alguien cómo era su barrio de niño','Una foto vieja y dos frases valen un recuerdo entero 📷','Los recuerdos compartidos pesan menos y brillan más','Yo cuido tus historias mientras duermes 🌙','Cada pregunta del día es una conversación que empieza','Los abuelos tienen mil historias esperando que alguien las pida'];
+function chat(){const now=Date.now(),p=S.pt,el=QS.filter(q=>!q.cond||q.cond());
+ if(Math.random()<.35){bubSay(say(FACTS));return}
+ let c=el.filter(q=>now-(p.asked[q.k]||0)>20*H);if(!c.length)c=el.slice().sort((a,b)=>(p.asked[a.k]||0)-(p.asked[b.k]||0)).slice(0,2);
+ const q=c[Math.floor(Math.random()*c.length)];p.asked[q.k]=now;bubSay(q.t(),q.o,q)}
 function reply(i){const q=S.bub&&S.bub.q;if(!q)return;const o=q.o[i],p=S.pt,d=today();if(p.ad!==d){p.ad=d;p.ans=0}
  if(q.mood&&o[2])p.moods=(p.moods||[]).filter(m=>m.d!==d).concat({d,v:o[2]}).slice(-14);
  S.bub={t:o[1],o:null,q:null};S.bubT=Date.now();
  if(o[3]==='chooser')setTimeout(()=>chooser(),900);if(o[3]==='fam')setTimeout(()=>{if(S.group){S.sub='personas';go('cap')}else go('caps')},1100);
  if(p.ans<5){p.ans++;add(2)}else render()}
 function petIdle(force){if(S.scr!=='main'||S.tab!=='mundo'||document.hidden||$('#sh.open')||$('.lvup'))return;ptTick();const now=Date.now();
- if(S.bub&&S.bub.q)return;if(!force&&now-(S.bubT||0)<14000)return;
- if(asleep()){if(!S.bub||!/Zzz/.test(S.bub.t))bubSay('Zzz… estoy soñando con tus historias 💤');return}
- const p=S.pt;if(p.food<35&&Math.random()<.7){bubSay('Tengo hambre… ¿me das de comer? 🍪');return}
- if(p.love<35&&Math.random()<.7){bubSay('Me siento solita… ¿me das un mimo? 💗');return}
- if(force||Math.random()<.65)chat();else bubSay(['¿Sabías que cada historia me hace crecer? 🌱','Me gusta cuando cuentas cosas de tu infancia','Hoy es buen día para una historia ✨'][Math.floor(Math.random()*3)])}
+ if(S.bub&&S.bub.q)return;if(!force&&now-(S.bubT||0)<22000)return;
+ if(asleep()){if(!S.bub||!/Zzz/.test(S.bub.t))bubSay(say(['Zzz… estoy soñando con tus historias 💤','Zzz… mmm… galletas… 💤']));return}
+ const p=S.pt,r=Math.random();
+ if(p.food<35&&r<.7){bubSay(say(['Tengo hambre… ¿me das de comer? 🍪','Mi panza hace ruiditos 🥺']));return}
+ if(p.clean<30&&r<.7){bubSay(say(['Creo que necesito un bañito 🫧','Huelo a aventura… ¿me bañas?']));return}
+ if(p.fun<30&&p.en>30&&r<.7){bubSay(say(['Me aburro… ¿jugamos? ⚽','¡Quiero bailar contigo! 💃']));return}
+ if(p.en<25&&r<.7){bubSay(say(['Tengo sueñito… ¿una siesta? 💤','Se me cierran los ojos 🥱']));return}
+ if(p.love<35&&r<.7){bubSay(say(['Me siento solita… ¿me das un mimo? 💗','¿Me das un abracito?']));return}
+ if(force||r<.55)chat();else bubSay(say(FACTS))}
 function moodCard(){const m=S.pt.moods||[];if(!m.length)return'';const E=['','😢','😕','🙂','😄'],L='DLMXJVS';
  return `<section class="card"><h3>Tu ánimo esta semana</h3><div class="days">${Array.from({length:7},(_,i)=>{const dt=new Date(Date.now()-(6-i)*864e5),e=m.find(x=>x.d===dt.toDateString());return `<span style="${e?'font-size:20px;background:var(--soft2)':''}">${e?E[e.v]:L[dt.getDay()]}</span>`}).join('')}</div><p class="mu">${esc(S.pet.name)} lo recuerda cada vez que le cuentas cómo te fue.</p></section>`}
 
@@ -970,7 +1032,7 @@ function triv(){
  const day=dayKey(),q=qaToday(!S.group),g=S.group;
  if(g&&window.CLOUD&&CLOUD.qaOpen)CLOUD.qaOpen(day);
  const st=S.qa&&S.qa.day===day?S.qa:{mine:null,all:null},done=S.qd===day;
- const head=`<button class="bk" onclick="go('${g?'cap':'mundo'}')">${ic('back',18)} ${g?esc(g.name):'Mi mundo'}</button><div class="spch"><h2>Pregunta del día</h2>${spaceTag()}</div><div class="card c">${g?ic('star',44):pet(S.pet.kind,80,S.wear)}<span class="mu">Hoy para ${g?fm():'ti'}</span><h2 style="margin:6px 0 0">${esc(q)}</h2></div>`;
+ const head=`<button class="bk" onclick="go('${g?'cap':'mundo'}')">${ic('back',18)} ${g?esc(g.name):'Mi mundo'}</button><div class="spch"><h2>Pregunta del día</h2>${spaceTag()}</div><div class="card c">${g?ic('star',44):pet3('pet3dx',130)}<span class="mu">Hoy para ${g?fm():'ti'}</span><h2 style="margin:6px 0 0">${esc(q)}</h2></div>`;
  if(!g)return head+`<div class="card">${done?'<p class="mu c">Ya la respondiste hoy. Tu respuesta quedó en tu Archivo. Vuelve mañana por otra.</p>':qaForm(true)}</div>`;
  if(!st.mine&&!done)return head+`<div class="card">${qaForm(false)}</div>`;
  if(!st.all)return head+`<div class="card"><p class="mu c">${st.mine?'Cargando las respuestas…':'Guardando tu respuesta…'}</p></div>`;
@@ -1017,17 +1079,28 @@ async function reportSend(pid,uid){const v=document.querySelector('input[name=rs
  catch(e){b.disabled=false;const q=$('#rse');q.textContent='No se pudo enviar. Revisa tu conexión e intenta de nuevo.';q.style.display='block'}}
 function blockSet(uid,on){S.blk=S.blk||[];const i=S.blk.indexOf(uid);if(on&&i<0)S.blk.push(uid);if(!on&&i>=0)S.blk.splice(i,1);save();toast(on?'Persona bloqueada. Ya no verás lo que publique.':'Persona desbloqueada');soft()}
 function blkList(){const L=S.blk||[];showSheet(`<h2>Personas bloqueadas</h2>${L.length?L.map(u=>`<div class="row sp"><span class="tx"><b>${esc((S.members[u]&&S.members[u].name)||'Persona')}</b></span><button class="btn s" onclick="blockSet('${esc(u)}',false);blkList()">Desbloquear</button></div>`).join(''):'<p class="mu">No has bloqueado a nadie.</p>'}<button class="btn s w" onclick="cl()">Cerrar</button>`)}
+/* ---------- libro de recuerdos ---------- */
+const bookPosts=()=>S.posts.filter(p=>TY[p.k]&&!isBlk(p.a)).slice().sort((a,b)=>(a.ts||0)-(b.ts||0));
+const fdate=ts=>ts?new Date(ts).toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric'}):'';
+function bookOpen(){const L=bookPosts();if(L.length<12){toast('Aún faltan '+(12-L.length)+' historias para armar el libro.');return}S.bkL=L;S.bk=0;bookPage()}
+function bookPage(){const L=S.bkL||[],i=S.bk,T=L.length+2;let h;
+ if(i===0)h=`<div class="bkc"><span class="bk2">${ic('book',56)}</span><h2>${esc(libName())}</h2><p class="mu">${L.length} historias${L[0]?' · desde '+fdate(L[0].ts):''}</p><p class="mu">Pasa las páginas para leerlo.</p></div>`;
+ else if(i===T-1)h=`<div class="bkc"><span class="bk2">${ic('star',56)}</span><h2>Fin… por ahora</h2><p class="mu">Cada historia nueva se suma a este libro.</p></div>`;
+ else{const p=L[i-1];h=`<span class="tag">${ic(TY[p.k].i,14)}${TY[p.k].l}</span><h3>${esc(p.t)}</h3><p class="mu">${esc(who(p.a,p))}${p.by?' · contada por '+esc(p.by):''} · ${fdate(p.ts)}</p>${postBody(p)}`}
+ showSheet(`<div class="bkr" aria-live="polite">${h}</div><div class="bkn"><button class="btn s" ${i?'':'disabled'} onclick="bookGo(-1)">Anterior</button><span class="mu">${i+1} de ${T}</span><button class="btn" ${i<T-1?'':'disabled'} onclick="bookGo(1)">Siguiente</button></div>`)}
+function bookGo(d){S.bk=Math.max(0,Math.min((S.bkL||[]).length+1,S.bk+d));bookPage()}
+function bookCard(n){const ok=n>=12;return `<section class="card"><div class="row sp"><span class="tx"><b>${esc(libName())}</b><span class="mu">${ok?'¡Listo para leer!':Math.min(n,12)+' de 12 historias · con 12 se arma'}</span></span>${ok?'<button class="btn" onclick="bookOpen()">Abrir</button>':''}</div>${ok?'':`<div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div>`}</section>`}
 function arcList(kind){
  const all=S.posts.filter(p=>TY[p.k]&&!isBlk(p.a)),L=kind?all.filter(p=>p.k===kind):all;
- if(!all.length)return `<div class="card c">${S.group?ic('book',48):pet(S.pet.kind,90)}<h3>Aún no hay historias</h3><p class="mu">${S.group?'Cuenta la primera y quedará aquí para todos.':'Cuenta la primera y '+esc(S.pet.name)+' te lo agradecerá.'}</p><button class="btn" onclick="chooser()">Contar la primera</button></div>`;
+ if(!all.length)return `<div class="card c">${S.group?ic('book',48):pet3('pet3dx',150)}<h3>Aún no hay historias</h3><p class="mu">${S.group?'Cuenta la primera y quedará aquí para todos.':'Cuenta la primera y '+esc(S.pet.name)+' te lo agradecerá.'}</p><button class="btn" onclick="chooser()">Contar la primera</button></div>`;
  if(!L.length)return `<div class="card c"><p class="mu">Aún no hay ${(TY[kind]||{l:'historias'}).l.toLowerCase()} aquí.</p>${kind==='carta'?'<button class="btn" onclick="compose(\'carta\')">Escribir una carta</button>':''}</div>`;
  return L.map(p=>`<article class="card"><div class="row">${pAv(p.a,40)}<div class="tx"><b>${esc(who(p.a,p))}</b><span class="mu">${rel(p.ts)}${p.by?' · contada por '+esc(p.by):''}</span></div><span class="tag">${ic(TY[p.k].i,14)}${TY[p.k].l}</span></div>
   <h3>${esc(p.t)}</h3>${postBody(p)}
-  <div class="rx">${['💗','😂','🥹'].map((e,j)=>`<button class="${p.m[j]?'on':''}" aria-pressed="${!!p.m[j]}" onclick="react('${p.id}',${j})">${e} ${p.r[j]+p.m[j]}</button>`).join('')}</div>${postActs(p)}</article>`).join('')+(S.posts.length>=S.plim?`<button class="btn s w" onclick="CLOUD.more()">Ver más historias</button>`:'')}
+  ${S.group?`<div class="rx">${['💗','😂','🥹'].map((e,j)=>`<button class="${p.m[j]?'on':''}" aria-pressed="${!!p.m[j]}" onclick="react('${p.id}',${j})">${e} ${p.r[j]+p.m[j]}</button>`).join('')}</div>`:''}${postActs(p)}</article>`).join('')+(S.posts.length>=S.plim?`<button class="btn s w" onclick="CLOUD.more()">Ver más historias</button>`:'')}
 function arc(){
  if(S.group){S.tab='cap';S.sub='recuerdos';return cap()}
  const n=S.posts.length;
- return `<button class="bk" onclick="go('mundo')">${ic('back',18)} Mi mundo</button><div class="spch"><h2>Mi archivo</h2>${spaceTag()}</div><div class="card"><span class="mu">${libName()}: ${Math.min(n,12)} de 12 historias</span><div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div></div>${afChips()}${arcList(S.af)}<button class="btn w" onclick="chooser()">${ic('plus',18)} Contar algo</button>`}
+ return `<button class="bk" onclick="go('mundo')">${ic('back',18)} Mi mundo</button><div class="spch"><h2>Mi archivo</h2>${spaceTag()}</div>${bookCard(n)}${afChips()}${arcList(S.af)}<button class="btn w" onclick="chooser()">${ic('plus',18)} Contar algo</button>`}
 function delPost(id){if(!confirm('¿Eliminar esta historia'+(S.group?' para todo el grupo':'')+'?'))return;CLOUD.deletePost(id).then(()=>toast('Historia eliminada')).catch(()=>toast('No se pudo eliminar. Intenta de nuevo.'))}
 function react(id,j){const p=S.posts.find(q=>q.id===id);if(p&&window.CLOUD&&CLOUD.ready)CLOUD.react(id,j,!p.m[j]).catch(()=>toast('No se pudo guardar tu reacción'))}
 
@@ -1111,6 +1184,20 @@ function applyTheme(id){const t=THEMES.find(x=>x.id===id)||THEMES[1];S.theme=t.i
  try{localStorage.setItem('capsula_theme',t.id)}catch(e){}
  const m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t.bar);try{applyAccent()}catch(e){}}
 function setTheme(id){if(!THEMES.some(t=>t.id===id))return;applyTheme(id);save();render()}
+const NAME_DAYS=15;
+const nameLeft=()=>{const t=(S.nameAt||0)+NAME_DAYS*864e5-Date.now();return t>0?t:0};
+function nameWhen(){const t=nameLeft();if(!t)return'';const d=Math.ceil(t/864e5);return 'el '+new Date(Date.now()+t).toLocaleDateString('es-CO',{day:'numeric',month:'long'})+' (en '+d+(d===1?' día':' días')+')'}
+function nameForm(){const lock=nameLeft()>0;return `<label class="lb" for="pfn">Nombre</label><input id="pfn" class="in" maxlength="24" autocomplete="given-name" value="${esc(S.me.name)}" ${lock?'disabled':''} oninput="nameDirty()">
+ <label class="lb" for="pfl">Apellido</label><input id="pfl" class="in" maxlength="24" autocomplete="family-name" value="${esc(S.me.ln||'')}" ${lock?'disabled':''} oninput="nameDirty()">
+ <p class="mu" id="pfh">${lock?'Podrás cambiar tu nombre de nuevo '+nameWhen()+'. La foto y la apariencia puedes cambiarlas cuando quieras.':'Puedes cambiar tu nombre una vez cada '+NAME_DAYS+' días.'}</p>
+ <button class="btn w" id="pfs" onclick="saveProfile()" disabled>Guardar cambios</button>`}
+function nameDirty(){const a=($('#pfn').value||'').trim(),b=($('#pfl').value||'').trim(),e=$('#pfs');if(e)e.disabled=!a||(a===S.me.name&&b===(S.me.ln||''))}
+function saveProfile(){if(nameLeft()>0){toast('Aún no puedes cambiar tu nombre.');return}
+ const a=($('#pfn').value||'').trim().slice(0,24),b=($('#pfl').value||'').trim().slice(0,24);
+ if(!a){toast('Escribe tu nombre');return}
+ if(a===S.me.name&&b===(S.me.ln||'')){return}
+ if(!confirm('¿Guardar «'+a+(b?' '+b:'')+'»? Después de guardar no podrás cambiarlo por '+NAME_DAYS+' días.'))return;
+ S.me.name=a;S.me.ln=b;S.nameAt=Date.now();S.nameP=1;save();render();toast('Cambios guardados. Podrás cambiar tu nombre de nuevo en '+NAME_DAYS+' días.')}
 function setName(v){v=String(v||'').trim().slice(0,24);if(!v){toast('Escribe un nombre');profile();return}S.me.name=v;save();render();const n=$('.pfc .tx b'),f=$('.pfc .pf');if(n)n.textContent=v;if(f)f.innerHTML=pfIn();toast('Nombre guardado')}
 function setPetName(v){v=String(v||'').trim().slice(0,14);if(!v){toast('Escribe un nombre');profile();return}S.pet={kind:S.pet.kind,name:v};save();render();toast('Nombre guardado')}
 const pfIn=()=>`${esc((S.me.name||'?').trim().charAt(0).toUpperCase())}${S.me.pic?`<img src="${esc(S.me.pic)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:''}`;
@@ -1134,7 +1221,7 @@ function setSeen(v){S.showSeen=!!v;save();toast(v?'Ahora se ve cuando estás act
 function perfil(){
  return `<div class="spch"><h2>Perfil</h2></div>
  <div class="card"><div class="pfc">${pfAv()}<span class="tx"><b>${esc(S.me.name)}</b><span class="mu" style="overflow-wrap:anywhere">${esc(S.user?S.user.email:'')}</span></span></div>
- <label class="lb" for="pfn">Tu nombre</label><input id="pfn" class="in" maxlength="24" value="${esc(S.me.name)}" onchange="setName(this.value)"></div>
+ ${nameForm()}</div>
  <div class="card"><label class="lb" id="thl">Apariencia</label>
  <div class="th" role="radiogroup" aria-labelledby="thl">${THEMES.map(t=>`<button class="thb ${S.theme===t.id?'on':''}" role="radio" aria-checked="${S.theme===t.id}" onclick="setTheme('${t.id}')"><span class="sw" style="background:${t.bg}"><i style="background:${t.pr}"></i></span>${t.n}</button>`).join('')}</div>
  <p class="mu">Tu apariencia y tu nombre se guardan en tu cuenta y te acompañan en todos tus dispositivos.</p></div>
@@ -1226,12 +1313,13 @@ function capHome(){
  return `<section class="card"><span class="mu">Pregunta de esta cápsula</span><h3 style="font-size:17px">${esc(qaToday())}</h3><button class="btn" onclick="go('triv')">Responder</button></section>
  <div class="duo"><button class="tile2" onclick="chooser()">${ic('pen',26)}<b>Escribir aquí</b><span class="mu">Se guarda en ${esc(S.group.name)}</span></button><button class="tile2" onclick="S.sub='recuerdos';soft()">${ic('image',26)}<b>Recuerdos</b><span class="mu">${S.posts.length} ${S.posts.length===1?'historia':'historias'}</span></button></div>
  <div class="duo"><button class="tile2" onclick="S.sub='cartas';soft()">${ic('mail',26)}<b>Cartas</b><span class="mu">${S.posts.filter(p=>p.k==='carta').length} escritas</span></button><button class="tile2 off" disabled aria-disabled="true">${ic('chat',26)}<b>Conversaciones</b><span class="tag soon">Pronto</span></button></div>
+ ${bookCard(S.posts.length)}
  <section class="card"><div class="row sp"><span class="tx"><b>Invita a alguien</b><span class="mu">Ganas 30 corazones por cada persona que se una</span></span><button class="btn" onclick="shareInvite()">Invitar</button></div></section>
  ${recentHTML(3)?`<h3>Actividad reciente</h3>${recentHTML(3)}`:''}`}
 function cap(){
  if(!S.group)return caps();
  const g=S.group,t=gtype(),sub=S.sub||'inicio',TB=[['inicio','Inicio'],['cartas','Cartas'],['recuerdos','Recuerdos'],['personas','Personas']];
- const av4=Object.keys(S.members).slice(0,4).map(id=>pAv(id,30)).join('');
+ const av4=Object.keys(S.members).slice(0,4).map(id=>`<span class="avw">${pAv(id,30)}${isOn(S.members[id])?'<i class="odot"></i>':''}</span>`).join('');
  const body=sub==='cartas'?arcList('carta'):sub==='recuerdos'?afChips()+arcList(S.af):sub==='personas'?personas():capHome();
  return `<section class="cvr amb-${t}${g.cover?' ph':''}"${g.cover?` style="background-image:linear-gradient(180deg,rgba(35,12,55,.18),rgba(35,12,55,.7)),url('${g.cover}')"`:''}><button class="bk2" onclick="go('caps')" aria-label="Volver a Mis cápsulas">${ic('back',18)}</button><div class="cvt"><h2>${esc(g.name)}</h2><span>${GT[t].d}</span></div><div class="row sp">${spaceTag()}<span class="avs">${av4}</span></div></section>
  <div class="tabs2" role="tablist">${TB.map(([k,l])=>`<button role="tab" aria-selected="${sub===k}" class="${sub===k?'on':''}" onclick="S.sub='${k}';soft()">${l}</button>`).join('')}</div>${body}`}
@@ -1260,10 +1348,10 @@ function compose(k){
  const ttl=ph=>`<label class="lb" for="ttl">Título</label><input id="ttl" class="in" maxlength="60" placeholder="${ph}" oninput="chk()">`;
  const B={
   voz:`<div id="vb">${voz()}</div>`,
-  foto:`<label class="drop" for="ph-f"><span class="ti">${ic('camera',24)}</span><b>Elegir una foto</b><span class="mu">De tu galería o de la cámara</span></label><input id="ph-f" type="file" accept="image/*" hidden onchange="pick(this,'img')"><img id="pv" class="pv" alt="Vista previa de tu foto" hidden>${ttl('Ponle un nombre al recuerdo')}<label class="lb" for="cap">¿Qué pasó ahí?</label><textarea id="cap" class="in" rows="3" maxlength="300" placeholder="Cuenta quiénes salen y qué recuerdas"></textarea>${go}`,
+  foto:`<label class="drop" for="ph-f"><span class="ti">${ic('camera',24)}</span><b>Elegir una foto</b><span class="mu">De tu galería o de la cámara</span></label><input id="ph-f" type="file" accept="image/*" hidden onchange="pick(this,'img')"><img id="pv" class="pv" alt="Vista previa de tu foto" hidden>${ttl('Ponle un nombre al recuerdo')}<label class="lb" for="cap">¿Qué pasó ahí?</label><textarea id="cap" class="in tall" rows="6" maxlength="600" placeholder="Cuenta quiénes salen, dónde fue y qué recuerdas de ese día…" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,360)+'px'"></textarea>${go}`,
   carta:`<label class="lb" for="to">Para</label><input id="to" class="in" maxlength="40" placeholder="${toDef()}"><label class="lb" for="tx">Tu carta</label><textarea id="tx" class="in paper" rows="7" maxlength="800" placeholder="Querido(a)…" oninput="chk()"></textarea>${go}`,
   dibujo:`<canvas id="cv" class="cv" width="600" height="440" aria-label="Lienzo para dibujar"></canvas><div class="tools"><div class="row" style="gap:8px">${[['#ff8dbb','Rosa'],['#c43d7a','Fucsia'],['#ffb1d0','Rosa pastel'],['#7ccfae','Verde'],['#7fb8f5','Azul'],['#4a2336','Ciruela'],['#ffffff','Borrador']].map((c,i)=>`<button class="swb ${i?'':'on'}" style="background:${c[0]}" data-c="${c[0]}" onclick="setCol(this)" aria-label="${c[1]}"></button>`).join('')}</div><div class="row" style="gap:8px">${[4,8,16].map((s,i)=>`<button class="szb ${i===1?'on':''}" onclick="setSz(this,${s})" aria-label="Grosor ${s}"><i style="width:${s+2}px;height:${s+2}px"></i></button>`).join('')}<button class="btn s" onclick="clr()">Borrar todo</button></div></div>${ttl('Ponle un nombre a tu dibujo')}${go}`,
-  video:`<label class="drop" for="vd-f"><span class="ti">${ic('video',24)}</span><b>Elegir o grabar un video</b><span class="mu">Hasta 60 segundos</span></label><input id="vd-f" type="file" accept="video/*" hidden onchange="pick(this,'vid')"><video id="pv" class="pv" controls playsinline hidden></video><p class="err" id="err"></p>${ttl('Ponle un nombre a tu video')}<label class="lb" for="cap">¿Qué cuenta el video?</label><textarea id="cap" class="in" rows="2" maxlength="300"></textarea>${go}`,
+  video:`<label class="drop" for="vd-f"><span class="ti">${ic('video',24)}</span><b>Elegir o grabar un video</b><span class="mu">Hasta 60 segundos</span></label><input id="vd-f" type="file" accept="video/*" hidden onchange="pick(this,'vid')"><video id="pv" class="pv" controls playsinline hidden></video><p class="err" id="err"></p>${ttl('Ponle un nombre a tu video')}<label class="lb" for="cap">¿Qué cuenta el video?</label><textarea id="cap" class="in" rows="4" maxlength="600" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,360)+'px'"></textarea>${go}`,
   receta:`<label class="lb" for="ttl">Nombre del plato</label><input id="ttl" class="in" maxlength="60" placeholder="Sancocho del domingo" oninput="chk()"><label class="lb" for="by">¿Quién te la enseñó?</label><input id="by" class="in" maxlength="40" placeholder="Abuela Rosa"><label class="lb" for="ing">Ingredientes (uno por línea)</label><textarea id="ing" class="in" rows="4" maxlength="1500" oninput="chk()"></textarea><label class="lb" for="stp">Preparación</label><textarea id="stp" class="in" rows="4" maxlength="3000" oninput="chk()"></textarea>${go}`
  };
  showSheet(head+B[k]);if(k==='dibujo')initDraw();draftLoad(k);
@@ -1373,6 +1461,7 @@ async function exportMem(){if(!window.CLOUD||!CLOUD.exportAll||!CLOUD.ready){toa
 const soft=()=>{if(S.scr==='main'){const a=document.activeElement;if(a&&(a.id==='qat'||a.id==='pfn'||a.id==='pfm'))return;render()}};
 const boot=()=>`<div class="wl" style="justify-content:center;align-items:center;text-align:center"><div class="fl"><img class="bl" src="icons/icon-192.png" width="96" height="96" alt=""></div><h2>Cápsula</h2>${S.cloudErr?`<p class="err" style="display:block;max-width:300px">${esc(S.cloudErr)}</p><button class="btn" style="align-self:center" onclick="location.reload()">Reintentar</button>`:S.bootSlow?`<p class="mu">Tarda más de lo normal… revisa tu conexión.</p><button class="btn s" style="align-self:center" onclick="location.reload()">Reintentar</button>`:'<p class="mu">Cargando tu espacio…</p>'}</div>`;
 window.APP={
+ fullName:()=>(S.me.name+' '+(S.me.ln||'')).trim().slice(0,40),nameP:v=>{if(v===false)S.nameP=0;return !!S.nameP},
  personal,legacy,
  localCache(uid){try{const o=JSON.parse(localStorage.getItem(KEY)||'null');return o&&o.uid===uid?o:null}catch(e){return null}},
  legacyDone(){try{localStorage.removeItem(LEGACY)}catch(e){}},
@@ -1390,7 +1479,7 @@ window.APP={
  noConfig(){S.cloudErr='Falta configurar Firebase: abre config.js y pega tus datos (mira el README).';S.scr='welcome';render()},
  cloudError(m){S.cloudErr=m;render()},
  signedOut(){resetPersonal();S.user=null;S.cloudErr='';S.scr=S.u13?'under13':'welcome';cl();render()},
- applyUser(d,u){resetPersonal();try{Object.keys(localStorage).filter(k=>/^capsula_ai/.test(k)).forEach(k=>localStorage.removeItem(k))}catch(e){}S.user=u;S.me.name=String(d.name||u.name||'Amigo').slice(0,24);S.me.email=u.email;S.me.pic=u.photo;applyPersonal(d)},
+ applyUser(d,u){resetPersonal();try{Object.keys(localStorage).filter(k=>/^capsula_ai/.test(k)).forEach(k=>localStorage.removeItem(k))}catch(e){}S.user=u;S.me.name=String(d.name||u.name||'Amigo').slice(0,24);S.me.ln=String(d.ln||'').slice(0,24);S.nameAt=d.nameAt&&d.nameAt.toMillis?d.nameAt.toMillis():Number(d.nameAt)||0;S.nameP=0;S.me.email=u.email;S.me.pic=u.photo;applyPersonal(d)},
  families(l){S.families=l},
  plusOn:()=>plusLive(),limits:()=>LIM.free,ent(e){S.ent=e;try{applyAccent()}catch(x){}plusSync();soft()},
  setGroup(g){S.group=g?{id:g.id,name:g.name,code:g.code,ownerUid:g.ownerUid,type:g.type||'familia',plan:g.plan||'free'}:null},

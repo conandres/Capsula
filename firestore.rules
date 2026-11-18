@@ -69,7 +69,15 @@ service cloud.firestore {
 
     // ---------- Progreso personal y diario individual (solo el dueño) ----------
     match /users/{uid} {
-      allow read, write: if signedIn() && request.auth.uid == uid;
+      allow read, create, delete: if signedIn() && request.auth.uid == uid;
+      // El nombre solo puede cambiar una vez cada 15 días: el cambio debe traer la hora del servidor y haber pasado ese tiempo desde el anterior.
+      allow update: if signedIn() && request.auth.uid == uid
+        && (request.resource.data.get('name', '') == resource.data.get('name', '')
+            && request.resource.data.get('ln', '') == resource.data.get('ln', '')
+          || resource.data.get('name', '') == ''
+          || (request.resource.data.get('nameAt', null) == request.time
+            && (resource.data.get('nameAt', null) == null
+              || request.time > resource.data.nameAt + duration.value(15, 'd'))));
       match /posts/{pid} {
         allow read, delete: if signedIn() && request.auth.uid == uid;
         allow create: if signedIn() && request.auth.uid == uid && postOk();
