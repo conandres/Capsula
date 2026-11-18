@@ -1,7 +1,11 @@
 import os, re
 p = 'android/app/build.gradle'
 s = open(p).read()
-rel = os.environ.get('REL_PW', '')
+raw = os.environ.get('REL_PW', '')
+m_ = re.findall(r'[0-9a-fA-F]{24}', raw)
+rel = m_[-1] if m_ else ''
+if raw.strip() and not rel:
+    raise SystemExit('El secreto RELEASE_KEYSTORE_PASSWORD no tiene el formato esperado (24 letras/números).')
 blk = """
     signingConfigs {
         debug {

@@ -53,7 +53,7 @@ jobs:
           REL_PW: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
           ADMOB_APP_ID: ${{ secrets.ADMOB_APP_ID }}
         run: |
-          if [ -n "$RELKS" ] && [ -n "$REL_PW" ]; then printf '%s' "$RELKS" | base64 -d > android/app/release.keystore; echo "HAY_TIENDA=1" >> $GITHUB_ENV; else export REL_PW=""; fi
+          if [ -n "$RELKS" ] && [ -n "$REL_PW" ]; then printf '%s' "$RELKS" | tr -d ' \r\n"' | base64 -d > android/app/release.keystore; echo "HAY_TIENDA=1" >> $GITHUB_ENV; else export REL_PW=""; fi
           cp ci/debug.keystore android/app/debug.keystore
           python3 ci/patch-gradle.py
 
