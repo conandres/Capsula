@@ -342,6 +342,8 @@ html[data-theme="negro"] .btn:not(.s):not(:disabled){box-shadow:none}
 .pfc .pf{width:64px;height:64px;font-size:26px;cursor:default}
 .pfc .tx b{font-size:18px}
 .th{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.osep{display:flex;align-items:center;gap:12px;margin:14px 0 10px;color:var(--mu);font-size:13px}.osep:before,.osep:after{content:'';flex:1;height:1px;background:var(--line-mid)}
+.ig{border:1px solid var(--line-mid);border-radius:14px;overflow:hidden;background:var(--card);margin-bottom:12px}.ig input{display:block;width:100%;box-sizing:border-box;border:0;border-radius:0;background:transparent;color:var(--tx);font:inherit;font-size:16px;padding:15px 16px;min-height:50px;outline:none}.ig input+input{border-top:1px solid var(--line-mid)}.ig:focus-within{border-color:var(--pd);box-shadow:0 0 0 3px color-mix(in srgb,var(--pd) 18%,transparent)}.ig input::placeholder{color:var(--mu)}
 .thb{border:2px solid var(--line-mid);background:var(--card);border-radius:18px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;min-height:44px;font-weight:500;color:var(--tx)}
 .thb.on{border-color:var(--pd);box-shadow:0 0 0 3px color-mix(in srgb,var(--pd) 20%,transparent)}
 .thb .sw{width:100%;height:48px;border-radius:12px;border:1px solid rgba(128,128,128,.28);display:grid;place-items:center}
@@ -678,6 +680,8 @@ const NATIVE=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNative
 const NP=n=>(window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins[n])||null;
 async function nativeGoogle(){const P=NP('FirebaseAuthentication');if(!P)throw new Error('sin plugin');
  const r=await P.signInWithGoogle({skipNativeAuth:true});const t=r&&r.credential&&r.credential.idToken;if(!t)throw new Error('sin token');return t}
+let LM='in';
+function lmSw(){LM=LM==='in'?'up':'in';const g=$('#lgo'),w=$('#lsw'),p=$('#lpw');if(g)g.textContent=LM==='up'?'Crear cuenta':'Continuar';if(w)w.textContent=LM==='up'?'Ya tengo cuenta':'Crear cuenta';if(p)p.autocomplete=LM==='up'?'new-password':'current-password';gerr('')}
 async function emailGo(mode){const e=($('#lem').value||'').trim(),p=$('#lpw').value||'',g=$('#gst');
  if(!/^\S+@\S+\.\S+$/.test(e)){gerr('Escribe un correo válido.');return}
  if(!navigator.onLine){gerr('Necesitas internet para entrar.');return}
@@ -714,8 +718,10 @@ function gsheet(){
  const id=CFG().googleClientId,ok=!!(id&&!/^PEGA/i.test(id)&&window.CLOUD&&CLOUD.configured);
  showSheet(`<div class="ch">${GLOGO}<h2>Inicia sesión</h2></div>
  ${ok?`<p class="mu">Con tu cuenta de Google guardamos tu progreso, tu familia y sus historias. Las recuperas en cualquier celular.</p>${NATIVE?`<button class="btn w" onclick="nativeLogin()">Continuar con Google</button>`:`<div id="gbox" style="min-height:44px;display:flex;justify-content:center"></div>`}<p class="mu c" id="gst"></p>
- <p class="mu c">— o con tu correo —</p><label class="lb" for="lem">Correo</label><input id="lem" class="in" type="email" autocomplete="email" inputmode="email"><label class="lb" for="lpw">Contraseña (mínimo 6)</label><input id="lpw" class="in" type="password" autocomplete="current-password">
- <div class="row" style="gap:8px"><button class="btn" style="flex:1" id="lei" onclick="emailGo('in')">Entrar</button><button class="btn s" style="flex:1" id="leu" onclick="emailGo('up')">Crear cuenta</button></div><button class="btn s w" onclick="emailGo('reset')">Olvidé mi contraseña</button>`:`<p class="err" style="display:block">${esc(S.cloudErr||'El inicio de sesión todavía no está configurado. Abre config.js y sigue el README.')}</p>`}
+ <div class="osep"><span>o</span></div>
+ <div class="ig"><input id="lem" type="email" autocomplete="email" inputmode="email" placeholder="Correo electrónico" aria-label="Correo electrónico"><input id="lpw" type="password" autocomplete="current-password" placeholder="Contraseña" aria-label="Contraseña"></div>
+ <button class="btn w" id="lgo" onclick="emailGo(LM)">Continuar</button>
+ <p class="mu c"><button class="lnk" style="text-decoration:none" id="lsw" onclick="lmSw()">Crear cuenta</button> · <button class="lnk" style="text-decoration:none" onclick="emailGo('reset')">¿Olvidaste tu contraseña?</button></p>`:`<p class="err" style="display:block">${esc(S.cloudErr||'El inicio de sesión todavía no está configurado. Abre config.js y sigue el README.')}</p>`}
  <p class="err" id="err"></p>`);
  if(ok&&!NATIVE)loadG(id)}
 function loadG(id){const go=()=>{try{google.accounts.id.initialize({client_id:id,callback:gCred,ux_mode:'popup'});google.accounts.id.renderButton($('#gbox'),{theme:'outline',size:'large',shape:'pill',width:300,text:'continue_with',locale:'es'})}catch(e){gerr('Google no respondió. Intenta de nuevo.')}};
