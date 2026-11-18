@@ -80,6 +80,7 @@ jobs:
         with:
           tag_name: android-tienda
           name: Cápsula Android (para tiendas)
+          draft: true
           prerelease: true
           body: "APK y AAB firmados con la llave de tienda. Para subir a Samsung Galaxy Store, AppGallery y Google Play."
           files: |
