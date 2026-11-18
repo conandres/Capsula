@@ -26,7 +26,7 @@ Todo está **apagado** para los usuarios (`plusOn: false` en `config.js`). Nadie
 - **Huawei AppGallery**: registro gratis (identidad + tarjeta, 1–2 días). Pero los Huawei nuevos no tienen servicios de Google: el inicio de sesión con Google y Play Billing no funcionan allí. Antes haría falta un inicio de sesión alternativo (correo y contraseña).
 
 ## Anuncios, correo y tiendas (actualización 21)
-- AdMob ya está integrado (plugin `@capacitor-community/admob`, consentimiento de Google, inicio solo para mayores de 18). Usa IDs **de prueba** de Google. Para pasar a real: en `config.js` pon tu `admobRewardedId` y `admobProd: true`, y crea el secreto `ADMOB_APP_ID` en GitHub (Settings → Secrets → Actions).
+- AdMob ya está integrado (plugin `@capacitor-community/admob`, consentimiento de Google, inicio solo para mayores de 18). Usa IDs **de prueba** de Google. Para pasar a real: en `config.js` pon tu `admobRewardedId` y `admobProd: true`, (el ID de app real ya está en `ci/patch-gradle.py`).
 - Inicio de sesión con correo y contraseña (activar "Correo electrónico/contraseña" en Firebase → Authentication → Método de acceso). Número de celular: no incluido (SMS con costo).
 - Versión de tienda: con los secretos `RELEASE_KEYSTORE_B64` y `RELEASE_KEYSTORE_PASSWORD` el flujo Android también publica `Capsula-tienda.apk` y `.aab` firmados con la llave de tienda (release `android-tienda`). **Guarda la llave: sin ella no puedes actualizar la app en las tiendas.** Agrega su SHA-1 en Firebase para que Google funcione.
 - Textos legales en versión 2 (publicidad, compras, correo). Todos deben aceptarlos de nuevo.

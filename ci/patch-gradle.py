@@ -25,7 +25,7 @@ open(p, 'w').write(s)
 # AdMob: el ID de la app va en el manifiesto (ID de PRUEBA de Google si no hay uno propio)
 m = 'android/app/src/main/AndroidManifest.xml'
 x = open(m).read()
-aid = os.environ.get('ADMOB_APP_ID') or 'ca-app-pub-3940256099942544~3347511713'
+aid = os.environ.get('ADMOB_APP_ID') or 'ca-app-pub-4743502426219538~3459820047'
 if 'com.google.android.gms.ads.APPLICATION_ID' not in x:
     x = x.replace('</application>', '    <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="%s"/>\n    </application>' % aid, 1)
 open(m, 'w').write(x)
