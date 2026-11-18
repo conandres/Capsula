@@ -18,6 +18,10 @@ blk = """
 s = re.sub(r'(\nandroid\s*\{)', lambda m: m.group(1) + blk, s, count=1)
 if rel:
     s = re.sub(r'(buildTypes\s*\{\s*release\s*\{)', lambda m: m.group(1) + '\n            signingConfig signingConfigs.release', s, count=1)
+# Cada compilación sube el número de versión para que Android la instale como actualización
+vc = 100 + int(os.environ.get('GITHUB_RUN_NUMBER', '1'))
+s = re.sub(r'versionCode\s+\d+', 'versionCode %d' % vc, s, count=1)
+s = re.sub(r'versionName\s+"[^"]*"', 'versionName "1.%d"' % vc, s, count=1)
 open(p, 'w').write(s)
 
 # AdMob: el ID de la app va en el manifiesto (ID de PRUEBA de Google si no hay uno propio)
