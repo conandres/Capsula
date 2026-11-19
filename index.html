@@ -385,8 +385,9 @@ nav button .ic{width:26px;height:26px}
 .cvr .bk2{align-self:flex-start;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.85);border:0;display:grid;place-items:center;color:#3A1230;cursor:pointer}
 .avs{display:flex}.avs .pav{margin-left:-8px;border:2px solid #fff}.avs .pav:first-child{margin-left:0}
 .tabs2{display:flex;gap:6px;overflow-x:auto;flex:none;padding:2px 0}
-.tabs2 button{min-height:44px;padding:0 16px;border-radius:99px;border:0;background:none;font:inherit;font-weight:700;font-size:14px;color:var(--mu);cursor:pointer;white-space:nowrap}
+.tabs2 button{min-height:44px;padding:0 12px;flex:1 0 auto;border-radius:99px;border:0;background:none;font:inherit;font-weight:700;font-size:14px;color:var(--mu);cursor:pointer;white-space:nowrap}
 .tabs2 button.on{background:var(--card);color:#8A1F5C;box-shadow:var(--shadow-card)}
+@media(max-width:360px){.tabs2{gap:2px}.tabs2 button{padding:0 9px;font-size:13px}}
 .pav{position:relative;display:inline-grid;place-items:center;border-radius:50%;background:#EDE8FF;color:#4F36B0;font-weight:800;flex:none;overflow:hidden}
 .pav img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .dst{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -745,7 +746,7 @@ async function gCred(r){if(RA&&S.user){return RA(r)}const g=$('#gst');if(g)g.tex
 
 /* ---------- registro legal: edad, términos y privacidad ---------- */
 const LEGAL_V=2,LEGAL_URL=new URL('legal/',location.href).href;
-const ageOf=b=>{const m=/^(\d{4})-(\d{2})$/.exec(b||'');if(!m)return null;const n=new Date();let a=n.getFullYear()-(+m[1]);if(n.getMonth()+1<+m[2])a--;return a};
+const ageOf=b=>{const m=/^(\d{4})-(\d{2})$/.exec(b||'');if(!m)return null;const n=new Date();let a=n.getFullYear()-(+m[1]);if(n.getMonth()+1<=+m[2])a--;return a};
 const legalOk=()=>!!(S.legal&&S.legal.v===LEGAL_V&&ageOf(S.birth)!==null);
 function legalScr(){
  const y=new Date().getFullYear(),M=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -771,7 +772,7 @@ async function lgGo(){const nm=$('#lgn').value.trim().slice(0,24),m=$('#lgm').va
  if(a===null)return;
  if(a<13){$('#lgb').disabled=true;S.u13=true;
   try{if(window.CLOUD&&CLOUD.deleteAccount)await CLOUD.deleteAccount(null)}catch(e){}
-  try{localStorage.clear()}catch(e){}
+  try{localStorage.clear();localStorage.setItem('capsula_u13',String(Date.now()))}catch(e){}
   S.user=null;S.scr='under13';render();return}
  if(!$('#lgt').checked)return;
  const minor=a<18;if(minor&&!$('#lggc').checked)return;
@@ -1343,7 +1344,7 @@ function compose(k){
  const B={
   voz:`<div id="vb">${voz()}</div>`,
   foto:`<label class="drop" for="ph-f"><span class="ti">${ic('camera',24)}</span><b>Elegir una foto</b><span class="mu">De tu galería o de la cámara</span></label><input id="ph-f" type="file" accept="image/*" hidden onchange="pick(this,'img')"><img id="pv" class="pv" alt="Vista previa de tu foto" hidden>${ttl('Ponle un nombre al recuerdo')}<label class="lb" for="cap">¿Qué pasó ahí?</label><textarea id="cap" class="in tall" rows="6" maxlength="600" placeholder="Cuenta quiénes salen, dónde fue y qué recuerdas de ese día…" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,360)+'px'"></textarea>${go}`,
-  carta:`<label class="lb" for="to">Para</label><input id="to" class="in" maxlength="40" placeholder="${toDef()}"><label class="lb" for="tx">Tu carta</label><textarea id="tx" class="in paper" rows="7" maxlength="800" placeholder="Querido(a)…" oninput="chk()"></textarea>${go}`,
+  carta:`<label class="lb" for="to">Para</label><input id="to" class="in" maxlength="40" placeholder="${toDef()}"><label class="lb" for="tx">Tu carta</label><textarea id="tx" class="in paper" rows="7" maxlength="800" placeholder="Querido(a)…" oninput="chk()"></textarea><p id="cth" class="mu" style="display:none">Escribe al menos 10 letras para poder guardarla.</p>${go}`,
   dibujo:`<canvas id="cv" class="cv" width="600" height="440" aria-label="Lienzo para dibujar"></canvas><div class="tools"><div class="row" style="gap:8px">${[['#ff8dbb','Rosa'],['#c43d7a','Fucsia'],['#ffb1d0','Rosa pastel'],['#7ccfae','Verde'],['#7fb8f5','Azul'],['#4a2336','Ciruela'],['#ffffff','Borrador']].map((c,i)=>`<button class="swb ${i?'':'on'}" style="background:${c[0]}" data-c="${c[0]}" onclick="setCol(this)" aria-label="${c[1]}"></button>`).join('')}</div><div class="row" style="gap:8px">${[4,8,16].map((s,i)=>`<button class="szb ${i===1?'on':''}" onclick="setSz(this,${s})" aria-label="Grosor ${s}"><i style="width:${s+2}px;height:${s+2}px"></i></button>`).join('')}<button class="btn s" onclick="clr()">Borrar todo</button></div></div>${ttl('Ponle un nombre a tu dibujo')}${go}`,
   video:`<label class="drop" for="vd-f"><span class="ti">${ic('video',24)}</span><b>Elegir o grabar un video</b><span class="mu">Hasta 60 segundos</span></label><input id="vd-f" type="file" accept="video/*" hidden onchange="pick(this,'vid')"><video id="pv" class="pv" controls playsinline hidden></video><p class="err" id="err"></p>${ttl('Ponle un nombre a tu video')}<label class="lb" for="cap">¿Qué cuenta el video?</label><textarea id="cap" class="in" rows="4" maxlength="600" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,360)+'px'"></textarea>${go}`,
   receta:`<label class="lb" for="ttl">Nombre del plato</label><input id="ttl" class="in" maxlength="60" placeholder="Sancocho del domingo" oninput="chk()"><label class="lb" for="by">¿Quién te la enseñó?</label><input id="by" class="in" maxlength="40" placeholder="Abuela Rosa"><label class="lb" for="ing">Ingredientes (uno por línea)</label><textarea id="ing" class="in" rows="4" maxlength="1500" oninput="chk()"></textarea><label class="lb" for="stp">Preparación</label><textarea id="stp" class="in" rows="4" maxlength="3000" oninput="chk()"></textarea>${go}`
@@ -1351,7 +1352,7 @@ function compose(k){
  showSheet(head+B[k]);if(k==='dibujo')initDraw();draftLoad(k);
 }
 function chk(){const g=$('#go');if(!g)return;const v=id=>{const e=$('#'+id);return e?e.value.trim():''};let ok=false;
- switch(C.k){case 'foto':ok=!!C.url;break;case 'video':ok=!!C.url&&C.ok;break;case 'dibujo':ok=C.drawn;break;case 'carta':ok=v('tx').length>=10;break;case 'receta':ok=!!(v('ttl')&&v('ing')&&v('stp'));break}
+ switch(C.k){case 'foto':ok=!!C.url;break;case 'video':ok=!!C.url&&C.ok;break;case 'dibujo':ok=C.drawn;break;case 'carta':ok=v('tx').length>=10;{const h=$('#cth');if(h)h.style.display=ok||!v('tx')?'none':'block'}break;case 'receta':ok=!!(v('ttl')&&v('ing')&&v('stp'));break}
  g.disabled=!ok}
 function pick(i,t){const f=i.files&&i.files[0];if(!f)return;C.url=URL.createObjectURL(f);LIVE.add(C.url);const e=$('#pv');e.hidden=false;e.src=C.url;
  if(t==='vid'){C.ok=false;$('#err').textContent='';e.onloadedmetadata=()=>{C.ok=e.duration<=61;$('#err').textContent=C.ok?'':'El video dura más de 60 segundos. Elige uno más corto.';chk()};e.onerror=()=>{C.ok=false;$('#err').textContent='No se pudo abrir ese video. Prueba con otro archivo.';chk()}}
@@ -1485,6 +1486,8 @@ window.APP={
  inviter:()=>{try{return localStorage.getItem('capsula_de')||''}catch(e){return''}},
  okLegal:()=>legalOk(),
  afterLogin(){cl();S.cloudErr='';try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
+  {let t=0;try{t=+localStorage.getItem('capsula_u13')||0}catch(e){}
+  if(t&&Date.now()-t<864e5){S.u13=true;try{if(window.CLOUD&&CLOUD.deleteAccount)CLOUD.deleteAccount(null).catch(()=>{})}catch(e){}S.scr='under13';render();return}}
   if(!legalOk()){S.scr='legal';S.lerr='';render();return}
   APP.goAfter()},
  goAfter(){setTimeout(refSync,2500);setTimeout(remInit,1500);const pc=S.joinCode;
