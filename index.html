@@ -487,7 +487,7 @@ function wear(id){if(!ownedId(id))return;S.wear=S.wear.includes(id)?S.wear.filte
 const closetHTML=()=>`<section class="card"><h3>Armario de ${esc(S.pet.name)}</h3><span class="mu">Desbloquea accesorios y elige cuáles usar</span><div class="cl">${ACCS.filter(accVisible).map(a=>{const un=owned(a),on=S.wear.includes(a.id);
  const act=un?`onclick="wear('${a.id}')" aria-pressed="${on}"`:a.src==='ad'?`onclick="adUnlock('${a.id}')"`:a.src==='plus'?`onclick="plusOpen('acc')"`:a.src==='pago'?`onclick="BILLING.buy(SKU.alas)"`:'disabled';
  const tag=un?(on?'Puesto':'Toca para ponerlo'):a.src==='ad'?(adult()?(ADS.ok()?'▶ Ver un anuncio':'Anuncios · pronto'):'Solo mayores de 18'):a.src==='plus'?'✨ Plus':a.src==='pago'?(BILLING.ok()?'🛍 Comprar':'🛍 Tienda · pronto'):a.u;
- return `<button class="cli ${on?'on':''} ${un||a.src?'':'lk'}" ${act}>${pet(S.pet.kind,62,[a.id],stg(),true)}<span>${a.n}</span><small>${tag}</small></button>`}).join('')}</div></section>`;
+ return `<button class="cli ${on?'on':''} ${un||a.src?'':'lk'}" ${act}>${pet(S.pet.kind,70,[a.id],stg(),true)}<span>${a.n}</span><small>${tag}</small></button>`}).join('')}</div></section>`;
 /* ---------- Cápsula Plus: límites, tienda y anuncios. Apagado para todos hasta que plusOn sea true (ver PLAN-PLUS.md) ---------- */
 const LIM={free:{caps:3,members:5,media:40},plus:{caps:999,members:999,media:400}};
 const MEDIA=['foto','dibujo','voz','video'];
@@ -609,9 +609,9 @@ const SN={v:null,c:{},ld:false,err:false};
 const snKey=(k,a,st)=>k+'|'+a.join(',')+'|'+st;
 function snInit(){if(SN.v||SN.ld||SN.err)return;SN.ld=true;
  import('./lab3d/capsula-pets.js').then(m=>{const h=document.createElement('div');h.setAttribute('aria-hidden','true');h.style.cssText='position:fixed;left:-9999px;top:0;width:240px;height:216px;visibility:hidden;pointer-events:none';document.body.appendChild(h);
-  SN.v=new m.CapsulaPetViewer(h,{pet:'capsule',maxPixelRatio:1});SN.v.setExpression('happy');psFill()}).catch(()=>{SN.err=true;document.body.classList.add('no3d')})}
+  SN.v=new m.CapsulaPetViewer(h,{pet:'capsule',maxPixelRatio:1});SN.v.setExpression('happy');SN.v.camera.position.z=3.9;SN.v.camera.updateProjectionMatrix();psFill()}).catch(()=>{SN.err=true;document.body.classList.add('no3d')})}
 function snGet(k,a,st){const key=snKey(k,a,st);if(SN.c[key])return SN.c[key];const v=SN.v;if(!v)return '';
- try{v.setPet(P3K[k]||'capsule');v.setStage(st);v.setAccessories(a);v.setExpression('happy');v.renderOnce();const u=v.canvas.toDataURL('image/png');if(u&&u.length>1000){SN.c[key]=u;return u}}catch(e){}return ''}
+ try{if(v.running||v.visible){v.visible=false;v.sync()}v.setPet(P3K[k]||'capsule');v.setStage(st);v.setAccessories(a);v.setExpression('happy');v.renderOnce();const u=v.canvas.toDataURL('image/png');if(u&&u.length>1000){SN.c[key]=u;return u}}catch(e){}return ''}
 function psFill(){document.querySelectorAll('.ps:not([data-d])').forEach(e=>{const u=snGet(e.dataset.k,e.dataset.a?e.dataset.a.split(','):[],+e.dataset.s);if(u){e.dataset.d=1;e.insertAdjacentHTML('afterbegin','<img alt="" src="'+u+'">')}})}
 const pet=(k,w,wear=[],st,raw)=>{const a=raw?wear:wear.filter(ownedId),s=st==null?3:st,u=SN.c[snKey(k,a,s)];
  if(!SN.v&&!SN.err)snInit();
@@ -1382,7 +1382,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=37;
+const BUILD=38;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
