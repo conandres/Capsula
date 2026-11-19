@@ -387,6 +387,11 @@ nav button .ic{width:26px;height:26px}
 .tabs2{display:flex;gap:6px;overflow-x:auto;flex:none;padding:2px 0}
 .tabs2 button{min-height:44px;padding:0 12px;flex:1 0 auto;border-radius:99px;border:0;background:none;font:inherit;font-weight:700;font-size:14px;color:var(--mu);cursor:pointer;white-space:nowrap}
 .tabs2 button.on{background:var(--card);color:#8A1F5C;box-shadow:var(--shadow-card)}
+.fv{margin-left:6px;border:0;background:none;font-size:22px;line-height:1;min-width:40px;min-height:40px;color:var(--mu);cursor:pointer;border-radius:12px}.fv.on{color:#E0A100}
+.gd{text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;padding:4px 4px 0}.gd .ge{width:104px;height:104px;border-radius:50%;display:grid;place-items:center;font-size:52px}
+.gd.m .ge{background:radial-gradient(circle at 30% 25%,#fff0f6,#ffc2dc)}.gd.c .ge{background:radial-gradient(circle at 30% 25%,#ece6ff,#c3b4f5)}
+.gd .gk{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}.gd.m .gk{color:#B0397A}.gd.c .gk{color:#5B3FC4}
+.upd{border:1.5px solid #c3b4f5}
 @media(max-width:360px){.tabs2{gap:2px}.tabs2 button{padding:0 9px;font-size:13px}}
 .pav{position:relative;display:inline-grid;place-items:center;border-radius:50%;background:#EDE8FF;color:#4F36B0;font-weight:800;flex:none;overflow:hidden}
 .pav img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -571,7 +576,7 @@ const PT0=()=>({love:80,food:75,clean:80,fun:70,en:90,rest:0,said:[],lb:0,lp:0,l
 const THEMES=[{id:'rosa',n:'Rosa',bg:'#FFF6FA',pr:'#B5336E',bar:'#FFF6FA'},{id:'azul',n:'Cápsula',bg:'#F6F3FF',pr:'#6A4CD6',bar:'#F6F3FF'},{id:'negro',n:'Negro',bg:'#000000',pr:'#F5F5F7',bar:'#000000'}];
 const S={birth:'',legal:null,blk:[],refC:0,invD:[],adm:(()=>{try{return localStorage.getItem('capsula_adm')==='1'}catch(e){return false}})(),showSeen:true,qd:'',qaN:0,qa:null,gtype:'familia',gname:'',qtx:'',theme:document.documentElement.dataset.theme||'azul',bub:null,bubT:0,pt:PT0(),scr:'boot',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,group:null,
  user:null,families:[],members:{},solo:false,cloudErr:'',bootSlow:0,joinCode:'',
- xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,prompt:null,posts:[],plim:25};
+ xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],favs:[],best:0,total:0,prompt:null,posts:[],plim:25};
 let T={i:0,s:0,a:null},C={};const LIVE=new Set();
 try{const q=new URLSearchParams(location.search),c=q.get('codigo'),sf=v=>String(v||'').replace(/[^A-Za-z0-9_-]/g,'').slice(0,40),rf=sf(q.get('ref')),de=sf(q.get('de'));
  if(rf)localStorage.setItem('capsula_ref',rf);if(de)localStorage.setItem('capsula_de',de);
@@ -579,18 +584,18 @@ try{const q=new URLSearchParams(location.search),c=q.get('codigo'),sf=v=>String(
  if(c||rf||de)history.replaceState(null,'',location.pathname)}catch(e){}
 
 /* Lo personal (mascota, corazones, racha...) viaja a la nube; la copia local sirve de respaldo sin internet */
-const personal=()=>({name:S.me.name,ln:S.me.ln||'',pet:S.pet,petSet:S.petSet,xp:S.xp,streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,best:S.best,total:S.total,types:[...S.types],pt:S.pt,solo:S.solo,theme:S.theme,showSeen:S.showSeen,birth:S.birth,legal:S.legal,blk:S.blk,refC:S.refC,invD:S.invD,qd:S.qd,qaN:S.qaN,accent:S.accent||'',active:S.group?S.group.id:null});
+const personal=()=>({name:S.me.name,ln:S.me.ln||'',pet:S.pet,petSet:S.petSet,xp:S.xp,streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,favs:S.favs||[],best:S.best,total:S.total,types:[...S.types],pt:S.pt,solo:S.solo,theme:S.theme,showSeen:S.showSeen,birth:S.birth,legal:S.legal,blk:S.blk,refC:S.refC,invD:S.invD,qd:S.qd,qaN:S.qaN,accent:S.accent||'',active:S.group?S.group.id:null});
 let remK='',remT=0;
 function save(){try{if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()){const k=(S.me.name||'')+'|'+((S.pet&&S.pet.name)||'');if(k!==remK){remK=k;clearTimeout(remT);remT=setTimeout(()=>{try{remApply()}catch(e){}},2500)}}}catch(e){}
  if(S.user){try{localStorage.setItem(KEY,JSON.stringify({...personal(),uid:S.user.uid,familyIds:S.families.map(f=>f.id)}))}catch(e){}}
  if(window.CLOUD&&CLOUD.ready)CLOUD.dirty()}
-function resetPersonal(){S.nameAt=0;S.nameP=0;Object.assign(S,{accent:'',ent:null,birth:'',legal:null,blk:[],refC:0,invD:[],xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],best:0,total:0,pt:PT0(),pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,solo:false,showSeen:true,qd:'',qaN:0,qa:null,group:null,bub:null,posts:[],members:{},families:[]});T={i:0,s:0,a:null}}
+function resetPersonal(){S.nameAt=0;S.nameP=0;Object.assign(S,{accent:'',ent:null,birth:'',legal:null,blk:[],refC:0,invD:[],xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],favs:[],best:0,total:0,pt:PT0(),pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,solo:false,showSeen:true,qd:'',qaN:0,qa:null,group:null,bub:null,posts:[],members:{},families:[]});T={i:0,s:0,a:null}}
 function applyPersonal(o){if(!o)return;
  if(THEMES.some(t=>t.id===o.theme))applyTheme(o.theme);
  if(typeof o.accent==='string')S.accent=o.accent;
  ['petSet','xp','streak','last','chest','mis','petDone','inv','perfect','solo','best','total','showSeen','qd','qaN','birth','legal','blk','refC','invD'].forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
  if(o.pet&&PETS[o.pet.kind])S.pet={kind:o.pet.kind,name:String(o.pet.name||PETS[o.pet.kind].n).slice(0,14)};
- S.types=new Set(o.types||[]);S.wk=o.wk||null;S.unl=Array.isArray(o.unl)?o.unl.filter(x=>typeof x==='string'):[];S.wear=Array.isArray(o.wear)?o.wear.filter(x=>typeof x==='string'):[];S.pt=Object.assign(PT0(),o.pt||{});S.pt.t=S.pt.t||Date.now();S.bub=null;
+ S.types=new Set(o.types||[]);S.wk=o.wk||null;S.unl=Array.isArray(o.unl)?o.unl.filter(x=>typeof x==='string'):[];S.wear=Array.isArray(o.wear)?o.wear.filter(x=>typeof x==='string'):[];S.favs=Array.isArray(o.favs)?o.favs.filter(x=>typeof x==='string').slice(-300):[];S.pt=Object.assign(PT0(),o.pt||{});S.pt.t=S.pt.t||Date.now();S.bub=null;
  const y=new Date(Date.now()-864e5).toDateString();S.posted=S.last===today();if(!S.posted&&S.last!==y)S.streak=0}
 function legacy(){try{const o=JSON.parse(localStorage.getItem(LEGACY)||'null');if(o&&o.me&&o.me.name)return{pet:o.pet,petSet:o.petSet,xp:o.xp,streak:o.streak,last:o.last,chest:o.chest,mis:o.mis,petDone:o.petDone,inv:o.inv,perfect:o.perfect,types:o.types,pt:o.pt}}catch(e){}return null}
 async function logout(){try{if(window.google&&google.accounts)google.accounts.id.disableAutoSelect()}catch(e){}try{localStorage.removeItem(KEY);localStorage.removeItem('capsula_adm')}catch(e){}try{if(window.CLOUD&&CLOUD.signOut)await CLOUD.signOut()}catch(e){}try{const P=NP('FirebaseAuthentication');if(P)await P.signOut()}catch(e){}location.reload()}
@@ -751,7 +756,7 @@ const legalOk=()=>!!(S.legal&&S.legal.v===LEGAL_V&&ageOf(S.birth)!==null);
 function legalScr(){
  const y=new Date().getFullYear(),M=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
  const [by,bm]=(S.birth||'').split('-');
- return `<div class="wl" style="justify-content:flex-start;overflow:auto"><h1 style="margin-top:18px">Antes de empezar</h1>
+ return `<div class="wl" style="justify-content:flex-start;overflow:auto;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));"><h1 style="margin-top:18px">Antes de empezar</h1>
  <p class="mu">Cápsula es para personas de <b>13 años o más</b>. Cuéntanos lo básico para cuidarte mejor.</p>
  <label class="lb" for="lgn">¿Cómo te llamamos?</label><input id="lgn" class="in" maxlength="24" value="${esc(S.me.name)}" autocomplete="off">
  <label class="lb" id="lgbl">¿Cuándo naciste? <span class="mu">(solo guardamos mes y año)</span></label>
@@ -779,7 +784,7 @@ async function lgGo(){const nm=$('#lgn').value.trim().slice(0,24),m=$('#lgm').va
  S.me.name=nm;S.birth=y+'-'+m;S.legal={v:LEGAL_V,t:Date.now(),minor:minor,guard:minor};S.lerr='';save();
  try{if(window.CLOUD){CLOUD.ping();const rf=localStorage.getItem('capsula_ref');if(rf){localStorage.removeItem('capsula_ref');CLOUD.refer(rf)}}}catch(e){}
  APP.goAfter()}
-const under13=()=>`<div class="wl" style="justify-content:center;text-align:center"><h1>Todavía no puedes usar Cápsula</h1><p class="mu">Cápsula es para personas de 13 años o más. No guardamos tus datos: tu cuenta quedó eliminada. ¡Te esperamos cuando cumplas 13!</p><button class="btn w" onclick="location.reload()">Entendido</button></div>`;
+const under13=()=>`<div class="wl" style="justify-content:center;text-align:center;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));"><h1>Todavía no puedes usar Cápsula</h1><p class="mu">Cápsula es para personas de 13 años o más. No guardamos tus datos: tu cuenta quedó eliminada. ¡Te esperamos cuando cumplas 13!</p><button class="btn w" onclick="location.reload()">Entendido</button></div>`;
 
 function groupScr(){
  const back=`<button class="bk" onclick="S.gstep='pick';render()">${ic('back',18)} Atrás</button>`;let b='';
@@ -855,7 +860,7 @@ function render(){
  if(S.scr==='main'){navSync();enterAnim($('#mn'));p3mount()}
  const key=S.scr+':'+S.gstep;if(key!==render.k){render.k=key;if(S.scr==='group'||S.scr==='pet')enterAnim($('.ob'))}
 }
-function go(t){if(t==='mundo')spaceTo(null);S.tab=t;render();const mn=$('#mn');if(mn){mn.scrollTop=0;enterAnim(mn)}if(t==='mundo')setTimeout(()=>petIdle(true),4000)}
+function go(t){if(t==='mundo')spaceTo(null);S.tab=t;render();if(t==='mundo')guideAuto('mundo');if(t==='cap')guideAuto('cap');const mn=$('#mn');if(mn){mn.scrollTop=0;enterAnim(mn)}if(t==='mundo')setTimeout(()=>petIdle(true),4000)}
 const openCap=id=>{spaceTo(id);S.sub='inicio';S.af='';go('cap')};
 const goArc=()=>{spaceTo(null);S.af='';go('arc')};
 const goTriv=()=>{spaceTo(null);go('triv')};
@@ -890,7 +895,7 @@ function recentHTML(n){const L=S.posts.filter(p=>p.a!=='me'&&TY[p.k]&&!isBlk(p.a
  return L.map(p=>`<div class="card row" style="flex-direction:row;align-items:center;gap:12px">${pAv(p.a,40)}<span class="tx" style="flex:1;min-width:0"><b>${esc(who(p.a,p))} ${VERB[p.k]||'compartió algo'}</b><span class="mu">${rel(p.ts)} · ${S.group?esc(S.group.name):'Mi mundo'}</span></span></div>`).join('')}
 function home(){
  const n=S.families.length,rc=recentHTML(3);
- return `<section class="card hw"><div style="max-width:200px"><span class="mu">Hola, ${esc(S.me.name)}</span><h2>Tu mundo te espera</h2><p class="mu" style="margin:4px 0 10px">Tu mascota ${esc(S.pet.name)} te espera. Cuídala y gana corazones.</p><button class="btn" onclick="go('mundo')">Entrar</button></div><span class="hp"><span id="pet3dh" class="p3 p3h${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet(S.pet.kind,104,S.wear,stg())}</span></span></span></section>
+ return `${updCard()}<section class="card hw"><div style="max-width:200px"><span class="mu">Hola, ${esc(S.me.name)}</span><h2>Tu mundo te espera</h2><p class="mu" style="margin:4px 0 10px">Tu mascota ${esc(S.pet.name)} te espera. Cuídala y gana corazones.</p><button class="btn" onclick="go('mundo')">Entrar</button></div><span class="hp"><span id="pet3dh" class="p3 p3h${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet(S.pet.kind,104,S.wear,stg())}</span></span></span></section>
  ${fpCard()}
  <div class="duo"><button class="tile2" onclick="go('mundo')">${ic('world',26)}<b>Mi mundo</b><span class="mu">Solo tuyo: tu mascota y tu diario</span></button><button class="tile2" onclick="go('caps')">${ic('caps',26)}<b>Mis cápsulas</b><span class="mu">${n?'Compartes historias en '+n+(n>1?' espacios':' espacio'):'Comparte historias con tu familia o amigos'}</span></button></div>
  <section class="card"><span class="mu">Pregunta del día · una nueva cada día</span><h2>${esc(qaToday(true))}</h2><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn" onclick="goTriv()">Responder</button><button class="btn s" onclick="dest()">Contar una historia</button></div></section>
@@ -1053,7 +1058,7 @@ function postBody(p){
  if(p.k==='receta')return `<div class="rcp">${x.by?`<span class="mu">Te la enseñó ${esc(x.by)}</span>`:''}<b>Ingredientes</b><ul>${(Array.isArray(x.ing)?x.ing:[]).map(i=>`<li>${esc(i)}</li>`).join('')}</ul><b>Preparación</b><p>${esc(x.stp||'')}</p></div>`;
  return ''}
 const AFL=()=>Object.entries(TY).filter(([k])=>k!=='video');
-const afChips=()=>`<div class="afc" role="group" aria-label="Filtrar">${[['', 'Todo'],...AFL().map(([k,v])=>[k,v.l])].map(([k,l])=>`<button class="${(S.af||'')===k?'on':''}" aria-pressed="${(S.af||'')===k}" onclick="S.af='${k}';soft()">${l}</button>`).join('')}</div>`;
+const afChips=()=>`<div class="afc" role="group" aria-label="Filtrar">${[['', 'Todo'],['fav','★ Favoritas'],...AFL().map(([k,v])=>[k,v.l])].map(([k,l])=>`<button class="${(S.af||'')===k?'on':''}" aria-pressed="${(S.af||'')===k}" onclick="S.af='${k}';soft()">${l}</button>`).join('')}</div>`;
 /* ---------- moderación: reportar y bloquear ---------- */
 const isBlk=u=>!!u&&u!=='me'&&(S.blk||[]).includes(u);
 const RSN=[['sexual','Contenido sexual o desnudez'],['violencia','Violencia o algo peligroso'],['acoso','Acoso, burla o insultos'],['privado','Muestra información privada'],['menor','Pone en riesgo a un menor'],['otro','Otro motivo']];
@@ -1086,10 +1091,10 @@ function bookPage(){const L=S.bkL||[],i=S.bk,T=L.length+2;let h;
 function bookGo(d){S.bk=Math.max(0,Math.min((S.bkL||[]).length+1,S.bk+d));bookPage()}
 function bookCard(n){const ok=n>=12;return `<section class="card"><div class="row sp"><span class="tx"><b>${esc(libName())}</b><span class="mu">${ok?'¡Listo para leer!':Math.min(n,12)+' de 12 historias · con 12 se arma'}</span></span>${ok?'<button class="btn" onclick="bookOpen()">Abrir</button>':''}</div>${ok?'':`<div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div>`}</section>`}
 function arcList(kind){
- const all=S.posts.filter(p=>TY[p.k]&&!isBlk(p.a)),L=kind?all.filter(p=>p.k===kind):all;
+ const all=S.posts.filter(p=>TY[p.k]&&!isBlk(p.a)),L=kind==='fav'?all.filter(p=>isFav(p.id)):kind?all.filter(p=>p.k===kind):all;
  if(!all.length)return `<div class="card c">${S.group?ic('book',48):pet3('pet3dx',150)}<h3>Aún no hay historias</h3><p class="mu">${S.group?'Cuenta la primera y quedará aquí para todos.':'Cuenta la primera y '+esc(S.pet.name)+' te lo agradecerá.'}</p><button class="btn" onclick="chooser()">Contar la primera</button></div>`;
- if(!L.length)return `<div class="card c"><p class="mu">Aún no hay ${(TY[kind]||{l:'historias'}).l.toLowerCase()} aquí.</p>${kind==='carta'?'<button class="btn" onclick="compose(\'carta\')">Escribir una carta</button>':''}</div>`;
- return L.map(p=>`<article class="card"><div class="row">${pAv(p.a,40)}<div class="tx"><b>${esc(who(p.a,p))}</b><span class="mu">${rel(p.ts)}${p.by?' · contada por '+esc(p.by):''}</span></div><span class="tag">${ic(TY[p.k].i,14)}${TY[p.k].l}</span></div>
+ if(!L.length)return `<div class="card c"><p class="mu">${kind==='fav'?'Aún no tienes favoritas. Toca ☆ en una historia para guardarla aquí.':'Aún no hay '+(TY[kind]||{l:'historias'}).l.toLowerCase()+' aquí.'}</p>${kind==='carta'?'<button class="btn" onclick="compose(\'carta\')">Escribir una carta</button>':''}</div>`;
+ return L.map(p=>`<article class="card"><div class="row">${pAv(p.a,40)}<div class="tx"><b>${esc(who(p.a,p))}</b><span class="mu">${rel(p.ts)}${p.by?' · contada por '+esc(p.by):''}</span></div><span class="tag">${ic(TY[p.k].i,14)}${TY[p.k].l}</span><button class="fv${isFav(p.id)?' on':''}" aria-pressed="${isFav(p.id)}" aria-label="${isFav(p.id)?'Quitar de favoritas':'Marcar como favorita'}" onclick="favSet('${p.id}')">${isFav(p.id)?'★':'☆'}</button></div>
   <h3>${esc(p.t)}</h3>${postBody(p)}
   ${S.group?`<div class="rx">${['💗','😂','🥹'].map((e,j)=>`<button class="${p.m[j]?'on':''}" aria-pressed="${!!p.m[j]}" onclick="react('${p.id}',${j})">${e} ${p.r[j]+p.m[j]}</button>`).join('')}</div>`:''}${postActs(p)}</article>`).join('')+(S.posts.length>=S.plim?`<button class="btn s w" onclick="CLOUD.more()">Ver más historias</button>`:'')}
 function arc(){
@@ -1233,6 +1238,7 @@ function perfil(){
  <button class="btn s w" onclick="delAsk()" style="color:#B3261E">Eliminar mi cuenta y mis datos</button></div>
  ${plusCard()}
  ${remCard()}
+ ${guideCard()}
  ${admCard()}
  <button class="btn s w" onclick="logout()">Cerrar sesión</button>
  <p class="mu c" onclick="admTap()" style="user-select:none;padding:8px">Cápsula · versión 21</p>`}
@@ -1268,9 +1274,10 @@ async function delRun(tok){const e=$('#dele'),p=$('#delp');if(e)e.style.display=
   try{localStorage.clear()}catch(x){}
   S.u13=false;S.user=null;S.scr='deleted';cl();render()}
  catch(x){console.error(x);if(e){e.textContent=(x&&/credential|auth\//i.test(String(x.code||x.message)))?'No pudimos confirmar tu identidad. Intenta de nuevo.':'No se pudo completar. Revisa tu conexión e intenta de nuevo; nada se borra a medias sin que puedas repetirlo.';e.style.display='block'}if(p)p.textContent=''}}
-const deleted=()=>`<div class="wl" style="justify-content:center;text-align:center"><h1>Tu cuenta fue eliminada</h1><p class="mu">Borramos tus datos de Cápsula. Gracias por haber estado aquí.</p><button class="btn w" onclick="location.reload()">Cerrar</button></div>`;
+const deleted=()=>`<div class="wl" style="justify-content:center;text-align:center;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));"><h1>Tu cuenta fue eliminada</h1><p class="mu">Borramos tus datos de Cápsula. Gracias por haber estado aquí.</p><button class="btn w" onclick="location.reload()">Cerrar</button></div>`;
 function profile(){go('perfil')}
-function leave(){showSheet(`<h2>Salir de ${esc(S.group.name)}</h2><p class="mu">Perderás el acceso a esta cápsula. Tu mascota, tu diario y tu archivo personal no se tocan.</p><p class="mu"><b>¿Qué pasa con lo que aportaste?</b></p>
+function leave(){if(Object.keys(S.members).length===1){showSheet(`<h2>Eliminar ${esc(S.group.name)}</h2><p class="mu">Eres la única persona en esta cápsula. Si sales, la cápsula y sus historias se eliminan para siempre.</p><p class="mu">Tu mascota, tu diario y tu archivo personal no se tocan.</p><button class="btn w" style="background:#B3261E" onclick="doLeave(false)">Eliminar la cápsula</button><button class="btn s w" onclick="cl()">Cancelar</button>`);return}
+ showSheet(`<h2>Salir de ${esc(S.group.name)}</h2><p class="mu">Perderás el acceso a esta cápsula. Tu mascota, tu diario y tu archivo personal no se tocan.</p><p class="mu"><b>¿Qué pasa con lo que aportaste?</b></p>
  <button class="btn w" onclick="doLeave(false)">Salir y dejar mis aportes</button><p class="mu">Se quedan en la cápsula con tu nombre.</p>
  <button class="btn s w" onclick="doLeave(true)">Salir y borrar mis aportes</button>
  <button class="btn s w" onclick="cl()">Cancelar</button>`)}
@@ -1290,7 +1297,7 @@ function personas(){
  ${S.group.ownerUid===me?`<div class="card"><h3>Portada de la cápsula</h3><p class="mu">Una foto que verán todas las personas de la cápsula.</p><button class="btn s w" onclick="coverPick()">${ic('image',18)} ${S.group.cover?'Cambiar portada':'Poner portada'}</button>${S.group.cover?`<button class="btn s w" onclick="coverSet('')">Quitar portada</button>`:''}</div>`:''}
  ${helpCard()}
  <button class="btn s w" onclick="S.scr='group';S.gstep='pick';render()">Crear o unirme a otra cápsula</button>
- ${S.group.ownerUid!==me?`<button class="btn s w" onclick="leave()">Salir de esta cápsula</button>`:''}`}
+ ${S.group.ownerUid!==me||Object.keys(S.members).length===1?`<button class="btn s w" onclick="leave()">${Object.keys(S.members).length===1?'Eliminar esta cápsula':'Salir de esta cápsula'}</button>`:''}`}
 function coverPick(){const i=document.createElement('input');i.type='file';i.accept='image/*';i.onchange=()=>{const f=i.files&&i.files[0];if(!f)return;const im=new Image();im.onload=()=>{let m=720,q=.62,u='';for(let n=0;n<5;n++){const k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));c.getContext('2d').drawImage(im,0,0,c.width,c.height);u=c.toDataURL('image/jpeg',q);if(u.length<=90000)break;m=Math.round(m*.8);q=Math.max(.4,q-.06)}
  if(u.length>95000){toast('La foto es muy pesada, prueba con otra');return}coverSet(u)};im.onerror=()=>toast('No se pudo leer la foto');im.src=URL.createObjectURL(f)};i.click()}
 async function coverSet(u){const g=S.group;if(!g||g.ownerUid!==S.user.uid)return;
@@ -1324,6 +1331,33 @@ function act(){
  ${rc?`<span class="lab">${S.group?esc(S.group.name):'Mi mundo'}</span>${rc}`:`<div class="card c">${ic('bell',44)}<h3>Todo al día</h3><p class="mu">Aquí verás las cartas, respuestas e invitaciones de tus cápsulas.</p></div>`}
  <div class="card"><h3>Tu mundo</h3><p class="mu">${S.xp} corazones · ${S.streak?'racha de '+S.streak+(S.streak>1?' días':' día'):'sin racha todavía'}</p></div>
  <p class="mu c">Por ahora ves la actividad de la cápsula abierta. Los avisos al teléfono llegarán más adelante.</p>`}
+/* ---------- mini guías (una para el juego, otra para las cápsulas; se ven la primera vez y se reabren desde Perfil) ---------- */
+const GUIDES={
+ mundo:{c:'m',k:'Tu mundo · el juego',s:[
+  ['🐾','Esta es tu mascota','Vive en Mi mundo, un espacio solo tuyo. Nadie más la ve.'],
+  ['🍪','Cuídala cada día','Mima, da de comer, juega, baña y deja dormir. Cada cuidado sube sus barras de ánimo, panza, limpieza, diversión y energía.'],
+  ['💗','Gana corazones y crece','Cada historia que cuentas le da corazones. Con ellos sube de nivel, evoluciona y desbloquea accesorios para su armario.']]},
+ cap:{c:'c',k:'Cápsulas · compartir',s:[
+  ['👨‍👩‍👧','Un espacio privado con los tuyos','Una cápsula junta a tu familia, tu pareja o tus amigos. Solo entran quienes tengan el código.'],
+  ['💌','Cuenten historias juntos','Fotos, cartas, notas de voz, dibujos y recetas. Reacciona a lo que cuentan los demás y responde la pregunta del día.'],
+  ['📖','Armen su libro','En Personas está el código para invitar. Con 12 historias se arma un libro para leer y guardar.']]}};
+const gSeen=k=>{try{return localStorage.getItem('capsula_g_'+k)==='1'}catch(e){return false}};
+function guideOpen(k,i){const g=GUIDES[k];if(!g)return;i=i||0;try{localStorage.setItem('capsula_g_'+k,'1')}catch(e){}
+ const st=g.s[i],last=i===g.s.length-1;
+ showSheet(`<div class="gd ${g.c}"><span class="gk">${g.k}</span><span class="ge" aria-hidden="true">${st[0]}</span><h2 style="padding:0">${st[1]}</h2><p class="mu">${st[2]}</p>
+ <div class="dots" aria-hidden="true">${g.s.map((_,j)=>`<button tabindex="-1" class="${j===i?'on':''}"></button>`).join('')}</div>
+ <div class="row" style="gap:8px;width:100%;justify-content:center">${i?`<button class="btn s" onclick="guideOpen('${k}',${i-1})">Atrás</button>`:`<button class="btn s" onclick="cl()">Saltar</button>`}<button class="btn" onclick="${last?'cl()':`guideOpen('${k}',${i+1})`}">${last?'Entendido':'Siguiente'}</button></div></div>`)}
+function guideAuto(k){if(S.scr!=='main'||gSeen(k)||!legalOk())return;setTimeout(()=>{if(S.scr!=='main'||gSeen(k)||$('#sh.open')||$('.lvup'))return;if(k==='mundo'&&S.tab!=='mundo')return;if(k==='cap'&&S.tab!=='cap')return;guideOpen(k,0)},900)}
+const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa cómo funciona cada parte.</span><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn s" onclick="guideOpen('mundo',0)">Guía de Mi mundo</button><button class="btn s" onclick="guideOpen('cap',0)">Guía de las cápsulas</button></div></div>`;
+/* ---------- favoritas (solo las ves tú) ---------- */
+const isFav=id=>(S.favs||[]).includes(id);
+function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
+/* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
+const BUILD=34;
+async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
+ try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
+const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
+function updX(){S.upd=0;try{sessionStorage.setItem('capsula_updx','1')}catch(e){}soft()}
 const VIEW={home,mundo,caps,cap,act,perfil,arc,triv};
 
 /* ---------- publish ---------- */
@@ -1490,7 +1524,7 @@ window.APP={
   if(t&&Date.now()-t<864e5){S.u13=true;try{if(window.CLOUD&&CLOUD.deleteAccount)CLOUD.deleteAccount(null).catch(()=>{})}catch(e){}S.scr='under13';render();return}}
   if(!legalOk()){S.scr='legal';S.lerr='';render();return}
   APP.goAfter()},
- goAfter(){setTimeout(refSync,2500);setTimeout(remInit,1500);const pc=S.joinCode;
+ goAfter(){setTimeout(refSync,2500);setTimeout(updChk,5000);setTimeout(remInit,1500);const pc=S.joinCode;
   if(pc&&!S.families.some(f=>f.code===pc)){S.scr='group';S.gstep='join'}
   else{S.joinCode='';S.scr=S.petSet?'main':((S.group||S.solo||S.families.length)?'pet':'group');S.gstep='pick'}
   S.tab='home';render()}

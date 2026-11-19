@@ -153,7 +153,7 @@ function start() {
 
   async function loadFamilies() {
     const res = await Promise.all(famIds.map(async id => {
-      try { const s = await getDoc(doc(db, 'families', id)); return s.exists() ? pick(id, s.data()) : null; }
+      try { const s = await getDoc(doc(db, 'families', id)); if (!s.exists()) { setDoc(userRef(), { familyIds: arrayRemove(id) }, { merge: true }).catch(() => {}); return { gone: id }; } return pick(id, s.data()); }
       catch (e) {
         if (e && e.code === 'permission-denied') {
           setDoc(userRef(), { familyIds: arrayRemove(id) }, { merge: true }).catch(() => {});
@@ -266,9 +266,10 @@ function start() {
       const b = writeBatch(db);
       b.set(doc(db, 'families', fid, 'members', me.uid), memberData(code));
       b.set(userRef(), { familyIds: arrayUnion(fid) }, { merge: true });
-      await b.commit();
+      try { await b.commit(); } catch (e) { if (e && e.code === 'permission-denied') return { err: 'notfound' }; throw e; }
     }
     const fs = await getDoc(doc(db, 'families', fid));
+    if (!fs.exists()) return { err: 'notfound' };
     const fam = pick(fid, fs.data());
     if (!wasIn && A.plusOn && A.plusOn() && fam.plan !== 'plus') {
       /* Límite de miembros del plan gratis (5). Si se pasa, se revierte la unión. */
@@ -315,6 +316,23 @@ function start() {
   };
 
 
+  /* Cápsula sin nadie dentro: se borra todo (historias, respuestas, código y la cápsula). Solo se llama cuando la persona que sale es la última. */
+  const qaDays = () => { const out = [], d = new Date(Date.UTC(2026, 10, 10)), e = Date.now() + 864e5 * 2; while (d.getTime() < e) { out.push(d.toISOString().slice(0, 10)); d.setUTCDate(d.getUTCDate() + 1); } return out; };
+  const isLast = async fid => { try { return (await getCountFromServer(collection(db, 'families', fid, 'members'))).data().count <= 1; } catch (e) { return false; } };
+  async function wipeFamily(fid, code) {
+    for (;;) {
+      const s = await getDocs(query(collection(db, 'families', fid, 'posts'), limit(400)));
+      if (!s.docs.length) break;
+      const b = writeBatch(db); s.docs.forEach(d => b.delete(d.ref)); await b.commit();
+    }
+    for (const day of qaDays()) {
+      try { const s = await getDocs(collection(db, 'families', fid, 'qa', day, 'answers')); for (const d of s.docs) await deleteDoc(d.ref); } catch (e) {}
+    }
+    if (code) { try { await deleteDoc(doc(db, 'familyCodes', code)); } catch (e) {} }
+    await deleteDoc(doc(db, 'families', fid));
+  }
+  CLOUD.isLast = isLast;
+
   /* Eliminar cuenta y datos propios. Orden importante: primero lo que las reglas
      solo permiten a un miembro (aportes y respuestas), luego la membresía, luego el perfil y la cuenta. */
   CLOUD.deleteAccount = async (idToken, onStep) => {
@@ -326,6 +344,7 @@ function start() {
     const uid = user.uid;
     const days = []; { const d = new Date(Date.UTC(2026, 10, 10)), e = Date.now() + 864e5 * 2; while (d.getTime() < e) { days.push(d.toISOString().slice(0, 10)); d.setUTCDate(d.getUTCDate() + 1); } }
     for (const f of families) {
+      try { if (await isLast(f.id)) await wipeFamily(f.id, f.code); } catch (e) { console.warn('No se pudo vaciar la cápsula', e); }
       step('Borrando tus aportes en ' + (f.name || 'una cápsula') + '…');
       await CLOUD.deleteMyPosts(f.id);
       for (const day of days) { try { await deleteDoc(doc(db, 'families', f.id, 'qa', day, 'answers', uid)); } catch (e) {} }
@@ -386,6 +405,7 @@ function start() {
   };
 
   CLOUD.leaveFamily = async fid => {
+    try { if (await isLast(fid)) await wipeFamily(fid, (families.find(x => x.id === fid) || {}).code); } catch (e) { console.warn('No se pudo vaciar la cápsula', e); }
     const b = writeBatch(db);
     b.delete(doc(db, 'families', fid, 'members', me.uid));
     b.set(userRef(), { familyIds: arrayRemove(fid) }, { merge: true });

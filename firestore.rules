@@ -65,6 +65,12 @@ service cloud.firestore {
     function isAdmin() {
       return signedIn() && request.auth.token.email_verified == true && request.auth.token.email == 'CORREO_ADMIN';
     }
+    // Limpieza: el dueño de la cápsula, o cualquier miembro si el dueño ya no está (cápsula sin dueño), puede vaciarla y borrarla cuando se queda sin gente.
+    function canClean(fid) {
+      return isMember(fid) && (
+        get(/databases/$(database)/documents/families/$(fid)).data.ownerUid == request.auth.uid
+        || !exists(/databases/$(database)/documents/families/$(fid)/members/$(get(/databases/$(database)/documents/families/$(fid)).data.ownerUid)));
+    }
     function typeOk(v) { return v in ['familia', 'pareja', 'amigos']; }
 
     // ---------- Progreso personal y diario individual (solo el dueño) ----------
@@ -142,6 +148,7 @@ service cloud.firestore {
     // ---------- Código de invitación -> familia. Se consulta uno por uno, no se puede listar ----------
     match /familyCodes/{code} {
       allow get: if signedIn();
+      allow delete: if signedIn() && (resource.data.ownerUid == request.auth.uid || canClean(resource.data.familyId));
       allow create: if signedIn()
         && code.matches('[A-Z0-9]{8}')
         && request.resource.data.keys().hasOnly(['familyId', 'ownerUid'])
@@ -165,7 +172,7 @@ service cloud.firestore {
         && (!('plan' in request.resource.data) || request.resource.data.plan == 'free' || (request.resource.data.plan == 'plus' && exists(/databases/$(database)/documents/entitlements/$(request.auth.uid)) && get(/databases/$(database)/documents/entitlements/$(request.auth.uid)).data.tier == 'plus'))
         && request.resource.data.name is string && request.resource.data.name.size() >= 1 && request.resource.data.name.size() <= 30
         && (!('cover' in request.resource.data) || (request.resource.data.cover is string && request.resource.data.cover.size() <= 100000));
-      allow delete: if false;
+      allow delete: if canClean(fid);
 
       match /members/{uid} {
         allow read: if isMember(fid);
@@ -202,7 +209,7 @@ service cloud.firestore {
           && str(request.resource.data.tx, 300) && request.resource.data.tx.size() >= 1
           && str(request.resource.data.name, 40)
           && request.resource.data.createdAt == request.time;
-        allow delete: if isMember(fid) && request.auth.uid == uid;
+        allow delete: if isMember(fid) && (request.auth.uid == uid || canClean(fid));
       }
 
       // Historial de la familia.
@@ -216,7 +223,7 @@ service cloud.firestore {
           && onlyMine(request.resource.data.get('rx2', []), resource.data.get('rx2', []));
         // Cada quien borra lo suyo; el administrador de la cápsula puede retirar cualquier historia (moderación).
         allow delete: if isMember(fid) && (resource.data.authorUid == request.auth.uid
-          || get(/databases/$(database)/documents/families/$(fid)).data.ownerUid == request.auth.uid);
+          || canClean(fid));
       }
     }
   }
