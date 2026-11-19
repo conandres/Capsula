@@ -424,6 +424,15 @@ function start() {
     createdAt: serverTimestamp(), rx0: [], rx1: [], rx2: []
   }));
 
+  /* Pasar la cápsula a otro miembro: cambia el dueño de la familia y de su código en una sola operación. */
+  CLOUD.transferOwner = async (fid, uid) => {
+    const f = families.find(x => x.id === fid);
+    const b = writeBatch(db);
+    b.update(doc(db, 'families', fid), { ownerUid: uid });
+    if (f && f.code) b.update(doc(db, 'familyCodes', f.code), { ownerUid: uid });
+    await b.commit();
+    if (f) { f.ownerUid = uid; A.families(families); }
+  };
   CLOUD.setCover = async (fid, url) => { await updateDoc(doc(db, 'families', fid), { cover: url }); };
   CLOUD.more = () => { plim += 25; subscribe(active); };
   /* Moderación: reportar y (admin) leer o cerrar reportes */

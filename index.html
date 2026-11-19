@@ -1247,12 +1247,17 @@ function memberCard(id){
  const np=S.posts.filter(p=>p.a===(mine?'me':id)).length,pt=presTxt(m),on=isOn(m),own=S.group&&uid===S.group.ownerUid;
  showSheet(`<div class="mcd"><span class="mpet">${pAv(mine?'me':id,96)}${on?'<i class="odot"></i>':''}</span>
  <h2>${esc(m.name||'Miembro')}${mine?' (tú)':''}</h2>
- <p class="mu">${own?'Administra la cápsula':'Miembro'}${S.group?' · '+esc(S.group.name):''}</p>
+ <p class="mu">${own?'Dueño de la cápsula':'Miembro'}${S.group?' · '+esc(S.group.name):''}</p>
  ${pt?`<p class="pres ${on?'on':''}">${pt}</p>`:''}
  <div class="mst"><div><b>${np}</b><span class="mu">${np===1?'aporte':'aportes'} aquí</span></div></div>
  ${m.joinedAt?`<p class="mu">En la cápsula desde ${new Date(m.joinedAt).toLocaleDateString('es',{day:'numeric',month:'long',year:'numeric'})}</p>`:''}
- ${mine?'<button class="btn s w" onclick="cl();go(\'perfil\')">Editar mi perfil</button>':(S.group?`<button class="btn s w" onclick="blockSet('${esc(uid)}',${!isBlk(uid)});cl()">${isBlk(uid)?'Desbloquear':'Bloquear'}</button><button class="btn s w" onclick="reportOpen('','${esc(uid)}')">Reportar a esta persona</button>`:'')}
+ ${mine?'<button class="btn s w" onclick="cl();go(\'perfil\')">Editar mi perfil</button>':(S.group?`<button class="btn s w" onclick="blockSet('${esc(uid)}',${!isBlk(uid)});cl()">${isBlk(uid)?'Desbloquear':'Bloquear'}</button><button class="btn s w" onclick="reportOpen('','${esc(uid)}')">Reportar a esta persona</button>${S.user&&S.group.ownerUid===S.user.uid&&!isBlk(uid)?`<button class="btn s w" onclick="ownerAsk('${esc(uid)}')">Hacerle dueño de la cápsula</button>`:''}`:'')}
  <button class="btn w" onclick="cl()">Cerrar</button></div>`)}
+function ownerAsk(uid){const m=S.members[uid]||{},n=esc(m.name||'esta persona');if(!S.group||!S.user||S.group.ownerUid!==S.user.uid)return;
+ showSheet(`<h2>¿Pasar la cápsula a ${n}?</h2><p class="mu">${n} será la persona dueña de ${esc(S.group.name)}: podrá cambiar la portada y eliminarla. Tú seguirás como miembro y podrás salir cuando quieras.</p><p class="mu">Solo ${n} podría devolvértela.</p><button class="btn w" onclick="ownerGo('${esc(uid)}')">Sí, pasarla a ${n}</button><button class="btn s w" onclick="cl()">Cancelar</button>`)}
+async function ownerGo(uid){const g=S.group,m=S.members[uid]||{};if(!g)return;busySheet('Pasando la cápsula…','Un momento…');
+ try{await CLOUD.transferOwner(g.id,uid);cl();toast('Ahora '+(m.name||'esa persona')+' es la persona dueña');render()}
+ catch(e){cl();toast('No se pudo pasar la cápsula ('+String(e&&(e.code||e.message)||'error').slice(0,40)+'). Revisa tu conexión e inténtalo otra vez.')}}
 function setSeen(v){S.showSeen=!!v;save();toast(v?'Ahora se ve cuando estás activo':'Ya no se ve cuando estás activo')}
 function perfil(){
  return `<div class="spch"><h2>Perfil</h2></div>
@@ -1333,7 +1338,7 @@ function personas(){
  ${S.group.ownerUid===me?`<div class="card"><h3>Portada de la cápsula</h3><p class="mu">Una foto que verán todas las personas de la cápsula.</p><button class="btn s w" onclick="coverPick()">${ic('image',18)} ${S.group.cover?'Cambiar portada':'Poner portada'}</button>${S.group.cover?`<button class="btn s w" onclick="coverSet('')">Quitar portada</button>`:''}</div>`:''}
  ${helpCard()}
  <button class="btn s w" onclick="S.scr='group';S.gstep='pick';render()">Crear o unirme a otra cápsula</button>
- ${S.group.ownerUid!==me||Object.keys(S.members).length===1?`<button class="btn s w" onclick="leave()">${Object.keys(S.members).length===1?'Eliminar esta cápsula':'Salir de esta cápsula'}</button>`:''}`}
+ ${S.group.ownerUid!==me||Object.keys(S.members).length===1?`<button class="btn s w" onclick="leave()">${Object.keys(S.members).length===1?'Eliminar esta cápsula':'Salir de esta cápsula'}</button>`:'<p class="mu">Eres la persona dueña. Para salir, toca el nombre de alguien y pásale la cápsula.</p>'}`}
 function coverPick(){const i=document.createElement('input');i.type='file';i.accept='image/*';i.onchange=()=>{const f=i.files&&i.files[0];if(!f)return;const im=new Image();im.onload=()=>{let m=720,q=.62,u='';for(let n=0;n<5;n++){const k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));c.getContext('2d').drawImage(im,0,0,c.width,c.height);u=c.toDataURL('image/jpeg',q);if(u.length<=90000)break;m=Math.round(m*.8);q=Math.max(.4,q-.06)}
  if(u.length>95000){toast('La foto es muy pesada. Elige una más pequeña o recórtala.');return}coverSet(u)};im.onerror=()=>toast('Esa foto no se pudo abrir. Prueba con otra imagen.');im.src=URL.createObjectURL(f)};i.click()}
 async function coverSet(u){const g=S.group;if(!g||g.ownerUid!==S.user.uid)return;
@@ -1389,7 +1394,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=41;
+const BUILD=42;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';

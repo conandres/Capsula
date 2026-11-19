@@ -149,6 +149,10 @@ service cloud.firestore {
     match /familyCodes/{code} {
       allow get: if signedIn();
       allow delete: if signedIn() && (resource.data.ownerUid == request.auth.uid || canClean(resource.data.familyId));
+      // Al transferir la cápsula, el código pasa al nuevo dueño en la misma operación.
+      allow update: if signedIn() && resource.data.ownerUid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['ownerUid'])
+        && getAfter(fam(resource.data.familyId)).data.ownerUid == request.resource.data.ownerUid;
       allow create: if signedIn()
         && code.matches('[A-Z0-9]{8}')
         && request.resource.data.keys().hasOnly(['familyId', 'ownerUid'])
@@ -172,6 +176,12 @@ service cloud.firestore {
         && (!('plan' in request.resource.data) || request.resource.data.plan == 'free' || (request.resource.data.plan == 'plus' && exists(/databases/$(database)/documents/entitlements/$(request.auth.uid)) && get(/databases/$(database)/documents/entitlements/$(request.auth.uid)).data.tier == 'plus'))
         && request.resource.data.name is string && request.resource.data.name.size() >= 1 && request.resource.data.name.size() <= 30
         && (!('cover' in request.resource.data) || (request.resource.data.cover is string && request.resource.data.cover.size() <= 100000));
+      // Transferir la cápsula: solo el dueño actual, solo cambia ownerUid y solo a alguien que ya es miembro.
+      allow update: if signedIn() && resource.data.ownerUid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['ownerUid'])
+        && request.resource.data.ownerUid is string
+        && request.resource.data.ownerUid != request.auth.uid
+        && exists(/databases/$(database)/documents/families/$(fid)/members/$(request.resource.data.ownerUid));
       allow delete: if canClean(fid);
 
       match /members/{uid} {
