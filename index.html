@@ -1312,7 +1312,7 @@ function leave(){if(Object.keys(S.members).length===1){showSheet(`<h2>Eliminar $
  <button class="btn s w" onclick="cl()">Cancelar</button>`)}
 async function doLeave(del){const g=S.group;if(!g)return;if(del&&!confirm('¿Borrar para siempre lo que aportaste a '+g.name+'? No se puede deshacer.'))return;cl();
  try{if(del)await CLOUD.deleteMyPosts(g.id)}catch(e){toast('No se pudieron borrar tus aportes. Revisa tu conexión e intenta de nuevo.');return}
- try{await CLOUD.leaveFamily(g.id);toast('Saliste de la cápsula');go('caps')}catch(e){toast('No pudimos sacarte de la cápsula. Revisa tu conexión e inténtalo otra vez.')}}
+ try{await CLOUD.leaveFamily(g.id);toast('Saliste de la cápsula');go('caps')}catch(e){const m=String(e&&e.message||e).replace(/^Error: /,'').slice(0,60);toast((e&&e.code==='wipe'?'No se pudo eliminar la cápsula ('+m.replace('wipe:','')+'). ':'No pudimos sacarte de la cápsula. ')+'Revisa tu conexión e inténtalo otra vez.')}}
 function personas(){
  const me=S.user.uid;
  const L=Object.entries(S.members).filter(([id])=>id!==me).map(([id,m])=>({id,n:m.name||'Miembro',m})).concat([{id:'me',n:S.me.name+' (tú)',m:{showSeen:S.showSeen,lastSeen:Date.now()}}]);
@@ -1382,7 +1382,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=38;
+const BUILD=39;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';

@@ -405,7 +405,9 @@ function start() {
   };
 
   CLOUD.leaveFamily = async fid => {
-    try { if (await isLast(fid)) await wipeFamily(fid, (families.find(x => x.id === fid) || {}).code); } catch (e) { console.warn('No se pudo vaciar la cápsula', e); }
+    let last = false;
+    try { last = await isLast(fid); } catch (e) { last = false; }
+    if (last) { try { await wipeFamily(fid, (families.find(x => x.id === fid) || {}).code); } catch (e) { console.warn('No se pudo vaciar la cápsula', e); const er = new Error('wipe:' + (e && (e.code || e.message) || 'error')); er.code = 'wipe'; throw er; } }
     const b = writeBatch(db);
     b.delete(doc(db, 'families', fid, 'members', me.uid));
     b.set(userRef(), { familyIds: arrayRemove(fid) }, { merge: true });
