@@ -427,7 +427,15 @@ nav button.on::after{display:none!important}
 /* Cuarto de la mascota y bandeja de cuidados */
 .room{position:relative;display:flex;justify-content:center;width:100%;border-radius:24px;padding:4px 0;background:radial-gradient(ellipse at 50% 55%,color-mix(in srgb,var(--p) 13%,transparent),transparent 70%);transition:background .6s;touch-action:pan-y}
 .room.scrub canvas{touch-action:none!important}
-.room.night{background:radial-gradient(ellipse at 50% 55%,#2b2467,#0d0a24 78%)}
+.room.night{background:radial-gradient(ellipse at 50% 55%,#2b2467,#0d0a24 78%)!important}
+.room.rm-ocaso{background:radial-gradient(ellipse at 50% 60%,#ffd9a8,transparent 62%),linear-gradient(180deg,#ffb199,#ff7aa2 70%,#c86dd7)}
+.room.rm-bosque{background:radial-gradient(ellipse at 50% 60%,#e6ffd0,transparent 62%),linear-gradient(180deg,#b9e6a8,#6fc28b 75%,#3f8f6a)}
+.room.rm-espacio{background:radial-gradient(ellipse at 50% 60%,#5b4fc0,transparent 62%),linear-gradient(180deg,#1b1650,#2e2a7a 70%,#4b3aa0)}
+.room.rm-playa{background:radial-gradient(ellipse at 50% 60%,#fff3c4,transparent 62%),linear-gradient(180deg,#9fdcff,#6cc3f0 60%,#f4dca0)}
+.wal{align-self:center;border:0;background:var(--tint-2);color:var(--pd);font:inherit;font-weight:700;font-size:14px;border-radius:99px;padding:6px 14px;cursor:pointer}
+.shr{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.shr button{border:0;border-radius:18px;padding:10px;background:var(--tint-2);font:inherit;color:var(--pd);display:flex;flex-direction:column;gap:6px;align-items:center;cursor:pointer;font-weight:700;font-size:14px}.shr button.on{box-shadow:0 0 0 2.5px var(--p)}
+.shr i{display:block;width:100%;height:46px;border-radius:12px}.shr small{font-weight:600;opacity:.8}
+.cap2{display:flex;gap:8px;flex-wrap:wrap}.cap2 .mu{background:var(--tint-2);border-radius:99px;padding:4px 12px}
 .room.night::before{content:"🌙  ✨";position:absolute;top:10px;right:16px;font-size:20px;letter-spacing:.3em;opacity:.9}
 .tray{width:100%;display:flex;flex-direction:column;gap:8px;align-items:center}
 .tools{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;width:100%}
@@ -573,9 +581,28 @@ function checkUnl(){if(!S.user||!S.petSet)return;const lvl=Math.floor(S.xp/100);
  const nu=ACCS.filter(a=>t[a.id]&&!S.unl.includes(a.id));if(!nu.length)return;
  nu.forEach(a=>{S.unl.push(a.id);S.wear.push(a.id)});toast('🎀 ¡Nuevo accesorio: '+nu.map(a=>a.n).join(', ')+'!')}
 function wear(id){if(!ownedId(id))return;S.wear=S.wear.includes(id)?S.wear.filter(x=>x!==id):S.wear.concat(id);render()}
+const ROOMS=[{id:'',n:'Cielo',p:0,bg:'linear-gradient(180deg,#fde3f1,#f6d5ef)'},{id:'ocaso',n:'Atardecer',p:60,bg:'linear-gradient(180deg,#ffb199,#ff7aa2 70%,#c86dd7)'},{id:'bosque',n:'Bosque',p:90,bg:'linear-gradient(180deg,#b9e6a8,#6fc28b 75%,#3f8f6a)'},{id:'playa',n:'Playa',p:110,bg:'linear-gradient(180deg,#9fdcff,#6cc3f0 60%,#f4dca0)'},{id:'espacio',n:'Espacio',p:150,bg:'linear-gradient(180deg,#1b1650,#2e2a7a 70%,#4b3aa0)'}];
+const ACCP={sombrero:150};
+const ownedRoom=id=>!id||S.unl.includes('rm:'+id);
+function shopSave(){S.lmT=Date.now();save();render()}
+function shopAsk(kind,id){let n,p;
+ if(kind==='acc'){const a=ACCS.find(x=>x.id===id);if(!a||owned(a))return;n=a.n;p=ACCP[id]}
+ else{const r=ROOMS.find(x=>x.id===id);if(!r)return;if(ownedRoom(id)){S.rm=id;shopSave();toast('Fondo cambiado');return}n='Fondo '+r.n;p=r.p}
+ if((S.lm||0)<p){toast('Te faltan '+(p-(S.lm||0))+' Lumis para '+n+'. Cuidar a '+S.pet.name+' y contar historias los da poco a poco.');return}
+ showSheet(`<h2>¿Comprar ${esc(n)}?</h2><p class="mu">Cuesta <b>${p} Lumis</b>. Te quedarán ${(S.lm||0)-p}.</p><button class="btn w" onclick="shopBuy('${kind}','${id}')">Comprar</button><button class="btn s w" onclick="cl()">Ahora no</button>`)}
+function shopBuy(kind,id){cl();let p;
+ if(kind==='acc'){const a=ACCS.find(x=>x.id===id);if(!a||owned(a))return;p=ACCP[id];if((S.lm||0)<p)return;S.lm-=p;S.unl.push(id);S.wear.push(id)}
+ else{const r=ROOMS.find(x=>x.id===id);if(!r||ownedRoom(id))return;p=r.p;if((S.lm||0)<p)return;S.lm-=p;S.unl.push('rm:'+id);S.rm=id}
+ burst(26,['✨','🎀']);toast('¡Listo! Ya es de '+S.pet.name+' ✨');shopSave()}
+function shopOpen(){S.tab='mundo';render();setTimeout(()=>{const e=$('#shop');if(e)e.scrollIntoView({behavior:'smooth',block:'center'})},60)}
+const shopHTML=()=>{const cp=capEnsure();return `<section class="card" id="shop"><div class="row sp"><h3>Tienda</h3><b style="color:var(--pd)">✨ ${S.lm||0} Lumis</b></div>
+ <span class="mu">Los Lumis se ganan poco a poco cuidando a ${esc(S.pet.name)}, contando historias y con las misiones. Guárdalos para lo que de verdad quieras.</span>
+ <div class="cap2"><span class="mu">Hoy: ${cp.c} de ${CAP_C} Lumis</span><span class="mu">${cp.x} de ${CAP_X} crecimiento</span></div>
+ <b>Fondos del cuarto</b><div class="shr">${ROOMS.map(r=>{const o=ownedRoom(r.id),on=(S.rm||'')===r.id;return `<button class="${on?'on':''}" onclick="shopAsk('room','${r.id}')"><i style="background:${r.bg}"></i>${r.n}<small>${on?'Puesto':o?'Toca para usar':'✨ '+r.p}</small></button>`}).join('')}</div>
+ <span class="mu">Accesorios: el Sombrero de copa está en el armario por ✨ ${ACCP.sombrero}.</span></section>`};
 const closetHTML=()=>`<section class="card"><h3>Armario de ${esc(S.pet.name)}</h3><span class="mu">Desbloquea accesorios y elige cuáles usar</span><div class="cl">${ACCS.filter(accVisible).map(a=>{const un=owned(a),on=S.wear.includes(a.id);
- const act=un?`onclick="wear('${a.id}')" aria-pressed="${on}"`:a.src==='ad'?`onclick="adUnlock('${a.id}')"`:a.src==='plus'?`onclick="plusOpen('acc')"`:a.src==='pago'?`onclick="BILLING.buy(SKU.alas)"`:'disabled';
- const tag=un?(on?'Puesto':'Toca para ponerlo'):a.src==='ad'?(adult()?(ADS.ok()?'▶ Ver un anuncio':'Anuncios · pronto'):'Solo mayores de 18'):a.src==='plus'?'✨ Plus':a.src==='pago'?(BILLING.ok()?'🛍 Comprar':'🛍 Tienda · pronto'):a.u;
+ const act=un?`onclick="wear('${a.id}')" aria-pressed="${on}"`:a.src==='ad'?`onclick="shopAsk('acc','${a.id}')"`:a.src==='plus'?`onclick="plusOpen('acc')"`:a.src==='pago'?`onclick="BILLING.buy(SKU.alas)"`:'disabled';
+ const tag=un?(on?'Puesto':'Toca para ponerlo'):a.src==='ad'?'✨ '+ACCP[a.id]+' Lumis':a.src==='plus'?'✨ Plus':a.src==='pago'?(BILLING.ok()?'🛍 Comprar':'🛍 Tienda · pronto'):a.u;
  return `<button class="cli ${on?'on':''} ${un||a.src?'':'lk'}" ${act}>${pet(S.pet.kind,70,[a.id],stg(),true)}<span>${a.n}</span><small>${tag}</small></button>`}).join('')}</div></section>`;
 /* ---------- Cápsula Plus: límites, tienda y anuncios. Apagado para todos hasta que plusOn sea true (ver PLAN-PLUS.md) ---------- */
 const LIM={free:{caps:3,members:5,media:40},plus:{caps:999,members:999,media:400}};
@@ -641,17 +668,17 @@ function admOk(id,u,d){CLOUD.adminApprove(id,u,d).then(()=>{toast('Plus concedid
 function admGrant(t){const u=($('#gu').value||'').trim(),d=parseInt($('#gd').value,10)||30;if(u.length<10){toast('Escribe el código de ayuda completo.');return}
  CLOUD.adminGrant(u,t,d).then(()=>toast(t==='plus'?'Plus concedido por '+d+' días.':'Plus retirado.')).catch(()=>toast('No se pudo. ¿Publicaste las reglas nuevas?'))}
 const STG=['Bebé','Pequeño','Joven','Adulto'];
-const stgL=l=>l<2?0:l<5?1:l<9?2:3;
+const stgL=l=>l<3?0:l<10?1:l<25?2:3;
 const stg=()=>stgL(Math.floor(S.xp/100));
 
 /* ---------- data ---------- */
 const TY={
- voz:{l:'Voz',h:'Cuéntalo en audio',i:'mic',xp:50},
- foto:{l:'Foto',h:'Un recuerdo con foto',i:'camera',xp:40},
- carta:{l:'Carta',h:'Escríbelo con calma',i:'pen',xp:40},
- dibujo:{l:'Dibujo',h:'Dibújalo a mano',i:'brush',xp:45},
- video:{l:'Video',h:'Muy pronto',i:'video',xp:60},
- receta:{l:'Receta',h:'Un plato de la familia',i:'cup',xp:55}
+ voz:{l:'Voz',h:'Cuéntalo en audio',i:'mic',xp:14,c:5},
+ foto:{l:'Foto',h:'Un recuerdo con foto',i:'camera',xp:12,c:4},
+ carta:{l:'Carta',h:'Escríbelo con calma',i:'pen',xp:12,c:4},
+ dibujo:{l:'Dibujo',h:'Dibújalo a mano',i:'brush',xp:13,c:4},
+ video:{l:'Video',h:'Muy pronto',i:'video',xp:18,c:6},
+ receta:{l:'Receta',h:'Un plato de la familia',i:'cup',xp:16,c:5}
 };
 
 /* ---------- state ---------- */
@@ -665,7 +692,7 @@ const PT0=()=>({love:80,food:75,clean:80,fun:70,en:90,rest:0,said:[],lb:0,lp:0,l
 const THEMES=[{id:'rosa',n:'Rosa',bg:'#FFF6FA',pr:'#B5336E',bar:'#FFF6FA'},{id:'azul',n:'Cápsula',bg:'#F6F3FF',pr:'#6A4CD6',bar:'#F6F3FF'},{id:'negro',n:'Negro',bg:'#000000',pr:'#F5F5F7',bar:'#000000'}];
 const S={birth:'',legal:null,blk:[],refC:0,invD:[],adm:(()=>{try{return localStorage.getItem('capsula_adm')==='1'}catch(e){return false}})(),showSeen:true,qd:'',qaN:0,qa:null,gtype:'familia',gname:'',qtx:'',theme:document.documentElement.dataset.theme||'azul',bub:null,bubT:0,pt:PT0(),scr:'boot',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,group:null,
  user:null,families:[],members:{},solo:false,cloudErr:'',bootSlow:0,joinCode:'',
- xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],favs:[],best:0,total:0,prompt:null,posts:[],plim:25};
+ xp:0,lm:0,lmT:0,cap:null,rm:'',streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],favs:[],best:0,total:0,prompt:null,posts:[],plim:25};
 let T={i:0,s:0,a:null},C={};const LIVE=new Set();
 try{const q=new URLSearchParams(location.search),c=q.get('codigo'),sf=v=>String(v||'').replace(/[^A-Za-z0-9_-]/g,'').slice(0,40),rf=sf(q.get('ref')),de=sf(q.get('de'));
  if(rf)localStorage.setItem('capsula_ref',rf);if(de)localStorage.setItem('capsula_de',de);
@@ -673,16 +700,16 @@ try{const q=new URLSearchParams(location.search),c=q.get('codigo'),sf=v=>String(
  if(c||rf||de)history.replaceState(null,'',location.pathname)}catch(e){}
 
 /* Lo personal (mascota, corazones, racha...) viaja a la nube; la copia local sirve de respaldo sin internet */
-const personal=()=>({name:S.me.name,ln:S.me.ln||'',pet:S.pet,petSet:S.petSet,xp:S.xp,streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,favs:S.favs||[],best:S.best,total:S.total,types:[...S.types],pt:S.pt,solo:S.solo,theme:S.theme,showSeen:S.showSeen,birth:S.birth,legal:S.legal,blk:S.blk,refC:S.refC,invD:S.invD,qd:S.qd,qaN:S.qaN,accent:S.accent||'',active:S.group?S.group.id:null});
+const personal=()=>({name:S.me.name,ln:S.me.ln||'',pet:S.pet,petSet:S.petSet,xp:S.xp,lm:S.lm||0,lmT:S.lmT||0,cap:S.cap||null,rm:S.rm||'',streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,favs:S.favs||[],best:S.best,total:S.total,types:[...S.types],pt:S.pt,solo:S.solo,theme:S.theme,showSeen:S.showSeen,birth:S.birth,legal:S.legal,blk:S.blk,refC:S.refC,invD:S.invD,qd:S.qd,qaN:S.qaN,accent:S.accent||'',active:S.group?S.group.id:null});
 let remK='',remT=0;
 function save(){try{if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()){const k=(S.me.name||'')+'|'+((S.pet&&S.pet.name)||'');if(k!==remK){remK=k;clearTimeout(remT);remT=setTimeout(()=>{try{remApply()}catch(e){}},2500)}}}catch(e){}
  if(S.user){try{localStorage.setItem(KEY,JSON.stringify({...personal(),uid:S.user.uid,familyIds:S.families.map(f=>f.id)}))}catch(e){}}
  if(window.CLOUD&&CLOUD.ready)CLOUD.dirty()}
-function resetPersonal(){S.nameAt=0;S.nameP=0;Object.assign(S,{accent:'',ent:null,birth:'',legal:null,blk:[],refC:0,invD:[],xp:0,streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],favs:[],best:0,total:0,pt:PT0(),pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,solo:false,showSeen:true,qd:'',qaN:0,qa:null,group:null,bub:null,posts:[],members:{},families:[]});T={i:0,s:0,a:null}}
+function resetPersonal(){S.nameAt=0;S.nameP=0;Object.assign(S,{accent:'',ent:null,birth:'',legal:null,blk:[],refC:0,invD:[],xp:0,lm:0,lmT:0,cap:null,rm:'',streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],favs:[],best:0,total:0,pt:PT0(),pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,solo:false,showSeen:true,qd:'',qaN:0,qa:null,group:null,bub:null,posts:[],members:{},families:[]});T={i:0,s:0,a:null}}
 function applyPersonal(o){if(!o)return;
  if(THEMES.some(t=>t.id===o.theme))applyTheme(o.theme);
  if(typeof o.accent==='string')S.accent=o.accent;
- ['petSet','xp','streak','last','chest','mis','petDone','inv','perfect','solo','best','total','showSeen','qd','qaN','birth','legal','blk','refC','invD'].forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
+ ['petSet','xp','lm','lmT','cap','rm','streak','last','chest','mis','petDone','inv','perfect','solo','best','total','showSeen','qd','qaN','birth','legal','blk','refC','invD'].forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
  if(o.pet&&PETS[o.pet.kind])S.pet={kind:o.pet.kind,name:String(o.pet.name||PETS[o.pet.kind].n).slice(0,14)};
  S.types=new Set(o.types||[]);S.wk=o.wk||null;S.unl=Array.isArray(o.unl)?o.unl.filter(x=>typeof x==='string'):[];S.wear=Array.isArray(o.wear)?o.wear.filter(x=>typeof x==='string'):[];S.favs=Array.isArray(o.favs)?o.favs.filter(x=>typeof x==='string').slice(-300):[];S.pt=Object.assign(PT0(),o.pt||{});S.pt.t=S.pt.t||Date.now();S.bub=null;
  const y=new Date(Date.now()-864e5).toDateString();S.posted=S.last===today();if(!S.posted&&S.last!==y)S.streak=0}
@@ -729,7 +756,15 @@ function levelUp(l){p3play('levelup');const o=document.createElement('div');o.cl
 
 /* ---------- helpers ---------- */
 function toast(m){const t=$('#ts');t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),2000)}
-function add(n){const a=Math.floor(S.xp/100);S.xp+=n;const b=Math.floor(S.xp/100);toast('+'+n+' corazones para '+S.pet.name);render();floatH('+'+n+' 💗');hopPet();{const ch=$('.chip');if(ch){ch.classList.remove('bump');void ch.offsetWidth;ch.classList.add('bump')}}if(b>a)setTimeout(()=>levelUp(b),500)}
+/* Economía: crecimiento (xp) y Lumis (moneda). Las dos son lentas y tienen tope diario para que no se regalen. */
+const CAP_X=45,CAP_C=20;
+function capEnsure(){if(!S.cap||S.cap.d!==today())S.cap={d:today(),x:0,c:0};return S.cap}
+function rw(x,c,o){const cp=capEnsure();let gx=x||0,gc=c||0;
+ if(!(o&&o.free)){gx=Math.max(0,Math.min(gx,CAP_X-cp.x));gc=Math.max(0,Math.min(gc,CAP_C-cp.c));cp.x+=gx;cp.c+=gc}
+ if(!gx&&!gc){if((x||c)&&S._capMsg!==today()){S._capMsg=today();toast('Hoy '+S.pet.name+' ya recibió todo lo que podía 🌙 Mañana sigue.')}return}
+ const a=Math.floor(S.xp/100);S.xp+=gx;if(gc){S.lm=(S.lm||0)+gc;S.lmT=Date.now()}const b=Math.floor(S.xp/100);
+ toast((gc?'+'+gc+' ✨ Lumis':'')+(gc&&gx?' · ':'')+(gx?'+'+gx+' 🌱 crecimiento':''));render();floatH(gc?'+'+gc+' ✨':'+'+gx+' 🌱');hopPet();
+ if(b>a)setTimeout(()=>levelUp(b),500)}
 function copy(t){try{navigator.clipboard.writeText(t).then(()=>toast('Copiado')).catch(()=>toast('Copia este texto: '+t))}catch(e){toast('Copia este texto: '+t)}}
 function pAv(id,s=40){const mine=id==='me'||(S.user&&id===S.user.uid),m=mine?{name:S.me.name,photo:S.me.pic}:(S.members[id]||{});const ini=esc(((m.name||'?').trim().charAt(0)||'?').toUpperCase());return `<span class="pav" style="width:${s}px;height:${s}px;font-size:${Math.round(s*.4)}px">${ini}${m.photo?`<img src="${esc(m.photo)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:''}</span>`}
 const av=pAv;
@@ -755,7 +790,7 @@ function welcome(){
    'Crece con cada historia que cuentas, te pregunta cómo te fue y te hace compañía todos los días.'],
   ['Una pregunta cada día','Respondan juntos',
    `<div class="mq">“¿Qué comida te recuerda a tu infancia?”</div><div class="mo o1">Ana: el arroz con leche</div><div class="mo o2">Beto: las arepas de la abuela</div><div class="mo o3">Tú: …</div>`,
-   'Cada día hay una pregunta nueva. Respondes y ves lo que contestó cada persona. Solo o en grupo, ganas corazones.'],
+   'Cada día hay una pregunta nueva. Respondes y ves lo que contestó cada persona. Solo o en grupo, ganas Lumis y crecimiento.'],
   ['Arma el libro familiar','12 historias y listo',
    `<span class="bk2">${ic('book',52)}</span><div class="sg">${Array.from({length:12},(_,i)=>`<i style="--i:${i}"></i>`).join('')}</div><div class="mq">Con 12 historias se arma vuestro libro</div>`,
    'Todo lo que cuenten se junta en un libro para guardar y compartir con quien más quieras.'],
@@ -988,8 +1023,8 @@ const wkMissions=()=>{const i=wkIdx()%MPOOL.length;return[0,3,6].map(j=>MPOOL[(i
 function track(t,k){const w=wkEnsure();
  if(t==='post'){w.posts++;if(k==='foto')w.fotos++;if(!w.types.includes(k))w.types.push(k);const d=today();if(!w.days.includes(d))w.days.push(d)}
  if(t==='trivia'||t==='qa')w.trivia++;if(t==='mimo')w.mimos++}
-function claimM(id){const w=wkEnsure(),m=MPOOL.find(x=>x.id===id);if(!m||w.claimed.includes(id)||m.p(w)<m.g)return;w.claimed.push(id);burst(30);add(m.r)}
-function missionsHTML(){const w=wkEnsure();return `<section class="card"><h3>Misiones de la semana</h3><span class="mu">Cambian cada lunes</span>${wkMissions().map(m=>{const v=Math.min(m.g,m.p(w)),done=w.claimed.includes(m.id),ok=v>=m.g;return `<div class="ms"><div class="row sp"><b>${esc(m.t)}</b><span class="mu">${v}/${m.g}</span></div><div class="bar"><i style="width:${v/m.g*100}%"></i></div>${done?`<p class="row" style="color:var(--color-success-text);font-weight:500">${ic('check',18)} Cobrada · +${m.r} corazones</p>`:ok?`<button class="btn" onclick="claimM('${m.id}')">Cobrar ${m.r} corazones</button>`:`<span class="mu">Recompensa: ${m.r} corazones</span>`}</div>`}).join('')}</section>`}
+function claimM(id){const w=wkEnsure(),m=MPOOL.find(x=>x.id===id);if(!m||w.claimed.includes(id)||m.p(w)<m.g)return;w.claimed.push(id);burst(30);rw(Math.round(m.r/4),Math.round(m.r/4),{free:true})}
+function missionsHTML(){const w=wkEnsure();return `<section class="card"><h3>Misiones de la semana</h3><span class="mu">Cambian cada lunes</span>${wkMissions().map(m=>{const v=Math.min(m.g,m.p(w)),done=w.claimed.includes(m.id),ok=v>=m.g;return `<div class="ms"><div class="row sp"><b>${esc(m.t)}</b><span class="mu">${v}/${m.g}</span></div><div class="bar"><i style="width:${v/m.g*100}%"></i></div>${done?`<p class="row" style="color:var(--color-success-text);font-weight:500">${ic('check',18)} Cobrada · +${Math.round(m.r/4)} Lumis</p>`:ok?`<button class="btn" onclick="claimM('${m.id}')">Cobrar ${Math.round(m.r/4)} Lumis</button>`:`<span class="mu">Recompensa: ${Math.round(m.r/4)} Lumis</span>`}</div>`}).join('')}</section>`}
 
 /* ---------- home ---------- */
 const VERB={voz:'grabó una nota de voz',foto:'compartió una foto',carta:'dejó una carta',dibujo:'hizo un dibujo',receta:'compartió una receta'};
@@ -997,7 +1032,7 @@ function recentHTML(n){const L=S.posts.filter(p=>p.a!=='me'&&TY[p.k]&&!isBlk(p.a
  return L.map(p=>`<div class="card row" style="flex-direction:row;align-items:center;gap:12px">${pAv(p.a,40)}<span class="tx" style="flex:1;min-width:0"><b>${esc(who(p.a,p))} ${VERB[p.k]||'compartió algo'}</b><span class="mu">${rel(p.ts)} · ${S.group?esc(S.group.name):'Mi mundo'}</span></span></div>`).join('')}
 function home(){
  const n=S.families.length,rc=recentHTML(3);
- return `${updCard()}<section class="card hw"><div style="max-width:200px"><span class="mu">Hola, ${esc(S.me.name)}</span><h2>Tu mundo te espera</h2><p class="mu" style="margin:4px 0 10px">Tu mascota ${esc(S.pet.name)} te espera. Cuídala y gana corazones.</p><button class="btn" onclick="go('mundo')">Entrar</button></div><span class="hp"><span id="pet3dh" class="p3 p3h${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,104,S.wear,stg())}</span></span></span></section>
+ return `${updCard()}<section class="card hw"><div style="max-width:200px"><span class="mu">Hola, ${esc(S.me.name)}</span><h2>Tu mundo te espera</h2><p class="mu" style="margin:4px 0 10px">Tu mascota ${esc(S.pet.name)} te espera. Cuídala y gana Lumis.</p><button class="btn" onclick="go('mundo')">Entrar</button></div><span class="hp"><span id="pet3dh" class="p3 p3h${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,104,S.wear,stg())}</span></span></span></section>
  ${fpCard()}
  <div class="duo"><button class="tile2" onclick="go('mundo')">${ic('world',26)}<b>Mi mundo</b><span class="mu">Solo tuyo: tu mascota y tu diario</span></button><button class="tile2" onclick="go('caps')">${ic('caps',26)}<b>Mis cápsulas</b><span class="mu">${n?'Compartes historias en '+n+(n>1?' espacios':' espacio'):'Comparte historias con tu familia o amigos'}</span></button></div>
  <section class="card"><span class="mu">Pregunta del día · una nueva cada día</span><h2>${esc(qaToday(true))}</h2><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn" onclick="goTriv()">Responder</button><button class="btn s" onclick="dest()">Contar una historia</button></div></section>
@@ -1007,7 +1042,7 @@ function fpCard(){let off=0,was=0;try{off=localStorage.getItem('capsula_fp')==='
  const L=[['Cuenta tu primera historia','Una foto, carta, dibujo o nota de voz. Tarda un minuto.',S.total>0||S.posts.some(p=>p.a==='me'),'dest()','Empezar'],
   ['Responde la pregunta del día','Una pregunta nueva cada día, para recordar cómo eres hoy.',(S.qaN||0)>=1,'goTriv()','Responder'],
   ['Crea tu primera cápsula','Un espacio privado para tu familia, tu pareja o tus amigos.',nf>0,"go('caps')",'Crear'],
-  ['Invita a una persona','Con un enlace o código. Ganas 30 corazones cuando entra.',!!S.inv||mem>1,f0?`openCap('${esc(f0.id)}');S.sub='personas';render()`:"go('caps')",'Invitar']];
+  ['Invita a una persona','Con un enlace o código. Ganas 15 Lumis cuando entra.',!!S.inv||mem>1,f0?`openCap('${esc(f0.id)}');S.sub='personas';render()`:"go('caps')",'Invitar']];
  const d=L.filter(x=>x[2]).length;
  if(d===L.length){if(!was){try{localStorage.setItem('capsula_fpd','1')}catch(e){}setTimeout(()=>{toast('🎉 ¡Completaste tus primeros pasos!');burst(36)},400)}return''}
  if(off)return'';
@@ -1031,8 +1066,8 @@ function mundo(){
  <section class="card"><span class="mu">Pregunta de la semana</span><h2>${esc(wqNow())}</h2><p class="mu">${wq}</p><button class="btn" onclick="chooser(wqNow())">Responder</button></section>
  <section class="card"><h3>¿Cómo quieres contar hoy?</h3><div class="qp">${Object.entries(TY).map(([k,v])=>`<button onclick="compose('${k}')">${ic(v.i,18)}${v.l}</button>`).join('')}</div></section>
  <div class="duo"><button class="tile2" onclick="goArc()">${ic('book',26)}<b>Mi archivo</b><span class="mu">${n} ${n===1?'historia':'historias'}</span></button><button class="tile2" onclick="go('triv')">${ic('star',26)}<b>Pregunta del día</b><span class="mu">Una para ti</span></button></div>
- <section class="card"><div class="row sp" style="gap:12px"><div class="tx"><h3>Parejas de recuerdos</h3><span class="mu">Cinco niveles, con intentos limitados${S.posts.some(p=>['foto','dibujo'].includes(p.k))?' con tus propias fotos':''}. Gana corazones una vez al día.</span></div><button class="btn" onclick="mgStart()">Jugar</button></div></section>
- ${missionsHTML()}${closetHTML()}
+ <section class="card"><div class="row sp" style="gap:12px"><div class="tx"><h3>Parejas de recuerdos</h3><span class="mu">Cinco niveles, con intentos limitados${S.posts.some(p=>['foto','dibujo'].includes(p.k))?' con tus propias fotos':''}. Gana Lumis una vez al día.</span></div><button class="btn" onclick="mgStart()">Jugar</button></div></section>
+ ${missionsHTML()}${shopHTML()}${closetHTML()}
  ${moodCard()}${badgesHTML()}${bookCard(n)}
  ${inviteApp()}`}
 const PREACT={
@@ -1052,7 +1087,7 @@ function memCard(){if(S.group)return '';const p=memPick();if(!p)return '';const 
 function memOpen(id){const p=S.posts.find(x=>x.id===id);if(!p)return;
  showSheet(`<h2>${esc(p.t)}</h2><span class="mu">${rel(p.ts)}</span>${postBody(p)}<button class="btn w" onclick="cl()">Cerrar</button>`);
  let d='';try{d=localStorage.getItem('capsula_mem')}catch(e){}
- if(d!==today()){try{localStorage.setItem('capsula_mem',today())}catch(e){}setTimeout(()=>{add(5)},350)}}
+ if(d!==today()){try{localStorage.setItem('capsula_mem',today())}catch(e){}setTimeout(()=>{rw(2,1)},350)}}
 /* ---------- Parejas de recuerdos: minijuego de memoria con tus propias fotos ---------- */
 let MG=null;
 const MGL=[[3,5,2600],[4,5,2300],[6,6,2000],[8,7,1800],[10,8,1600]];
@@ -1081,10 +1116,10 @@ function mgFlip(i){if(!MG||MG.lock||MG.prev||MG.st!=='play'||MG.open.includes(i)
   else{mgDraw();setTimeout(()=>{if(!MG||MG.tk!==tk)return;MG.open=[];MG.lock=false;mgDraw()},800)}}}
 function mgWin(){burst(36);const lv=MG.lv;try{if(lv<5&&mgLv()<=lv)localStorage.setItem('capsula_mgl',String(lv+1));if(lv===5)localStorage.setItem('capsula_mgl','1')}catch(e){}
  let d='',d5='';try{d=localStorage.getItem('capsula_mg');d5=localStorage.getItem('capsula_mg5')}catch(e){}
- if(d!==today()){try{localStorage.setItem('capsula_mg',today())}catch(e){}setTimeout(()=>add(8+lv*2),500)}
- else if(lv===5&&d5!==today()){try{localStorage.setItem('capsula_mg5',today())}catch(e){}setTimeout(()=>add(20),500)}}
+ if(d!==today()){try{localStorage.setItem('capsula_mg',today())}catch(e){}setTimeout(()=>rw(2+lv,2+lv),500)}
+ else if(lv===5&&d5!==today()){try{localStorage.setItem('capsula_mg5',today())}catch(e){}setTimeout(()=>rw(4,8),500)}}
 function mgClose(){MG=null;const o=$('#mgo');if(o)o.remove()}
-function chest(){const r=(10+Math.floor(Math.random()*21));S.chest=today();burst(32);add(r)}
+function chest(){const c=3+Math.floor(Math.random()*5);S.chest=today();burst(32);rw(3,c)}
 const H=3600e3;
 const QS=[
  {k:'dia',mood:1,t:()=>'¿Cómo te fue hoy, '+S.me.name+'?',o:[['😄 Genial','¡Qué alegría! Cuéntale tu día a alguien que quieres 💗',4],['🙂 Bien','Me alegra. Los días tranquilos también cuentan ✨',3],['😕 Regular','Te entiendo. Mañana es otra oportunidad y yo estoy contigo 🫶',2],['😢 Mal','Ven, te doy un abrazo gigante 🤗 Cuando quieras, me cuentas qué pasó.',1]]},
@@ -1121,13 +1156,14 @@ function bubSay(t,o,q){S.bub={t,o:o||null,q:q||null};S.bubT=Date.now();petUI()}
 function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=greet(away);
  const lvl=Math.floor(S.xp/100),sz=150,sl=asleep();
  return `<section class="card hero">
-  <div class="room${sl?' night':''}" id="room"><div class="fl ${sl?'sleep':''}" onclick="petClick()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div></div>
+  <div class="room${sl?' night':''}${S.rm&&ownedRoom(S.rm)?' rm-'+S.rm:''}" id="room"><div class="fl ${sl?'sleep':''}" onclick="petClick()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div></div>
   <h2>${esc(S.pet.name)}</h2>
-  <div class="mu">${STG[stg()]} · nivel ${lvl+1} · crece con tus corazones</div>
+  <button class="wal" onclick="shopOpen()" aria-label="Tus Lumis">✨ ${S.lm||0} Lumis</button>
+  <div class="mu">${STG[stg()]} · nivel ${lvl+1} · crece poco a poco</div>
   <div id="bubw" class="bw" aria-live="polite">${bubHTML()}</div>
   <div class="stw" id="stw">${statsHTML()}</div>
   <div class="tray" id="tray">${trayHTML()}</div>
-  <div class="mu">Faltan ${100-S.xp%100} corazones para que ${esc(S.pet.name)} crezca</div></section>`}
+  <div class="mu">Crecimiento del nivel: ${S.xp%100} de 100 · hoy ${capEnsure().x} de ${CAP_X}</div></section>`}
 /* ---------- cuidado interactivo: acariciar, arrastrar comida, frotar para bañar, apagar la luz, hablar ---------- */
 const SC={acc:0,pet:0,last:0,drag:0,bt:0,hint:0};
 const TOOLS=[['food','🍪','Comer'],['bath','🫧','Bañar'],['sleep','🌙','Dormir'],['play','⚽','Jugar'],['talk','🎤','Hablar']];
@@ -1195,7 +1231,7 @@ function echoPlay(bl){const url=URL.createObjectURL(bl),a=new Audio(url);a.prese
  a.onended=done;a.onerror=()=>{cancelAnimationFrame(raf);try{P3.v&&P3.v.setTalk(0)}catch(_){}URL.revokeObjectURL(url)};
  a.play().then(()=>{loop();p3play('happy')}).catch(()=>{toast('No pude reproducirlo. Inténtalo otra vez.');URL.revokeObjectURL(url)})}
 function echoReward(){let d='';try{d=localStorage.getItem('capsula_echo')}catch(e){}ptTick();
- if(d!==today()){try{localStorage.setItem('capsula_echo',today())}catch(e){}S.pt.love=Math.min(100,S.pt.love+5);add(3)}else{S.pt.love=Math.min(100,S.pt.love+2);petUI()}}
+ if(d!==today()){try{localStorage.setItem('capsula_echo',today())}catch(e){}S.pt.love=Math.min(100,S.pt.love+5);rw(2,1)}else{S.pt.love=Math.min(100,S.pt.love+2);petUI()}}
 document.addEventListener('pointerdown',e=>{const t=e.target&&e.target.closest?e.target:null;if(!t)return;const b=t.closest('.dg');if(b){dgStart(e,b);return}if(t.closest('#micb'))echoStart(e)},{passive:false});
 function petTap(){ptTick();const p=S.pt,now=Date.now();
  if(p.rest>now){p.rest=0;p.love=Math.min(100,p.love+4);p3sync();bubSay('🥱 ¡Me despertaste! Pero con mimos te perdono.');hopPet();return}
@@ -1211,24 +1247,24 @@ function feed(){ptTick();const p=S.pt;
  showSheet(`<h2>¿Qué le das de comer a ${esc(S.pet.name)}?</h2><div class="fdg">${FOODS.map(f=>`<button onclick="eat('${f.k}')"><b>${f.e}</b>${f.n}</button>`).join('')}</div><p class="mu">Cada comida le da distinta energía. El pastel es rico, pero ensucia.</p>`)}
 function eat(k){const f=FOODS.find(x=>x.k===k);if(!f)return;cl();ptTick();const p=S.pt,now=Date.now(),need=p.food<60;p3play('eat');
  p.food=Math.min(100,p.food+f.f);p.love=Math.min(100,p.love+f.l);p.clean=Math.max(0,p.clean+f.c);p.en=Math.min(100,p.en+f.u);burst(8,[f.e,'💗']);
- if(need&&now-p.lf>3*H){p.lf=now;S.bub={t:say(['¡Ñam ñam! Estaba riquísimo '+f.e,'¡Delicioso! Eres el mejor cocinero '+f.e,'Mmm… '+f.n.toLowerCase()+', mi favorita del día '+f.e]),o:null,q:null};S.bubT=now;add(8)}else{bubSay(say(['¡Ñam ñam! Gracias '+f.e,'Qué rico '+f.e+' ¡repito mañana!']));hopPet();petUI()}}
+ if(need&&now-p.lf>3*H){p.lf=now;S.bub={t:say(['¡Ñam ñam! Estaba riquísimo '+f.e,'¡Delicioso! Eres el mejor cocinero '+f.e,'Mmm… '+f.n.toLowerCase()+', mi favorita del día '+f.e]),o:null,q:null};S.bubT=now;rw(3,2)}else{bubSay(say(['¡Ñam ñam! Gracias '+f.e,'Qué rico '+f.e+' ¡repito mañana!']));hopPet();petUI()}}
 function playOpen(){ptTick();const p=S.pt;
  if(asleep()){bubSay('Zzz… tengo sueño, ahora no 💤');return}
  if(p.en<20){bubSay(say(['Estoy muy cansada… ¿una siesta primero? 💤','Se me cierran los ojitos 🥱 Mejor dormimos un rato']));return}
  showSheet(`<h2>¿A qué juegan?</h2><div class="fdg"><button onclick="playG('pelota')"><b>⚽</b>Pelota</button><button onclick="playG('baile')"><b>💃</b>Bailar</button><button onclick="playG('escondidas')"><b>🙈</b>Escondidas</button></div><p class="mu">Jugar da diversión pero gasta energía.</p>`)}
 function playG(k){const G={pelota:[28,14,'dance','⚽'],baile:[22,10,'dance','🎵'],escondidas:[34,20,'surprise','🙈']}[k];if(!G)return;cl();ptTick();const p=S.pt,now=Date.now(),need=p.fun<65;
  p.fun=Math.min(100,p.fun+G[0]);p.en=Math.max(0,p.en-G[1]);p.love=Math.min(100,p.love+4);p.food=Math.max(0,p.food-5);p3play(G[2]);burst(10,[G[3],'✨']);
- if(need&&now-p.lp>2*H){p.lp=now;S.bub={t:say(['¡Qué divertido! Otra vez mañana '+G[3],'¡Me encantó jugar contigo! 💗','¡Jajaja! Eres muy bueno en esto '+G[3]]),o:null,q:null};S.bubT=now;add(6)}else{bubSay(say(['¡Jugamos! 🎉','Wiii '+G[3]+' pero me estoy cansando','¡Otra partida cuando quieras!']));hopPet();petUI()}}
+ if(need&&now-p.lp>2*H){p.lp=now;S.bub={t:say(['¡Qué divertido! Otra vez mañana '+G[3],'¡Me encantó jugar contigo! 💗','¡Jajaja! Eres muy bueno en esto '+G[3]]),o:null,q:null};S.bubT=now;rw(3,3)}else{bubSay(say(['¡Jugamos! 🎉','Wiii '+G[3]+' pero me estoy cansando','¡Otra partida cuando quieras!']));hopPet();petUI()}}
 function bath(){ptTick();const p=S.pt,now=Date.now();
  if(asleep()){bubSay('Zzz… ahora no, estoy durmiendo 💤');return}
  if(p.clean>=90){bubSay(say(['¡Ya estoy limpio y brillante! ✨','Hoy ya me bañé, mira cómo huelo 🫧','Más tarde, ahora estoy impecable']));return}
  const need=p.clean<60;p.clean=100;p.love=Math.min(100,p.love+4);p3play('surprise');burst(18,['🫧','💦','✨']);
- if(need&&now-p.lb>6*H){p.lb=now;S.bub={t:say(['¡Qué fresquito! Huelo a nube 🫧','Burbujas, burbujas… ¡gracias! 🛁','¡Quedé como nuevo! ✨']),o:null,q:null};S.bubT=now;add(6)}else{bubSay('¡Chap chap! Qué rico 🫧');hopPet();petUI()}}
+ if(need&&now-p.lb>6*H){p.lb=now;S.bub={t:say(['¡Qué fresquito! Huelo a nube 🫧','Burbujas, burbujas… ¡gracias! 🛁','¡Quedé como nuevo! ✨']),o:null,q:null};S.bubT=now;rw(3,3)}else{bubSay('¡Chap chap! Qué rico 🫧');hopPet();petUI()}}
 function rest(){ptTick();const p=S.pt,now=Date.now();
  if(p.rest>now){bubSay('Zzz… (ya estoy descansando) 💤');return}
  if(p.en>=88){bubSay(say(['No tengo sueño todavía 😄 Juguemos un rato.','Estoy lleno de energía, ¡aún no!']));return}
  const need=p.en<55;p.rest=now+6*60000;p3sync();burst(6,['💤','🌙']);
- if(need&&now-p.lz>4*H){p.lz=now;S.bub={t:'Zzz… voy a dormir una siestita 🌙 Descansaré unos minutos y despertaré con energía.',o:null,q:null};S.bubT=now;add(5)}else{bubSay('Zzz… una siestita corta 💤')}
+ if(need&&now-p.lz>4*H){p.lz=now;S.bub={t:'Zzz… voy a dormir una siestita 🌙 Descansaré unos minutos y despertaré con energía.',o:null,q:null};S.bubT=now;rw(2,0)}else{bubSay('Zzz… una siestita corta 💤')}
  petUI();setTimeout(()=>{ptTick();p3sync();petUI()},6*60000+500)}
 const FACTS=['¿Sabías que cada historia me hace crecer? 🌱','Me gusta cuando cuentas cosas de tu infancia','Hoy es buen día para una historia ✨','Las recetas de la abuela son mis favoritas 🍲','Una carta escrita a mano es un tesoro; una aquí también 💌','Si grabas tu voz, tu familia la escuchará siempre 🎙️','Pregúntale hoy a alguien cómo era su barrio de niño','Una foto vieja y dos frases valen un recuerdo entero 📷','Los recuerdos compartidos pesan menos y brillan más','Yo cuido tus historias mientras duermes 🌙','Cada pregunta del día es una conversación que empieza','Los abuelos tienen mil historias esperando que alguien las pida','Hoy podrías contar algo que nunca has contado 🌟','Una historia cortita también cuenta 💗','Si no sabes por dónde empezar, responde la pregunta del día','Los mejores recuerdos casi nunca fueron planeados','Tu voz de hoy será un tesoro mañana 🎙️','Un dibujo sencillo puede decir más que mil palabras ✏️','Pídele a alguien de tu familia su receta favorita 🍲','Cuando cuentas algo, lo vuelves a vivir un ratito','Las cartas se disfrutan más con los años 💌','Ponle fecha a tus fotos: tu yo del futuro te lo agradecerá 📷','Cada persona que invitas hace más grande la cápsula','Compartir un recuerdo es regalar un pedacito de ti','Una pregunta bonita puede abrir una charla de horas','Con 12 historias armas tu libro 📖','Descansar también es cuidarte 🌙','Me encanta cuando vuelves a visitarme 🥹','Las cosas pequeñas de hoy serán los grandes recuerdos de mañana'];
 function chat(){const now=Date.now(),p=S.pt,el=QS.filter(q=>!q.cond||q.cond());
@@ -1239,7 +1275,7 @@ function reply(i){const q=S.bub&&S.bub.q;if(!q)return;const o=q.o[i],p=S.pt,d=to
  if(q.mood&&o[2])p.moods=(p.moods||[]).filter(m=>m.d!==d).concat({d,v:o[2]}).slice(-14);
  S.bub={t:o[1],o:null,q:null};S.bubT=Date.now();
  if(o[3]==='chooser')setTimeout(()=>chooser(),900);if(o[3]==='fam')setTimeout(()=>{if(S.group){S.sub='personas';go('cap')}else go('caps')},1100);
- if(p.ans<5){p.ans++;add(2)}else render()}
+ if(p.ans<5){p.ans++;rw(1,p.ans<=2?1:0)}else render()}
 function petIdle(force){if(S.scr!=='main'||S.tab!=='mundo'||document.hidden||$('#sh.open')||$('.lvup'))return;ptTick();const now=Date.now();
  if(S.bub&&S.bub.q)return;if(!force&&now-(S.bubT||0)<22000)return;
  if(asleep()){if(!S.bub||!/Zzz/.test(S.bub.t))bubSay(say(['Zzz… estoy soñando con tus historias 💤','Zzz… mmm… galletas… 💤']));return}
@@ -1284,7 +1320,7 @@ async function qaSend(){const el=$('#qat'),t=(el?el.value:'').trim().slice(0,300
  const day=dayKey(),q=qaToday(!S.group),prev=S.qd,fail=()=>{S.qd=prev;S.qtx=t;toast('Tu respuesta no se guardó. Revisa tu conexión e inténtalo otra vez.');soft()};
  S.qd=day;S.qtx='';S.qaN=(S.qaN||0)+1;track('qa');burst(18,['✨','💗']);
  try{(S.group?CLOUD.qaAnswer(day,t):CLOUD.publish({k:'carta',t:q.slice(0,120),x:{to:'Mi diario',tx:t},by:''})).catch(fail)}catch(e){fail();return}
- add(10)}
+ rw(3,3)}
 
 /* ---------- archive ---------- */
 /* solo se muestran fotos y audios guardados como datos; evita que otro miembro inyecte código */
@@ -1413,13 +1449,13 @@ const appLink=()=>baseUrl()+'?ref='+encodeURIComponent(S.user.uid);
 const appText=()=>'Estoy usando Cápsula 💗 para guardar historias con mi gente y cuidar una mascota. Únete con mi enlace: '+appLink();
 async function shareApp(){if(navigator.share){try{await navigator.share({title:'Cápsula',text:appText()});return}catch(e){if(e&&e.name==='AbortError')return}}copy(appText())}
 function copyApp(){copy(appLink())}
-function inviteApp(){const n=Math.min(S.refC||0,99);return `<section class="card"><h3>Invita a un amigo a Cápsula</h3><p class="mu">Por cada amigo que se una con tu enlace ganas <b>50 corazones</b> para tu mascota.${n?' '+(n===1?'Ya se unió 1 amigo 🎉':'Ya se unieron '+n+' amigos 🎉'):''}</p><button class="btn w" onclick="shareApp()">Compartir mi enlace</button><button class="btn s w" onclick="copyApp()">Copiar enlace</button></section>`}
+function inviteApp(){const n=Math.min(S.refC||0,99);return `<section class="card"><h3>Invita a un amigo a Cápsula</h3><p class="mu">Por cada amigo que se una con tu enlace ganas <b>25 Lumis</b> para tu mascota.${n?' '+(n===1?'Ya se unió 1 amigo 🎉':'Ya se unieron '+n+' amigos 🎉'):''}</p><button class="btn w" onclick="shareApp()">Compartir mi enlace</button><button class="btn s w" onclick="copyApp()">Copiar enlace</button></section>`}
 let refT=0;
 async function refSync(){if(S.scr!=='main'||!S.user||!window.CLOUD||!CLOUD.ready||!legalOk()||Date.now()-refT<30000)return;refT=Date.now();
- try{const ids=await CLOUD.myReferrals(),n=Math.min(ids.length,40);if(n>(S.refC||0)){const g=n-(S.refC||0);S.refC=n;S.inv=1;save();add(g*50);setTimeout(()=>toast('¡'+(g>1?g+' amigos se unieron':'Un amigo se unió')+' con tu enlace! +'+g*50+' corazones'),900)}}catch(e){}}
+ try{const ids=await CLOUD.myReferrals(),n=Math.min(ids.length,40);if(n>(S.refC||0)){const g=n-(S.refC||0);S.refC=n;S.inv=1;save();rw(g*20,g*25,{free:true});setTimeout(()=>toast('¡'+(g>1?g+' amigos se unieron':'Un amigo se unió')+' con tu enlace! +'+g*50+' corazones'),900)}}catch(e){}}
 function rewardInv(m){if(!S.user||!legalOk())return;const me=S.user.uid;let n=0;S.invD=S.invD||[];
  for(const id of Object.keys(m||{})){if(id!==me&&m[id]&&m[id].invBy===me&&!S.invD.includes(id)&&n<10){S.invD.push(id);n++}}
- if(n){S.invD=S.invD.slice(-200);S.inv=1;save();setTimeout(()=>{add(n*30);setTimeout(()=>toast(n>1?n+' personas se unieron a tu cápsula 🎉 +'+n*30+' corazones':'Alguien se unió con tu invitación 🎉 +30 corazones'),900)},300)}}
+ if(n){S.invD=S.invD.slice(-200);S.inv=1;save();setTimeout(()=>{rw(n*10,n*15,{free:true});setTimeout(()=>toast(n>1?n+' personas se unieron a tu cápsula 🎉 +'+n*15+' Lumis':'Alguien se unió con tu invitación 🎉 +15 Lumis'),900)},300)}}
 function inviteText(){return 'Te invito a "'+S.group.name+'" en Cápsula 💗 Toca este enlace para entrar (o usa el código '+S.group.code+'): '+inviteLink()}
 async function shareInvite(){S.inv=1;save();
  if(navigator.share){try{await navigator.share({title:'Cápsula',text:inviteText()});return}catch(e){if(e&&e.name==='AbortError')return}}
@@ -1544,7 +1580,7 @@ function personas(){
   <button class="btn w" onclick="shareInvite()">Compartir invitación</button>
   <button class="btn s w" onclick="copyLink()">Copiar enlace</button>
   <button class="btn s w" onclick="showQr()">Invitar en persona (QR)</button>
-  <p class="mu">Ganas 30 corazones por cada persona que se una con tu invitación.</p></div>
+  <p class="mu">Ganas 15 Lumis por cada persona que se una con tu invitación.</p></div>
  ${S.group.ownerUid===me?`<div class="card"><h3>Portada de la cápsula</h3><p class="mu">Una foto que verán todas las personas de la cápsula.</p><button class="btn s w" onclick="coverPick()">${ic('image',18)} ${S.group.cover?'Cambiar portada':'Poner portada'}</button>${S.group.cover?`<button class="btn s w" onclick="coverSet('')">Quitar portada</button>`:''}</div>`:''}
  ${helpCard()}
  <button class="btn s w" onclick="S.scr='group';S.gstep='pick';render()">Crear o unirme a otra cápsula</button>
@@ -1567,7 +1603,7 @@ function capHome(){
  <div class="duo"><button class="tile2" onclick="chooser()">${ic('pen',26)}<b>Escribir aquí</b><span class="mu">Se guarda en ${esc(S.group.name)}</span></button><button class="tile2" onclick="S.sub='recuerdos';soft()">${ic('image',26)}<b>Recuerdos</b><span class="mu">${S.posts.length} ${S.posts.length===1?'historia':'historias'}</span></button></div>
  <div class="duo"><button class="tile2" onclick="S.sub='cartas';soft()">${ic('mail',26)}<b>Cartas</b><span class="mu">${S.posts.filter(p=>p.k==='carta').length} escritas</span></button><button class="tile2 off" disabled aria-disabled="true">${ic('chat',26)}<b>Conversaciones</b><span class="tag soon">Pronto</span></button></div>
  ${bookCard(S.posts.length)}
- <section class="card"><div class="row sp"><span class="tx"><b>Invita a alguien</b><span class="mu">Ganas 30 corazones por cada persona que se una</span></span><button class="btn" onclick="shareInvite()">Invitar</button></div></section>
+ <section class="card"><div class="row sp"><span class="tx"><b>Invita a alguien</b><span class="mu">Ganas 15 Lumis por cada persona que se una</span></span><button class="btn" onclick="shareInvite()">Invitar</button></div></section>
  ${recentHTML(3)?`<h3>Actividad reciente</h3>${recentHTML(3)}`:''}`}
 function cap(){
  if(!S.group)return caps();
@@ -1580,18 +1616,18 @@ function act(){
  const rc=recentHTML(10);
  return `<div class="spch"><h2>Actividad</h2></div>
  ${rc?`<span class="lab">${S.group?esc(S.group.name):'Mi mundo'}</span>${rc}`:`<div class="card c">${ic('bell',44)}<h3>Todo al día</h3><p class="mu">Aquí verás las cartas, respuestas e invitaciones de tus cápsulas.</p></div>`}
- <div class="card"><h3>Tu mundo</h3><p class="mu">${S.xp} corazones · ${S.streak?'racha de '+S.streak+(S.streak>1?' días':' día'):'sin racha todavía'}</p></div>
+ <div class="card"><h3>Tu mundo</h3><p class="mu">✨ ${S.lm||0} Lumis · nivel ${Math.floor(S.xp/100)+1} · ${S.streak?'racha de '+S.streak+(S.streak>1?' días':' día'):'sin racha todavía'}</p></div>
  <p class="mu c">Por ahora ves la actividad de la cápsula abierta. Los avisos al teléfono llegarán más adelante.</p>`}
 /* ---------- mini guías (una para el juego, otra para las cápsulas; se ven la primera vez y se reabren desde Perfil) ---------- */
 const GUIDES={
  mundo:{c:'m',k:'Tu mundo · el juego',s:[
   ['crown','Esta es tu mascota','Vive en Mi mundo, un espacio solo tuyo. Nadie más la ve ni entra a jugar con ella.'],
   ['heart','Cuídala cada día','Acarícialo con el dedo, arrástrale comida a la boca, frótalo para bañarlo, apaga la luz para dormir o mantén presionado Hablar y repite lo que dices. Si sus barras bajan, te lo pide con cariño: aquí no hay castigos.'],
-  ['star','Gana corazones y crece','Cada historia que cuentas le da corazones. Con ellos sube de nivel, evoluciona y estrena accesorios en su armario.'],
-  ['gift','Cofre, racha y misiones','Abre el cofre una vez al día, mantén tu racha contando algo cada día y cumple las misiones de la semana para ganar más corazones.',['Contar una historia','dest()']]]},
+  ['star','Lumis y crecimiento','Cuidar a tu mascota y contar historias le da crecimiento (lento: evolucionar toma semanas) y Lumis ✨, una moneda que ganas poco a poco, con tope diario. Con los Lumis compras accesorios y fondos en la tienda.'],
+  ['gift','Cofre, racha y misiones','Abre el cofre una vez al día, mantén tu racha contando algo cada día y cumple las misiones de la semana para ganar más Lumis.',['Contar una historia','dest()']]]},
  cap:{c:'c',k:'Cápsulas · compartir',s:[
   ['lock','Un espacio privado con los tuyos','Una cápsula junta a tu familia, tu pareja o tus amigos. Solo entra quien tenga el código.'],
-  ['users','Invita con un código','En la pestaña Personas están el código y el enlace para invitar. Ganas corazones cuando alguien entra.',['Ir a Personas',"S.sub='personas';soft()"]],
+  ['users','Invita con un código','En la pestaña Personas están el código y el enlace para invitar. Ganas Lumis cuando alguien entra.',['Ir a Personas',"S.sub='personas';soft()"]],
   ['mail','Cuenten historias juntos','Fotos, cartas, notas de voz, dibujos y recetas. Reacciona a lo que cuentan los demás y marca con ★ tus favoritas.'],
   ['book','Respondan y armen su libro','Cada día hay una pregunta para todos. Con 12 historias se arma un libro para leer y guardar.']]}};
 const gSeen=k=>{try{return localStorage.getItem('capsula_g_'+k)==='1'}catch(e){return false}};
@@ -1606,7 +1642,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=49;
+const BUILD=50;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
@@ -1704,7 +1740,7 @@ function doPub(k,ok){
  CLOUD.publish(p).then(()=>{track('post',k);soft()}).catch(()=>toast('Tu historia no se guardó. Revisa tu conexión e inténtalo otra vez.'));
  S.types.add(k);S.total=(S.total||0)+1;
  if(!S.posted){S.posted=true;S.streak++;S.best=Math.max(S.best||0,S.streak);S.last=today();setTimeout(()=>{toast('🔥 ¡Racha de '+S.streak+(S.streak>1?' días':' día')+'!');burst(26,['🔥','✨'])},1100)}
- S.prompt=null;cl();if(S.group){S.tab='cap';S.sub='recuerdos'}else S.tab='arc';S.bub={t:say(PREACT[k]||PREACT.foto),o:null,q:null};S.bubT=Date.now();add(TY[k].xp);
+ S.prompt=null;cl();if(S.group){S.tab='cap';S.sub='recuerdos'}else S.tab='arc';S.bub={t:say(PREACT[k]||PREACT.foto),o:null,q:null};S.bubT=Date.now();rw(TY[k].xp,TY[k].c);
 }
 
 /* ---------- estado de guardado ---------- */
@@ -1754,6 +1790,8 @@ window.APP={
  /* Une la nube con la copia de este celular sin perder avances: lo que solo sube (corazones, mejor racha, historias) toma el mayor. */
  merge(c,l){if(!l||typeof l!=='object')return{data:c,changed:false};const d={...c};let ch=false;
   ['xp','best','total','qaN'].forEach(k=>{const a=+c[k]||0,b=+l[k]||0;if(b>a){d[k]=b;ch=true}});
+  if((+l.lmT||0)>(+c.lmT||0)){d.lm=l.lm;d.lmT=l.lmT;d.cap=l.cap;ch=true}
+  if(l.rm&&!c.rm){d.rm=l.rm;ch=true}
   const un=(a,b)=>{const u=[...new Set([...(Array.isArray(a)?a:[]),...(Array.isArray(b)?b:[])])];return u};
   ['types','unl'].forEach(k=>{const u=un(c[k],l[k]);if(u.length>(Array.isArray(c[k])?c[k].length:0)){d[k]=u;ch=true}});
   const tc=Date.parse(c.last)||0,tl=Date.parse(l.last)||0;
