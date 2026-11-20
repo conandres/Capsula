@@ -435,6 +435,7 @@ nav button.on::after{display:none!important}
 .hw{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:6px 10px}.hw>div{max-width:none!important}.hw .hp{position:static!important;align-self:end;justify-self:end;margin-bottom:-4px}.hw .hp .p3{width:104px;height:104px}
 @media (max-width:340px){.hw .hp .p3{width:84px;height:84px}.hw h2{font-size:20px}}
 .lvc>.btn,.mgw>.btn{align-self:stretch;width:100%;text-align:center}
+.ti2{width:40px;height:40px;object-fit:contain;display:block;pointer-events:none}.btn.mic .ti2{display:inline-block;width:30px;height:30px;vertical-align:middle;margin-right:6px}.tools .tl{min-height:76px;justify-content:center}
 .ci{width:1.25em;height:1.25em;vertical-align:-.3em;object-fit:contain;display:inline-block}.fh .ci{width:1.4em;height:1.4em}#ts .ci{width:1.5em;height:1.5em;vertical-align:-.45em}.pr{color:var(--pd);display:inline-flex;align-items:center;gap:6px;font-size:18px}.pr .ci{width:28px;height:28px}
 .wal{display:inline-flex;align-items:center;justify-content:center;gap:6px;align-self:center;border:0;background:var(--tint-2);color:var(--pd);font:inherit;font-weight:700;font-size:14px;border-radius:99px;padding:6px 14px;cursor:pointer}
 .shr{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.shr button{border:0;border-radius:18px;padding:10px;background:var(--tint-2);font:inherit;color:var(--pd);display:flex;flex-direction:column;gap:6px;align-items:center;cursor:pointer;font-weight:700;font-size:14px}.shr button.on{box-shadow:0 0 0 2.5px var(--p)}
@@ -1177,12 +1178,13 @@ function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=gr
   <div class="mu">${XI} XP del nivel: ${S.xp%100} de 100</div></section>`}
 /* ---------- cuidado interactivo: acariciar, arrastrar comida, frotar para bañar, apagar la luz, hablar ---------- */
 const SC={acc:0,pet:0,last:0,drag:0,bt:0,hint:0};
-const TOOLS=[['food','🍪','Comer'],['bath','🫧','Bañar'],['sleep','🌙','Dormir'],['play','⚽','Jugar'],['talk','🎤','Hablar']];
+const TIM=k=>`<img class="ti2" src="img/t-${k}.png" alt="">`;
+const TOOLS=[['food',TIM('comer'),'Comer'],['bath',TIM('banar'),'Bañar'],['sleep',TIM('dormir'),'Dormir'],['play',TIM('jugar'),'Jugar'],['talk',TIM('hablar'),'Hablar']];
 function trayHTML(){const n=esc(S.pet.name),sl=asleep();
  if(sl)return `<div class="tw"><span class="mu">${n} está durmiendo 💤</span><button class="btn s w" onclick="wake()">🌙 Encender la luz</button></div>`;
  if(S.tool==='food')return `<div class="tw"><span class="mu">Arrastra la comida hasta la boca de ${n} (o tócala)</span><div class="fdt">${FOODS.map(f=>`<button class="dg" data-k="${f.k}" aria-label="Dar ${f.n}"><b>${f.e}</b><span>${f.n}</span></button>`).join('')}</div><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
  if(S.tool==='bath')return `<div class="tw"><span class="mu">Frota a ${n} con el dedo para bañarlo 🫧</span><div class="bar"><i id="scb" style="width:${Math.round(S.pt.clean)}%"></i></div><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
- if(S.tool==='talk')return `<div class="tw"><span class="mu">Mantén presionado y di algo: ${n} lo repite con su voz. No se guarda ni se envía.</span><div class="row" style="gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn mic" id="micb" aria-label="Mantén presionado para hablar">🎤 Mantén para hablar</button><button class="btn s" onclick="chat()">💬 Pregúntame</button></div><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
+ if(S.tool==='talk')return `<div class="tw"><span class="mu">Mantén presionado y di algo: ${n} lo repite con su voz. No se guarda ni se envía.</span><div class="row" style="gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn mic" id="micb" aria-label="Mantén presionado para hablar">${TIM('hablar')} Mantén para hablar</button><button class="btn s" onclick="chat()">💬 Pregúntame</button></div><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
  return `<div class="tools">${TOOLS.map(([k,e,l])=>`<button class="tl" onclick="toolSet('${k}')"><b>${e}</b>${l}</button>`).join('')}</div><span class="mu c">Toca o acaricia a ${n} con el dedo 💗</span>`}
 function trayUpd(){const t=$('#tray');if(t)t.innerHTML=trayHTML();const r=$('#room');if(r)r.classList.toggle('scrub',S.tool==='bath')}
 function toolSet(k){S.tool=k||null;SC.acc=0;
@@ -1659,7 +1661,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=53;
+const BUILD=54;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';

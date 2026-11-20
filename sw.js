@@ -1,12 +1,12 @@
 /* Service worker de Cápsula: funciona sin internet.
    Los archivos se piden primero a la red, así que las actualizaciones llegan solas. */
-const VERSION='capsula-v53';
+const VERSION='capsula-v54';
 const SHELL = ['legal/terminos.html','legal/privacidad.html','legal/eliminar-cuenta.html',
   './', './index.html', './manifest.json', './config.js', './cloud.js',
   './icons/icon-192.png', './icons/icon-512.png',
   './icons/maskable-192.png', './icons/maskable-512.png',
   './icons/apple-touch-icon.png', './icons/favicon-32.png',
-  './img/lumis.png', './img/xp.png', './img/lumis-lg.png', './img/xp-lg.png'
+  './img/t-comer.png', './img/t-banar.png', './img/t-dormir.png', './img/t-jugar.png', './img/t-hablar.png', './img/lumis.png', './img/xp.png', './img/lumis-lg.png', './img/xp-lg.png'
 ];
 
 /* Mascota 3D: se guarda para que también cargue sin internet (si falla, no se detiene la instalación). */
