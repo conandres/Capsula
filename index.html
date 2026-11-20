@@ -8,7 +8,7 @@
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><noscript><link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"></noscript>
 <style>
 /* Layout: one phone-width column. Intro cards + Google sign-in, group, pet, then 4 tabs with a center "Contar" button.
    Single light look by choice: warm ivory ground, sage actions, pink only as a brand accent. No dark mode. */
@@ -1084,12 +1084,17 @@ async function qaSend(){const el=$('#qat'),t=(el?el.value:'').trim().slice(0,300
 /* ---------- archive ---------- */
 /* solo se muestran fotos y audios guardados como datos; evita que otro miembro inyecte código */
 const okSrc=s=>typeof s==='string'&&/^data:(image|audio)\/[a-z0-9.+-]+(;[a-z0-9=.+-]+)*;base64,[A-Za-z0-9+\/=]+$/i.test(s)?s:'';
+/* Las fotos y audios guardados como texto se convierten una sola vez en un enlace corto (blob) y se reutilizan: así cada repintado no vuelve a procesar megas de texto. */
+const SRCM=new Map();
+function fastSrc(s){if(typeof s!=='string'||s.length<64)return '';const k=s.length+':'+s.slice(20,60)+':'+s.slice(-40);let u=SRCM.get(k);if(u!==undefined)return u;
+ u='';if(okSrc(s)){try{const c=s.indexOf(','),mt=s.slice(5,s.indexOf(';')),bin=atob(s.slice(c+1)),a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);u=URL.createObjectURL(new Blob([a],{type:mt}))}catch(e){u=''}}
+ SRCM.set(k,u);if(SRCM.size>120){const o=SRCM.keys().next().value,ou=SRCM.get(o);SRCM.delete(o);if(ou)try{URL.revokeObjectURL(ou)}catch(e){}}return u}
 function postBody(p){
- const x=p.x,sx=okSrc(x.src);
+ const x=p.x,sx=fastSrc(x.src);
  if(['foto','dibujo'].includes(p.k)&&!sx)return '<p class="mu">Este archivo no se pudo mostrar.</p>';
  if(p.k==='voz')return sx?`<div class="aud"><audio controls preload="none" src="${sx}" style="width:100%;min-width:0"></audio></div><span class="mu">Nota de voz · ${esc(x.d||'')}</span>`:'<p class="mu">Esta nota se creó antes de la grabación real y no tiene audio.</p>';
- if(p.k==='foto')return `<img class="pimg" src="${sx}" alt="${esc(p.t)}">${x.cap?`<p>${esc(x.cap)}</p>`:''}`;
- if(p.k==='dibujo')return `<img class="pimg" src="${sx}" alt="Dibujo: ${esc(p.t)}">`;
+ if(p.k==='foto')return `<img class="pimg" src="${sx}" alt="${esc(p.t)}" loading="lazy" decoding="async">${x.cap?`<p>${esc(x.cap)}</p>`:''}`;
+ if(p.k==='dibujo')return `<img class="pimg" src="${sx}" alt="Dibujo: ${esc(p.t)}" loading="lazy" decoding="async">`;
  if(p.k==='carta')return `<div class="paperbox">${esc(x.tx||'')}</div>`;
  if(p.k==='receta')return `<div class="rcp">${x.by?`<span class="mu">Te la enseñó ${esc(x.by)}</span>`:''}<b>Ingredientes</b><ul>${(Array.isArray(x.ing)?x.ing:[]).map(i=>`<li>${esc(i)}</li>`).join('')}</ul><b>Preparación</b><p>${esc(x.stp||'')}</p></div>`;
  return ''}
@@ -1394,7 +1399,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=42;
+const BUILD=43;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
@@ -1556,8 +1561,8 @@ window.APP={
  setGroup(g){S.group=g?{id:g.id,name:g.name,code:g.code,ownerUid:g.ownerUid,type:g.type||'familia',plan:g.plan||'free'}:null},
  group(g){if(S.group&&S.group.id===g.id){Object.assign(S.group,{name:g.name,code:g.code,ownerUid:g.ownerUid,type:g.type||'familia',plan:g.plan||'free',cover:g.cover||''});S.families=S.families.map(f=>f.id===g.id?{...f,name:g.name,plan:g.plan||'free',cover:g.cover||''}:f);soft()}},
  qa(st){const c=S.qa&&S.qa.day===st.day?S.qa:{day:st.day,mine:null,all:null};S.qa={...c,...st};if(S.tab==='triv')soft()},
- switched(){S.qa=null;S.posts=[];S.plim=25;S.members={};T={i:0,s:0,a:null};soft()},
- posts(l,lim){S.posts=l;S.plim=lim||25;soft()},
+ switched(){S._psg='';S.qa=null;S.posts=[];S.plim=25;S.members={};T={i:0,s:0,a:null};soft()},
+ posts(l,lim){const sg=(lim||25)+'|'+l.map(p=>p.id+p.t+p.r.join('')+p.m.join('')+((p.x&&p.x.src)?p.x.src.length:0)).join(',');S.posts=l;S.plim=lim||25;if(sg===S._psg)return;S._psg=sg;soft()},
  members(m){S.members=m;rewardInv(m);soft()},
  inviter:()=>{try{return localStorage.getItem('capsula_de')||''}catch(e){return''}},
  okLegal:()=>legalOk(),
