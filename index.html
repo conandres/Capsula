@@ -400,6 +400,34 @@ nav button .ic{width:26px;height:26px}
 .afc button{min-height:44px;padding:0 16px;border-radius:99px;border:1.5px solid var(--line);background:var(--card);font:inherit;font-weight:700;font-size:14px;color:var(--tx);cursor:pointer;white-space:nowrap}
 .afc button.on{background:var(--p);border-color:var(--p);color:var(--color-on-primary)}
 .sec3{display:flex;flex-direction:column;gap:6px}
+/* ===== Capa estilo iOS: títulos grandes, tarjetas limpias, botones táctiles, control segmentado y hojas con agarre. Usa los mismos colores y temas. ===== */
+h1,h2,.spch h2,.ch h2{font-family:var(--f);font-weight:800;letter-spacing:-.03em}
+h1{font-size:32px;line-height:1.08}h2{font-size:22px;line-height:1.15}
+.spch h2,.ch h2{font-size:30px;line-height:1.1}
+h3{font-weight:700;letter-spacing:-.012em}
+.card{border:0;border-radius:20px;padding:18px;box-shadow:var(--shadow-card)}
+.btn{min-height:50px;border-radius:15px;font-size:16px;font-weight:700;padding:13px 22px;letter-spacing:-.01em;transition:transform .12s,opacity .12s,background .15s}
+.btn.w{min-height:54px;font-size:17px}
+.btn.s{background:var(--tint-2);color:var(--pd);border:0}
+.btn:hover,.tile:hover,.opc:hover,.tile2:hover,.qp button:hover{transform:none}
+.btn:active{transform:scale(.97);opacity:.88}
+.opc:active,.tile2:active{transform:scale(.985)}
+.in{border:0;background:var(--tint);border-radius:14px;padding:14px 16px;font-size:17px}
+.in:focus{background:var(--card);box-shadow:0 0 0 2px var(--pd)}
+.opc{border:0;border-radius:18px;box-shadow:var(--shadow-card);min-height:64px;padding:14px 16px}
+.tile2{border:0;border-radius:20px}
+.chip{border:0}
+.tabs2{background:var(--tint-2);border-radius:13px;padding:3px;gap:2px}
+.tabs2 button{border-radius:10px;min-height:38px;font-weight:700;color:var(--mu)}
+.tabs2 button.on{background:var(--card);color:var(--tx);box-shadow:0 1px 3px rgba(0,0,0,.14),0 3px 8px rgba(0,0,0,.06)}
+nav{border-top:0;box-shadow:0 -1px 0 var(--line-mid);padding:6px 6px max(8px,env(safe-area-inset-bottom,0px))}
+nav button{font-size:11px;font-weight:600;gap:3px;min-height:52px;border-radius:14px}
+nav button.on{background:var(--tint-2);color:var(--pd)}
+nav button.on::after{display:none!important}
+.hw h2{font-size:23px}.hw>div{max-width:220px!important}.opc.fpc{flex-wrap:wrap}.opc.fpc .tx{flex:1 1 0;min-width:0}.fpb{order:3;flex:0 0 100%;text-align:center;padding:11px 12px;border-radius:13px;font-size:15px}
+nav button .ic{width:25px;height:25px}
+.pn{border-radius:30px 30px 0 0;padding-top:28px}
+.pn::before{content:'';position:absolute;top:9px;left:50%;transform:translateX(-50%);width:38px;height:5px;border-radius:5px;background:var(--line-mid)}
 </style>
 
 <div class="app">
@@ -927,7 +955,7 @@ function fpCard(){let off=0,was=0;try{off=localStorage.getItem('capsula_fp')==='
  if(d===L.length){if(!was){try{localStorage.setItem('capsula_fpd','1')}catch(e){}setTimeout(()=>{toast('🎉 ¡Completaste tus primeros pasos!');burst(36)},400)}return''}
  if(off)return'';
  const cur=L.findIndex(x=>!x[2]);
- return `<section class="card" id="fp"><div class="row sp"><h3>Primeros pasos</h3><button class="lnk" onclick="fpOff()">Ocultar</button></div><span class="mu">${d} de ${L.length} · Sigue este camino y Cápsula queda lista para ti.</span><div class="bar" style="margin:8px 0 4px"><i style="width:${d/L.length*100}%"></i></div>${L.map((x,k)=>`<button class="opc ${k===cur?'fpc':''}" ${x[2]?'disabled':''} onclick="${x[3]}"><span class="ti">${ic(x[2]?'check':k===cur?'pen':'star',22)}</span><span class="tx"><b style="${x[2]?'text-decoration:line-through;opacity:.6':''}">${k===cur?'Ahora: ':''}${x[0]}</b><span class="mu">${x[1]}</span></span>${k===cur?`<span class="fpb">${x[4]}</span>`:''}</button>`).join('')}</section>`}
+ return `<section class="card" id="fp"><div class="row sp"><h3>Primeros pasos</h3><button class="lnk" onclick="fpOff()">Ocultar</button></div><span class="mu">${d} de ${L.length} · Sigue este camino y Cápsula queda lista para ti.</span><div class="bar" style="margin:8px 0 4px"><i style="width:${d/L.length*100}%"></i></div>${L.map((x,k)=>`<button class="opc ${k===cur?'fpc':''}" ${x[2]?'disabled':''} onclick="${x[3]}"><span class="ti">${ic(x[2]?'check':k===cur?'pen':'star',22)}</span><span class="tx"><b style="${x[2]?'text-decoration:line-through;opacity:.6':''}">${x[0]}</b><span class="mu">${x[1]}</span></span>${k===cur?`<span class="fpb">${x[4]}</span>`:''}</button>`).join('')}</section>`}
 function fpOff(){try{localStorage.setItem('capsula_fp','1')}catch(e){}render()}
 function dest(){showSheet(`<h2>¿Dónde lo guardas?</h2><p class="mu">Elige el lugar antes de escribir.</p>
  <button class="opc" onclick="cl();spaceTo(null);chooser()"><span class="ti">${ic('world',24)}</span><span class="tx"><b>Mi mundo</b><span class="mu">Solo tú lo ves</span></span></button>
@@ -1399,7 +1427,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=44;
+const BUILD=45;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
