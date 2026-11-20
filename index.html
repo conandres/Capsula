@@ -432,6 +432,9 @@ nav button.on::after{display:none!important}
 .room.rm-bosque{background:radial-gradient(ellipse at 50% 60%,#e6ffd0,transparent 62%),linear-gradient(180deg,#b9e6a8,#6fc28b 75%,#3f8f6a)}
 .room.rm-espacio{background:radial-gradient(ellipse at 50% 60%,#5b4fc0,transparent 62%),linear-gradient(180deg,#1b1650,#2e2a7a 70%,#4b3aa0)}
 .room.rm-playa{background:radial-gradient(ellipse at 50% 60%,#fff3c4,transparent 62%),linear-gradient(180deg,#9fdcff,#6cc3f0 60%,#f4dca0)}
+.hw{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:6px 10px}.hw>div{max-width:none!important}.hw .hp{position:static!important;align-self:end;justify-self:end;margin-bottom:-4px}.hw .hp .p3{width:104px;height:104px}
+@media (max-width:340px){.hw .hp .p3{width:84px;height:84px}.hw h2{font-size:20px}}
+.lvc>.btn,.mgw>.btn{align-self:stretch;width:100%;text-align:center}
 .ci{width:1.25em;height:1.25em;vertical-align:-.3em;object-fit:contain;display:inline-block}.fh .ci{width:1.4em;height:1.4em}#ts .ci{width:1.5em;height:1.5em;vertical-align:-.45em}.pr{color:var(--pd);display:inline-flex;align-items:center;gap:6px;font-size:18px}.pr .ci{width:28px;height:28px}
 .wal{display:inline-flex;align-items:center;justify-content:center;gap:6px;align-self:center;border:0;background:var(--tint-2);color:var(--pd);font:inherit;font-weight:700;font-size:14px;border-radius:99px;padding:6px 14px;cursor:pointer}
 .shr{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.shr button{border:0;border-radius:18px;padding:10px;background:var(--tint-2);font:inherit;color:var(--pd);display:flex;flex-direction:column;gap:6px;align-items:center;cursor:pointer;font-weight:700;font-size:14px}.shr button.on{box-shadow:0 0 0 2.5px var(--p)}
@@ -938,7 +941,7 @@ function groupScr(){
   <button class="btn w" onclick="shareInvite()">Compartir invitación</button>
   <button class="btn s w" onclick="copyLink()">Copiar enlace</button>
   <button class="btn s w" onclick="showQr()">Mostrar código QR</button>
-  <button class="btn s w" onclick="const id=S.group.id;nextScr();openCap(id)">Continuar</button>`;
+  <button class="btn s w" onclick="const id=S.group.id,fl=S.invFlow;S.invFlow=0;nextScr();openCap(id);if(fl){S.sub='personas';render()}">Continuar</button>`;
  if(S.gstep==='join')b=`${back}<h1>Únete a una cápsula</h1><label class="lb" for="gc">Código de la cápsula</label>
   <input id="gc" class="in" maxlength="8" placeholder="K7M2QX9P" value="${esc(S.joinCode)}" autocapitalize="characters" autocomplete="off" onkeydown="if(event.key==='Enter')jn()">
   <p class="err" id="err"></p>
@@ -1032,7 +1035,12 @@ function missionsHTML(){const w=wkEnsure();return `<section class="card"><h3>Mis
 /* ---------- home ---------- */
 const VERB={voz:'grabó una nota de voz',foto:'compartió una foto',carta:'dejó una carta',dibujo:'hizo un dibujo',receta:'compartió una receta'};
 function recentHTML(n){const L=S.posts.filter(p=>p.a!=='me'&&TY[p.k]&&!isBlk(p.a)).slice(0,n);
- return L.map(p=>`<div class="card row" style="flex-direction:row;align-items:center;gap:12px">${pAv(p.a,40)}<span class="tx" style="flex:1;min-width:0"><b>${esc(who(p.a,p))} ${VERB[p.k]||'compartió algo'}</b><span class="mu">${rel(p.ts)} · ${S.group?esc(S.group.name):'Mi mundo'}</span></span></div>`).join('')}
+ return L.map(p=>`<button class="card row act" onclick="actGo('${esc(p.id)}')" style="flex-direction:row;align-items:center;gap:12px;text-align:left;width:100%;border:0;font:inherit;color:inherit;cursor:pointer">${pAv(p.a,40)}<span class="tx" style="flex:1;min-width:0"><b>${esc(who(p.a,p))} ${VERB[p.k]||'compartió algo'}</b><span class="mu">${rel(p.ts)} · ${S.group?esc(S.group.name):'Mi mundo'}</span></span>${ic('back',18).replace('class="ic"','class="ic" style="transform:rotate(180deg);opacity:.5"')}</button>`).join('')}
+function postOpen(id){const p=S.posts.find(x=>x.id===id);if(!p){toast('Ese recuerdo ya no está disponible.');return}
+ showSheet(`<h2>${esc(p.t)}</h2><span class="mu">${esc(who(p.a,p))} · ${rel(p.ts)}</span>${postBody(p)}<button class="btn w" onclick="cl()">Cerrar</button>`)}
+function actGo(id){const p=S.posts.find(x=>x.id===id);if(!p){toast('Ese recuerdo ya no está disponible.');return}
+ if(S.group){const gid=S.group.id;spaceTo(gid);S.af='';S.sub=p.k==='carta'?'cartas':'recuerdos';go('cap')}
+ setTimeout(()=>postOpen(id),180)}
 function home(){
  const n=S.families.length,rc=recentHTML(3);
  return `${updCard()}<section class="card hw"><div style="max-width:200px"><span class="mu">Hola, ${esc(S.me.name)}</span><h2>Tu mundo te espera</h2><p class="mu" style="margin:4px 0 10px">Tu mascota ${esc(S.pet.name)} te espera. Cuídala y gana Lumis.</p><button class="btn" onclick="go('mundo')">Entrar</button></div><span class="hp"><span id="pet3dh" class="p3 p3h${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,104,S.wear,stg())}</span></span></span></section>
@@ -1045,7 +1053,7 @@ function fpCard(){let off=0,was=0;try{off=localStorage.getItem('capsula_fp')==='
  const L=[['Cuenta tu primera historia','Una foto, carta, dibujo o nota de voz. Tarda un minuto.',S.total>0||S.posts.some(p=>p.a==='me'),'dest()','Empezar'],
   ['Responde la pregunta del día','Una pregunta nueva cada día, para recordar cómo eres hoy.',(S.qaN||0)>=1,'goTriv()','Responder'],
   ['Crea tu primera cápsula','Un espacio privado para tu familia, tu pareja o tus amigos.',nf>0,"go('caps')",'Crear'],
-  ['Invita a una persona','Con un enlace o código. Ganas 15 Lumis cuando entra.',!!S.inv||mem>1,f0?`openCap('${esc(f0.id)}');S.sub='personas';render()`:"go('caps')",'Invitar']];
+  ['Invita a una persona','Con un enlace o código. Ganas 15 Lumis cuando entra.',!!S.inv||mem>1,'guideInvite()','Invitar']];
  const d=L.filter(x=>x[2]).length;
  if(d===L.length){if(!was){try{localStorage.setItem('capsula_fpd','1')}catch(e){}setTimeout(()=>{toast('🎉 ¡Completaste tus primeros pasos!');burst(36)},400)}return''}
  if(off)return'';
@@ -1455,7 +1463,7 @@ function copyApp(){copy(appLink())}
 function inviteApp(){const n=Math.min(S.refC||0,99);return `<section class="card"><h3>Invita a un amigo a Cápsula</h3><p class="mu">Por cada amigo que se una con tu enlace ganas <b>25 Lumis</b> para tu mascota.${n?' '+(n===1?'Ya se unió 1 amigo 🎉':'Ya se unieron '+n+' amigos 🎉'):''}</p><button class="btn w" onclick="shareApp()">Compartir mi enlace</button><button class="btn s w" onclick="copyApp()">Copiar enlace</button></section>`}
 let refT=0;
 async function refSync(){if(S.scr!=='main'||!S.user||!window.CLOUD||!CLOUD.ready||!legalOk()||Date.now()-refT<30000)return;refT=Date.now();
- try{const ids=await CLOUD.myReferrals(),n=Math.min(ids.length,40);if(n>(S.refC||0)){const g=n-(S.refC||0);S.refC=n;S.inv=1;save();rw(g*20,g*25,{free:true});setTimeout(()=>toast('¡'+(g>1?g+' amigos se unieron':'Un amigo se unió')+' con tu enlace! +'+g*50+' corazones'),900)}}catch(e){}}
+ try{const ids=await CLOUD.myReferrals(),n=Math.min(ids.length,40);if(n>(S.refC||0)){const g=n-(S.refC||0);S.refC=n;S.inv=1;save();rw(g*20,g*25,{free:true});setTimeout(()=>toast('¡'+(g>1?g+' amigos se unieron':'Un amigo se unió')+' con tu enlace! +'+g*25+' Lumis'),900)}}catch(e){}}
 function rewardInv(m){if(!S.user||!legalOk())return;const me=S.user.uid;let n=0;S.invD=S.invD||[];
  for(const id of Object.keys(m||{})){if(id!==me&&m[id]&&m[id].invBy===me&&!S.invD.includes(id)&&n<10){S.invD.push(id);n++}}
  if(n){S.invD=S.invD.slice(-200);S.inv=1;save();setTimeout(()=>{rw(n*10,n*15,{free:true});setTimeout(()=>toast(n>1?n+' personas se unieron a tu cápsula 🎉 +'+n*15+' Lumis':'Alguien se unió con tu invitación 🎉 +15 Lumis'),900)},300)}}
@@ -1626,17 +1634,23 @@ const GUIDES={
  mundo:{c:'m',k:'Tu mundo · el juego',s:[
   ['crown','Esta es tu mascota','Vive en Mi mundo, un espacio solo tuyo. Nadie más la ve ni entra a jugar con ella.'],
   ['heart','Cuídala cada día','Acarícialo con el dedo, arrástrale comida a la boca, frótalo para bañarlo, apaga la luz para dormir o mantén presionado Hablar y repite lo que dices. Si sus barras bajan, te lo pide con cariño: aquí no hay castigos.'],
-  ['star','Lumis y XP','Cuidar a tu mascota y contar historias te da XP, que la hace crecer (lento: evolucionar toma semanas), y Lumis, la moneda que ganas poco a poco, con tope diario. Los Lumis se gastan en la tienda; la XP no se gasta.'],
+  ['img:lumis','Lumis: la moneda','Los ganas despacio: contando historias, cuidando a tu mascota (comer, bañar, jugar, siesta), con el cofre diario, la pregunta del día, el juego de Parejas, las misiones de la semana y cuando alguien entra con tu invitación. Hay un tope por día para que valgan algo. Se gastan en la Tienda de Mi mundo: fondos del cuarto y el Sombrero de copa.'],
+  ['img:xp','XP: así crece tu mascota','La XP se gana con las mismas acciones, pero no se gasta. Cada 100 XP subes un nivel, y con los niveles tu mascota evoluciona: Bebé, Pequeño (nivel 4), Joven (nivel 11) y Adulto (nivel 26). Crecer es lento a propósito.'],
+  ['crown','Accesorios y recompensas','Algunos accesorios se desbloquean solos al subir de nivel o con logros, como contar tu primera historia, responder preguntas o mantener la racha. Otros se compran con Lumis. Los ves y los pones en el armario.'],
+  ['heart','Y los corazones','Los corazones 💗 ya no son monedas ni XP: son el ánimo de tu mascota y las vidas del juego de Parejas.'],
   ['gift','Cofre, racha y misiones','Abre el cofre una vez al día, mantén tu racha contando algo cada día y cumple las misiones de la semana para ganar más Lumis.',['Contar una historia','dest()']]]},
  cap:{c:'c',k:'Cápsulas · compartir',s:[
   ['lock','Un espacio privado con los tuyos','Una cápsula junta a tu familia, tu pareja o tus amigos. Solo entra quien tenga el código.'],
-  ['users','Invita con un código','En la pestaña Personas están el código y el enlace para invitar. Ganas Lumis cuando alguien entra.',['Ir a Personas',"S.sub='personas';soft()"]],
+  ['users','Invita con un código','En la pestaña Personas están el código y el enlace para invitar. Ganas Lumis cuando alguien entra.',['Ir a Personas',"guideInvite()"]],
   ['mail','Cuenten historias juntos','Fotos, cartas, notas de voz, dibujos y recetas. Reacciona a lo que cuentan los demás y marca con ★ tus favoritas.'],
   ['book','Respondan y armen su libro','Cada día hay una pregunta para todos. Con 12 historias se arma un libro para leer y guardar.']]}};
 const gSeen=k=>{try{return localStorage.getItem('capsula_g_'+k)==='1'}catch(e){return false}};
+function guideInvite(){cl();
+ if(S.families.length){const f=S.group&&S.families.some(x=>x.id===S.group.id)?S.group:S.families[0];openCap(f.id);S.sub='personas';render();return}
+ S.invFlow=1;S.gname='';S.scr='group';S.gstep='create';render();toast('Primero crea tu cápsula; al terminar podrás invitar.')}
 function guideOpen(k,i){const g=GUIDES[k];if(!g)return;i=i||0;try{localStorage.setItem('capsula_g_'+k,'1')}catch(e){}
  const st=g.s[i],last=i===g.s.length-1;
- showSheet(`<div class="gd ${g.c}"><div class="obs gs" aria-hidden="true">${g.s.map((_,j)=>`<i class="${j<=i?'on':''}"></i>`).join('')}</div><span class="gk">${g.k} · ${i+1} de ${g.s.length}</span><span class="ge" aria-hidden="true">${ic(st[0],46,1.8)}</span><h2 style="padding:0">${st[1]}</h2><p class="mu">${st[2]}</p>
+ showSheet(`<div class="gd ${g.c}"><div class="obs gs" aria-hidden="true">${g.s.map((_,j)=>`<i class="${j<=i?'on':''}"></i>`).join('')}</div><span class="gk">${g.k} · ${i+1} de ${g.s.length}</span><span class="ge" aria-hidden="true">${st[0].startsWith('img:')?`<img src="img/${st[0].slice(4)}-lg.png" alt="" style="width:64px;height:64px;object-fit:contain">`:ic(st[0],46,1.8)}</span><h2 style="padding:0">${st[1]}</h2><p class="mu">${st[2]}</p>
  ${st[3]?`<button class="btn s w" onclick="cl();${st[3][1]}">${st[3][0]}</button>`:''}
  <div class="row" style="gap:8px;width:100%">${i?`<button class="btn s" style="flex:1" onclick="guideOpen('${k}',${i-1})">Atrás</button>`:`<button class="btn s" style="flex:1" onclick="cl()">Saltar</button>`}<button class="btn" style="flex:2" onclick="${last?'cl()':`guideOpen('${k}',${i+1})`}">${last?'Entendido':'Siguiente'}</button></div></div>`)}
 function guideAuto(k){if(S.scr!=='main'||gSeen(k)||!legalOk())return;setTimeout(()=>{if(S.scr!=='main'||gSeen(k)||$('#sh.open')||$('.lvup'))return;if(k==='mundo'&&S.tab!=='mundo')return;if(k==='cap'&&S.tab!=='cap')return;guideOpen(k,0)},900)}
@@ -1645,7 +1659,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=52;
+const BUILD=53;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
