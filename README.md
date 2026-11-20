@@ -8,7 +8,7 @@
 
 [![Abrir la app](https://img.shields.io/badge/Abrir%20la%20app-conandres.github.io%2FCapsula-6A4CD6?style=for-the-badge)](https://conandres.github.io/Capsula/)
 ![PWA](https://img.shields.io/badge/PWA-instalable-6A4CD6?style=flat-square)
-![Android](https://img.shields.io/badge/Android-TWA-3DDC84?style=flat-square&logo=android&logoColor=white)
+![Android](https://img.shields.io/badge/Android-Capacitor-3DDC84?style=flat-square&logo=android&logoColor=white)
 ![Firebase](https://img.shields.io/badge/Firebase-Spark%20(gratis)-FFCA28?style=flat-square&logo=firebase&logoColor=black)
 ![Edad](https://img.shields.io/badge/edad-13%2B-B5336E?style=flat-square)
 
@@ -23,13 +23,22 @@ Cápsula convierte los recuerdos en un hábito diario y compartido. Cada persona
 | | |
 |---|---|
 | 🏠 **Inicio** | Resumen del día, pregunta del día y "Primeros pasos" |
-| 🐾 **Mi mundo** | Tu mascota en 3D, diario personal, accesorios, misiones y racha |
+| 🐾 **Mi mundo** | Tu mascota en 3D que se cuida con el dedo (caricias, comida, baño, sueño, voz), minijuego de memoria, tienda, misiones y racha |
 | 👨‍👩‍👧 **Mis cápsulas** | Espacios compartidos con portada, historias y miembros |
 | 🔔 **Actividad** | Lo nuevo en tus cápsulas |
 | 👤 **Perfil** | Tema (rosa, azul, negro), privacidad, descarga y eliminación de tu cuenta |
 
 **Tipos de historia:** cartas, fotos, dibujos, notas de voz y recetas, con reacciones.
 **Pregunta del día:** solo ves las respuestas de los demás después de responder la tuya.
+
+## 🪙 Economía
+
+- **Lumis**: moneda gastable. Se gana despacio (historias, cuidado, cofre, misiones, invitaciones) con tope diario y se gasta en la tienda (fondos del cuarto y accesorios).
+- **XP**: progreso. No se gasta; cada 100 XP es un nivel y los niveles hacen evolucionar a la mascota (Bebé, Pequeño, Joven, Adulto).
+
+## 🛠️ Desarrollo
+
+Web estática (`index.html`, `cloud.js`, `lab3d/`) publicada con GitHub Pages; la app de Android la empaqueta Capacitor (`.github/workflows/android.yml`). Las reglas de seguridad están en `firestore.rules`.
 
 ---
 <div align="center">Sebastian Barba</div>

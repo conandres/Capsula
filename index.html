@@ -440,7 +440,7 @@ nav button.on::after{display:none!important}
 .wal{display:inline-flex;align-items:center;justify-content:center;gap:6px;align-self:center;border:0;background:var(--tint-2);color:var(--pd);font:inherit;font-weight:700;font-size:14px;border-radius:99px;padding:6px 14px;cursor:pointer}
 .shr{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.shr button{border:0;border-radius:18px;padding:10px;background:var(--tint-2);font:inherit;color:var(--pd);display:flex;flex-direction:column;gap:6px;align-items:center;cursor:pointer;font-weight:700;font-size:14px}.shr button.on{box-shadow:0 0 0 2.5px var(--p)}
 .shr i{display:block;width:100%;height:46px;border-radius:12px}.shr small{font-weight:600;opacity:.8}
-.cap2{display:flex;gap:8px;flex-wrap:wrap}.cap2 .mu{background:var(--tint-2);border-radius:99px;padding:4px 12px}
+
 .room.night::before{content:"🌙  ✨";position:absolute;top:10px;right:16px;font-size:20px;letter-spacing:.3em;opacity:.9}
 .tray{width:100%;display:flex;flex-direction:column;gap:8px;align-items:center}
 .tools{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;width:100%}
@@ -608,10 +608,9 @@ const closetHTML=()=>`<section class="card"><h3>Armario de ${esc(S.pet.name)}</h
  const act=un?`onclick="wear('${a.id}')" aria-pressed="${on}"`:a.src==='ad'?`onclick="shopAsk('acc','${a.id}')"`:a.src==='plus'?`onclick="plusOpen('acc')"`:a.src==='pago'?`onclick="BILLING.buy(SKU.alas)"`:'disabled';
  const tag=un?(on?'Puesto':'Toca para ponerlo'):a.src==='ad'?LI+' '+ACCP[a.id]:a.src==='plus'?'✨ Plus':a.src==='pago'?(BILLING.ok()?'🛍 Comprar':'🛍 Tienda · pronto'):a.u;
  return `<button class="cli ${on?'on':''} ${un||a.src?'':'lk'}" ${act}>${pet(S.pet.kind,70,[a.id],stg(),true)}<span>${a.n}</span><small>${tag}</small></button>`}).join('')}</div></section>`;
-/* ---------- Cápsula Plus: límites, tienda y anuncios. Apagado para todos hasta que plusOn sea true (ver PLAN-PLUS.md) ---------- */
+/* ---------- Cápsula Plus: límites, tienda y anuncios. Apagado para todos hasta que plusOn sea true ----------  */
 const LIM={free:{caps:3,members:5,media:40},plus:{caps:999,members:999,media:400}};
 const MEDIA=['foto','dibujo','voz','video'];
-const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
 const plusLive=()=>!!CFG().plusOn;
 const realPlus=()=>!!(S.ent&&S.ent.tier==='plus'&&S.ent.until>Date.now());
 const isPlus=()=>realPlus();
@@ -622,7 +621,7 @@ function applyAccent(){const r=document.documentElement.style,on=!!(S.accent&&pl
  ['--color-primary','--color-primary-hover','--color-on-primary'].forEach(v=>r.removeProperty(v));
  if(on){r.setProperty('--color-primary',S.accent);r.setProperty('--color-primary-hover','color-mix(in srgb,'+S.accent+' 80%,#000)');r.setProperty('--color-on-primary','#FFFFFF')}}
 function setAccent(c){if(!plusLive())return;if(!isPlus()){plusOpen('col');return}S.accent=c||'';applyAccent();save();render()}
-/* Anuncios: adaptador. Con el plugin de AdMob instalado (ver PLAN-PLUS.md) usa anuncios reales con trato para menores; sin él, no se muestran anuncios. */
+/* Anuncios: adaptador. Con el plugin de AdMob instalado usa anuncios reales con trato para menores; sin él, no se muestran anuncios. */
 const ADM=()=>{try{return window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins.AdMob||null}catch(e){return null}};
 let adsOk=false;
 async function adsInit(){if(adsOk)return true;const P=ADM();if(!P||!adult())return false;
@@ -642,10 +641,6 @@ const BPL=()=>{try{return window.Capacitor&&Capacitor.Plugins&&Capacitor.Plugins
 const BILLING={ok:()=>!!BPL()&&!!CFG().billingOn,
  async buy(sku){if(!BILLING.ok()){toast('Las compras llegan pronto con Google Play.');return}
   try{const r=await BPL().purchase({productId:sku});await CLOUD.submitPurchase(sku,(r&&(r.purchaseToken||r.token))||'');cl();toast('¡Gracias! Estamos confirmando tu compra; tu Plus se activa en unos minutos.')}catch(e){toast('No se completó la compra. No se te cobró.')}}};
-function adUnlock(id){const a=ACCS.find(x=>x.id===id);if(!a||a.src!=='ad'||owned(a))return;
- if(!adult()){toast('Los anuncios son solo para mayores de 18 años.');return}
- if(!ADS.ok()){toast('Los anuncios llegan pronto.');return}
- ADS.show(()=>{if(!S.unl.includes(id))S.unl.push(id);S.wear.push(id);save();burst(26,['🎀','✨']);toast('🎀 ¡Desbloqueaste: '+a.n+'!');render()})}
 function plusOpen(why){
  const R={caps:'Llegaste al máximo de '+LIM.free.caps+' cápsulas del plan gratis (creadas o a las que te uniste).',members:'Esa cápsula ya tiene '+LIM.free.members+' personas, el máximo del plan gratis.',media:'Esta cápsula llegó al espacio del plan gratis ('+LIM.free.media+' fotos, dibujos, videos y audios).',acc:'Ese accesorio es de Cápsula Plus.',col:'Elegir tus colores es de Cápsula Plus.'}[why]||'';
  showSheet(`<h2>✨ Cápsula Plus</h2>${R?`<p><b>${R}</b></p>`:''}
@@ -690,7 +685,6 @@ const GT={familia:{n:'Familia',d:'Los tuyos de siempre',fm:'tu familia',ph:'Fami
 const gtype=()=>S.group&&GT[S.group.type]?S.group.type:'familia';
 const fm=()=>GT[gtype()].fm;
 const libName=()=>S.group?GT[gtype()].lib:'Mi libro';
-const famLabel=()=>S.group?GT[gtype()].n:'Grupo';
 const today=()=>new Date().toDateString(),KEY='capsula_v3',LEGACY='capsula_v2';
 const PT0=()=>({love:80,food:75,clean:80,fun:70,en:90,rest:0,said:[],lb:0,lp:0,lz:0,t:Date.now(),lr:0,lf:0,ans:0,ad:'',asked:{},moods:[],seen:{},tv:{d:'',n:0},tvb:''});
 const THEMES=[{id:'rosa',n:'Rosa',bg:'#FFF6FA',pr:'#B5336E',bar:'#FFF6FA'},{id:'azul',n:'Cápsula',bg:'#F6F3FF',pr:'#6A4CD6',bar:'#F6F3FF'},{id:'negro',n:'Negro',bg:'#000000',pr:'#F5F5F7',bar:'#000000'}];
@@ -720,7 +714,6 @@ function applyPersonal(o){if(!o)return;
 function legacy(){try{const o=JSON.parse(localStorage.getItem(LEGACY)||'null');if(o&&o.me&&o.me.name)return{pet:o.pet,petSet:o.petSet,xp:o.xp,streak:o.streak,last:o.last,chest:o.chest,mis:o.mis,petDone:o.petDone,inv:o.inv,perfect:o.perfect,types:o.types,pt:o.pt}}catch(e){}return null}
 async function logout(){try{if(window.google&&google.accounts)google.accounts.id.disableAutoSelect()}catch(e){}try{localStorage.removeItem(KEY);localStorage.removeItem('capsula_adm')}catch(e){}try{if(window.CLOUD&&CLOUD.signOut)await CLOUD.signOut()}catch(e){}try{const P=NP('FirebaseAuthentication');if(P)await P.signOut()}catch(e){}location.reload()}
 function burst(n=28,em=['💗','✨','⭐','🎉','💖']){const a=$('.app');for(let i=0;i<n;i++){const e=document.createElement('span');e.className='cf';e.textContent=em[i%em.length];e.style.cssText=`left:${50+(Math.random()-.5)*20}%;--dx:${(Math.random()-.5)*360}px;--dy:${-120-Math.random()*320}px;--r:${(Math.random()-.5)*720}deg;animation-delay:${Math.random()*.2}s`;a.appendChild(e);setTimeout(()=>e.remove(),1900)}}
-function floatH(t){const e=document.createElement('div');e.className='fh';e.textContent=t;$('.app').appendChild(e);setTimeout(()=>e.remove(),1300)}
 /* ---------- mascota 3D (Mi mundo). Si falla, queda la 2D ---------- */
 const P3={st:'idle',v:null,host:null,t:0,slow:false};
 const P3K={nube:'capsule',gato:'cat',perro:'dog',conejo:'bunny',oso:'bear'};
@@ -1250,14 +1243,10 @@ function petTap(){ptTick();const p=S.pt,now=Date.now();
  if(p.rest>now){p.rest=0;p.love=Math.min(100,p.love+4);p3sync();bubSay('🥱 ¡Me despertaste! Pero con mimos te perdono.');hopPet();return}
  p3play('love');const wait=3*H-(now-p.lr),need=p.love<70;p.love=Math.min(100,p.love+12);burst(8,['💗','✨']);
  if(new Date().getHours()<6){bubSay('🥱 ¡Me despertaste! Pero con mimos te perdono.');hopPet();return}
- if(wait<=0&&need){p.lr=now;S.bub={t:say(['¡Qué rico mimo! 💗','Me encantas, '+S.me.name+' 💕','¡Soy la mascota más feliz! ☁️','Eso era justo lo que necesitaba 🥹','Ronroneo por dentro… 💗']),o:null,q:null};S.bubT=now;track('mimo');add(5)}
+ if(wait<=0&&need){p.lr=now;S.bub={t:say(['¡Qué rico mimo! 💗','Me encantas, '+S.me.name+' 💕','¡Soy la mascota más feliz! ☁️','Eso era justo lo que necesitaba 🥹','Ronroneo por dentro… 💗']),o:null,q:null};S.bubT=now;track('mimo');rw(2,1)}
  else if(!need){bubSay(say(['Ya estoy rebosante de cariño 💗 ¡pero no pares!','Mmm, qué rico. Hoy me siento muy querido.','¡Más mimos no caben en mi corazón, pero igual me gustan! 🥹']));hopPet()}
  else{bubSay('Mmm, qué rico 🥹 Mi próximo premio de mimos llega en '+fmtWait(wait));hopPet()}}
 const FOODS=[{k:'galleta',e:'🍪',n:'Galleta',f:30,l:3,c:-3,u:0},{k:'manzana',e:'🍎',n:'Manzana',f:22,l:6,c:0,u:6},{k:'pastel',e:'🍰',n:'Pastel',f:42,l:10,c:-10,u:-4}];
-function feed(){ptTick();const p=S.pt;
- if(asleep()){bubSay('Zzz… tengo sueño, ahora no 💤');return}
- if(p.food>=90){bubSay(say(['Estoy llenita 🥹 Gracias, más tarde me da hambre.','Ya no me cabe ni una migaja 🍪','Mi panza dice: «gracias, luego»']));return}
- showSheet(`<h2>¿Qué le das de comer a ${esc(S.pet.name)}?</h2><div class="fdg">${FOODS.map(f=>`<button onclick="eat('${f.k}')"><b>${f.e}</b>${f.n}</button>`).join('')}</div><p class="mu">Cada comida le da distinta energía. El pastel es rico, pero ensucia.</p>`)}
 function eat(k){const f=FOODS.find(x=>x.k===k);if(!f)return;cl();ptTick();const p=S.pt,now=Date.now(),need=p.food<60;p3play('eat');
  p.food=Math.min(100,p.food+f.f);p.love=Math.min(100,p.love+f.l);p.clean=Math.max(0,p.clean+f.c);p.en=Math.min(100,p.en+f.u);burst(8,[f.e,'💗']);
  if(need&&now-p.lf>3*H){p.lf=now;S.bub={t:say(['¡Ñam ñam! Estaba riquísimo '+f.e,'¡Delicioso! Eres el mejor cocinero '+f.e,'Mmm… '+f.n.toLowerCase()+', mi favorita del día '+f.e]),o:null,q:null};S.bubT=now;rw(3,2)}else{bubSay(say(['¡Ñam ñam! Gracias '+f.e,'Qué rico '+f.e+' ¡repito mañana!']));hopPet();petUI()}}
@@ -1493,7 +1482,6 @@ function saveProfile(){if(nameLeft()>0){toast('Aún no puedes cambiar tu nombre.
  if(a===S.me.name&&b===(S.me.ln||'')){return}
  if(!confirm('¿Guardar «'+a+(b?' '+b:'')+'»? Después de guardar no podrás cambiarlo por '+NAME_DAYS+' días.'))return;
  S.me.name=a;S.me.ln=b;S.nameAt=Date.now();S.nameP=1;save();render();toast('Cambios guardados. Podrás cambiar tu nombre de nuevo en '+NAME_DAYS+' días.')}
-function setName(v){v=String(v||'').trim().slice(0,24);if(!v){toast('Escribe un nombre');profile();return}S.me.name=v;save();render();const n=$('.pfc .tx b'),f=$('.pfc .pf');if(n)n.textContent=v;if(f)f.innerHTML=pfIn();toast('Nombre guardado')}
 function setPetName(v){v=String(v||'').trim().slice(0,14);if(!v){toast('Escribe un nombre');profile();return}S.pet={kind:S.pet.kind,name:v};save();render();toast('Nombre guardado')}
 const pfIn=()=>`${esc((S.me.name||'?').trim().charAt(0).toUpperCase())}${S.me.pic?`<img src="${esc(S.me.pic)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:''}`;
 const pfAv=()=>`<span class="pf" aria-hidden="true">${pfIn()}</span>`;
@@ -1661,7 +1649,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=54;
+const BUILD=55;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
