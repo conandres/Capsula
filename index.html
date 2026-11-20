@@ -432,7 +432,8 @@ nav button.on::after{display:none!important}
 .room.rm-bosque{background:radial-gradient(ellipse at 50% 60%,#e6ffd0,transparent 62%),linear-gradient(180deg,#b9e6a8,#6fc28b 75%,#3f8f6a)}
 .room.rm-espacio{background:radial-gradient(ellipse at 50% 60%,#5b4fc0,transparent 62%),linear-gradient(180deg,#1b1650,#2e2a7a 70%,#4b3aa0)}
 .room.rm-playa{background:radial-gradient(ellipse at 50% 60%,#fff3c4,transparent 62%),linear-gradient(180deg,#9fdcff,#6cc3f0 60%,#f4dca0)}
-.wal{align-self:center;border:0;background:var(--tint-2);color:var(--pd);font:inherit;font-weight:700;font-size:14px;border-radius:99px;padding:6px 14px;cursor:pointer}
+.ci{width:1.25em;height:1.25em;vertical-align:-.3em;object-fit:contain;display:inline-block}.fh .ci{width:1.4em;height:1.4em}#ts .ci{width:1.5em;height:1.5em;vertical-align:-.45em}.pr{color:var(--pd);display:inline-flex;align-items:center;gap:6px;font-size:18px}.pr .ci{width:28px;height:28px}
+.wal{display:inline-flex;align-items:center;justify-content:center;gap:6px;align-self:center;border:0;background:var(--tint-2);color:var(--pd);font:inherit;font-weight:700;font-size:14px;border-radius:99px;padding:6px 14px;cursor:pointer}
 .shr{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.shr button{border:0;border-radius:18px;padding:10px;background:var(--tint-2);font:inherit;color:var(--pd);display:flex;flex-direction:column;gap:6px;align-items:center;cursor:pointer;font-weight:700;font-size:14px}.shr button.on{box-shadow:0 0 0 2.5px var(--p)}
 .shr i{display:block;width:100%;height:46px;border-radius:12px}.shr small{font-weight:600;opacity:.8}
 .cap2{display:flex;gap:8px;flex-wrap:wrap}.cap2 .mu{background:var(--tint-2);border-radius:99px;padding:4px 12px}
@@ -589,20 +590,20 @@ function shopAsk(kind,id){let n,p;
  if(kind==='acc'){const a=ACCS.find(x=>x.id===id);if(!a||owned(a))return;n=a.n;p=ACCP[id]}
  else{const r=ROOMS.find(x=>x.id===id);if(!r)return;if(ownedRoom(id)){S.rm=id;shopSave();toast('Fondo cambiado');return}n='Fondo '+r.n;p=r.p}
  if((S.lm||0)<p){toast('Te faltan '+(p-(S.lm||0))+' Lumis para '+n+'. Cuidar a '+S.pet.name+' y contar historias los da poco a poco.');return}
- showSheet(`<h2>¿Comprar ${esc(n)}?</h2><p class="mu">Cuesta <b>${p} Lumis</b>. Te quedarán ${(S.lm||0)-p}.</p><button class="btn w" onclick="shopBuy('${kind}','${id}')">Comprar</button><button class="btn s w" onclick="cl()">Ahora no</button>`)}
+ showSheet(`<h2>¿Comprar ${esc(n)}?</h2><p class="mu">Cuesta <b>${LI} ${p} Lumis</b>. Te quedarán ${(S.lm||0)-p}.</p><button class="btn w" onclick="shopBuy('${kind}','${id}')">Comprar</button><button class="btn s w" onclick="cl()">Ahora no</button>`)}
 function shopBuy(kind,id){cl();let p;
  if(kind==='acc'){const a=ACCS.find(x=>x.id===id);if(!a||owned(a))return;p=ACCP[id];if((S.lm||0)<p)return;S.lm-=p;S.unl.push(id);S.wear.push(id)}
  else{const r=ROOMS.find(x=>x.id===id);if(!r||ownedRoom(id))return;p=r.p;if((S.lm||0)<p)return;S.lm-=p;S.unl.push('rm:'+id);S.rm=id}
  burst(26,['✨','🎀']);toast('¡Listo! Ya es de '+S.pet.name+' ✨');shopSave()}
 function shopOpen(){S.tab='mundo';render();setTimeout(()=>{const e=$('#shop');if(e)e.scrollIntoView({behavior:'smooth',block:'center'})},60)}
-const shopHTML=()=>{const cp=capEnsure();return `<section class="card" id="shop"><div class="row sp"><h3>Tienda</h3><b style="color:var(--pd)">✨ ${S.lm||0} Lumis</b></div>
- <span class="mu">Los Lumis se ganan poco a poco cuidando a ${esc(S.pet.name)}, contando historias y con las misiones. Guárdalos para lo que de verdad quieras.</span>
- <div class="cap2"><span class="mu">Hoy: ${cp.c} de ${CAP_C} Lumis</span><span class="mu">${cp.x} de ${CAP_X} crecimiento</span></div>
- <b>Fondos del cuarto</b><div class="shr">${ROOMS.map(r=>{const o=ownedRoom(r.id),on=(S.rm||'')===r.id;return `<button class="${on?'on':''}" onclick="shopAsk('room','${r.id}')"><i style="background:${r.bg}"></i>${r.n}<small>${on?'Puesto':o?'Toca para usar':'✨ '+r.p}</small></button>`}).join('')}</div>
- <span class="mu">Accesorios: el Sombrero de copa está en el armario por ✨ ${ACCP.sombrero}.</span></section>`};
+const shopHTML=()=>{const cp=capEnsure();return `<section class="card" id="shop"><div class="row sp"><h3>Tienda</h3><b class="pr">${LI} ${S.lm||0}</b></div>
+ <span class="mu">Los Lumis son la moneda: se ganan poco a poco cuidando a ${esc(S.pet.name)}, contando historias y con las misiones. Guárdalos para lo que de verdad quieras.</span>
+ <div class="cap2"><span class="mu">${LI} Hoy: ${cp.c} de ${CAP_C}</span><span class="mu">${XI} Hoy: ${cp.x} de ${CAP_X} XP</span></div>
+ <b>Fondos del cuarto</b><div class="shr">${ROOMS.map(r=>{const o=ownedRoom(r.id),on=(S.rm||'')===r.id;return `<button class="${on?'on':''}" onclick="shopAsk('room','${r.id}')"><i style="background:${r.bg}"></i>${r.n}<small>${on?'Puesto':o?'Toca para usar':LI+' '+r.p}</small></button>`}).join('')}</div>
+ <span class="mu">Accesorios: el Sombrero de copa está en el armario por ${LI} ${ACCP.sombrero}.</span></section>`};
 const closetHTML=()=>`<section class="card"><h3>Armario de ${esc(S.pet.name)}</h3><span class="mu">Desbloquea accesorios y elige cuáles usar</span><div class="cl">${ACCS.filter(accVisible).map(a=>{const un=owned(a),on=S.wear.includes(a.id);
  const act=un?`onclick="wear('${a.id}')" aria-pressed="${on}"`:a.src==='ad'?`onclick="shopAsk('acc','${a.id}')"`:a.src==='plus'?`onclick="plusOpen('acc')"`:a.src==='pago'?`onclick="BILLING.buy(SKU.alas)"`:'disabled';
- const tag=un?(on?'Puesto':'Toca para ponerlo'):a.src==='ad'?'✨ '+ACCP[a.id]+' Lumis':a.src==='plus'?'✨ Plus':a.src==='pago'?(BILLING.ok()?'🛍 Comprar':'🛍 Tienda · pronto'):a.u;
+ const tag=un?(on?'Puesto':'Toca para ponerlo'):a.src==='ad'?LI+' '+ACCP[a.id]:a.src==='plus'?'✨ Plus':a.src==='pago'?(BILLING.ok()?'🛍 Comprar':'🛍 Tienda · pronto'):a.u;
  return `<button class="cli ${on?'on':''} ${un||a.src?'':'lk'}" ${act}>${pet(S.pet.kind,70,[a.id],stg(),true)}<span>${a.n}</span><small>${tag}</small></button>`}).join('')}</div></section>`;
 /* ---------- Cápsula Plus: límites, tienda y anuncios. Apagado para todos hasta que plusOn sea true (ver PLAN-PLUS.md) ---------- */
 const LIM={free:{caps:3,members:5,media:40},plus:{caps:999,members:999,media:400}};
@@ -758,12 +759,15 @@ function levelUp(l){p3play('levelup');const o=document.createElement('div');o.cl
 function toast(m){const t=$('#ts');t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),2000)}
 /* Economía: crecimiento (xp) y Lumis (moneda). Las dos son lentas y tienen tope diario para que no se regalen. */
 const CAP_X=45,CAP_C=20;
+const LI='<img class="ci" src="img/lumis.png" alt="Lumis">',XI='<img class="ci" src="img/xp.png" alt="XP">';
+const toastH=m=>{const t=$('#ts');t.innerHTML=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),2200)};
+const floatI=(h)=>{const e=document.createElement('div');e.className='fh';e.innerHTML=h;$('.app').appendChild(e);setTimeout(()=>e.remove(),1300)};
 function capEnsure(){if(!S.cap||S.cap.d!==today())S.cap={d:today(),x:0,c:0};return S.cap}
 function rw(x,c,o){const cp=capEnsure();let gx=x||0,gc=c||0;
  if(!(o&&o.free)){gx=Math.max(0,Math.min(gx,CAP_X-cp.x));gc=Math.max(0,Math.min(gc,CAP_C-cp.c));cp.x+=gx;cp.c+=gc}
  if(!gx&&!gc){if((x||c)&&S._capMsg!==today()){S._capMsg=today();toast('Hoy '+S.pet.name+' ya recibió todo lo que podía 🌙 Mañana sigue.')}return}
  const a=Math.floor(S.xp/100);S.xp+=gx;if(gc){S.lm=(S.lm||0)+gc;S.lmT=Date.now()}const b=Math.floor(S.xp/100);
- toast((gc?'+'+gc+' ✨ Lumis':'')+(gc&&gx?' · ':'')+(gx?'+'+gx+' 🌱 crecimiento':''));render();floatH(gc?'+'+gc+' ✨':'+'+gx+' 🌱');hopPet();
+ toastH((gc?'+'+gc+' '+LI+' Lumis':'')+(gc&&gx?' · ':'')+(gx?'+'+gx+' '+XI+' XP':''));render();floatI(gc?'+'+gc+' '+LI:'+'+gx+' '+XI);hopPet();
  if(b>a)setTimeout(()=>levelUp(b),500)}
 function copy(t){try{navigator.clipboard.writeText(t).then(()=>toast('Copiado')).catch(()=>toast('Copia este texto: '+t))}catch(e){toast('Copia este texto: '+t)}}
 function pAv(id,s=40){const mine=id==='me'||(S.user&&id===S.user.uid),m=mine?{name:S.me.name,photo:S.me.pic}:(S.members[id]||{});const ini=esc(((m.name||'?').trim().charAt(0)||'?').toUpperCase());return `<span class="pav" style="width:${s}px;height:${s}px;font-size:${Math.round(s*.4)}px">${ini}${m.photo?`<img src="${esc(m.photo)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:''}</span>`}
@@ -1024,7 +1028,7 @@ function track(t,k){const w=wkEnsure();
  if(t==='post'){w.posts++;if(k==='foto')w.fotos++;if(!w.types.includes(k))w.types.push(k);const d=today();if(!w.days.includes(d))w.days.push(d)}
  if(t==='trivia'||t==='qa')w.trivia++;if(t==='mimo')w.mimos++}
 function claimM(id){const w=wkEnsure(),m=MPOOL.find(x=>x.id===id);if(!m||w.claimed.includes(id)||m.p(w)<m.g)return;w.claimed.push(id);burst(30);rw(Math.round(m.r/4),Math.round(m.r/4),{free:true})}
-function missionsHTML(){const w=wkEnsure();return `<section class="card"><h3>Misiones de la semana</h3><span class="mu">Cambian cada lunes</span>${wkMissions().map(m=>{const v=Math.min(m.g,m.p(w)),done=w.claimed.includes(m.id),ok=v>=m.g;return `<div class="ms"><div class="row sp"><b>${esc(m.t)}</b><span class="mu">${v}/${m.g}</span></div><div class="bar"><i style="width:${v/m.g*100}%"></i></div>${done?`<p class="row" style="color:var(--color-success-text);font-weight:500">${ic('check',18)} Cobrada · +${Math.round(m.r/4)} Lumis</p>`:ok?`<button class="btn" onclick="claimM('${m.id}')">Cobrar ${Math.round(m.r/4)} Lumis</button>`:`<span class="mu">Recompensa: ${Math.round(m.r/4)} Lumis</span>`}</div>`}).join('')}</section>`}
+function missionsHTML(){const w=wkEnsure();return `<section class="card"><h3>Misiones de la semana</h3><span class="mu">Cambian cada lunes</span>${wkMissions().map(m=>{const v=Math.min(m.g,m.p(w)),done=w.claimed.includes(m.id),ok=v>=m.g;return `<div class="ms"><div class="row sp"><b>${esc(m.t)}</b><span class="mu">${v}/${m.g}</span></div><div class="bar"><i style="width:${v/m.g*100}%"></i></div>${done?`<p class="row" style="color:var(--color-success-text);font-weight:500">${ic('check',18)} Cobrada · +${Math.round(m.r/4)} ${LI} Lumis y ${Math.round(m.r/4)} ${XI} XP</p>`:ok?`<button class="btn" onclick="claimM('${m.id}')">Cobrar ${Math.round(m.r/4)} Lumis y XP</button>`:`<span class="mu">Recompensa: ${Math.round(m.r/4)} ${LI} Lumis y ${Math.round(m.r/4)} ${XI} XP</span>`}</div>`}).join('')}</section>`}
 
 /* ---------- home ---------- */
 const VERB={voz:'grabó una nota de voz',foto:'compartió una foto',carta:'dejó una carta',dibujo:'hizo un dibujo',receta:'compartió una receta'};
@@ -1158,12 +1162,12 @@ function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=gr
  return `<section class="card hero">
   <div class="room${sl?' night':''}${S.rm&&ownedRoom(S.rm)?' rm-'+S.rm:''}" id="room"><div class="fl ${sl?'sleep':''}" onclick="petClick()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div></div>
   <h2>${esc(S.pet.name)}</h2>
-  <button class="wal" onclick="shopOpen()" aria-label="Tus Lumis">✨ ${S.lm||0} Lumis</button>
+  <button class="wal" onclick="shopOpen()" aria-label="Tus Lumis">${LI} ${S.lm||0} Lumis</button>
   <div class="mu">${STG[stg()]} · nivel ${lvl+1} · crece poco a poco</div>
   <div id="bubw" class="bw" aria-live="polite">${bubHTML()}</div>
   <div class="stw" id="stw">${statsHTML()}</div>
   <div class="tray" id="tray">${trayHTML()}</div>
-  <div class="mu">Crecimiento del nivel: ${S.xp%100} de 100 · hoy ${capEnsure().x} de ${CAP_X}</div></section>`}
+  <div class="mu">${XI} XP del nivel: ${S.xp%100} de 100 · hoy ${capEnsure().x} de ${CAP_X}</div></section>`}
 /* ---------- cuidado interactivo: acariciar, arrastrar comida, frotar para bañar, apagar la luz, hablar ---------- */
 const SC={acc:0,pet:0,last:0,drag:0,bt:0,hint:0};
 const TOOLS=[['food','🍪','Comer'],['bath','🫧','Bañar'],['sleep','🌙','Dormir'],['play','⚽','Jugar'],['talk','🎤','Hablar']];
@@ -1616,14 +1620,14 @@ function act(){
  const rc=recentHTML(10);
  return `<div class="spch"><h2>Actividad</h2></div>
  ${rc?`<span class="lab">${S.group?esc(S.group.name):'Mi mundo'}</span>${rc}`:`<div class="card c">${ic('bell',44)}<h3>Todo al día</h3><p class="mu">Aquí verás las cartas, respuestas e invitaciones de tus cápsulas.</p></div>`}
- <div class="card"><h3>Tu mundo</h3><p class="mu">✨ ${S.lm||0} Lumis · nivel ${Math.floor(S.xp/100)+1} · ${S.streak?'racha de '+S.streak+(S.streak>1?' días':' día'):'sin racha todavía'}</p></div>
+ <div class="card"><h3>Tu mundo</h3><p class="mu">${LI} ${S.lm||0} Lumis · ${XI} nivel ${Math.floor(S.xp/100)+1} · ${S.streak?'racha de '+S.streak+(S.streak>1?' días':' día'):'sin racha todavía'}</p></div>
  <p class="mu c">Por ahora ves la actividad de la cápsula abierta. Los avisos al teléfono llegarán más adelante.</p>`}
 /* ---------- mini guías (una para el juego, otra para las cápsulas; se ven la primera vez y se reabren desde Perfil) ---------- */
 const GUIDES={
  mundo:{c:'m',k:'Tu mundo · el juego',s:[
   ['crown','Esta es tu mascota','Vive en Mi mundo, un espacio solo tuyo. Nadie más la ve ni entra a jugar con ella.'],
   ['heart','Cuídala cada día','Acarícialo con el dedo, arrástrale comida a la boca, frótalo para bañarlo, apaga la luz para dormir o mantén presionado Hablar y repite lo que dices. Si sus barras bajan, te lo pide con cariño: aquí no hay castigos.'],
-  ['star','Lumis y crecimiento','Cuidar a tu mascota y contar historias le da crecimiento (lento: evolucionar toma semanas) y Lumis ✨, una moneda que ganas poco a poco, con tope diario. Con los Lumis compras accesorios y fondos en la tienda.'],
+  ['star','Lumis y XP','Cuidar a tu mascota y contar historias te da XP, que la hace crecer (lento: evolucionar toma semanas), y Lumis, la moneda que ganas poco a poco, con tope diario. Los Lumis se gastan en la tienda; la XP no se gasta.'],
   ['gift','Cofre, racha y misiones','Abre el cofre una vez al día, mantén tu racha contando algo cada día y cumple las misiones de la semana para ganar más Lumis.',['Contar una historia','dest()']]]},
  cap:{c:'c',k:'Cápsulas · compartir',s:[
   ['lock','Un espacio privado con los tuyos','Una cápsula junta a tu familia, tu pareja o tus amigos. Solo entra quien tenga el código.'],
@@ -1642,7 +1646,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=50;
+const BUILD=51;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';

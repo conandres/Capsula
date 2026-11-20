@@ -29,7 +29,7 @@ jobs:
       - name: Copiar la web a www
         run: |
           mkdir -p www
-          cp -r index.html cloud.js config.js manifest.json icons lab3d legal www/
+          cp -r index.html cloud.js config.js manifest.json icons img lab3d legal www/
 
       - name: Crear proyecto Android
         run: |
