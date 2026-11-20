@@ -424,6 +424,17 @@ nav{border-top:0;box-shadow:0 -1px 0 var(--line-mid);padding:6px 6px max(8px,env
 nav button{font-size:11px;font-weight:600;gap:3px;min-height:52px;border-radius:14px}
 nav button.on{background:var(--tint-2);color:var(--pd)}
 nav button.on::after{display:none!important}
+.mc .mem{max-height:220px;object-fit:cover;width:100%;border-radius:14px}
+.mgo{position:absolute;inset:0;z-index:45;background:var(--bg);display:flex;flex-direction:column;gap:14px;padding:max(14px,env(safe-area-inset-top,0px)) 16px max(16px,env(safe-area-inset-bottom,0px));overflow:auto;animation:fi .25s}
+.mgh{display:flex;align-items:center;gap:12px}.mgh .x{border:0;background:var(--tint-2);color:var(--pd);width:40px;height:40px;border-radius:50%;display:grid;place-items:center;cursor:pointer;flex:none}
+.mgg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;flex:1;align-content:center;max-width:420px;width:100%;margin:0 auto}
+.mgc{position:relative;aspect-ratio:3/4;border:0;padding:0;background:none;perspective:700px;cursor:pointer}
+.mgc>span{position:absolute;inset:0;border-radius:16px;backface-visibility:hidden;-webkit-backface-visibility:hidden;transition:transform .45s;display:grid;place-items:center;overflow:hidden}
+.mgb{background:linear-gradient(150deg,var(--p),color-mix(in srgb,var(--p) 60%,var(--color-accent-pink)));color:var(--color-on-primary);box-shadow:var(--shadow-card)}
+.mgf{background:var(--card);transform:rotateY(180deg);box-shadow:var(--shadow-card)}.mgf img{width:100%;height:100%;object-fit:cover}.mgf i{font-style:normal;font-size:40px}
+.mgc.on .mgb{transform:rotateY(180deg)}.mgc.on .mgf{transform:rotateY(0)}.mgc.ok .mgf{box-shadow:0 0 0 3px var(--ok)}
+.mgc:disabled{cursor:default}
+.mgw{background:var(--card);border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:10px;text-align:center;box-shadow:var(--shadow-card);animation:up .4s both}
 /* Bienvenida (antes de crear la cuenta): una idea por pantalla, títulos grandes y botón claro */
 .ob{gap:6px;padding-top:max(8px,env(safe-area-inset-top,0px))}
 .obt{display:flex;align-items:center;gap:14px;padding:4px max(18px,env(safe-area-inset-right,0px)) 0 max(18px,env(safe-area-inset-left,0px))}
@@ -989,12 +1000,51 @@ function mundo(){
  ${heroHTML()}
  ${S.chest===today()?`<section class="card c"><span class="mu">Cofre de hoy abierto. Vuelve mañana por otro 🎁</span></section>`:`<section class="card c hero"><div class="chest">🎁</div><h3>¡${esc(S.pet.name)} te trajo un regalo!</h3><button class="btn" onclick="chest()">Abrir cofre</button></section>`}
  <section class="card"><div class="row sp"><h3 class="row" style="gap:6px;color:var(--pd)"><span class="${S.streak?'flick':''}" style="display:inline-flex">${ic('flame',20)}</span><span style="color:var(--tx)">${S.streak?'Racha de '+S.streak+(S.streak>1?' días':' día'):'Empieza tu racha hoy'}</span></h3><span class="mu">${S.posted?'Hoy ya cuentas':'Cuenta algo hoy'}</span></div><div class="days">${strip()}</div></section>
+ ${memCard()}
  <section class="card"><span class="mu">Pregunta de la semana</span><h2>${esc(wqNow())}</h2><p class="mu">${wq}</p><button class="btn" onclick="chooser(wqNow())">Responder</button></section>
  <section class="card"><h3>¿Cómo quieres contar hoy?</h3><div class="qp">${Object.entries(TY).map(([k,v])=>`<button onclick="compose('${k}')">${ic(v.i,18)}${v.l}</button>`).join('')}</div></section>
  <div class="duo"><button class="tile2" onclick="goArc()">${ic('book',26)}<b>Mi archivo</b><span class="mu">${n} ${n===1?'historia':'historias'}</span></button><button class="tile2" onclick="go('triv')">${ic('star',26)}<b>Pregunta del día</b><span class="mu">Una para ti</span></button></div>
+ <section class="card"><div class="row sp" style="gap:12px"><div class="tx"><h3>Parejas de recuerdos</h3><span class="mu">Un juego rápido${S.posts.some(p=>['foto','dibujo'].includes(p.k))?' con tus propias fotos':''}. Gana corazones una vez al día.</span></div><button class="btn" onclick="mgStart()">Jugar</button></div></section>
  ${missionsHTML()}${closetHTML()}
  ${moodCard()}${badgesHTML()}${bookCard(n)}
  ${inviteApp()}`}
+const PREACT={
+ voz:['¡Qué linda voz! Me quedo escuchándola 🎵','Tu voz me da calma ☁️🎶','Me encanta oírte contar eso 🎧'],
+ foto:['¡Qué foto! La guardo en mi álbum 📷','Mira qué recuerdo tan bonito ✨','Quedó guardada para siempre 🖼️'],
+ carta:['Qué carta tan bonita… se me aguaron los ojitos 💌','Gracias por confiarme tus palabras 💗','La leí despacito, me encantó 📖'],
+ dibujo:['¡Qué artista! Lo pongo en mi cuarto 🎨','Me encanta cómo lo dibujaste 🖍️','¡Esto va directo a mi galería! ✨'],
+ receta:['¡Mmm! Ya me dio hambre 🍲','Esa receta suena a hogar 🍳','Guárdame un platico, por favor 😋'],
+ video:['¡Qué recuerdo tan lindo! 🎬','¡Quedó genial! ✨']};
+/* ---------- Recuerdo del día: una historia tuya de hace días, la misma durante todo el día ---------- */
+function memPick(){const ok=p=>p&&p.ts&&['foto','dibujo','carta','voz','receta'].includes(p.k)&&((p.x&&p.x.src)||p.k==='carta'||p.k==='receta');
+ let pool=S.posts.filter(p=>ok(p)&&Date.now()-p.ts>=6*864e5);if(!pool.length)pool=S.posts.filter(p=>ok(p)&&Date.now()-p.ts>=3*864e5);if(!pool.length)return null;
+ return pool[(hs(today()+(S.user?S.user.uid:'')+(S.memN||0)))%pool.length]}
+function memCard(){if(S.group)return '';const p=memPick();if(!p)return '';const x=p.x||{};
+ const pv=['foto','dibujo'].includes(p.k)?(fastSrc(x.src)?`<img class="pimg mem" src="${fastSrc(x.src)}" alt="${esc(p.t)}" loading="lazy" decoding="async">`:''):p.k==='voz'?`<div class="mq">${ic('mic',22)} Nota de voz</div>`:`<p class="mu">${esc(String(x.tx||x.stp||'').slice(0,140))}</p>`;
+ return `<section class="card mc"><span class="mu">${ic('star',14)} Recuerdo del día · ${rel(p.ts)}</span><h3>${esc(p.t)}</h3>${pv}<p class="mu">${esc(S.pet.name)} dice: ¿te acuerdas de este día?</p><div class="row" style="gap:8px;width:100%"><button class="btn" style="flex:2" onclick="memOpen('${esc(p.id)}')">Revivirlo</button><button class="btn s" style="flex:1" onclick="S.memN=(S.memN||0)+1;soft()">Otro</button></div></section>`}
+function memOpen(id){const p=S.posts.find(x=>x.id===id);if(!p)return;
+ showSheet(`<h2>${esc(p.t)}</h2><span class="mu">${rel(p.ts)}</span>${postBody(p)}<button class="btn w" onclick="cl()">Cerrar</button>`);
+ let d='';try{d=localStorage.getItem('capsula_mem')}catch(e){}
+ if(d!==today()){try{localStorage.setItem('capsula_mem',today())}catch(e){}setTimeout(()=>{add(5)},350)}}
+/* ---------- Parejas de recuerdos: minijuego de memoria con tus propias fotos ---------- */
+let MG=null;
+function mgStart(){const ph=S.posts.filter(p=>['foto','dibujo'].includes(p.k)&&p.x&&fastSrc(p.x.src)).slice(0,6);
+ const em=['🍪','🌙','⭐','💗','🎀','🌈','☁️','🧸'],it=ph.map(p=>({img:fastSrc(p.x.src),n:p.t}));for(let i=0;it.length<6;i++)it.push({em:em[i],n:em[i]});
+ const deck=[];it.forEach((t,i)=>deck.push({g:i,...t},{g:i,...t}));for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]]}
+ MG={deck,open:[],done:new Set(),lock:false,moves:0,ph:ph.length};mgDraw(true)}
+function mgDraw(first){const a=$('.app');let o=$('#mgo');if(!o){o=document.createElement('div');o.id='mgo';o.className='mgo';a.appendChild(o)}
+ const w=MG.done.size===MG.deck.length;
+ o.innerHTML=`<div class="mgh"><button class="x" onclick="mgClose()" aria-label="Cerrar">${ic('x',20)}</button><div><h2>Parejas de recuerdos</h2><span class="mu">${MG.ph?'Con tus propias fotos':'Encuentra las parejas'} · ${MG.moves} ${MG.moves===1?'intento':'intentos'}</span></div></div>
+ <div class="mgg">${MG.deck.map((c,i)=>{const on=MG.open.includes(i)||MG.done.has(i);return `<button class="mgc${on?' on':''}${MG.done.has(i)?' ok':''}" onclick="mgFlip(${i})" ${on?'disabled':''} aria-label="${on?esc(c.n):'Carta '+(i+1)+' boca abajo'}"><span class="mgb">${ic('heart',26)}</span><span class="mgf">${c.img?`<img src="${c.img}" alt="">`:`<i>${c.em}</i>`}</span></button>`}).join('')}</div>
+ ${w?`<div class="mgw"><h2>¡Las encontraste todas!</h2><p class="mu">En ${MG.moves} intentos. ${esc(S.pet.name)} está feliz 💗</p><button class="btn w" onclick="mgStart()">Jugar otra vez</button><button class="btn s w" onclick="mgClose()">Salir</button></div>`:''}`}
+function mgFlip(i){if(!MG||MG.lock||MG.open.includes(i)||MG.done.has(i))return;MG.open.push(i);
+ if(MG.open.length<2){mgDraw();return}
+ MG.moves++;const [a,b]=MG.open;
+ if(MG.deck[a].g===MG.deck[b].g){MG.done.add(a);MG.done.add(b);MG.open=[];mgDraw();if(MG.done.size===MG.deck.length)mgWin()}
+ else{MG.lock=true;mgDraw();setTimeout(()=>{if(!MG)return;MG.open=[];MG.lock=false;mgDraw()},800)}}
+function mgWin(){burst(36);let d='';try{d=localStorage.getItem('capsula_mg')}catch(e){}
+ if(d!==today()){try{localStorage.setItem('capsula_mg',today())}catch(e){}setTimeout(()=>add(MG&&MG.moves<=10?20:12),500)}}
+function mgClose(){MG=null;const o=$('#mgo');if(o)o.remove()}
 function chest(){const r=(10+Math.floor(Math.random()*21));S.chest=today();burst(32);add(r)}
 const H=3600e3;
 const QS=[
@@ -1032,7 +1082,7 @@ function bubSay(t,o,q){S.bub={t,o:o||null,q:q||null};S.bubT=Date.now();petUI()}
 function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=greet(away);
  const lvl=Math.floor(S.xp/100),sz=150,sl=asleep();
  return `<section class="card hero">
-  <div class="fl ${sl?'sleep':''}" onclick="petTap()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div>
+  <div class="fl ${sl?'sleep':''}" onclick="petTap()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div>
   <h2>${esc(S.pet.name)}</h2>
   <div class="mu">${STG[stg()]} · nivel ${lvl+1} · crece con tus corazones</div>
   <div id="bubw" class="bw" aria-live="polite">${bubHTML()}</div>
@@ -1448,7 +1498,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=46;
+const BUILD=47;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
@@ -1546,7 +1596,7 @@ function doPub(k,ok){
  CLOUD.publish(p).then(()=>{track('post',k);soft()}).catch(()=>toast('Tu historia no se guardó. Revisa tu conexión e inténtalo otra vez.'));
  S.types.add(k);S.total=(S.total||0)+1;
  if(!S.posted){S.posted=true;S.streak++;S.best=Math.max(S.best||0,S.streak);S.last=today();setTimeout(()=>{toast('🔥 ¡Racha de '+S.streak+(S.streak>1?' días':' día')+'!');burst(26,['🔥','✨'])},1100)}
- S.prompt=null;cl();if(S.group){S.tab='cap';S.sub='recuerdos'}else S.tab='arc';add(TY[k].xp);
+ S.prompt=null;cl();if(S.group){S.tab='cap';S.sub='recuerdos'}else S.tab='arc';S.bub={t:say(PREACT[k]||PREACT.foto),o:null,q:null};S.bubT=Date.now();add(TY[k].xp);
 }
 
 /* ---------- estado de guardado ---------- */
