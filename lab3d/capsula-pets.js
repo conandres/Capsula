@@ -332,7 +332,7 @@ export class CapsulaPetViewer {
     this.current = "cat"; this.expr = "neutral"; this.accList = [];
     this.t = 0; this.last = 0; this.fps = 0; this.zNext = 0;
     this.cur = { ...EXPR.neutral }; this.tgt = { ...EXPR.neutral };
-    this.act = null; this.tmp = null; this.yawUser = 0; this.drag = null;
+    this.act = null; this.tmp = null; this.yawUser = 0; this.drag = null; this.talk = 0; this.strokeExpr = "happy";
     this.blink = { next: 2.5, start: -1, double: false };
     this.visible = true; this.running = false; this.motion = 1;
 
@@ -451,6 +451,7 @@ export class CapsulaPetViewer {
     if (this.parts && this.parts.head) { this.parts.head.scale.x = this.stageHead; this.parts.head.scale.z = this.stageHead; }
     this.renderOnce();
   }
+  setTalk(v) { this.talk = Math.max(0, Math.min(1, +v || 0)); }
   setExpression(name) { this.expr = EXPR[name] ? name : "neutral"; }
   setAccessories(list) {
     this.accList = (list || []).filter(a => ACCESSORIES.includes(a));
@@ -475,12 +476,19 @@ export class CapsulaPetViewer {
   /* ---------- tocar y arrastrar ---------- */
   bindPointer() {
     const c = this.canvas;
-    const down = e => { this.drag = { x: e.clientX, y: e.clientY, t: performance.now(), moved: 0, yaw0: this.yawUser }; try { c.setPointerCapture(e.pointerId); } catch (_) {} };
+    const down = e => { this.drag = { x: e.clientX, y: e.clientY, lx: e.clientX, ly: e.clientY, t: performance.now(), moved: 0, yaw0: this.yawUser }; try { c.setPointerCapture(e.pointerId); } catch (_) {} };
     const move = e => {
       if (!this.drag) return;
       const dx = e.clientX - this.drag.x;
       this.drag.moved = Math.max(this.drag.moved, Math.abs(dx) + Math.abs(e.clientY - this.drag.y));
-      this.yawUser = Math.max(-1.3, Math.min(1.3, this.drag.yaw0 + dx * 0.012));
+      /* Caricias: arrastrar sobre la mascota no la gira; ella mira hacia el dedo y se pone feliz. */
+      const r = c.getBoundingClientRect(), d = Math.hypot(e.clientX - this.drag.lx, e.clientY - this.drag.ly);
+      this.drag.lx = e.clientX; this.drag.ly = e.clientY;
+      if (this.drag.moved >= 8) {
+        this.yawUser = Math.max(-0.5, Math.min(0.5, ((e.clientX - r.left) / Math.max(1, r.width) - 0.5) * 0.9));
+        this.tmp = { expr: this.strokeExpr || "happy", until: this.t + 0.5 };
+        this.container.dispatchEvent(new CustomEvent("capsulapetstroke", { detail: { d, x: e.clientX, y: e.clientY, rx: (e.clientX - r.left) / Math.max(1, r.width), ry: (e.clientY - r.top) / Math.max(1, r.height) } }));
+      }
     };
     const up = () => {
       const d = this.drag; this.drag = null;
@@ -557,6 +565,7 @@ export class CapsulaPetViewer {
     });
     F.blush.forEach(bl => { const b = bl.userData.base; bl.scale.set(b.x * c.blush, b.y * c.blush, b.z); });
     let mouth = c.mouthO;
+    if (this.talk > 0) mouth = Math.max(mouth, this.talk);
     if (an === "eat") mouth = Math.max(mouth, Math.abs(Math.sin(p * Math.PI * 6)) * 0.85);
     F.smile.visible = mouth < 0.5;
     F.smile.scale.set(c.smileX, c.smileY, 1);
