@@ -1399,7 +1399,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=43;
+const BUILD=44;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
@@ -1438,7 +1438,9 @@ function chk(){const g=$('#go');if(!g)return;const v=id=>{const e=$('#'+id);retu
 function pick(i,t){const f=i.files&&i.files[0];if(!f)return;C.url=URL.createObjectURL(f);LIVE.add(C.url);const e=$('#pv');e.hidden=false;e.src=C.url;
  if(t==='vid'){C.ok=false;$('#err').textContent='';e.onloadedmetadata=()=>{C.ok=e.duration<=61;$('#err').textContent=C.ok?'':'El video dura más de 60 segundos. Elige uno más corto.';chk()};e.onerror=()=>{C.ok=false;$('#err').textContent='No se pudo abrir ese video. Prueba con otro archivo.';chk()}}
  else{C.ok=true;shrink(f)}chk()}
-function shrink(f){const im=new Image();im.onload=()=>{const k=Math.min(1,800/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);C.url=c.toDataURL('image/jpeg',.7);const e=$('#pv');if(e)e.src=C.url};im.src=URL.createObjectURL(f)}
+function shrink(f){const im=new Image();im.onload=()=>{/* Calidad alta: empieza grande y solo baja lo necesario para caber en el límite de la historia (880.000 caracteres). */
+ let u='';const W=Math.max(im.width,im.height);for(const [m,q] of [[2000,.9],[1800,.86],[1600,.82],[1400,.78],[1200,.74],[1000,.7],[800,.66],[640,.6]]){const k=Math.min(1,m/W),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);const x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(im,0,0,c.width,c.height);u=c.toDataURL('image/jpeg',q);if(u.length<=880000)break}
+ C.url=u;const e=$('#pv');if(e)e.src=C.url;URL.revokeObjectURL(im.src)};im.src=URL.createObjectURL(f)}
 
 /* voz real: MediaRecorder comprimido (24 kbps), se guarda dentro de la nota */
 const MIMES=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg;codecs=opus'],MAXV=120;
