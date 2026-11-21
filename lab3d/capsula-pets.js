@@ -225,18 +225,21 @@ function makeBear(g) {
 /* Cápsula central: esfera perlada abierta como en el logo, con el núcleo morado que sonríe, anillo y destello. */
 function makeCapsule(g) {
   const root = new THREE.Group(); root.position.y = 0.0; g.add(root);
-  const shellMat = mat(PAL.shell, 0.22, 0.05, { side: THREE.DoubleSide });
+  /* concha nacarada y brillante, como en el logo */
+  const shellMat = new THREE.MeshPhysicalMaterial({ color: 0xfff1fb, roughness: 0.2, metalness: 0.04, clearcoat: 0.9, clearcoatRoughness: 0.12,
+    sheen: 1, sheenRoughness: 0.4, sheenColor: new THREE.Color(0xf0b4ff), side: THREE.DoubleSide });
   const low = new THREE.Mesh(HEM_LOW, shellMat); low.scale.setScalar(0.64); low.position.y = -0.1; low.castShadow = true; low.receiveShadow = true; root.add(low);
   const rim = mesh(new THREE.TorusGeometry(0.64, 0.022, 10, 56), mat(PAL.shell2, 0.3), root, [0, -0.1, 0], false); rim.rotation.x = Math.PI / 2;
   const core = new THREE.Group(); core.position.set(0, 0.04, 0.02); root.add(core);
-  ball(core, "core", PAL.core, [0, 0, 0], [0.5, 0.34, 0.44], { roughness: 0.3 });
+  ball(core, "core", PAL.core, [0, 0, 0], [0.5, 0.34, 0.44], { roughness: 0.16 });
+  const inner = new THREE.PointLight(0xc084fc, 3, 2.2); inner.position.set(0, 0.2, 0.5); core.add(inner);   /* luz interior lila */
   const gm = glow(0xffffff, 1.15);
   const surf = (dx, dy) => 0.44 * Math.sqrt(Math.max(0, 1 - (dx / 0.5) ** 2 - (dy / 0.34) ** 2));
   const F = { eyes: [], glints: [], blush: [], surf };
   for (const s of [-1, 1]) {
-    const e = mesh(new THREE.TorusGeometry(0.055, 0.015, 8, 20, Math.PI), gm, core, [s * 0.17, 0.05, surf(s * 0.17, 0.05) - 0.004], false);
+    const e = mesh(new THREE.TorusGeometry(0.06, 0.021, 10, 24, Math.PI), gm, core, [s * 0.17, 0.05, surf(s * 0.17, 0.05) - 0.004], false);
     e.userData.base = e.scale.clone(); F.eyes.push(e);
-    const b = ball(core, "blush", 0x9b4fd0, [s * 0.3, -0.07, surf(s * 0.3, -0.07) - 0.01], [0.07, 0.045, 0.02], { noShadow: true });
+    const b = ball(core, "blush", 0xc060d8, [s * 0.3, -0.07, surf(s * 0.3, -0.07) - 0.01], [0.085, 0.052, 0.02], { noShadow: true });
     b.userData.base = b.scale.clone(); F.blush.push(b);
   }
   const curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(-0.05, 0.015, 0), new THREE.Vector3(0, -0.045, 0.01), new THREE.Vector3(0.05, 0.015, 0));
@@ -247,9 +250,9 @@ function makeCapsule(g) {
   const hinge = new THREE.Group(); hinge.position.set(0, -0.1, -0.5); root.add(hinge);
   const lid = new THREE.Mesh(HEM_UP, shellMat); lid.scale.setScalar(0.64); lid.position.set(0, 0, 0.5); lid.castShadow = true; hinge.add(lid);
   hinge.rotation.x = -1.0;
-  const orbit = mesh(new THREE.TorusGeometry(0.82, 0.04, 12, 96), glow(PAL.orbit, 0.5), root, [0, -0.05, 0], false);
-  orbit.rotation.set(1.2, 0.12, -0.28);
-  const spark = sparkle(glow(PAL.spark, 0.9), 0.14); spark.position.set(0.82, 0.72, 0.1); root.add(spark);
+  const orbit = mesh(new THREE.TorusGeometry(0.82, 0.07, 12, 96), glow(PAL.orbit, 0.55), root, [0, -0.05, 0], false);   /* anillo ancho y plano, como una cinta */
+  orbit.scale.z = 0.36; orbit.rotation.set(1.2, 0.12, -0.28);
+  const spark = sparkle(glow(PAL.spark, 1.0), 0.18); spark.position.set(0.82, 0.72, 0.1); root.add(spark);
   return finish({ head: core, body: low, ears: [], face: F, arms: [], feet: [], orbit, spark, lid: hinge, hr: [0.55, 0.62, 0.45], neck: 0 });
 }
 
