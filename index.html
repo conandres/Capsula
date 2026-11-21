@@ -435,6 +435,15 @@ nav button.on::after{display:none!important}
 .hw{display:grid!important;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:6px 10px}.hw>div{max-width:none!important}.hw .hp{position:static!important;align-self:end;justify-self:end;margin-bottom:-4px}.hw .hp .p3{width:104px;height:104px}
 @media (max-width:340px){.hw .hp .p3{width:84px;height:84px}.hw h2{font-size:20px}}
 .lvc>.btn,.mgw>.btn{align-self:stretch;width:100%;text-align:center}
+.dirt{display:none;position:absolute;inset:0;pointer-events:none;z-index:3}.room.dirty .dirt{display:block}
+.dirt i{position:absolute;width:22px;height:18px;border-radius:50% 45% 55% 50%;background:radial-gradient(circle at 40% 40%,#8a6238,#5b3d1e 70%);opacity:.72;filter:blur(.4px)}
+.dirt i:nth-child(1){left:41%;top:52%;transform:rotate(12deg)}.dirt i:nth-child(2){left:55%;top:60%;width:28px;height:20px}.dirt i:nth-child(3){left:46%;top:70%;width:16px;height:14px}.dirt i:nth-child(4){left:35%;top:63%;width:14px;height:12px}
+.dirt b{position:absolute;font-size:20px;left:50%;top:38%;animation:fly 2.8s linear infinite;transform-origin:0 0}.dirt b+b{animation-duration:3.7s;animation-direction:reverse;top:44%}
+@keyframes fly{from{transform:rotate(0) translateX(60px) rotate(0)}to{transform:rotate(360deg) translateX(60px) rotate(-360deg)}}
+.stk{position:absolute;left:50%;top:26%;display:flex;gap:10px;transform:translateX(-50%)}.stk u{width:6px;height:34px;border-radius:6px;background:linear-gradient(#8bbf4e00,#8bbf4ebb);animation:stk 1.8s ease-in-out infinite;transform-origin:50% 100%}.stk u:nth-child(2){animation-delay:.4s;height:42px}.stk u:nth-child(3){animation-delay:.8s}
+@keyframes stk{0%,100%{transform:translateY(6px) scaleY(.7) skewX(-8deg);opacity:.4}50%{transform:translateY(-6px) scaleY(1) skewX(8deg);opacity:.9}}
+.dchip{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);z-index:4;border:0;border-radius:99px;padding:8px 14px;font:inherit;font-weight:700;font-size:14px;background:#fff;color:var(--pd);box-shadow:0 4px 14px rgba(0,0,0,.14);cursor:pointer;white-space:nowrap}.dchip[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){.dirt b,.stk u{animation:none}}
 .ti2{width:40px;height:40px;object-fit:contain;display:block;pointer-events:none}.btn.mic .ti2{display:inline-block;width:30px;height:30px;vertical-align:middle;margin-right:6px}.tools .tl{min-height:76px;justify-content:center}
 .ci{width:1.25em;height:1.25em;vertical-align:-.3em;object-fit:contain;display:inline-block}.fh .ci{width:1.4em;height:1.4em}#ts .ci{width:1.5em;height:1.5em;vertical-align:-.45em}.pr{color:var(--pd);display:inline-flex;align-items:center;gap:6px;font-size:18px}.pr .ci{width:28px;height:28px}
 .wal{display:inline-flex;align-items:center;justify-content:center;gap:6px;align-self:center;border:0;background:var(--tint-2);color:var(--pd);font:inherit;font-weight:700;font-size:14px;border-radius:99px;padding:6px 14px;cursor:pointer}
@@ -1142,12 +1151,13 @@ const QS=[
  {k:'risa',t:()=>'¿Te reíste hoy?',o:[['Sí, mucho','¡Reírse es medicina! 😂'],['Un poquito','Hay que apuntar esas risas 🙂'],['Todavía no','Pon un video gracioso, yo te espero 😄']]},
  {k:'inv',cond:()=>S.group&&Object.keys(S.members).length<2,t:()=>'¿Ya invitaste a alguien a tu grupo?',o:[['Sí','¡Genial! Con ellos todo es más lindo 💗'],['Aún no','Comparte el código desde Familia, ¡quiero conocerlos!',0,'fam']]}
 ];
-const asleep=()=>new Date().getHours()<6||S.pt.rest>Date.now();
+const asleep=()=>S.pt.rest>Date.now()||(new Date().getHours()<6&&!(S.pt.wk>Date.now()));
+const sleepMin=()=>Math.max(1,Math.ceil((S.pt.rest-Date.now())/60000));
 const fmtWait=ms=>{const m=Math.ceil(ms/60000);return m>=60?Math.floor(m/60)+' h '+(m%60)+' min':m+' min'};
-function ptTick(){const p=S.pt,now=Date.now(),m=Math.max(0,(now-p.t)/60000),sl=p.rest>now;
- p.love=Math.max(0,p.love-m/(sl?20:9));p.food=Math.max(0,p.food-m/(sl?14:7));
- p.clean=Math.max(0,(p.clean??80)-m/16);p.fun=Math.max(0,(p.fun??70)-m/(sl?30:11));
- p.en=sl?Math.min(100,(p.en??90)+m*1.2):Math.max(0,(p.en??90)-m/18);p.t=now}
+function ptTick(){const p=S.pt,now=Date.now(),m=Math.max(0,(now-p.t)/60000),ms=Math.min(m,Math.max(0,((p.rest||0)-p.t)/60000)),ma=m-ms;
+ p.love=Math.max(0,p.love-ms/20-ma/9);p.food=Math.max(0,p.food-ms/14-ma/7);
+ p.clean=Math.max(0,(p.clean??80)-m/16);p.fun=Math.max(0,(p.fun??70)-ms/30-ma/11);
+ p.en=Math.max(0,Math.min(100,(p.en??90)+ms*3)-ma/18);p.t=now}
 function say(pool){const L=S.pt.said||(S.pt.said=[]);let c=pool.filter(x=>!L.includes(x));if(!c.length)c=pool;const t=c[Math.floor(Math.random()*c.length)];L.push(t);if(L.length>8)L.shift();return t}
 const tod=()=>{const h=new Date().getHours();return h<6?'noche':h<12?'mañana':h<19?'tarde':'noche'};
 function greet(away){if(asleep())return{t:'Zzz… (tócame para despertarme)',o:null,q:null};const n=S.me.name,t0=tod(),p=S.pt;
@@ -1162,7 +1172,7 @@ function bubSay(t,o,q){S.bub={t,o:o||null,q:q||null};S.bubT=Date.now();petUI()}
 function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=greet(away);
  const lvl=Math.floor(S.xp/100),sz=150,sl=asleep();
  return `<section class="card hero">
-  <div class="room${sl?' night':''}${S.rm&&ownedRoom(S.rm)?' rm-'+S.rm:''}" id="room"><div class="fl ${sl?'sleep':''}" onclick="petClick()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div></div>
+  <div class="room${sl?' night':''}${S.pt.clean<35?' dirty':''}${S.rm&&ownedRoom(S.rm)?' rm-'+S.rm:''}" id="room"><div class="fl ${sl?'sleep':''}" onclick="petClick()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div><div class="dirt" aria-hidden="true"><i></i><i></i><i></i><i></i><b>🪰</b><b>🪰</b><span class="stk"><u></u><u></u><u></u></span></div><button class="dchip" id="dirtc" ${S.pt.clean<35&&!S.tool?'':'hidden'} onclick="toolSet(\'bath\')">🫧 Necesita un baño</button></div>
   <h2>${esc(S.pet.name)}</h2>
   <button class="wal" onclick="shopOpen()" aria-label="Tus Lumis">${LI} ${S.lm||0} Lumis</button>
   <div class="mu">${STG[stg()]} · nivel ${lvl+1} · crece poco a poco</div>
@@ -1173,12 +1183,11 @@ function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=gr
 /* ---------- cuidado interactivo: acariciar, arrastrar comida, frotar para bañar, apagar la luz, hablar ---------- */
 const SC={acc:0,pet:0,last:0,drag:0,bt:0,hint:0};
 const TIM=k=>`<img class="ti2" src="img/t-${k}.png" alt="">`;
-const TOOLS=[['food',TIM('comer'),'Comer'],['bath',TIM('banar'),'Bañar'],['sleep',TIM('dormir'),'Dormir'],['play',TIM('jugar'),'Jugar'],['talk',TIM('hablar'),'Hablar']];
+const TOOLS=[['food',TIM('comer'),'Comer'],['bath',TIM('banar'),'Bañar'],['sleep',TIM('dormir'),'Dormir'],['play',TIM('jugar'),'Jugar']];
 function trayHTML(){const n=esc(S.pet.name),sl=asleep();
- if(sl)return `<div class="tw"><span class="mu">${n} está durmiendo 💤</span><button class="btn s w" onclick="wake()">🌙 Encender la luz</button></div>`;
+ if(sl)return `<div class="tw"><span class="mu" id="slt">${n} está durmiendo 💤${S.pt.rest>Date.now()?` · despierta en unos ${sleepMin()} min`:''}</span><button class="btn s w" onclick="wake()">🌙 Encender la luz</button></div>`;
  if(S.tool==='food')return `<div class="tw"><span class="mu">Arrastra la comida hasta la boca de ${n} (o tócala)</span><div class="fdt">${FOODS.map(f=>`<button class="dg" data-k="${f.k}" aria-label="Dar ${f.n}"><b>${f.e}</b><span>${f.n}</span></button>`).join('')}</div><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
  if(S.tool==='bath')return `<div class="tw"><span class="mu">Frota a ${n} con el dedo para bañarlo 🫧</span><div class="bar"><i id="scb" style="width:${Math.round(S.pt.clean)}%"></i></div><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
- if(S.tool==='talk')return `<div class="tw"><span class="mu">Mantén presionado y di algo: ${n} lo repite con su voz. No se guarda ni se envía.</span><div class="row" style="gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn mic" id="micb" aria-label="Mantén presionado para hablar">${TIM('hablar')} Mantén para hablar</button><button class="btn s" onclick="chat()">💬 Pregúntame</button></div><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
  return `<div class="tools">${TOOLS.map(([k,e,l])=>`<button class="tl" onclick="toolSet('${k}')"><b>${e}</b>${l}</button>`).join('')}</div><span class="mu c">Toca o acaricia a ${n} con el dedo 💗</span>`}
 function trayUpd(){const t=$('#tray');if(t)t.innerHTML=trayHTML();const r=$('#room');if(r)r.classList.toggle('scrub',S.tool==='bath')}
 function toolSet(k){S.tool=k||null;SC.acc=0;
@@ -1188,7 +1197,7 @@ function toolSet(k){S.tool=k||null;SC.acc=0;
  if(k==='bath'&&!bathOk()){S.tool=null;return}
  try{if(P3.v)P3.v.strokeExpr=k==='bath'?'wink':'happy'}catch(e){}
  trayUpd()}
-function wake(){ptTick();const p=S.pt;if(p.rest>Date.now()){p.rest=0;p.love=Math.min(100,p.love+3);p3sync();bubSay('¡Buenos días! 🥱☀️ Gracias por encender la luz.')}trayUpd();hopPet()}
+function wake(){ptTick();const p=S.pt;if(p.rest>Date.now()){p.rest=0;p.love=Math.min(100,p.love+3);bubSay('¡Buenos días! 🥱☀️ Gracias por encender la luz.')}p.wk=Date.now()+4*3600000;p3sync();petUI();trayUpd();hopPet()}
 function feedOk(){ptTick();const p=S.pt;
  if(asleep()){bubSay('Zzz… tengo sueño, ahora no 💤');return false}
  if(p.food>=90){bubSay(say(['Estoy llenita 🥹 Gracias, más tarde me da hambre.','Ya no me cabe ni una migaja 🍪','Mi panza dice: «gracias, luego»']));return false}
@@ -1197,8 +1206,8 @@ function bathOk(){ptTick();const p=S.pt;
  if(asleep()){bubSay('Zzz… ahora no, estoy durmiendo 💤');return false}
  if(p.clean>=90){bubSay(say(['¡Ya estoy limpio y brillante! ✨','Hoy ya me bañé, mira cómo huelo 🫧','Más tarde, ahora estoy impecable']));return false}
  return true}
-function roomSync(){const r=$('#room');if(!r)return;const sl=asleep();r.classList.toggle('night',sl);
- if(sl&&!P3.zt){P3.zt=setInterval(()=>{if(!asleep()){clearInterval(P3.zt);P3.zt=0;trayUpd();return}try{P3.v&&P3.v.spawn&&P3.v.spawn('zzz')}catch(e){}},2600)}
+function roomSync(){const r=$('#room');if(!r)return;const sl=asleep();r.classList.toggle('night',sl);r.classList.toggle('dirty',S.pt.clean<35);const dc=$('#dirtc');if(dc)dc.hidden=!(S.pt.clean<35&&!S.tool);
+ if(sl&&!P3.zt){P3.zt=setInterval(()=>{if(!asleep()){clearInterval(P3.zt);P3.zt=0;trayUpd();return}const st=$('#slt');if(st&&S.pt.rest>Date.now())st.textContent=S.pet.name+' está durmiendo 💤 · despierta en unos '+sleepMin()+' min';try{P3.v&&P3.v.spawn&&P3.v.spawn('zzz')}catch(e){}},2600)}
  if(!sl&&P3.zt){clearInterval(P3.zt);P3.zt=0}}
 function petClick(){if(SC.drag){SC.drag=0;return}petTap()}
 function bbl(x,y){const b=document.createElement('span');b.className='bbl';const z=14+Math.random()*22;b.style.cssText=`left:${x-z/2+(Math.random()*30-15)}px;top:${y-z/2}px;width:${z}px;height:${z}px`;document.body.appendChild(b);setTimeout(()=>b.remove(),1100)}
@@ -1217,29 +1226,7 @@ function dgStart(e,b){e.preventDefault();const k=b.dataset.k,f=FOODS.find(x=>x.k
  const end=ev=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',end);removeEventListener('pointercancel',end);el.remove();try{P3.v&&P3.v.setExpression(p3expr())}catch(_){}
   if(ev.type==='pointercancel')return;if(moved<10||mouth(ev)){if(feedOk())eat(k)}};
  addEventListener('pointermove',mv);addEventListener('pointerup',end);addEventListener('pointercancel',end)}
-/* Hablar: ella repite lo que dices con voz aguda. El audio no se guarda ni se envía. */
-const EC={st:null,mr:null,ch:[],t:0,to:0};
-async function echoStart(e){e.preventDefault();if(EC.mr)return;if(asleep()){bubSay('Zzz… ahora no 💤');return}
- if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.MediaRecorder){toast('Este celular no permite grabar audio.');return}
- let held=true;const rl=()=>{held=false;echoStop()};addEventListener('pointerup',rl,{once:true});addEventListener('pointercancel',rl,{once:true});
- try{EC.st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}})}catch(err){toast('Necesito permiso del micrófono para repetir lo que dices.');return}
- if(!held){EC.st.getTracks().forEach(t=>t.stop());EC.st=null;return}
- EC.ch=[];const mr=new MediaRecorder(EC.st);EC.mr=mr;
- mr.ondataavailable=ev=>{if(ev.data&&ev.data.size)EC.ch.push(ev.data)};
- mr.onstop=()=>{if(EC.st)EC.st.getTracks().forEach(t=>t.stop());EC.st=null;EC.mr=null;const bl=new Blob(EC.ch,{type:mr.mimeType||'audio/webm'});if(bl.size>800&&Date.now()-EC.t>450)echoPlay(bl);else bubSay('No te escuché bien, ¡inténtalo otra vez! 🎤')};
- EC.t=Date.now();mr.start();const m=$('#micb');if(m)m.classList.add('rec');try{P3.v&&P3.v.setExpression('surprised')}catch(_){}
- clearTimeout(EC.to);EC.to=setTimeout(echoStop,4000)}
-function echoStop(){clearTimeout(EC.to);const m=EC.mr;if(m&&m.state==='recording')m.stop();const b=$('#micb');if(b)b.classList.remove('rec');try{P3.v&&P3.v.setExpression(p3expr())}catch(_){}}
-function echoPlay(bl){const url=URL.createObjectURL(bl),a=new Audio(url);a.preservesPitch=false;a.mozPreservesPitch=false;a.webkitPreservesPitch=false;a.playbackRate=1.6;
- let an=null,buf=null,ctx=null,raf=0;
- try{ctx=new (window.AudioContext||window.webkitAudioContext)();const src=ctx.createMediaElementSource(a);an=ctx.createAnalyser();an.fftSize=256;src.connect(an);an.connect(ctx.destination);buf=new Uint8Array(an.fftSize)}catch(e){an=null}
- const loop=()=>{let lv;if(an){an.getByteTimeDomainData(buf);let q=0;for(let i=0;i<buf.length;i++){const v=(buf[i]-128)/128;q+=v*v}lv=Math.min(1,Math.sqrt(q/buf.length)*5)}else lv=.5+.5*Math.sin(Date.now()/70);try{P3.v&&P3.v.setTalk(lv)}catch(_){}raf=requestAnimationFrame(loop)};
- const done=()=>{cancelAnimationFrame(raf);try{P3.v&&P3.v.setTalk(0)}catch(_){}URL.revokeObjectURL(url);if(ctx)ctx.close().catch(()=>{});echoReward()};
- a.onended=done;a.onerror=()=>{cancelAnimationFrame(raf);try{P3.v&&P3.v.setTalk(0)}catch(_){}URL.revokeObjectURL(url)};
- a.play().then(()=>{loop();p3play('happy')}).catch(()=>{toast('No pude reproducirlo. Inténtalo otra vez.');URL.revokeObjectURL(url)})}
-function echoReward(){let d='';try{d=localStorage.getItem('capsula_echo')}catch(e){}ptTick();
- if(d!==today()){try{localStorage.setItem('capsula_echo',today())}catch(e){}S.pt.love=Math.min(100,S.pt.love+5);rw(2,1)}else{S.pt.love=Math.min(100,S.pt.love+2);petUI()}}
-document.addEventListener('pointerdown',e=>{const t=e.target&&e.target.closest?e.target:null;if(!t)return;const b=t.closest('.dg');if(b){dgStart(e,b);return}if(t.closest('#micb'))echoStart(e)},{passive:false});
+document.addEventListener('pointerdown',e=>{const t=e.target&&e.target.closest?e.target:null;if(!t)return;const b=t.closest('.dg');if(b){dgStart(e,b);return}},{passive:false});
 function petTap(){ptTick();const p=S.pt,now=Date.now();
  if(p.rest>now){p.rest=0;p.love=Math.min(100,p.love+4);p3sync();bubSay('🥱 ¡Me despertaste! Pero con mimos te perdono.');hopPet();return}
  p3play('love');const wait=3*H-(now-p.lr),need=p.love<70;p.love=Math.min(100,p.love+12);burst(8,['💗','✨']);
@@ -1266,9 +1253,9 @@ function bath(){ptTick();const p=S.pt,now=Date.now();
 function rest(){ptTick();const p=S.pt,now=Date.now();
  if(p.rest>now){bubSay('Zzz… (ya estoy descansando) 💤');return}
  if(p.en>=88){bubSay(say(['No tengo sueño todavía 😄 Juguemos un rato.','Estoy lleno de energía, ¡aún no!']));return}
- const need=p.en<55;p.rest=now+6*60000;p3sync();burst(6,['💤','🌙']);
+ const need=p.en<55,dur=Math.max(4,Math.min(20,Math.ceil((78-p.en)/3)));p.rest=now+dur*60000;p.wk=0;p3sync();burst(6,['💤','🌙']);
  if(need&&now-p.lz>4*H){p.lz=now;S.bub={t:'Zzz… voy a dormir una siestita 🌙 Descansaré unos minutos y despertaré con energía.',o:null,q:null};S.bubT=now;rw(2,0)}else{bubSay('Zzz… una siestita corta 💤')}
- petUI();setTimeout(()=>{ptTick();p3sync();petUI()},6*60000+500)}
+ petUI();trayUpd();setTimeout(()=>{ptTick();p3sync();petUI();trayUpd()},dur*60000+500)}
 const FACTS=['¿Sabías que cada historia me hace crecer? 🌱','Me gusta cuando cuentas cosas de tu infancia','Hoy es buen día para una historia ✨','Las recetas de la abuela son mis favoritas 🍲','Una carta escrita a mano es un tesoro; una aquí también 💌','Si grabas tu voz, tu familia la escuchará siempre 🎙️','Pregúntale hoy a alguien cómo era su barrio de niño','Una foto vieja y dos frases valen un recuerdo entero 📷','Los recuerdos compartidos pesan menos y brillan más','Yo cuido tus historias mientras duermes 🌙','Cada pregunta del día es una conversación que empieza','Los abuelos tienen mil historias esperando que alguien las pida','Hoy podrías contar algo que nunca has contado 🌟','Una historia cortita también cuenta 💗','Si no sabes por dónde empezar, responde la pregunta del día','Los mejores recuerdos casi nunca fueron planeados','Tu voz de hoy será un tesoro mañana 🎙️','Un dibujo sencillo puede decir más que mil palabras ✏️','Pídele a alguien de tu familia su receta favorita 🍲','Cuando cuentas algo, lo vuelves a vivir un ratito','Las cartas se disfrutan más con los años 💌','Ponle fecha a tus fotos: tu yo del futuro te lo agradecerá 📷','Cada persona que invitas hace más grande la cápsula','Compartir un recuerdo es regalar un pedacito de ti','Una pregunta bonita puede abrir una charla de horas','Con 12 historias armas tu libro 📖','Descansar también es cuidarte 🌙','Me encanta cuando vuelves a visitarme 🥹','Las cosas pequeñas de hoy serán los grandes recuerdos de mañana'];
 function chat(){const now=Date.now(),p=S.pt,el=QS.filter(q=>!q.cond||q.cond());
  if(Math.random()<.35){bubSay(say(FACTS));return}
@@ -1650,7 +1637,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=56;
+const BUILD=57;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
