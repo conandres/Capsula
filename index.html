@@ -551,6 +551,7 @@ const I={
  check:'<polyline points="20 6 9 17 4 12"/>',
  world:'<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>',
  caps:'<circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/>',
+ bag:'<path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
  bell:'<path d="M6 9a6 6 0 0 1 12 0c0 6 2 7 2 7H4s2-1 2-7"/><path d="M10 20a2 2 0 0 0 4 0"/>',
  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
  lock:'<rect x="5" y="11" width="14" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
@@ -612,7 +613,7 @@ function shopBuy(kind,id){cl();let p;
  if(kind==='acc'){const a=ACCS.find(x=>x.id===id);if(!a||owned(a))return;p=ACCP[id];if((S.lm||0)<p)return;S.lm-=p;S.unl.push(id);S.wear.push(id)}
  else{const r=ROOMS.find(x=>x.id===id);if(!r||ownedRoom(id))return;p=r.p;if((S.lm||0)<p)return;S.lm-=p;S.unl.push('rm:'+id);S.rm=id}
  burst(26,['✨','🎀']);toast('¡Listo! Ya es de '+S.pet.name+' ✨');shopSave()}
-function shopOpen(){S.tab='mundo';render();setTimeout(()=>{const e=$('#shop');if(e)e.scrollIntoView({behavior:'smooth',block:'center'})},60)}
+function shopOpen(){S.tab='tienda';render();setTimeout(()=>{const e=$('#shop');if(e)e.scrollIntoView({behavior:'smooth',block:'center'})},60)}
 const shopHTML=()=>{return `<section class="card" id="shop"><div class="row sp"><h3>Tienda</h3><b class="pr">${LI} ${S.lm||0}</b></div>
  <span class="mu">Los Lumis son la moneda: se ganan poco a poco cuidando a ${esc(S.pet.name)}, contando historias y con las misiones. Guárdalos para lo que de verdad quieras.</span>
  <b>Fondos del cuarto</b><div class="shr">${ROOMS.map(r=>{const o=ownedRoom(r.id),on=(S.rm||'')===r.id;return `<button class="${on?'on':''}" onclick="shopAsk('room','${r.id}')"><i style="background:${r.bg}"></i>${r.n}<small>${on?'Puesto':o?'Toca para usar':LI+' '+r.p}</small></button>`}).join('')}</div>
@@ -991,7 +992,7 @@ function petHello(){const n=esc(S.pet.name);showSheet(`<div class="bz"><div styl
 /* ---------- main shell ---------- */
 const spaceId=()=>S.group?S.group.id:null;
 function spaceTo(id){id=id||null;if(spaceId()===id)return;if(window.CLOUD&&CLOUD.ready&&CLOUD.switchFamily)CLOUD.switchFamily(id);else S.group=id?(S.families.find(f=>f.id===id)||null):null}
-const NK=()=>({home:'home',mundo:'mundo',caps:'caps',cap:'caps',act:'act',perfil:'perfil'})[S.tab]||(S.group?'caps':'mundo');
+const NK=()=>({home:'home',mundo:'mundo',caps:'caps',cap:'caps',act:'perfil',tienda:'tienda',perfil:'perfil'})[S.tab]||(S.group?'caps':'mundo');
 const nMem=()=>Math.max(1,Object.keys(S.members).length);
 const spaceTag=()=>S.group?`<span class="tag spc shr">${ic('users',14)}Compartido con ${nMem()} ${nMem()===1?'persona':'personas'}</span>`:`<span class="tag spc priv">${ic('lock',14)}Solo tú</span>`;
 const hsub=()=>({home:'Hola, '+esc(S.me.name),mundo:'Mi mundo · solo tú',caps:'Mis cápsulas',cap:S.group?esc(S.group.name):'Mis cápsulas',act:'Actividad',perfil:'Perfil'})[S.tab]||(S.group?esc(S.group.name):'Mi mundo · solo tú');
@@ -1001,7 +1002,7 @@ function shell(){return `<div class="top" id="hd">${hdr()}</div><main id="mn">${
  <button data-t="home" onclick="go('home')">${ic('home')}Inicio</button>
  <button data-t="mundo" onclick="go('mundo')">${ic('world')}Mi mundo</button>
  <button data-t="caps" onclick="go('caps')">${ic('caps')}Mis cápsulas</button>
- <button data-t="act" onclick="go('act')">${ic('bell')}Actividad</button>
+ <button data-t="tienda" onclick="go('tienda')">${ic('bag')}Tienda</button>
  <button data-t="perfil" onclick="go('perfil')">${ic('user')}Perfil</button>
 </nav>`}
 function navSync(){document.querySelectorAll('nav [data-t]').forEach(b=>{const on=b.dataset.t===NK();b.classList.toggle('on',on);on?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')})}
@@ -1098,7 +1099,7 @@ function mundo(){
  <section class="card"><h3>¿Cómo quieres contar hoy?</h3><div class="qp">${Object.entries(TY).map(([k,v])=>`<button onclick="compose('${k}')">${ic(v.i,18)}${v.l}</button>`).join('')}</div></section>
  <div class="duo"><button class="tile2" onclick="goArc()">${ic('book',26)}<b>Mi archivo</b><span class="mu">${n} ${n===1?'historia':'historias'}</span></button><button class="tile2" onclick="go('triv')">${ic('star',26)}<b>Pregunta del día</b><span class="mu">Una para ti</span></button></div>
  <section class="card"><div class="row sp" style="gap:12px"><div class="tx"><h3>Parejas de recuerdos</h3><span class="mu">Cinco niveles, con intentos limitados${S.posts.some(p=>['foto','dibujo'].includes(p.k))?' con tus propias fotos':''}. Gana Lumis una vez al día.</span></div><button class="btn" onclick="mgStart()">Jugar</button></div></section>
- ${missionsHTML()}${shopHTML()}${closetHTML()}
+ ${missionsHTML()}
  ${moodCard()}${badgesHTML()}${bookCard(n)}
  ${inviteApp()}`}
 const PREACT={
@@ -1593,6 +1594,7 @@ function perfil(){
  ${(S.blk||[]).length?`<button class="btn s w" onclick="blkList()">Personas bloqueadas (${S.blk.length})</button>`:''}
  <button class="btn s w" onclick="delAsk()" style="color:#B3261E">Eliminar mi cuenta y mis datos</button></div>
  ${plusCard()}
+ <div class="card"><div class="row sp"><h3>Actividad</h3><button class="lnk" onclick="go('act')">Ver todo</button></div>${recentHTML(3)||'<p class="mu">Aquí verás las cartas, respuestas e invitaciones de tus cápsulas.</p>'}</div>
  ${remCard()}
  ${guideCard()}
  ${admCard()}
@@ -1718,12 +1720,13 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=61;
+const BUILD=62;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
 function updX(){S.upd=0;try{sessionStorage.setItem('capsula_updx','1')}catch(e){}soft()}
-const VIEW={home,mundo,caps,cap,act,perfil,arc,triv};
+function tienda(){return `<div class="spch"><h2>Tienda</h2></div>${shopHTML()}${closetHTML()}<p class="mu c">Los Lumis se ganan despacio cuidando a ${esc(S.pet.name)} y contando historias.</p>`}
+const VIEW={home,mundo,caps,cap,act,tienda,perfil,arc,triv};
 
 /* ---------- publish ---------- */
 function busySheet(t,d){showSheet(`<div class="bz" role="status" aria-live="polite"><i class="sp"></i><h2>${t}</h2><p class="mu">${d}</p></div>`);const x=$('#sh .x');if(x)x.style.display='none'}
