@@ -797,7 +797,7 @@ function levelUp(l){p3play('levelup');const o=document.createElement('div');o.cl
 /* ---------- helpers ---------- */
 function toast(m){const t=$('#ts');t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),2000)}
 /* Economía: crecimiento (xp) y Lumis (moneda). Las dos son lentas y tienen tope diario para que no se regalen. */
-const CAP_X=45,CAP_C=20;
+const CAP_X=45,CAP_C=20,CAP_E=30;
 const LI='<img class="ci" src="img/lumis.png" alt="Lumis">',XI='<img class="ci" src="img/xp.png" alt="XP">';
 const toastH=m=>{const t=$('#ts');t.innerHTML=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),2200)};
 const floatI=(h)=>{const e=document.createElement('div');e.className='fh';e.innerHTML=h;$('.app').appendChild(e);setTimeout(()=>e.remove(),1300)};
@@ -1257,7 +1257,7 @@ async function exAns(){const e=S.pt.ex,el=$('#exa'),t=(el?el.value:'').trim().sl
  if(!window.CLOUD||!CLOUD.ready){toast('Sin conexión con tu cuenta. Intenta de nuevo en un momento.');return}
  const x=EXPS.find(a=>a.k===e.k),q=e.q;
  try{await CLOUD.publish({k:'carta',t:('Postal: '+q).slice(0,120),x:{to:'Mi diario',tx:t},by:''})}catch(err){toast('Tu respuesta no se guardó. Revisa tu conexión.');return}
- S.pt.ex=null;S.pt.exn=(S.pt.exn||0)+1;S.pt.fun=Math.min(100,S.pt.fun+20);S.pt.love=Math.min(100,S.pt.love+6);track('exp');cl();burst(20,['🧭','✨','💗']);rw(x.x,x.c,{free:true});save();render()}
+ S.pt.ex=null;S.pt.exn=(S.pt.exn||0)+1;S.pt.fun=Math.min(100,S.pt.fun+20);S.pt.love=Math.min(100,S.pt.love+6);track('exp');cl();burst(20,['🧭','✨','💗']);{const cp=capEnsure(),left=Math.max(0,CAP_E-(cp.e||0)),g=Math.min(x.c,left);cp.e=(cp.e||0)+g;if(g)rw(Math.min(x.x,g),g,{free:true});else toast('Hoy ya cobraste el máximo de expediciones; tu respuesta quedó en el diario 🧭')}save();render()}
 function exSkip(){const e=S.pt.ex;if(e){S.pt.ex=null;S.pt.exn=(S.pt.exn||0)+1;S.pt.fun=Math.min(100,S.pt.fun+10)}cl();bubSay('¡Qué paseo! Te guardo la postal en mi corazón 💗');save();try{remApply()}catch(e){}render()}
 /* ---------- cuidado interactivo: acariciar, arrastrar comida, frotar para bañar, apagar la luz, hablar ---------- */
 const SC={acc:0,pet:0,last:0,drag:0,bt:0,hint:0};
@@ -1732,7 +1732,7 @@ const GUIDES={
   ['crown','Esta es tu mascota','Vive en Mi mundo, un espacio solo tuyo. Nadie más la ve ni entra a jugar con ella.'],
   ['heart','Cuídala cada día','Acarícialo con el dedo, arrástrale comida a la boca, frótalo para bañarlo, apaga la luz para dormir o lanza el balón para jugar. Si sus barras bajan, te lo pide con cariño: aquí no hay castigos.'],
   ['img:lumis','Lumis: la moneda','Los ganas despacio: contando historias, cuidando a tu mascota (comer, bañar, jugar, siesta), con el cofre diario, la pregunta del día, el juego de Parejas (en Mis cápsulas), las expediciones, las misiones de la semana y cuando alguien entra con tu invitación. Hay un tope por día para que valgan algo. Se gastan en la Tienda: fondos del cuarto, accesorios y mascotas nuevas.'],
-  ['🧭','Expediciones','Manda a tu mascota a la Playa (1 h), el Bosque (4 h) o la Montaña (8 h). Mientras está fuera no puedes cuidarla. Al volver trae una postal y una pregunta: si la respondes ganas Lumis y XP, y tu respuesta se guarda en tu diario. Entre más dure el viaje, mejor el premio.'],
+  ['🧭','Expediciones','Manda a tu mascota a la Playa (1 h), el Bosque (4 h) o la Montaña (8 h). Mientras está fuera no puedes cuidarla. Al volver trae una postal y una pregunta: si la respondes ganas Lumis y XP, y tu respuesta se guarda en tu diario. Entre más dure el viaje, mejor el premio (hasta 30 Lumis de expediciones por día).'],
   ['🐾','Varias mascotas','Puedes tener hasta 3 mascotas. La segunda cuesta 400 Lumis y la tercera 800. Cada una tiene su propio ánimo, nivel y armario; los Lumis son compartidos.'],
   ['img:xp','XP: así crece tu mascota','La XP se gana con las mismas acciones, pero no se gasta. Cada 100 XP subes un nivel, y con los niveles tu mascota evoluciona: Bebé, Pequeño (nivel 4), Joven (nivel 11) y Adulto (nivel 26). Crecer es lento a propósito.'],
   ['crown','Accesorios y recompensas','Algunos accesorios se desbloquean solos al subir de nivel o con logros, como contar tu primera historia, responder preguntas o mantener la racha. Otros se compran con Lumis. Los ves y los pones en el armario (el botón del gancho en el cuarto), una prenda por categoría.'],
@@ -1758,7 +1758,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=70;
+const BUILD=71;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
