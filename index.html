@@ -300,7 +300,11 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
 @keyframes zzf{0%{opacity:0;transform:translate(0,10px)}40%{opacity:1}100%{opacity:0;transform:translate(10px,-24px)}}
 .bw{width:100%;display:flex;flex-direction:column;gap:8px;align-items:center}
 .bub{background:var(--card);border:2px solid var(--soft2);border-radius:20px;padding:10px 14px;font-weight:500;position:relative;max-width:100%;line-height:1.35;animation:popb .4s cubic-bezier(.2,1.5,.4,1)}
-.bub::before{content:'';position:absolute;top:-8px;left:50%;margin-left:-7px;width:12px;height:12px;background:var(--card);border-left:2px solid var(--soft2);border-top:2px solid var(--soft2);transform:rotate(45deg)}
+.bw{margin-top:14px}
+.bub{border-radius:26px;padding:11px 18px;text-align:center}
+.bub::before,.bub::after{content:'';position:absolute;left:50%;border-radius:50%;background:var(--card);border:2px solid var(--soft2)}
+.bub::before{top:-13px;margin-left:-5px;width:10px;height:10px}
+.bub::after{top:-22px;margin-left:-2px;width:6px;height:6px}
 @keyframes popb{from{transform:scale(.85);opacity:0}}
 .qr{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .qr button{border:2px solid var(--line);background:var(--soft);color:var(--pd);border-radius:99px;padding:8px 14px;font-weight:600;min-height:40px;cursor:pointer;animation:up .4s both}
@@ -443,7 +447,7 @@ nav button.on::after{display:none!important}
 @keyframes fly{from{transform:rotate(0) translateX(60px) rotate(0)}to{transform:rotate(360deg) translateX(60px) rotate(-360deg)}}
 .stk{position:absolute;left:50%;top:26%;display:flex;gap:10px;transform:translateX(-50%)}.stk u{width:6px;height:34px;border-radius:6px;background:linear-gradient(#8bbf4e00,#8bbf4ebb);animation:stk 1.8s ease-in-out infinite;transform-origin:50% 100%}.stk u:nth-child(2){animation-delay:.4s;height:42px}.stk u:nth-child(3){animation-delay:.8s}
 @keyframes stk{0%,100%{transform:translateY(6px) scaleY(.7) skewX(-8deg);opacity:.4}50%{transform:translateY(-6px) scaleY(1) skewX(8deg);opacity:.9}}
-.dchip{position:absolute;left:50%;bottom:6px;transform:translateX(-50%);z-index:4;border:0;border-radius:99px;padding:8px 14px;font:inherit;font-weight:700;font-size:14px;background:#fff;color:var(--pd);box-shadow:0 4px 14px rgba(0,0,0,.14);cursor:pointer;white-space:nowrap}.dchip[hidden]{display:none}
+.dchip{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:4;border:0;border-radius:99px;padding:8px 14px;font:inherit;font-weight:700;font-size:14px;background:#fff;color:var(--pd);box-shadow:0 4px 14px rgba(0,0,0,.14);cursor:pointer;white-space:nowrap}.dchip[hidden]{display:none}.dchip::before,.dchip::after{content:'';position:absolute;left:50%;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.12)}.dchip::before{bottom:-9px;margin-left:-4px;width:9px;height:9px}.dchip::after{bottom:-16px;margin-left:0;width:5px;height:5px}
 @media (prefers-reduced-motion:reduce){.dirt b,.stk u{animation:none}}
 .ti2{width:40px;height:40px;object-fit:contain;display:block;pointer-events:none}.btn.mic .ti2{display:inline-block;width:30px;height:30px;vertical-align:middle;margin-right:6px}.tools .tl{min-height:76px;justify-content:center}
 .ci{width:1.25em;height:1.25em;vertical-align:-.3em;object-fit:contain;display:inline-block}.fh .ci{width:1.4em;height:1.4em}#ts .ci{width:1.5em;height:1.5em;vertical-align:-.45em}.pr{color:var(--pd);display:inline-flex;align-items:center;gap:6px;font-size:18px}.pr .ci{width:28px;height:28px}
@@ -1208,7 +1212,7 @@ const tod=()=>{const h=new Date().getHours();return h<6?'noche':h<12?'mañana':h
 function greet(away){if(asleep())return{t:'Zzz… (tócame para despertarme)',o:null,q:null};const n=S.me.name,t0=tod(),p=S.pt;
  const P={mañana:['Buenos días, '+n+' ☀️','¡Arriba, '+n+'! Hoy huele a historia nueva','Buen día, '+n+' 💗 ¿desayunaste?'],tarde:['Buenas tardes, '+n+' 💗','¡Hola, '+n+'! Te estaba esperando','¿Qué tal va tu tarde, '+n+'?'],noche:['Buenas noches, '+n+' 🌙','Qué bueno verte antes de dormir, '+n,'La noche es perfecta para recordar ✨']}[t0];
  let t=say(P);if(away>6)t='¡Te extrañé! Pasaron '+Math.floor(away)+' horas. '+t;
- if(p.food<30)t+=' Tengo hambre 🍪';else if(p.clean<30)t+=' Necesito un baño 🫧';else if(p.fun<30)t+=' ¿Jugamos un rato?';return{t,o:null,q:null}}
+ const nd=p.food<30?'Tengo hambre 🍪':p.clean<30?'Necesito un baño 🫧':p.fun<30?'¿Jugamos un rato?':'';if(nd)t+=(/[.!?¿\p{Extended_Pictographic}]$/u.test(t)?' ':'. ')+nd;return{t,o:null,q:null}}
 const bubHTML=()=>exAway()?`<div class="bub">${Date.now()>=S.pt.ex.end?'¡Volví! Mira mi postal 💌':'Estoy de aventura, ¡vuelvo pronto! 🧭'}</div>`:`<div class="bub">${esc(S.bub.t)}</div>${S.bub.o?`<div class="qr">${S.bub.o.map((o,i)=>`<button onclick="reply(${i})">${esc(o[0])}</button>`).join('')}</div>`:''}`;
 const statsHTML=()=>{const p=S.pt,st=(n,v,c)=>`<div class="st"><span>${n}</span><div class="bar sm ${c?'low':''}"><i style="width:${Math.round(v)}%"></i></div></div>`;
  return `<div class="stw2">${st('Ánimo',p.love,p.love<30)}${st('Panza',p.food,p.food<30)}${st('Limpieza',p.clean,p.clean<30)}${st('Diversión',p.fun,p.fun<30)}${st('Energía',p.en,p.en<25)}${st('Nivel',S.xp%100)}</div>`};
@@ -1217,7 +1221,7 @@ function bubSay(t,o,q){S.bub={t,o:o||null,q:q||null};S.bubT=Date.now();petUI()}
 function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=greet(away);
  const lvl=Math.floor(S.xp/100),sz=150,sl=asleep();
  return `<section class="card hero">
-  <div class="room${sl?' night':''}${S.pt.clean<35?' dirty':''}${S.rm&&ownedRoom(S.rm)?' rm-'+S.rm:''}${exAway()?' exa exp-'+S.pt.ex.k:''}" id="room">${exAway()?exScene():''}<div class="fl ${sl?'sleep':''}${exAway()?' away':''}" onclick="petClick()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div><button class="hang" onclick="wardOpen()" aria-label="Armario">${ic('hanger',22)}</button><div class="dirt" aria-hidden="true"><i></i><i></i><i></i><i></i><b>🪰</b><b>🪰</b><span class="stk"><u></u><u></u><u></u></span></div><button class="dchip" id="dirtc" ${S.pt.clean<35&&!S.tool?'':'hidden'} onclick="toolSet(\'bath\')">🫧 Necesita un baño</button></div>
+  <div class="room${sl?' night':''}${S.pt.clean<35?' dirty':''}${S.rm&&ownedRoom(S.rm)?' rm-'+S.rm:''}${exAway()?' exa exp-'+S.pt.ex.k:''}" id="room">${exAway()?exScene():''}<div class="fl ${sl?'sleep':''}${exAway()?' away':''}" onclick="petClick()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div><button class="hang" onclick="wardOpen()" aria-label="Armario">${ic('hanger',22)}</button><div class="dirt" aria-hidden="true"><i></i><i></i><i></i><i></i><b>🪰</b><b>🪰</b><span class="stk"><u></u><u></u><u></u></span></div><button class="dchip" id="dirtc" ${S.pt.clean<35&&!S.tool?'':'hidden'} onclick="toolSet(\'bath\')">💭 Necesito un baño</button></div>
   ${pswHTML()}<h2>${esc(S.pet.name)}</h2>
   <button class="wal" onclick="shopOpen()" aria-label="Tus Lumis">${LI} ${S.lm||0} Lumis</button>
   <div class="mu">${STG[stg()]} · nivel ${lvl+1} · crece poco a poco</div>
@@ -1311,7 +1315,7 @@ function dgStart(e,b){e.preventDefault();const k=b.dataset.k,f=FOODS.find(x=>x.k
 document.addEventListener('pointerdown',e=>{const t=e.target&&e.target.closest?e.target:null;if(!t)return;const b=t.closest('.dg');if(b){if(b.dataset.k==='ball'){ballStart(e);return}dgStart(e,b);return}},{passive:false});
 function petTap(){ptTick();const p=S.pt,now=Date.now();
  if(exAway()){bubSay(Date.now()>=p.ex.end?'¡Volví! Mira mi postal 💌':'Está de aventura, ¡ya vuelve! 🧭');return}
- if(asleep()){p.rest=0;p.wk=now+4*3600000;p.love=Math.min(100,p.love+4);p3sync();bubSay('🥱 ¡Me despertaste! Pero con mimos te perdono.');petUI();trayUpd();hopPet();return}
+ if(asleep()){SC.pk=(SC.pk||[]).filter(x=>now-x<4000);SC.pk.push(now);if(SC.pk.length<3){bubSay(SC.pk.length===1?say(['Zzz… 💤','Mmm… cinco minutitos más 😴','Zzz… zzz… 💭']):'Mmm… si sigues, me despierto 🥱');return}SC.pk=[];p.rest=0;p.wk=now+4*3600000;p.love=Math.min(100,p.love+4);p3sync();bubSay('🥱 ¡Me despertaste! Pero con mimos te perdono.');petUI();trayUpd();hopPet();return}
  p3play('love');const wait=3*H-(now-p.lr),need=p.love<70;p.love=Math.min(100,p.love+12);burst(8,['💗','✨']);
  if(new Date().getHours()<6){bubSay('🥱 ¡Me despertaste! Pero con mimos te perdono.');hopPet();return}
  if(wait<=0&&need){p.lr=now;S.bub={t:say(['¡Qué rico mimo! 💗','Me encantas, '+S.me.name+' 💕','¡Soy la mascota más feliz! ☁️','Eso era justo lo que necesitaba 🥹','Ronroneo por dentro… 💗']),o:null,q:null};S.bubT=now;track('mimo');rw(2,1)}
@@ -1758,7 +1762,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=72;
+const BUILD=73;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';

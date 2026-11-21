@@ -11,7 +11,7 @@
 import * as THREE from "three";
 
 const PAL = {
-  white: 0xfff7fb, pink: 0xf29ac2, blush: 0xffb5d0, dark: 0x351b2d, purple: 0xb99be9, gold: 0xffd36b,
+  white: 0xfff7fb, pink: 0xf29ac2, blush: 0xff9fc4, dark: 0x351b2d, purple: 0xb99be9, gold: 0xffd36b,
   cream: 0xffe8d8, ear: 0xf7a9c9, bear: 0xf6a3c6, tongue: 0xff7fa8, ribbon: 0xe8476f, red: 0xe0405a,
   monkey: 0xd9a066, core: 0x2a1148, shell: 0xfff3fb, shell2: 0xe9d4fb, orbit: 0xf48fc3, spark: 0xa855f7,
   lilac: 0xc9b3f5
@@ -365,7 +365,7 @@ export class CapsulaPetViewer {
     this.canvas.setAttribute("aria-label", "Mascota 3D. Toca para que reaccione, arrastra para girarla.");
     container.appendChild(this.canvas);
 
-    this.scene.add(new THREE.HemisphereLight(0xffe8f4, 0x4d3454, 2.0));
+    this.scene.add(new THREE.HemisphereLight(0xffe8f4, 0x7a5a86, 2.1));
     const key = new THREE.DirectionalLight(0xffffff, 3.1);
     key.position.set(3, 4, 5); key.castShadow = true; key.shadow.mapSize.set(1024, 1024);
     Object.assign(key.shadow.camera, { left: -2, right: 2, top: 2, bottom: -2 });
@@ -374,7 +374,7 @@ export class CapsulaPetViewer {
     const rim = new THREE.PointLight(0xe88ac8, 24, 8); rim.position.set(-2, 1, 2); this.scene.add(rim);
     const fill = new THREE.DirectionalLight(0xfff0f8, 0.9); fill.position.set(-3, 1.5, 4); this.scene.add(fill);   /* relleno suave: aclara las sombras de la cara */
     const back = new THREE.PointLight(0xc9b3f5, 10, 8); back.position.set(2, 2, -3); this.scene.add(back);   /* contraluz lila: dibuja el contorno */
-    const floor = new THREE.Mesh(new THREE.CircleGeometry(1, 48), new THREE.ShadowMaterial({ opacity: 0.22 }));
+    const floor = new THREE.Mesh(new THREE.CircleGeometry(1, 48), new THREE.ShadowMaterial({ opacity: 0.3 }));
     floor.rotation.x = -Math.PI / 2; floor.position.y = -1.03; floor.scale.set(1.5, 1, 0.6); floor.receiveShadow = true;
     this.scene.add(floor);
 
