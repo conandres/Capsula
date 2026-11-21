@@ -482,7 +482,7 @@ export class CapsulaPetViewer {
     const ex = { surprise: "surprised", eat: "neutral" }[action] || "happy";
     this.tmp = { expr: ex, until: this.t + DUR[action] + 0.25 };
     if (action === "love") this.spawn("hearts");
-    if (action === "levelup") this.spawn("stars");
+    if (action === "levelup" || action === "dance") this.spawn("stars");
   }
 
   /* ---------- tocar y arrastrar ---------- */
@@ -621,6 +621,7 @@ export class CapsulaPetViewer {
     } catch (e) { this.idle = null; }
     if (name === "sleepy") headTilt += Math.sin(t * 0.5) * 0.06;   /* cabeceo suave al dormir */
     P.arms.forEach((a, i) => { armZ[i] += Math.sin(t * 1.3 + i * 2.1) * 0.03 * m; });   /* bracitos que se mecen */
+    if (this.drag && this.drag.moved >= 8) hyaw += this.yawUser * 0.9;   /* mira hacia el dedo mientras la acaricias */
     this.hy = (this.hy || 0) + (hyaw - (this.hy || 0)) * (1 - Math.exp(-dt * 9));
 
     /* orejas (caídas con la tristeza), cola, órbita, destello, objeto en brazos */
@@ -644,6 +645,7 @@ export class CapsulaPetViewer {
       const hops = an === "happy" ? 2 : 1, h = Math.abs(Math.sin(p * Math.PI * hops));
       y += h * (an === "happy" ? 0.34 : 0.26) * Math.max(m, 0.3);
       sx = 1 + 0.05 * (1 - h) * env; sy = 1 - 0.05 * (1 - h) * env + 0.04 * h * env;
+      if (p < 0.14) { const cr = Math.sin(p / 0.14 * Math.PI); sy *= 1 - 0.09 * cr; sx *= 1 + 0.05 * cr; y -= 0.03 * cr; }   /* se agacha antes de saltar */
       P.arms.forEach((a, i) => { armZ[i] = a.userData.s * (an === "happy" ? 0.9 : 0.6) * env; });
       if (an === "surprise") headTilt -= 0.05 * env;
     } else if (an === "love") {
@@ -672,6 +674,11 @@ export class CapsulaPetViewer {
     P.head.scale.y = headScaleY * (this.stageHead || 1);
     this.character.position.set(x, y - (1 - (this.stageK || 1)) * 0.9, 0);
     this.character.rotation.z = rz;
+    /* entrada con rebote cuando aparece o cambia de mascota */
+    if (!still) { if (this.popFor !== this.current) { this.popFor = this.current; this.popT = t; } }
+    let pf = 1;
+    if (!still && this.popT != null) { const q = (t - this.popT) / 0.6; if (q < 1) { const u = q - 1; pf = 0.62 + 0.38 * (1 + 2.70158 * u * u * u + 1.70158 * u * u); } }
+    sx *= pf; sy *= pf;
     this.character.scale.set(this.charBase * sx, this.charBase * sy, this.charBase * sx);
 
     /* burbujas al dormir */

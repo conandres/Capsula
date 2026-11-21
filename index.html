@@ -15,6 +15,12 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
 @keyframes shup{from{transform:translateY(40px);opacity:.4}}@keyframes shfade{from{background-color:transparent}}
 .stw .bar i,.stw .fill{transition:width .6s cubic-bezier(.2,.8,.2,1)}
 @media (prefers-reduced-motion:reduce){nav .on svg,.sh.open .pn,.sh.open{animation:none}}
+
+.psw button.on{animation:navpop .45s cubic-bezier(.2,1.6,.4,1)}
+.postal{animation:postin .7s cubic-bezier(.2,1.3,.3,1)}
+@keyframes postin{from{transform:scale(.7) rotate(-7deg);opacity:0}}
+.exa-svg{animation:kb 9s ease-in-out infinite alternate}@keyframes kb{to{transform:scale(1.07)}}
+@media (prefers-reduced-motion:reduce){.psw button.on,.postal,.exa-svg{animation:none}}
 </style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1801,7 +1807,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=78;
+const BUILD=79;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
