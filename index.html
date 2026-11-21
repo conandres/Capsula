@@ -476,7 +476,7 @@ nav button.on::after{display:none!important}
 .fl.away{opacity:0;pointer-events:none}
 .psw{display:flex;justify-content:center;gap:8px;margin:10px 0 2px}.psw button{display:flex;flex-direction:column;align-items:center;gap:2px;border:2px solid #f6d5ef;background:#fff;border-radius:16px;padding:6px 10px;min-width:64px;font:inherit;color:#8a5a73;cursor:pointer}.psw button.on{border-color:#b0336f;background:#ffe9f3}.psw small{font-size:11px;font-weight:700}.psw .add{border-style:dashed;justify-content:center}.psw .add b{font-size:26px;line-height:1.2;color:#b0336f}
 .room.exa{background:linear-gradient(180deg,#bfe6ff,#e9f7ff 60%,#fde9c8)!important}.room.exp-bosque{background:linear-gradient(180deg,#c8f0c8,#8fd19e 70%,#5aa86b)!important}.room.exp-montana{background:linear-gradient(180deg,#d6dcff,#b7c4ee 60%,#8f9bc9)!important}
-.exs{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:16px;color:#4a2336;z-index:2;pointer-events:none}.exs .exe{font-size:84px;line-height:1;animation:exb 3s ease-in-out infinite}.exs b{font-size:19px}.exs span{font-size:15px;background:rgba(255,255,255,.7);border-radius:999px;padding:6px 14px}@keyframes exb{50%{transform:translateY(-8px)}}
+.exs{overflow:hidden;border-radius:inherit;position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:16px;color:#4a2336;z-index:2;pointer-events:none}.exa-svg{position:absolute;inset:0;width:100%;height:100%;z-index:-1;border-radius:inherit}.exs b{background:rgba(255,255,255,.78);border-radius:999px;padding:6px 14px}.exs{justify-content:flex-end;padding-bottom:22px}.exs b{font-size:19px}.exs span{font-size:15px;background:rgba(255,255,255,.7);border-radius:999px;padding:6px 14px}@keyframes exb{50%{transform:translateY(-8px)}}
 .dgf.ball{font-size:46px;transition:none}.dgf.ball.fly{scale:1}
 .ti2{width:50px;height:50px}
 .btn.mic{touch-action:none;user-select:none;-webkit-user-select:none}.btn.mic.rec{background:var(--bad);animation:micp .9s infinite}
@@ -1210,7 +1210,7 @@ function greet(away){if(asleep())return{t:'Zzz… (tócame para despertarme)',o:
  const P={mañana:['Buenos días, '+n+' ☀️','¡Arriba, '+n+'! Hoy huele a historia nueva','Buen día, '+n+' 💗 ¿desayunaste?'],tarde:['Buenas tardes, '+n+' 💗','¡Hola, '+n+'! Te estaba esperando','¿Qué tal va tu tarde, '+n+'?'],noche:['Buenas noches, '+n+' 🌙','Qué bueno verte antes de dormir, '+n,'La noche es perfecta para recordar ✨']}[t0];
  let t=say(P);if(away>6)t='¡Te extrañé! Pasaron '+Math.floor(away)+' horas. '+t;
  if(p.food<30)t+=' Tengo hambre 🍪';else if(p.clean<30)t+=' Necesito un baño 🫧';else if(p.fun<30)t+=' ¿Jugamos un rato?';return{t,o:null,q:null}}
-const bubHTML=()=>`<div class="bub">${esc(S.bub.t)}</div>${S.bub.o?`<div class="qr">${S.bub.o.map((o,i)=>`<button onclick="reply(${i})">${esc(o[0])}</button>`).join('')}</div>`:''}`;
+const bubHTML=()=>exAway()?`<div class="bub">${Date.now()>=S.pt.ex.end?'¡Volví! Mira mi postal 💌':'Estoy de aventura, ¡vuelvo pronto! 🧭'}</div>`:`<div class="bub">${esc(S.bub.t)}</div>${S.bub.o?`<div class="qr">${S.bub.o.map((o,i)=>`<button onclick="reply(${i})">${esc(o[0])}</button>`).join('')}</div>`:''}`;
 const statsHTML=()=>{const p=S.pt,st=(n,v,c)=>`<div class="st"><span>${n}</span><div class="bar sm ${c?'low':''}"><i style="width:${Math.round(v)}%"></i></div></div>`;
  return `<div class="stw2">${st('Ánimo',p.love,p.love<30)}${st('Panza',p.food,p.food<30)}${st('Limpieza',p.clean,p.clean<30)}${st('Diversión',p.fun,p.fun<30)}${st('Energía',p.en,p.en<25)}${st('Nivel',S.xp%100)}</div>`};
 function petUI(){roomSync();const b=$('#bubw');if(b)b.innerHTML=bubHTML();const x=$('#stw');if(x)x.innerHTML=statsHTML()}
@@ -1227,10 +1227,15 @@ function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=gr
   <div class="tray" id="tray">${trayHTML()}</div>
   <div class="mu">${XI} XP del nivel: ${S.xp%100} de 100</div></section>`}
 /* ---------- Expediciones: la mascota sale de viaje, vuelve con una postal y una pregunta ---------- */
-const EXPS=[{k:'playa',n:'Playa',e:'🏖️',h:1,c:4,x:4},{k:'bosque',n:'Bosque',e:'🌲',h:4,c:10,x:10},{k:'montana',n:'Montaña',e:'⛰️',h:8,c:20,x:20}];
+const EXPS=[{k:'playa',n:'Playa',e:'🏖️',h:1,c:4,x:4},{k:'bosque',n:'Bosque',e:'🌲',h:4,c:10,x:10},{k:'montana',n:'Montaña',e:'⛰️',h:8,c:25,x:25}];
 const EXPOST={playa:['Hoy vi el mar y pensé en ti 🌊','Encontré una concha con forma de corazón 🐚','Las olas me contaron un secreto 🏖️'],bosque:['Un búho me contó que duermes poco 🦉','Encontré un camino de hojas doradas 🍂','Aquí huele a tierra mojada y a recuerdos 🌲'],montana:['Desde la cima se ven todos tus recuerdos ⛰️','Escalé muy alto y me acordé de ti 🏔️','El aire de aquí te haría sonreír ☁️']};
 const EXQ=['¿Cuál es tu recuerdo favorito de un viaje?','¿Qué lugar te gustaría que visitáramos juntos?','¿Qué es lo más bonito que has visto en la naturaleza?','¿A quién le mandarías una postal hoy y qué le dirías?','¿Qué paisaje te da paz?','¿Cuál fue la mejor aventura de tu infancia?','¿Qué lugar de tu familia te trae buenos recuerdos?','¿Qué llevarías en una maleta para un viaje inolvidable?','¿Qué cosa nueva te gustaría probar este año?','¿Con quién te gustaría hacer una caminata?','¿Qué sabor te recuerda a unas vacaciones?','¿Qué canción pondrías en un viaje por carretera?'];
-const exScene=()=>{const e=S.pt.ex,x=EXPS.find(a=>a.k===e.k),back=Date.now()>=e.end;return `<div class="exs" aria-live="polite"><div class="exe">${x.e}</div><b>${esc(S.pet.name)} está en ${x.n}</b><span id="exr">${back?'¡Ya volvió! Trae una postal 💌':'Vuelve en '+fmtWait(exLeft())}</span></div>`};
+const EXART={
+playa:'<circle cx="215" cy="52" r="26" fill="#ffd166"/><circle cx="215" cy="52" r="38" fill="#ffd166" opacity=".25"/><path d="M0 108q40-10 80 0t80 0t80 0t60 0v44H0z" fill="#5ec2e8"/><path d="M0 124q40-10 80 0t80 0t80 0t60 0v28H0z" fill="#3aa5d6" opacity=".7"/><path d="M0 146q60-20 120-6t180-4v64H0z" fill="#f6d9a0"/><path d="M62 150q4-40-6-70" stroke="#8a5a3c" stroke-width="7" fill="none" stroke-linecap="round"/><g fill="#3fa066"><path d="M56 80q-26-16-44 0q22-4 44 0z"/><path d="M56 80q-8-28-30-30q18 10 30 30z"/><path d="M56 80q14-26 38-22q-20 4-38 22z"/><path d="M56 80q26-12 42 6q-22-6-42-6z"/></g><circle cx="150" cy="168" r="7" fill="#ff8dbb"/>',
+bosque:'<circle cx="236" cy="42" r="20" fill="#fff6c8" opacity=".9"/><path d="M0 130q60-34 130-10t170-14v94H0z" fill="#7fc88f"/><g fill="#3f9d63"><path d="M40 150l22-70l22 70z"/><path d="M95 156l26-84l26 84z"/><path d="M200 152l24-76l24 76z"/></g><g fill="#2c7a4b"><path d="M20 168l24-64l24 64z"/><path d="M150 170l30-88l30 88z"/><path d="M250 168l20-56l20 56z"/></g><rect x="40" y="168" width="8" height="14" fill="#6b4a33"/><rect x="146" y="170" width="8" height="12" fill="#6b4a33"/><path d="M0 178q80-14 150 0t150-6v28H0z" fill="#5aa86b"/>',
+montana:'<circle cx="62" cy="48" r="22" fill="#fff3c4"/><path d="M0 150l70-84l50 54l50-86l80 116z" fill="#8f9bc9"/><path d="M110 150l60-96l90 96z" fill="#6f7bb3"/><path d="M154 78l16-24l16 24l-8-5l-8 8l-8-8z" fill="#fff"/><path d="M60 82l10-16l10 16l-6-4l-4 6l-4-6z" fill="#fff"/><path d="M0 160q80-24 160-6t140-10v56H0z" fill="#7fb98f"/><g fill="#3b8a5a"><path d="M214 178l12-34l12 34z"/><path d="M244 182l10-28l10 28z"/><path d="M36 182l10-30l10 30z"/></g>'};
+const exArt=k=>`<svg class="exa-svg" viewBox="0 0 300 200" role="img" aria-label="Paisaje" preserveAspectRatio="xMidYMid slice">${EXART[k]}</svg>`;
+const exScene=()=>{const e=S.pt.ex,x=EXPS.find(a=>a.k===e.k),back=Date.now()>=e.end;return `<div class="exs" aria-live="polite">${exArt(e.k)}<b>${esc(S.pet.name)} está en ${x.n}</b><span id="exr">${back?'¡Ya volvió! Trae una postal 💌':'Vuelve en '+fmtWait(exLeft())}</span></div>`};
 const exAway=()=>{const e=S.pt.ex;return !!(e&&!e.done)};
 const exLeft=()=>{const e=S.pt.ex;return e?Math.max(0,e.end-Date.now()):0};
 function exOpen(){ptTick();const p=S.pt;
@@ -1253,7 +1258,7 @@ async function exAns(){const e=S.pt.ex,el=$('#exa'),t=(el?el.value:'').trim().sl
  if(!window.CLOUD||!CLOUD.ready){toast('Sin conexión con tu cuenta. Intenta de nuevo en un momento.');return}
  const x=EXPS.find(a=>a.k===e.k),q=e.q;
  try{await CLOUD.publish({k:'carta',t:('Postal: '+q).slice(0,120),x:{to:'Mi diario',tx:t},by:''})}catch(err){toast('Tu respuesta no se guardó. Revisa tu conexión.');return}
- S.pt.ex=null;S.pt.exn=(S.pt.exn||0)+1;S.pt.fun=Math.min(100,S.pt.fun+20);S.pt.love=Math.min(100,S.pt.love+6);track('exp');cl();burst(20,['🧭','✨','💗']);rw(x.x,x.c);save();render()}
+ S.pt.ex=null;S.pt.exn=(S.pt.exn||0)+1;S.pt.fun=Math.min(100,S.pt.fun+20);S.pt.love=Math.min(100,S.pt.love+6);track('exp');cl();burst(20,['🧭','✨','💗']);rw(x.x,x.c,{free:true});save();render()}
 function exSkip(){const e=S.pt.ex;if(e){S.pt.ex=null;S.pt.exn=(S.pt.exn||0)+1;S.pt.fun=Math.min(100,S.pt.fun+10)}cl();bubSay('¡Qué paseo! Te guardo la postal en mi corazón 💗');save();try{remApply()}catch(e){}render()}
 /* ---------- cuidado interactivo: acariciar, arrastrar comida, frotar para bañar, apagar la luz, hablar ---------- */
 const SC={acc:0,pet:0,last:0,drag:0,bt:0,hint:0};
@@ -1749,7 +1754,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=68;
+const BUILD=69;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
