@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script><script>try{var t=localStorage.getItem("capsula_theme");if(t==="rosa"||t==="negro"||t==="azul")document.documentElement.dataset.theme=t}catch(e){}</script><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:var(--color-bg,#F7F5F0);color:var(--color-text,#292B2A)}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.ms{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid var(--soft2)}
+<!doctype html><html><head><meta charset=utf8><meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; form-action 'none'; img-src 'self' data: blob: https://*.googleusercontent.com; media-src 'self' data: blob:"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script><script>try{var t=localStorage.getItem("capsula_theme");if(t==="rosa"||t==="negro"||t==="azul")document.documentElement.dataset.theme=t}catch(e){}</script><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:var(--color-bg,#F7F5F0);color:var(--color-text,#292B2A)}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.ms{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid var(--soft2)}
 .cl{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
 .cli{border:2px solid var(--soft2);background:var(--card);border-radius:16px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;font:inherit;color:var(--tx);cursor:pointer;min-height:44px}
 .cli.on{border-color:var(--pd);background:var(--soft)}
@@ -513,6 +513,7 @@ nav button .ic{width:25px;height:25px}
 <script src="config.js"></script>
 <script>
 const $=s=>document.querySelector(s);
+const okCover=u=>typeof u==='string'&&/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(u)?u:'';
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=n=>Math.floor(n/60)+':'+String(n%60).padStart(2,'0');
 
@@ -628,7 +629,7 @@ async function adsInit(){if(adsOk)return true;const P=ADM();if(!P||!adult())retu
  try{let i=await P.requestConsentInfo();if(i.isConsentFormAvailable&&i.status==='REQUIRED')i=await P.showConsentForm();
   if(i&&i.canRequestAds===false)return false;
   await P.initialize({initializeForTesting:!CFG().admobProd,tagForChildDirectedTreatment:false,tagForUnderAgeOfConsent:false});adsOk=true;return true}catch(e){return false}}
-const ADS={real:()=>!!(ADM()&&CFG().admobRewardedId),ok:()=>ADS.real(),
+const ADS={real:()=>!!(CFG().adsOn===true&&ADM()&&CFG().admobRewardedId),ok:()=>ADS.real(),
  async privacy(){try{await ADM().showPrivacyOptionsForm()}catch(e){toast('No hay opciones disponibles ahora.')}},
  async show(cb){
   if(ADS.real()){const P=ADM();if(!adult()||!(await adsInit())){toast('Los anuncios no están disponibles.');return}
@@ -766,7 +767,7 @@ function rw(x,c,o){const cp=capEnsure();let gx=x||0,gc=c||0;
  toastH((gc?'+'+gc+' '+LI+' Lumis':'')+(gc&&gx?' · ':'')+(gx?'+'+gx+' '+XI+' XP':''));render();floatI(gc?'+'+gc+' '+LI:'+'+gx+' '+XI);hopPet();
  if(b>a)setTimeout(()=>levelUp(b),500)}
 function copy(t){try{navigator.clipboard.writeText(t).then(()=>toast('Copiado')).catch(()=>toast('Copia este texto: '+t))}catch(e){toast('Copia este texto: '+t)}}
-function pAv(id,s=40){const mine=id==='me'||(S.user&&id===S.user.uid),m=mine?{name:S.me.name,photo:S.me.pic}:(S.members[id]||{});const ini=esc(((m.name||'?').trim().charAt(0)||'?').toUpperCase());return `<span class="pav" style="width:${s}px;height:${s}px;font-size:${Math.round(s*.4)}px">${ini}${m.photo?`<img src="${esc(m.photo)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:''}</span>`}
+function pAv(id,s=40){const mine=id==='me'||(S.user&&id===S.user.uid),m=mine?{name:S.me.name,photo:S.me.pic}:(S.members[id]||{});const ini=esc(((m.name||'?').trim().charAt(0)||'?').toUpperCase());return `<span class="pav" style="width:${s}px;height:${s}px;font-size:${Math.round(s*.4)}px">${ini}${m.photo&&/^https:\/\/[a-z0-9-]+\.googleusercontent\.com\//i.test(m.photo)?`<img src="${esc(m.photo)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:''}</span>`}
 const av=pAv;
 const who=(id,p)=>id==='me'?S.me.name:((S.members[id]||{}).name||(p&&p.an)||'Familiar');
 const rel=t=>{const m=Math.floor((Date.now()-t)/6e4);if(m<1)return'ahora';if(m<60)return'hace '+m+' min';const h=Math.floor(m/60);if(h<24)return'hace '+h+(h>1?' horas':' hora');const d=Math.floor(h/24);if(d<7)return'hace '+d+(d>1?' días':' día');if(d<30){const w=Math.floor(d/7);return'hace '+w+(w>1?' semanas':' semana')}if(d<365){const mo=Math.floor(d/30);return'hace '+mo+(mo>1?' meses':' mes')}const y=Math.floor(d/365);return'hace '+y+(y>1?' años':' año')};
@@ -1595,7 +1596,7 @@ function caps(){
  const L=S.families;
  return `<div class="spch"><h2>Mis cápsulas</h2><span class="tag spc shr">${ic('users',14)}Compartido</span></div>
  <p class="mu">Tus espacios compartidos con las personas que quieres. Lo que escribes en Mi mundo no se mezcla con ellos.</p>
- ${L.length?L.map(f=>{const t=GT[f.type]?f.type:'familia';return `<button class="cpc" onclick="openCap('${esc(f.id)}')"><span class="cvs amb-${t}"${f.cover?` style="background-image:url('${f.cover}');background-size:cover;background-position:center"`:''}></span><span class="tx"><b>${esc(f.name)}</b><span class="mu">${GT[t].n}</span></span>${ic('back',18).replace('class="ic"','class="ic" style="transform:rotate(180deg)"')}</button>`}).join(''):`<div class="card c">${ic('caps',48)}<h3>Aún no tienes cápsulas</h3><p class="mu">Crea una con quien quieras o únete con un código.</p></div>`}
+ ${L.length?L.map(f=>{const t=GT[f.type]?f.type:'familia';return `<button class="cpc" onclick="openCap('${esc(f.id)}')"><span class="cvs amb-${t}"${f.cover?` style="background-image:url('${okCover(f.cover)}');background-size:cover;background-position:center"`:''}></span><span class="tx"><b>${esc(f.name)}</b><span class="mu">${GT[t].n}</span></span>${ic('back',18).replace('class="ic"','class="ic" style="transform:rotate(180deg)"')}</button>`}).join(''):`<div class="card c">${ic('caps',48)}<h3>Aún no tienes cápsulas</h3><p class="mu">Crea una con quien quieras o únete con un código.</p></div>`}
  <button class="btn w" onclick="S.gname='';S.scr='group';S.gstep='create';render()">${ic('plus',18)} Crear una cápsula</button>
  <button class="btn s w" onclick="S.scr='group';S.gstep='join';render()">Unirme con código o enlace</button>
  ${plusLive()&&!isPlus()?`<p class="mu c">${S.families.length} de ${LIM.free.caps} cápsulas en el plan gratis</p>`:''}`}
@@ -1611,7 +1612,7 @@ function cap(){
  const g=S.group,t=gtype(),sub=S.sub||'inicio',TB=[['inicio','Inicio'],['cartas','Cartas'],['recuerdos','Recuerdos'],['personas','Personas']];
  const av4=Object.keys(S.members).slice(0,4).map(id=>`<span class="avw">${pAv(id,30)}${isOn(S.members[id])?'<i class="odot"></i>':''}</span>`).join('');
  const body=sub==='cartas'?arcList('carta'):sub==='recuerdos'?afChips()+arcList(S.af):sub==='personas'?personas():capHome();
- return `<section class="cvr amb-${t}${g.cover?' ph':''}"${g.cover?` style="background-image:linear-gradient(180deg,rgba(35,12,55,.18),rgba(35,12,55,.7)),url('${g.cover}')"`:''}><button class="bk2" onclick="go('caps')" aria-label="Volver a Mis cápsulas">${ic('back',18)}</button><div class="cvt"><h2>${esc(g.name)}</h2><span>${GT[t].d}</span></div><div class="row sp">${spaceTag()}<span class="avs">${av4}</span></div></section>
+ return `<section class="cvr amb-${t}${g.cover?' ph':''}"${g.cover?` style="background-image:linear-gradient(180deg,rgba(35,12,55,.18),rgba(35,12,55,.7)),url('${okCover(g.cover)}')"`:''}><button class="bk2" onclick="go('caps')" aria-label="Volver a Mis cápsulas">${ic('back',18)}</button><div class="cvt"><h2>${esc(g.name)}</h2><span>${GT[t].d}</span></div><div class="row sp">${spaceTag()}<span class="avs">${av4}</span></div></section>
  <div class="tabs2" role="tablist">${TB.map(([k,l])=>`<button role="tab" aria-selected="${sub===k}" class="${sub===k?'on':''}" onclick="S.sub='${k}';soft()">${l}</button>`).join('')}</div>${body}`}
 function act(){
  const rc=recentHTML(10);
@@ -1649,7 +1650,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=55;
+const BUILD=56;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';

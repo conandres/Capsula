@@ -86,7 +86,7 @@ service cloud.firestore {
               || request.time > resource.data.nameAt + duration.value(15, 'd'))));
       match /posts/{pid} {
         allow read, delete: if signedIn() && request.auth.uid == uid;
-        allow create: if signedIn() && request.auth.uid == uid && postOk();
+        allow create: if signedIn() && request.auth.uid == uid && pid.matches('[A-Za-z0-9]{20}') && postOk();
         allow update: if signedIn() && request.auth.uid == uid
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rx0', 'rx1', 'rx2']);
       }
@@ -164,6 +164,7 @@ service cloud.firestore {
     match /families/{fid} {
       allow read: if isMember(fid);
       allow create: if signedIn()
+        && fid.matches('[A-Za-z0-9]{20}')
         && request.resource.data.ownerUid == request.auth.uid
         && request.resource.data.keys().hasOnly(['name', 'code', 'ownerUid', 'createdAt', 'type'])
         && (!('type' in request.resource.data) || typeOk(request.resource.data.type))
@@ -175,7 +176,7 @@ service cloud.firestore {
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'cover', 'plan'])
         && (!('plan' in request.resource.data) || request.resource.data.plan == 'free' || (request.resource.data.plan == 'plus' && exists(/databases/$(database)/documents/entitlements/$(request.auth.uid)) && get(/databases/$(database)/documents/entitlements/$(request.auth.uid)).data.tier == 'plus'))
         && request.resource.data.name is string && request.resource.data.name.size() >= 1 && request.resource.data.name.size() <= 30
-        && (!('cover' in request.resource.data) || (request.resource.data.cover is string && request.resource.data.cover.size() <= 100000));
+        && (!('cover' in request.resource.data) || (request.resource.data.cover is string && request.resource.data.cover.size() <= 100000 && request.resource.data.cover.matches('data:image/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+')));
       // Transferir la cápsula: solo el dueño actual, solo cambia ownerUid y solo a alguien que ya es miembro.
       allow update: if signedIn() && resource.data.ownerUid == request.auth.uid
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['ownerUid'])
@@ -195,6 +196,7 @@ service cloud.firestore {
           && request.resource.data.keys().hasAll(['name', 'petKind', 'petName', 'xp', 'joinCode', 'joinedAt'])
           && memberFieldsOk(request.resource.data)
           && str(request.resource.data.get('photo', ''), 600)
+          && (request.resource.data.get('photo', '') == '' || request.resource.data.get('photo', '').matches('https://[a-z0-9-]+\\.googleusercontent\\.com/.*'))
           && str(request.resource.data.joinCode, 8)
           && request.resource.data.joinedAt == request.time
           && (getAfter(fam(fid)).data.ownerUid == uid ||
@@ -225,7 +227,7 @@ service cloud.firestore {
       // Historial de la familia.
       match /posts/{pid} {
         allow read: if isMember(fid);
-        allow create: if isMember(fid) && postOk();
+        allow create: if isMember(fid) && pid.matches('[A-Za-z0-9]{20}') && postOk();
         allow update: if isMember(fid)
           && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rx0', 'rx1', 'rx2'])
           && onlyMine(request.resource.data.get('rx0', []), resource.data.get('rx0', []))

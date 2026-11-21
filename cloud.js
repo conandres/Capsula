@@ -41,7 +41,10 @@ function start() {
   const userRef = () => doc(db, 'users', me.uid);
   const base = () => (active ? ['families', active] : ['users', me.uid]);
   const TYPES = ['familia', 'pareja', 'amigos'];
-  const pick = (id, d) => ({ id, name: d.name || 'Familia', code: d.code || '', ownerUid: d.ownerUid || '', type: TYPES.includes(d.type) ? d.type : 'familia', plan: d.plan === 'plus' ? 'plus' : 'free', cover: typeof d.cover === 'string' && d.cover.startsWith('data:image/') ? d.cover : '' });
+  /* Seguridad: los ids vienen de la nube y acaban en atributos HTML; solo se aceptan letras, números, guion y guion bajo. */
+  const SAFE_ID = /^[A-Za-z0-9_-]{1,40}$/;
+  const SAFE_COVER = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/;
+  const pick = (id, d) => ({ id, name: d.name || 'Familia', code: d.code || '', ownerUid: d.ownerUid || '', type: TYPES.includes(d.type) ? d.type : 'familia', plan: d.plan === 'plus' ? 'plus' : 'free', cover: typeof d.cover === 'string' && d.cover.length <= 100000 && SAFE_COVER.test(d.cover) ? d.cover : '' });
 
   /* ---------- estado de guardado: cuántas escrituras esperan confirmación de la nube ---------- */
   let pend = 0;
@@ -148,12 +151,12 @@ function start() {
       subs.push(onSnapshot(doc(db, 'families', fid), s => { if (s.exists()) A.group(pick(fid, s.data())); }, warn));
     } else A.members({});
     const q = query(collection(db, ...base(), 'posts'), orderBy('createdAt', 'desc'), limit(plim));
-    subs.push(onSnapshot(q, s => A.posts(s.docs.map(norm), plim), warn));
+    subs.push(onSnapshot(q, s => A.posts(s.docs.filter(d => SAFE_ID.test(d.id)).map(norm), plim), warn));
   }
 
   async function loadFamilies() {
     const res = await Promise.all(famIds.map(async id => {
-      try { const s = await getDoc(doc(db, 'families', id)); if (!s.exists()) { setDoc(userRef(), { familyIds: arrayRemove(id) }, { merge: true }).catch(() => {}); return { gone: id }; } return pick(id, s.data()); }
+      try { if (!SAFE_ID.test(id)) return { gone: id }; const s = await getDoc(doc(db, 'families', id)); if (!s.exists()) { setDoc(userRef(), { familyIds: arrayRemove(id) }, { merge: true }).catch(() => {}); return { gone: id }; } return pick(id, s.data()); }
       catch (e) {
         if (e && e.code === 'permission-denied') {
           setDoc(userRef(), { familyIds: arrayRemove(id) }, { merge: true }).catch(() => {});
@@ -261,6 +264,7 @@ function start() {
     const cs = await getDoc(doc(db, 'familyCodes', code));
     if (!cs.exists()) return { err: 'notfound' };
     const fid = cs.data().familyId;
+    if (typeof fid !== 'string' || !SAFE_ID.test(fid)) return { err: 'notfound' };
     const wasIn = famIds.includes(fid);
     if (!wasIn) {
       const b = writeBatch(db);
@@ -452,7 +456,7 @@ function start() {
     const out = [];
     const grab = async (name, path) => {
       const s = await getDocs(query(collection(db, ...path, 'posts'), orderBy('createdAt', 'asc')));
-      out.push({ name, posts: s.docs.map(d => {
+      out.push({ name, posts: s.docs.filter(d => SAFE_ID.test(d.id)).map(d => {
         const x = d.data({ serverTimestamps: 'estimate' });
         return { id: d.id, k: x.k, t: x.t || '', x: x.x || {}, by: x.by || '', an: x.authorName || '',
           mine: x.authorUid === me.uid, ts: x.createdAt && x.createdAt.toMillis ? x.createdAt.toMillis() : Date.now() };

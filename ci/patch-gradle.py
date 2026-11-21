@@ -24,10 +24,10 @@ s = re.sub(r'versionCode\s+\d+', 'versionCode %d' % vc, s, count=1)
 s = re.sub(r'versionName\s+"[^"]*"', 'versionName "1.%d"' % vc, s, count=1)
 open(p, 'w').write(s)
 
-# AdMob: el ID de la app va en el manifiesto (ID de PRUEBA de Google si no hay uno propio)
+# AdMob: el ID de la app va en el manifiesto (ID de PRUEBA de Google si no hay un secreto ADMOB_APP_ID)
 m = 'android/app/src/main/AndroidManifest.xml'
 x = open(m).read()
-aid = os.environ.get('ADMOB_APP_ID') or 'ca-app-pub-4743502426219538~3459820047'
+aid = os.environ.get('ADMOB_APP_ID') or 'ca-app-pub-3940256099942544~3347511713'
 if 'com.google.android.gms.ads.APPLICATION_ID' not in x:
     x = x.replace('</application>', '    <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="%s"/>\n    </application>' % aid, 1)
 # Micrófono: notas de voz y "Hablar" con la mascota (sin esto Android bloquea la grabación)
@@ -36,4 +36,9 @@ for perm in ('android.permission.RECORD_AUDIO', 'android.permission.MODIFY_AUDIO
         x = x.replace('<application', '<uses-permission android:name="%s"/>\n    <application' % perm, 1)
 if 'android.hardware.microphone' not in x:
     x = x.replace('<application', '<uses-feature android:name="android.hardware.microphone" android:required="false"/>\n    <application', 1)
+open(m, 'w').write(x)
+
+# Seguridad: sin copias de seguridad automáticas de Android (evita extraer sesión y datos locales con adb o la nube)
+x = open(m).read()
+x = x.replace('android:allowBackup="true"', 'android:allowBackup="false"')
 open(m, 'w').write(x)
