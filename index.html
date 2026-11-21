@@ -1227,7 +1227,7 @@ function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=gr
   <div class="tray" id="tray">${trayHTML()}</div>
   <div class="mu">${XI} XP del nivel: ${S.xp%100} de 100</div></section>`}
 /* ---------- Expediciones: la mascota sale de viaje, vuelve con una postal y una pregunta ---------- */
-const EXPS=[{k:'playa',n:'Playa',e:'🏖️',h:1,c:4,x:4},{k:'bosque',n:'Bosque',e:'🌲',h:4,c:8,x:8},{k:'montana',n:'Montaña',e:'⛰️',h:8,c:12,x:12}];
+const EXPS=[{k:'playa',n:'Playa',e:'🏖️',h:1,c:4,x:4},{k:'bosque',n:'Bosque',e:'🌲',h:4,c:10,x:10},{k:'montana',n:'Montaña',e:'⛰️',h:8,c:20,x:20}];
 const EXPOST={playa:['Hoy vi el mar y pensé en ti 🌊','Encontré una concha con forma de corazón 🐚','Las olas me contaron un secreto 🏖️'],bosque:['Un búho me contó que duermes poco 🦉','Encontré un camino de hojas doradas 🍂','Aquí huele a tierra mojada y a recuerdos 🌲'],montana:['Desde la cima se ven todos tus recuerdos ⛰️','Escalé muy alto y me acordé de ti 🏔️','El aire de aquí te haría sonreír ☁️']};
 const EXQ=['¿Cuál es tu recuerdo favorito de un viaje?','¿Qué lugar te gustaría que visitáramos juntos?','¿Qué es lo más bonito que has visto en la naturaleza?','¿A quién le mandarías una postal hoy y qué le dirías?','¿Qué paisaje te da paz?','¿Cuál fue la mejor aventura de tu infancia?','¿Qué lugar de tu familia te trae buenos recuerdos?','¿Qué llevarías en una maleta para un viaje inolvidable?','¿Qué cosa nueva te gustaría probar este año?','¿Con quién te gustaría hacer una caminata?','¿Qué sabor te recuerda a unas vacaciones?','¿Qué canción pondrías en un viaje por carretera?'];
 const exScene=()=>{const e=S.pt.ex,x=EXPS.find(a=>a.k===e.k),back=Date.now()>=e.end;return `<div class="exs" aria-live="polite"><div class="exe">${x.e}</div><b>${esc(S.pet.name)} está en ${x.n}</b><span id="exr">${back?'¡Ya volvió! Trae una postal 💌':'Vuelve en '+fmtWait(exLeft())}</span></div>`};
@@ -1236,13 +1236,12 @@ const exLeft=()=>{const e=S.pt.ex;return e?Math.max(0,e.end-Date.now()):0};
 function exOpen(){ptTick();const p=S.pt;
  if(asleep()){bubSay('Zzz… ahora no, estoy durmiendo 💤');return}
  const ok=p.en>=40&&p.food>=35;
- showSheet(`<h2>🧭 Expedición</h2><p class="mu">${esc(S.pet.name)} sale de aventura y vuelve con una postal y una pregunta. Si la respondes, ganas Lumis y la respuesta se guarda en tu diario.</p>
+ showSheet(`<h2>🧭 Expedición</h2><p class="mu">${esc(S.pet.name)} sale de aventura y vuelve con una postal y una pregunta. Mientras esté fuera no podrás cuidarla, y cuanto más dure, mejor la recompensa. Expediciones hechas: <b>${p.exn||0}</b>.</p>
  ${ok?'':`<p class="mu"><b>${esc(S.pet.name)} necesita comer y descansar un poco antes de salir.</b></p>`}
- ${EXPS.map(x=>`<button class="btn w" ${ok?'':'disabled'} onclick="exGo('${x.k}')" style="margin-bottom:8px">${x.e} ${x.n} · ${x.h} h</button>`).join('')}`)}
+ ${EXPS.map(x=>`<button class="btn w" ${ok?'':'disabled'} onclick="exGo('${x.k}')" style="margin-bottom:8px">${x.e} ${x.n} · ${x.h} h · hasta +${x.c} Lumis</button>`).join('')}`)}
 function exGo(k){const x=EXPS.find(a=>a.k===k);if(!x||exAway())return;ptTick();const p=S.pt;if(p.en<40||p.food<35)return;
  p.ex={k,t0:Date.now(),end:Date.now()+x.h*H,done:0};p.en=Math.max(0,p.en-12);p.food=Math.max(0,p.food-10);S.tool=null;cl();
  toast(S.pet.name+' salió a '+x.n+' '+x.e);save();try{remApply()}catch(e){}render()}
-function exCall(){const e=S.pt.ex;if(!e)return;S.pt.ex=null;S.pt.fun=Math.max(0,S.pt.fun-5);bubSay('¡Volví antes de tiempo! Sin postal esta vez 🥲');save();try{remApply()}catch(e){}render()}
 function exPost(){const e=S.pt.ex;if(!e||e.done||Date.now()<e.end)return;const x=EXPS.find(a=>a.k===e.k);
  if(!e.q){e.q=EXQ[Math.floor(Math.random()*EXQ.length)];e.pc=EXPOST[e.k][Math.floor(Math.random()*3)];save()}
  showSheet(`<h2>${x.e} Postal de ${x.n}</h2><div class="paper" style="padding:14px;border-radius:12px;margin:8px 0">${esc(e.pc)}</div>
@@ -1254,19 +1253,19 @@ async function exAns(){const e=S.pt.ex,el=$('#exa'),t=(el?el.value:'').trim().sl
  if(!window.CLOUD||!CLOUD.ready){toast('Sin conexión con tu cuenta. Intenta de nuevo en un momento.');return}
  const x=EXPS.find(a=>a.k===e.k),q=e.q;
  try{await CLOUD.publish({k:'carta',t:('Postal: '+q).slice(0,120),x:{to:'Mi diario',tx:t},by:''})}catch(err){toast('Tu respuesta no se guardó. Revisa tu conexión.');return}
- S.pt.ex=null;S.pt.fun=Math.min(100,S.pt.fun+20);S.pt.love=Math.min(100,S.pt.love+6);track('exp');cl();burst(20,['🧭','✨','💗']);rw(x.x,x.c);save();render()}
-function exSkip(){const e=S.pt.ex;if(e){S.pt.ex=null;S.pt.fun=Math.min(100,S.pt.fun+10)}cl();bubSay('¡Qué paseo! Te guardo la postal en mi corazón 💗');save();try{remApply()}catch(e){}render()}
+ S.pt.ex=null;S.pt.exn=(S.pt.exn||0)+1;S.pt.fun=Math.min(100,S.pt.fun+20);S.pt.love=Math.min(100,S.pt.love+6);track('exp');cl();burst(20,['🧭','✨','💗']);rw(x.x,x.c);save();render()}
+function exSkip(){const e=S.pt.ex;if(e){S.pt.ex=null;S.pt.exn=(S.pt.exn||0)+1;S.pt.fun=Math.min(100,S.pt.fun+10)}cl();bubSay('¡Qué paseo! Te guardo la postal en mi corazón 💗');save();try{remApply()}catch(e){}render()}
 /* ---------- cuidado interactivo: acariciar, arrastrar comida, frotar para bañar, apagar la luz, hablar ---------- */
 const SC={acc:0,pet:0,last:0,drag:0,bt:0,hint:0};
 const TIM=k=>`<img class="ti2" src="img/t-${k}.png" alt="">`;
 const TOOLS=[['food',TIM('comer'),'Comer'],['bath',TIM('banar'),'Bañar'],['sleep',TIM('dormir'),'Dormir'],['play',TIM('jugar'),'Jugar']];
 function trayHTML(){const n=esc(S.pet.name),sl=asleep();
- if(exAway()){const e=S.pt.ex,x=EXPS.find(a=>a.k===e.k);return Date.now()>=e.end?`<div class="tw"><span class="mu">¡${n} volvió de ${x.n} ${x.e} con una postal!</span><button class="btn s w" onclick="exPost()">💌 Ver postal</button></div>`:`<div class="tw"><span class="mu" id="exl">${n} está de expedición en ${x.n} ${x.e} · vuelve en ${fmtWait(exLeft())}</span><button class="btn s w" onclick="exCall()">Llamar de vuelta</button></div>`}
+ if(exAway()){const e=S.pt.ex,x=EXPS.find(a=>a.k===e.k);return Date.now()>=e.end?`<div class="tw"><span class="mu">¡${n} volvió de ${x.n} ${x.e} con una postal!</span><button class="btn s w" onclick="exPost()">💌 Ver postal</button></div>`:`<div class="tw"><span class="mu" id="exl">${n} está de expedición en ${x.n} ${x.e} · vuelve en ${fmtWait(exLeft())}</span><span class="mu c">Mientras esté fuera no puedes cuidarla 🧭 Expediciones hechas: <b>${S.pt.exn||0}</b></span></div>`}
  if(sl)return `<div class="tw"><span class="mu" id="slt">${n} está durmiendo 💤${S.pt.rest>Date.now()?` · despierta en unos ${sleepMin()} min`:''}</span><button class="btn s w" onclick="wake()">🌙 Encender la luz</button></div>`;
  if(S.tool==='food')return `<div class="tw"><span class="mu">Arrastra la comida hasta la boca de ${n} (o tócala)</span><div class="fdt">${FOODS.map(f=>`<button class="dg" data-k="${f.k}" aria-label="Dar ${f.n}"><b>${f.e}</b><span>${f.n}</span></button>`).join('')}</div><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
  if(S.tool==='bath')return `<div class="tw"><span class="mu">Frota a ${n} con el dedo para bañarlo 🫧</span><div class="bar"><i id="scb" style="width:${Math.round(S.pt.clean)}%"></i></div><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
  if(S.tool==='play')return `<div class="tw"><span class="mu">Arrastra el balón al cuarto y suéltalo con un impulso para que ${n} lo persiga ⚽ <b>${S.pg||0}/5</b></span><div class="fdt"><button class="dg" data-k="ball" aria-label="Balón"><b>⚽</b><span>Balón</span></button></div><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
- return `<div class="tools">${TOOLS.map(([k,e,l])=>`<button class="tl" onclick="toolSet('${k}')"><b>${e}</b>${l}</button>`).join('')}</div><button class="btn s w" onclick="exOpen()" style="margin-top:8px">🧭 Mandar de expedición</button><span class="mu c">Toca o acaricia a ${n} con el dedo 💗</span>`}
+ return `<div class="tools">${TOOLS.map(([k,e,l])=>`<button class="tl" onclick="toolSet('${k}')"><b>${e}</b>${l}</button>`).join('')}</div><button class="btn s w" onclick="exOpen()" style="margin-top:8px">🧭 Mandar de expedición${S.pt.exn?' · '+S.pt.exn+' hechas':''}</button><span class="mu c">Toca o acaricia a ${n} con el dedo 💗</span>`}
 function trayUpd(){const t=$('#tray');if(t)t.innerHTML=trayHTML();const r=$('#room');if(r)r.classList.toggle('scrub',S.tool==='bath')}
 function toolSet(k){if(exAway()){S.tool=null;return}S.tool=k||null;SC.acc=0;
  if(k==='sleep'){S.tool=null;rest();trayUpd();return}
@@ -1750,7 +1749,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=67;
+const BUILD=68;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
