@@ -450,7 +450,8 @@ nav button.on::after{display:none!important}
 .shr{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.shr button{border:0;border-radius:18px;padding:10px;background:var(--tint-2);font:inherit;color:var(--pd);display:flex;flex-direction:column;gap:6px;align-items:center;cursor:pointer;font-weight:700;font-size:14px}.shr button.on{box-shadow:0 0 0 2.5px var(--p)}
 .shr i{display:block;width:100%;height:46px;border-radius:12px}.shr small{font-weight:600;opacity:.8}
 
-.room.night::before{content:"🌙  ✨";position:absolute;top:10px;right:16px;font-size:20px;letter-spacing:.3em;opacity:.9}
+.hang{position:absolute;top:10px;left:10px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.82);color:#b0336f;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.15);z-index:3;cursor:pointer}
+.hang:active{transform:scale(.94)}
 .tray{width:100%;display:flex;flex-direction:column;gap:8px;align-items:center}
 .tools{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;width:100%}
 .tl{border:0;background:var(--tint-2);border-radius:16px;padding:9px 0 7px;display:flex;flex-direction:column;align-items:center;gap:2px;font:inherit;font-size:11px;font-weight:700;color:var(--pd);cursor:pointer;transition:transform .12s}.tl b{font-size:25px;line-height:1.1}.tl:active{transform:scale(.94)}
@@ -552,6 +553,7 @@ const I={
  world:'<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>',
  caps:'<circle cx="9" cy="12" r="6"/><circle cx="15" cy="12" r="6"/>',
  bag:'<path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
+ hanger:'<path d="M12 8a2.5 2.5 0 1 0-2.5-2.5"/><path d="M12 8v2.5L3 17.5a1 1 0 0 0 .6 1.8h16.8a1 1 0 0 0 .6-1.8L12 10.5"/>',
  bell:'<path d="M6 9a6 6 0 0 1 12 0c0 6 2 7 2 7H4s2-1 2-7"/><path d="M10 20a2 2 0 0 0 4 0"/>',
  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
  lock:'<rect x="5" y="11" width="14" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
@@ -591,15 +593,16 @@ ACCS.push(
  {id:'alas',n:'Alas de ángel',u:'Tienda · próximamente',src:'pago',s:()=>'<path d="M24 66q-22-4-20-28q15 3 22 20z" fill="#fff" stroke="#ffb1d0" stroke-width="2.5" stroke-linejoin="round"/><path d="M96 66q22-4 20-28q-15 3-22 20z" fill="#fff" stroke="#ffb1d0" stroke-width="2.5" stroke-linejoin="round"/>'});
 const owned=a=>!!a&&(!a.src&&S.unl.includes(a.id)||S.unl.includes(a.id)||(a.src==='plus'&&plusLive()&&isPlus()));
 const ownedId=id=>owned(ACCS.find(a=>a.id===id));
-const accVisible=a=>!a.src||plusLive();
+const accVisible=a=>!a.src||a.src==='ad'||plusLive();
 const accSvg=(ids,k)=>ACCS.filter(a=>ids.includes(a.id)&&owned(a)).map(a=>a.s(k)).join('');
 const PSC=[.66,.8,.92,1];
 const pet2d=(k,w,wear=[],st)=>{const b=`${PETS[k].draw()}${accSvg(wear,k)}`,sc=st==null?1:PSC[st];return `<svg viewBox="0 0 120 100" width="${w}" height="${w*100/120}" aria-hidden="true">${sc===1?b:`<g transform="translate(60 98) scale(${sc}) translate(-60 -98)">${b}</g>`}</svg>`};
 function checkUnl(){if(!S.user||!S.petSet)return;const lvl=Math.floor(S.xp/100);
  const t={estrella:lvl>=1,mono:lvl>=2,corona:lvl>=3,flor:S.types.size>=1,lentes:!!S.perfect||(S.qaN||0)>=7,gorro:(S.total||0)>=10,bufanda:(S.best||0)>=7};
  const nu=ACCS.filter(a=>t[a.id]&&!S.unl.includes(a.id));if(!nu.length)return;
- nu.forEach(a=>{S.unl.push(a.id);S.wear.push(a.id)});toast('🎀 ¡Nuevo accesorio: '+nu.map(a=>a.n).join(', ')+'!')}
-function wear(id){if(!ownedId(id))return;S.wear=S.wear.includes(id)?S.wear.filter(x=>x!==id):S.wear.concat(id);render()}
+ nu.forEach(a=>{S.unl.push(a.id)});if(nu.length)S.wear=[nu[nu.length-1].id];toast('🎀 ¡Nuevo accesorio: '+nu.map(a=>a.n).join(', ')+'!')}
+function wear(id){if(!ownedId(id))return;S.wear=S.wear.includes(id)?[]:[id];const w=document.querySelector('#sh .ward');render();if(w)wardOpen()}
+function wardOpen(){showSheet(`<div class="ward"><h2>Armario de ${esc(S.pet.name)}</h2><p class="mu">Solo puede llevar una prenda a la vez. Toca una para ponerla o quitarla.</p>${closetGrid()}</div>`)}
 const ROOMS=[{id:'',n:'Cielo',p:0,bg:'linear-gradient(180deg,#fde3f1,#f6d5ef)'},{id:'ocaso',n:'Atardecer',p:60,bg:'linear-gradient(180deg,#ffb199,#ff7aa2 70%,#c86dd7)'},{id:'bosque',n:'Bosque',p:90,bg:'linear-gradient(180deg,#b9e6a8,#6fc28b 75%,#3f8f6a)'},{id:'playa',n:'Playa',p:110,bg:'linear-gradient(180deg,#9fdcff,#6cc3f0 60%,#f4dca0)'},{id:'espacio',n:'Espacio',p:150,bg:'linear-gradient(180deg,#1b1650,#2e2a7a 70%,#4b3aa0)'}];
 const ACCP={sombrero:150};
 const ownedRoom=id=>!id||S.unl.includes('rm:'+id);
@@ -610,18 +613,19 @@ function shopAsk(kind,id){let n,p;
  if((S.lm||0)<p){toast('Te faltan '+(p-(S.lm||0))+' Lumis para '+n+'. Cuidar a '+S.pet.name+' y contar historias los da poco a poco.');return}
  showSheet(`<h2>¿Comprar ${esc(n)}?</h2><p class="mu">Cuesta <b>${LI} ${p} Lumis</b>. Te quedarán ${(S.lm||0)-p}.</p><button class="btn w" onclick="shopBuy('${kind}','${id}')">Comprar</button><button class="btn s w" onclick="cl()">Ahora no</button>`)}
 function shopBuy(kind,id){cl();let p;
- if(kind==='acc'){const a=ACCS.find(x=>x.id===id);if(!a||owned(a))return;p=ACCP[id];if((S.lm||0)<p)return;S.lm-=p;S.unl.push(id);S.wear.push(id)}
+ if(kind==='acc'){const a=ACCS.find(x=>x.id===id);if(!a||owned(a))return;p=ACCP[id];if((S.lm||0)<p)return;S.lm-=p;S.unl.push(id);S.wear=[id]}
  else{const r=ROOMS.find(x=>x.id===id);if(!r||ownedRoom(id))return;p=r.p;if((S.lm||0)<p)return;S.lm-=p;S.unl.push('rm:'+id);S.rm=id}
  burst(26,['✨','🎀']);toast('¡Listo! Ya es de '+S.pet.name+' ✨');shopSave()}
 function shopOpen(){S.tab='tienda';render();setTimeout(()=>{const e=$('#shop');if(e)e.scrollIntoView({behavior:'smooth',block:'center'})},60)}
 const shopHTML=()=>{return `<section class="card" id="shop"><div class="row sp"><h3>Tienda</h3><b class="pr">${LI} ${S.lm||0}</b></div>
  <span class="mu">Los Lumis son la moneda: se ganan poco a poco cuidando a ${esc(S.pet.name)}, contando historias y con las misiones. Guárdalos para lo que de verdad quieras.</span>
  <b>Fondos del cuarto</b><div class="shr">${ROOMS.map(r=>{const o=ownedRoom(r.id),on=(S.rm||'')===r.id;return `<button class="${on?'on':''}" onclick="shopAsk('room','${r.id}')"><i style="background:${r.bg}"></i>${r.n}<small>${on?'Puesto':o?'Toca para usar':LI+' '+r.p}</small></button>`}).join('')}</div>
- <span class="mu">Accesorios: el Sombrero de copa está en el armario por ${LI} ${ACCP.sombrero}.</span></section>`};
-const closetHTML=()=>`<section class="card"><h3>Armario de ${esc(S.pet.name)}</h3><span class="mu">Desbloquea accesorios y elige cuáles usar</span><div class="cl">${ACCS.filter(accVisible).map(a=>{const un=owned(a),on=S.wear.includes(a.id);
+</section>`};
+const closetHTML=()=>`<section class="card"><h3>Armario de ${esc(S.pet.name)}</h3><span class="mu">Desbloquea accesorios; solo puedes llevar uno a la vez</span>${closetGrid()}</section>`;
+const closetGrid=()=>`<div class="cl">${ACCS.filter(accVisible).map(a=>{const un=owned(a),on=S.wear.includes(a.id);
  const act=un?`onclick="wear('${a.id}')" aria-pressed="${on}"`:a.src==='ad'?`onclick="shopAsk('acc','${a.id}')"`:a.src==='plus'?`onclick="plusOpen('acc')"`:a.src==='pago'?`onclick="BILLING.buy(SKU.alas)"`:'disabled';
  const tag=un?(on?'Puesto':'Toca para ponerlo'):a.src==='ad'?LI+' '+ACCP[a.id]:a.src==='plus'?'✨ Plus':a.src==='pago'?(BILLING.ok()?'🛍 Comprar':'🛍 Tienda · pronto'):a.u;
- return `<button class="cli ${on?'on':''} ${un||a.src?'':'lk'}" ${act}>${pet(S.pet.kind,70,[a.id],stg(),true)}<span>${a.n}</span><small>${tag}</small></button>`}).join('')}</div></section>`;
+ return `<button class="cli ${on?'on':''} ${un||a.src?'':'lk'}" ${act}>${pet(S.pet.kind,70,[a.id],stg(),true)}<span>${a.n}</span><small>${tag}</small></button>`}).join('')}</div>`;
 /* ---------- Cápsula Plus: límites, tienda y anuncios. Apagado para todos hasta que plusOn sea true ----------  */
 const LIM={free:{caps:3,members:5,media:40},plus:{caps:999,members:999,media:400}};
 const MEDIA=['foto','dibujo','voz','video'];
@@ -723,7 +727,7 @@ function applyPersonal(o){if(!o)return;
  if(typeof o.accent==='string')S.accent=o.accent;
  ['petSet','xp','lm','lmT','cap','rm','streak','last','chest','mis','petDone','inv','perfect','solo','best','total','showSeen','qd','qaN','birth','legal','blk','refC','invD'].forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
  if(o.pet&&PETS[o.pet.kind])S.pet={kind:o.pet.kind,name:String(o.pet.name||PETS[o.pet.kind].n).slice(0,14)};
- S.types=new Set(o.types||[]);S.wk=o.wk||null;S.unl=Array.isArray(o.unl)?o.unl.filter(x=>typeof x==='string'):[];S.wear=Array.isArray(o.wear)?o.wear.filter(x=>typeof x==='string'):[];S.favs=Array.isArray(o.favs)?o.favs.filter(x=>typeof x==='string').slice(-300):[];S.pt=Object.assign(PT0(),o.pt||{});S.pt.t=S.pt.t||Date.now();S.bub=null;
+ S.types=new Set(o.types||[]);S.wk=o.wk||null;S.unl=Array.isArray(o.unl)?o.unl.filter(x=>typeof x==='string'):[];S.wear=Array.isArray(o.wear)?o.wear.filter(x=>typeof x==='string').slice(-1):[];S.favs=Array.isArray(o.favs)?o.favs.filter(x=>typeof x==='string').slice(-300):[];S.pt=Object.assign(PT0(),o.pt||{});S.pt.t=S.pt.t||Date.now();S.bub=null;
  const y=new Date(Date.now()-864e5).toDateString();S.posted=S.last===today();if(!S.posted&&S.last!==y)S.streak=0}
 function legacy(){try{const o=JSON.parse(localStorage.getItem(LEGACY)||'null');if(o&&o.me&&o.me.name)return{pet:o.pet,petSet:o.petSet,xp:o.xp,streak:o.streak,last:o.last,chest:o.chest,mis:o.mis,petDone:o.petDone,inv:o.inv,perfect:o.perfect,types:o.types,pt:o.pt}}catch(e){}return null}
 async function logout(){try{if(window.google&&google.accounts)google.accounts.id.disableAutoSelect()}catch(e){}try{localStorage.removeItem(KEY);localStorage.removeItem('capsula_adm')}catch(e){}try{if(window.CLOUD&&CLOUD.signOut)await CLOUD.signOut()}catch(e){}try{const P=NP('FirebaseAuthentication');if(P)await P.signOut()}catch(e){}location.reload()}
@@ -1189,7 +1193,7 @@ function bubSay(t,o,q){S.bub={t,o:o||null,q:q||null};S.bubT=Date.now();petUI()}
 function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=greet(away);
  const lvl=Math.floor(S.xp/100),sz=150,sl=asleep();
  return `<section class="card hero">
-  <div class="room${sl?' night':''}${S.pt.clean<35?' dirty':''}${S.rm&&ownedRoom(S.rm)?' rm-'+S.rm:''}" id="room"><div class="fl ${sl?'sleep':''}${exAway()?' away':''}" onclick="petClick()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div><div class="dirt" aria-hidden="true"><i></i><i></i><i></i><i></i><b>🪰</b><b>🪰</b><span class="stk"><u></u><u></u><u></u></span></div><button class="dchip" id="dirtc" ${S.pt.clean<35&&!S.tool?'':'hidden'} onclick="toolSet(\'bath\')">🫧 Necesita un baño</button></div>
+  <div class="room${sl?' night':''}${S.pt.clean<35?' dirty':''}${S.rm&&ownedRoom(S.rm)?' rm-'+S.rm:''}" id="room"><div class="fl ${sl?'sleep':''}${exAway()?' away':''}" onclick="petClick()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div><button class="hang" onclick="wardOpen()" aria-label="Armario">${ic('hanger',22)}</button><div class="dirt" aria-hidden="true"><i></i><i></i><i></i><i></i><b>🪰</b><b>🪰</b><span class="stk"><u></u><u></u><u></u></span></div><button class="dchip" id="dirtc" ${S.pt.clean<35&&!S.tool?'':'hidden'} onclick="toolSet(\'bath\')">🫧 Necesita un baño</button></div>
   <h2>${esc(S.pet.name)}</h2>
   <button class="wal" onclick="shopOpen()" aria-label="Tus Lumis">${LI} ${S.lm||0} Lumis</button>
   <div class="mu">${STG[stg()]} · nivel ${lvl+1} · crece poco a poco</div>
@@ -1720,7 +1724,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=62;
+const BUILD=63;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
