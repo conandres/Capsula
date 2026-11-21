@@ -148,7 +148,7 @@ function start() {
         });
         A.members(m);
       }, warn));
-      subs.push(onSnapshot(doc(db, 'families', fid), s => { if (s.exists()) A.group(pick(fid, s.data())); }, warn));
+      subs.push(onSnapshot(doc(db, 'families', fid), s => { if (s.exists()) A.group(pick(fid, s.data())); }, e => { if (e && e.code === 'permission-denied') dropFam(fid); else warn(e); }));
     } else A.members({});
     const q = query(collection(db, ...base(), 'posts'), orderBy('createdAt', 'desc'), limit(plim));
     subs.push(onSnapshot(q, s => A.posts(s.docs.filter(d => SAFE_ID.test(d.id)).map(norm), plim), warn));
@@ -436,6 +436,28 @@ function start() {
     if (f && f.code) b.update(doc(db, 'familyCodes', f.code), { ownerUid: uid });
     await b.commit();
     if (f) { f.ownerUid = uid; A.families(families); }
+  };
+  /* Si el dueño te quita de una cápsula, la app la suelta sin errores. */
+  function dropFam(fid) {
+    if (!families.some(f => f.id === fid)) return;
+    families = families.filter(f => f.id !== fid); famIds = famIds.filter(i => i !== fid);
+    setDoc(userRef(), { familyIds: arrayRemove(fid) }, { merge: true }).catch(() => {});
+    try { A.kicked && A.kicked(fid); } catch (e) {}
+  }
+  /* Solo el dueño: quitar a una persona. Después solo vuelve con un código nuevo (renueva el código). */
+  CLOUD.removeMember = async (fid, uid) => { await deleteDoc(doc(db, 'families', fid, 'members', uid)); };
+  /* Solo el dueño: código nuevo. El anterior y los enlaces viejos dejan de funcionar. */
+  CLOUD.renewCode = async fid => {
+    const f = families.find(x => x.id === fid), old = f && f.code;
+    for (let i = 0; i < 5; i++) {
+      const code = genCode(), b = writeBatch(db);
+      b.update(doc(db, 'families', fid), { code });
+      b.set(doc(db, 'familyCodes', code), { familyId: fid, ownerUid: me.uid });
+      try { await b.commit(); } catch (e) { if (e && e.code === 'permission-denied' && i < 4) continue; throw e; }
+      if (old) { try { await deleteDoc(doc(db, 'familyCodes', old)); } catch (e) {} }
+      if (f) { f.code = code; A.families(families); }
+      return code;
+    }
   };
   CLOUD.setCover = async (fid, url) => { await updateDoc(doc(db, 'families', fid), { cover: url }); };
   CLOUD.more = () => { plim += 25; subscribe(active); };

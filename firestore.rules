@@ -177,6 +177,10 @@ service cloud.firestore {
         && (!('plan' in request.resource.data) || request.resource.data.plan == 'free' || (request.resource.data.plan == 'plus' && exists(/databases/$(database)/documents/entitlements/$(request.auth.uid)) && get(/databases/$(database)/documents/entitlements/$(request.auth.uid)).data.tier == 'plus'))
         && request.resource.data.name is string && request.resource.data.name.size() >= 1 && request.resource.data.name.size() <= 30
         && (!('cover' in request.resource.data) || (request.resource.data.cover is string && request.resource.data.cover.size() <= 100000 && request.resource.data.cover.matches('data:image/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+')));
+      // Renovar el código de invitación: solo el dueño y solo cambia el código (el anterior deja de servir).
+      allow update: if signedIn() && resource.data.ownerUid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['code'])
+        && request.resource.data.code is string && request.resource.data.code.matches('[A-Z0-9]{8}');
       // Transferir la cápsula: solo el dueño actual, solo cambia ownerUid y solo a alguien que ya es miembro.
       allow update: if signedIn() && resource.data.ownerUid == request.auth.uid
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['ownerUid'])
@@ -206,7 +210,8 @@ service cloud.firestore {
           && memberFieldsOk(request.resource.data)
           && memberExtraOk(request.resource.data)
           && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['lastSeen']) || request.resource.data.lastSeen == request.time);
-        allow delete: if signedIn() && request.auth.uid == uid;
+        // Cada persona puede salir; el dueño de la cápsula puede quitar a otra.
+        allow delete: if signedIn() && (request.auth.uid == uid || get(fam(fid)).data.ownerUid == request.auth.uid);
       }
 
       // Pregunta del día: una respuesta por persona y día. Solo ves las de los demás cuando ya respondiste la tuya.
