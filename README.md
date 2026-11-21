@@ -36,9 +36,6 @@ Cápsula convierte los recuerdos en un hábito diario y compartido. Cada persona
 - **Lumis**: moneda gastable. Se gana despacio (historias, cuidado, cofre, misiones, invitaciones) con tope diario y se gasta en la tienda (fondos del cuarto y accesorios).
 - **XP**: progreso. No se gasta; cada 100 XP es un nivel y los niveles hacen evolucionar a la mascota (Bebé, Pequeño, Joven, Adulto).
 
-## 🛠️ Desarrollo
-
-Web estática (`index.html`, `cloud.js`, `lab3d/`) publicada con GitHub Pages; la app de Android la empaqueta Capacitor (`.github/workflows/android.yml`). Las reglas de seguridad están en `firestore.rules`.
 
 ---
 <div align="center">Sebastian Barba</div>
