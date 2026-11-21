@@ -1,4 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'; form-action 'none'; img-src 'self' data: blob: https://*.googleusercontent.com; media-src 'self' data: blob:"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script><script>try{var t=localStorage.getItem("capsula_theme");if(t==="rosa"||t==="negro"||t==="azul")document.documentElement.dataset.theme=t}catch(e){}</script><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:var(--color-bg,#F7F5F0);color:var(--color-text,#292B2A)}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.ms{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-top:1px solid var(--soft2)}
+.wtabs{display:flex;gap:6px;overflow-x:auto;margin:10px -2px 2px;padding:2px;scrollbar-width:none}.wtabs::-webkit-scrollbar{display:none}.wtabs button{flex:none;border:2px solid #f6d5ef;background:#fff;color:#8a5a73;border-radius:999px;padding:8px 14px;font:inherit;font-size:14px;font-weight:700;cursor:pointer}.wtabs button.on{background:#b0336f;border-color:#b0336f;color:#fff}.wtabs i{display:inline-block;width:7px;height:7px;border-radius:50%;background:currentColor;margin-left:4px;vertical-align:middle;opacity:.7}
 .cl{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
 .cli{border:2px solid var(--soft2);background:var(--card);border-radius:16px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;font:inherit;color:var(--tx);cursor:pointer;min-height:44px}
 .cli.on{border-color:var(--pd);background:var(--soft)}
@@ -600,9 +601,13 @@ const pet2d=(k,w,wear=[],st)=>{const b=`${PETS[k].draw()}${accSvg(wear,k)}`,sc=s
 function checkUnl(){if(!S.user||!S.petSet)return;const lvl=Math.floor(S.xp/100);
  const t={estrella:lvl>=1,mono:lvl>=2,corona:lvl>=3,flor:S.types.size>=1,lentes:!!S.perfect||(S.qaN||0)>=7,gorro:(S.total||0)>=10,bufanda:(S.best||0)>=7};
  const nu=ACCS.filter(a=>t[a.id]&&!S.unl.includes(a.id));if(!nu.length)return;
- nu.forEach(a=>{S.unl.push(a.id)});if(nu.length)S.wear=[nu[nu.length-1].id];toast('🎀 ¡Nuevo accesorio: '+nu.map(a=>a.n).join(', ')+'!')}
-function wear(id){if(!ownedId(id))return;S.wear=S.wear.includes(id)?[]:[id];const w=document.querySelector('#sh .ward');render();if(w)wardOpen()}
-function wardOpen(){showSheet(`<div class="ward"><h2>Armario de ${esc(S.pet.name)}</h2><p class="mu">Solo puede llevar una prenda a la vez. Toca una para ponerla o quitarla.</p>${closetGrid()}</div>`)}
+ nu.forEach(a=>{S.unl.push(a.id);wearPut(a.id)});toast('🎀 ¡Nuevo accesorio: '+nu.map(a=>a.n).join(', ')+'!')}
+const ACAT={estrella:'cab',mono:'cab',corona:'cab',flor:'cab',gorro:'cab',sombrero:'cab',audifonos:'cab',lentes:'cara',bufanda:'cuello',alas:'esp'};
+const WTABS=[['cab','Cabeza'],['cara','Cara'],['cuello','Cuello'],['esp','Espalda'],['cam','Camisas'],['pan','Pantalones']];
+function wearPut(id){const on=S.wear.includes(id),c=ACAT[id];S.wear=S.wear.filter(x=>ACAT[x]!==c);if(!on)S.wear.push(id)}
+function wtab(k){S.wtab=k;if(document.querySelector('#sh .ward'))wardOpen();else render()}
+function wear(id){if(!ownedId(id))return;wearPut(id);const w=document.querySelector('#sh .ward');render();if(w)wardOpen()}
+function wardOpen(){showSheet(`<div class="ward"><h2>Armario de ${esc(S.pet.name)}</h2><p class="mu">Una prenda por categoría. Toca una para ponerla o quitarla.</p>${closetGrid()}</div>`)}
 const ROOMS=[{id:'',n:'Cielo',p:0,bg:'linear-gradient(180deg,#fde3f1,#f6d5ef)'},{id:'ocaso',n:'Atardecer',p:60,bg:'linear-gradient(180deg,#ffb199,#ff7aa2 70%,#c86dd7)'},{id:'bosque',n:'Bosque',p:90,bg:'linear-gradient(180deg,#b9e6a8,#6fc28b 75%,#3f8f6a)'},{id:'playa',n:'Playa',p:110,bg:'linear-gradient(180deg,#9fdcff,#6cc3f0 60%,#f4dca0)'},{id:'espacio',n:'Espacio',p:150,bg:'linear-gradient(180deg,#1b1650,#2e2a7a 70%,#4b3aa0)'}];
 const ACCP={sombrero:150};
 const ownedRoom=id=>!id||S.unl.includes('rm:'+id);
@@ -613,7 +618,7 @@ function shopAsk(kind,id){let n,p;
  if((S.lm||0)<p){toast('Te faltan '+(p-(S.lm||0))+' Lumis para '+n+'. Cuidar a '+S.pet.name+' y contar historias los da poco a poco.');return}
  showSheet(`<h2>¿Comprar ${esc(n)}?</h2><p class="mu">Cuesta <b>${LI} ${p} Lumis</b>. Te quedarán ${(S.lm||0)-p}.</p><button class="btn w" onclick="shopBuy('${kind}','${id}')">Comprar</button><button class="btn s w" onclick="cl()">Ahora no</button>`)}
 function shopBuy(kind,id){cl();let p;
- if(kind==='acc'){const a=ACCS.find(x=>x.id===id);if(!a||owned(a))return;p=ACCP[id];if((S.lm||0)<p)return;S.lm-=p;S.unl.push(id);S.wear=[id]}
+ if(kind==='acc'){const a=ACCS.find(x=>x.id===id);if(!a||owned(a))return;p=ACCP[id];if((S.lm||0)<p)return;S.lm-=p;S.unl.push(id);if(!S.wear.includes(id))wearPut(id)}
  else{const r=ROOMS.find(x=>x.id===id);if(!r||ownedRoom(id))return;p=r.p;if((S.lm||0)<p)return;S.lm-=p;S.unl.push('rm:'+id);S.rm=id}
  burst(26,['✨','🎀']);toast('¡Listo! Ya es de '+S.pet.name+' ✨');shopSave()}
 function shopOpen(){S.tab='tienda';render();setTimeout(()=>{const e=$('#shop');if(e)e.scrollIntoView({behavior:'smooth',block:'center'})},60)}
@@ -621,8 +626,11 @@ const shopHTML=()=>{return `<section class="card" id="shop"><div class="row sp">
  <span class="mu">Los Lumis son la moneda: se ganan poco a poco cuidando a ${esc(S.pet.name)}, contando historias y con las misiones. Guárdalos para lo que de verdad quieras.</span>
  <b>Fondos del cuarto</b><div class="shr">${ROOMS.map(r=>{const o=ownedRoom(r.id),on=(S.rm||'')===r.id;return `<button class="${on?'on':''}" onclick="shopAsk('room','${r.id}')"><i style="background:${r.bg}"></i>${r.n}<small>${on?'Puesto':o?'Toca para usar':LI+' '+r.p}</small></button>`}).join('')}</div>
 </section>`};
-const closetHTML=()=>`<section class="card"><h3>Armario de ${esc(S.pet.name)}</h3><span class="mu">Desbloquea accesorios; solo puedes llevar uno a la vez</span>${closetGrid()}</section>`;
-const closetGrid=()=>`<div class="cl">${ACCS.filter(accVisible).map(a=>{const un=owned(a),on=S.wear.includes(a.id);
+const closetHTML=()=>`<section class="card"><h3>Armario de ${esc(S.pet.name)}</h3><span class="mu">Desbloquea accesorios; una prenda por categoría</span>${closetGrid()}</section>`;
+const closetGrid=()=>{const vis=ACCS.filter(accVisible),tabs=WTABS.filter(([k])=>k==='cam'||k==='pan'||vis.some(a=>ACAT[a.id]===k)),cur=tabs.some(t=>t[0]===S.wtab)?S.wtab:'cab',list=vis.filter(a=>ACAT[a.id]===cur);
+ const bar=`<div class="wtabs" role="tablist">${tabs.map(([k,n])=>{const w=vis.find(a=>ACAT[a.id]===k&&S.wear.includes(a.id));return `<button role="tab" aria-selected="${k===cur}" class="${k===cur?'on':''}" onclick="wtab('${k}')">${n}${w?' <i></i>':''}</button>`}).join('')}</div>`;
+ return bar+(list.length?closetItems(list):`<p class="mu c" style="padding:22px 0">Aquí llegarán ${cur==='cam'?'camisas y sudaderas':'pantalones y faldas'} muy pronto 👕</p>`)};
+const closetItems=L=>`<div class="cl">${L.map(a=>{const un=owned(a),on=S.wear.includes(a.id);
  const act=un?`onclick="wear('${a.id}')" aria-pressed="${on}"`:a.src==='ad'?`onclick="shopAsk('acc','${a.id}')"`:a.src==='plus'?`onclick="plusOpen('acc')"`:a.src==='pago'?`onclick="BILLING.buy(SKU.alas)"`:'disabled';
  const tag=un?(on?'Puesto':'Toca para ponerlo'):a.src==='ad'?LI+' '+ACCP[a.id]:a.src==='plus'?'✨ Plus':a.src==='pago'?(BILLING.ok()?'🛍 Comprar':'🛍 Tienda · pronto'):a.u;
  return `<button class="cli ${on?'on':''} ${un||a.src?'':'lk'}" ${act}>${pet(S.pet.kind,70,[a.id],stg(),true)}<span>${a.n}</span><small>${tag}</small></button>`}).join('')}</div>`;
@@ -727,7 +735,7 @@ function applyPersonal(o){if(!o)return;
  if(typeof o.accent==='string')S.accent=o.accent;
  ['petSet','xp','lm','lmT','cap','rm','streak','last','chest','mis','petDone','inv','perfect','solo','best','total','showSeen','qd','qaN','birth','legal','blk','refC','invD'].forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
  if(o.pet&&PETS[o.pet.kind])S.pet={kind:o.pet.kind,name:String(o.pet.name||PETS[o.pet.kind].n).slice(0,14)};
- S.types=new Set(o.types||[]);S.wk=o.wk||null;S.unl=Array.isArray(o.unl)?o.unl.filter(x=>typeof x==='string'):[];S.wear=Array.isArray(o.wear)?o.wear.filter(x=>typeof x==='string').slice(-1):[];S.favs=Array.isArray(o.favs)?o.favs.filter(x=>typeof x==='string').slice(-300):[];S.pt=Object.assign(PT0(),o.pt||{});S.pt.t=S.pt.t||Date.now();S.bub=null;
+ S.types=new Set(o.types||[]);S.wk=o.wk||null;S.unl=Array.isArray(o.unl)?o.unl.filter(x=>typeof x==='string'):[];S.wear=Array.isArray(o.wear)?o.wear.filter(x=>typeof x==='string').reduce((a,x)=>a.filter(y=>ACAT[y]!==ACAT[x]).concat(x),[]):[];S.favs=Array.isArray(o.favs)?o.favs.filter(x=>typeof x==='string').slice(-300):[];S.pt=Object.assign(PT0(),o.pt||{});S.pt.t=S.pt.t||Date.now();S.bub=null;
  const y=new Date(Date.now()-864e5).toDateString();S.posted=S.last===today();if(!S.posted&&S.last!==y)S.streak=0}
 function legacy(){try{const o=JSON.parse(localStorage.getItem(LEGACY)||'null');if(o&&o.me&&o.me.name)return{pet:o.pet,petSet:o.petSet,xp:o.xp,streak:o.streak,last:o.last,chest:o.chest,mis:o.mis,petDone:o.petDone,inv:o.inv,perfect:o.perfect,types:o.types,pt:o.pt}}catch(e){}return null}
 async function logout(){try{if(window.google&&google.accounts)google.accounts.id.disableAutoSelect()}catch(e){}try{localStorage.removeItem(KEY);localStorage.removeItem('capsula_adm')}catch(e){}try{if(window.CLOUD&&CLOUD.signOut)await CLOUD.signOut()}catch(e){}try{const P=NP('FirebaseAuthentication');if(P)await P.signOut()}catch(e){}location.reload()}
@@ -1724,7 +1732,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=63;
+const BUILD=64;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
