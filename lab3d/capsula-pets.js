@@ -47,8 +47,13 @@ const mat = (color, roughness = 0.45, metalness = 0.02, extra = {}) =>
   new THREE.MeshStandardMaterial({ color, roughness, metalness, ...extra });
 const glow = (color, k = 1.1) => new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: k, roughness: 0.4 });
 
+/* Piezas "de peluche": un brillo aterciopelado (sheen) suave en cabeza, cuerpo, bracitos, patitas y orejas. */
+const PLUSH = /^(head|body|arm|foot|[a-z]+-ear)$/;
+const plush = (color, roughness) => new THREE.MeshPhysicalMaterial({
+  color, roughness: roughness ?? 0.5, metalness: 0.0, sheen: 0.7, sheenRoughness: 0.55, sheenColor: new THREE.Color(0xffd6ea)
+});
 function ball(parent, name, color, pos, scale, opts = {}) {
-  const m = new THREE.Mesh(SPH, opts.material || mat(color, opts.roughness ?? 0.45, opts.metalness ?? 0.02));
+  const m = new THREE.Mesh(SPH, opts.material || (PLUSH.test(name) ? plush(color, opts.roughness) : mat(color, opts.roughness ?? 0.45, opts.metalness ?? 0.02)));
   m.name = name; m.position.set(pos[0], pos[1], pos[2]); m.scale.set(scale[0], scale[1], scale[2]);
   m.castShadow = opts.noShadow ? false : true; m.receiveShadow = true;
   parent.add(m); return m;
@@ -80,15 +85,17 @@ const sparkle = (material, size) => {         /* destello de 4 puntas */
 /* ---------- cara: ojos, brillos, mejillas, sonrisa y boca "o" (coordenadas locales de la cabeza) ---------- */
 function addFace(H, rx, ry, rz, o = {}) {
   const surf = (dx, dy) => rz * Math.sqrt(Math.max(0, 1 - (dx / rx) ** 2 - (dy / ry) ** 2));
-  const eyeSize = o.eyeSize ?? 0.07, ex = o.eyeDx ?? 0.19, ey = o.eyeDy ?? -0.1, my = o.mouthDy ?? -0.25;
+  const eyeSize = o.eyeSize ?? 0.078, ex = o.eyeDx ?? 0.19, ey = o.eyeDy ?? -0.1, my = o.mouthDy ?? -0.25;
   const F = { eyes: [], glints: [], blush: [], surf };
   for (const s of [-1, 1]) {
     const e = ball(H, "eye", PAL.dark, [s * ex, ey, surf(s * ex, ey) - 0.006], [eyeSize, eyeSize * 1.25, 0.035], { roughness: 0.18, noShadow: true });
     e.userData.base = e.scale.clone(); F.eyes.push(e);
     const g = ball(H, "glint", 0xffffff, [s * ex - eyeSize * 0.25, ey + eyeSize * 0.5, surf(s * ex, ey) + 0.026], [eyeSize * 0.3, eyeSize * 0.3, 0.018], { roughness: 0.12, noShadow: true });
     g.userData.base = g.scale.clone(); F.glints.push(g);
+    const g2 = ball(H, "glint", 0xffffff, [s * ex + eyeSize * 0.32, ey - eyeSize * 0.42, surf(s * ex, ey) + 0.024], [eyeSize * 0.14, eyeSize * 0.14, 0.014], { roughness: 0.12, noShadow: true });
+    g2.userData.base = g2.scale.clone(); (F.glints2 = F.glints2 || []).push(g2);
     const bx = o.blushDx ?? 0.33, by = o.blushDy ?? -0.2;
-    const b = ball(H, "blush", PAL.blush, [s * bx, by, surf(s * bx, by) - 0.012], [0.08, 0.048, 0.022], { noShadow: true });
+    const b = ball(H, "blush", PAL.blush, [s * bx, by, surf(s * bx, by) - 0.012], [0.088, 0.054, 0.022], { noShadow: true });
     b.userData.base = b.scale.clone(); F.blush.push(b);
   }
   const curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(-0.095, 0.03, 0), new THREE.Vector3(0, -0.095, 0.015), new THREE.Vector3(0.095, 0.03, 0));
@@ -360,11 +367,13 @@ export class CapsulaPetViewer {
 
     this.scene.add(new THREE.HemisphereLight(0xffe8f4, 0x4d3454, 2.0));
     const key = new THREE.DirectionalLight(0xffffff, 3.1);
-    key.position.set(3, 4, 5); key.castShadow = true; key.shadow.mapSize.set(512, 512);
+    key.position.set(3, 4, 5); key.castShadow = true; key.shadow.mapSize.set(1024, 1024);
     Object.assign(key.shadow.camera, { left: -2, right: 2, top: 2, bottom: -2 });
     key.shadow.camera.updateProjectionMatrix();
     this.scene.add(key);
     const rim = new THREE.PointLight(0xe88ac8, 24, 8); rim.position.set(-2, 1, 2); this.scene.add(rim);
+    const fill = new THREE.DirectionalLight(0xfff0f8, 0.9); fill.position.set(-3, 1.5, 4); this.scene.add(fill);   /* relleno suave: aclara las sombras de la cara */
+    const back = new THREE.PointLight(0xc9b3f5, 10, 8); back.position.set(2, 2, -3); this.scene.add(back);   /* contraluz lila: dibuja el contorno */
     const floor = new THREE.Mesh(new THREE.CircleGeometry(1, 48), new THREE.ShadowMaterial({ opacity: 0.22 }));
     floor.rotation.x = -Math.PI / 2; floor.position.y = -1.03; floor.scale.set(1.5, 1, 0.6); floor.receiveShadow = true;
     this.scene.add(floor);
@@ -562,6 +571,8 @@ export class CapsulaPetViewer {
       e.scale.set(b.x * c.eyeX, b.y * ey, b.z);
       const g = F.glints[i];
       if (g) { const gb = g.userData.base; g.scale.set(gb.x, gb.y * Math.min(1, ey + 0.1), gb.z); g.visible = ey > 0.3; }
+      const g2 = F.glints2 && F.glints2[i];
+      if (g2) { const gb = g2.userData.base; g2.scale.set(gb.x, gb.y * Math.min(1, ey + 0.1), gb.z); g2.visible = ey > 0.3; }
     });
     F.blush.forEach(bl => { const b = bl.userData.base; bl.scale.set(b.x * c.blush, b.y * c.blush, b.z); });
     let mouth = c.mouthO;
