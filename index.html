@@ -478,6 +478,7 @@ nav button.on::after{display:none!important}
 .fdt{width:100%}.fdt .dg{flex:1;max-width:120px}
 .tools{grid-template-columns:repeat(4,1fr)!important;gap:10px!important}.tools .tl{min-height:92px;font-size:14px;border-radius:22px;gap:6px;justify-content:center}.tools .tl b{display:flex}.btn.danger{color:var(--bad);background:color-mix(in srgb,var(--bad) 10%,transparent)}
 .fl.away{opacity:0;pointer-events:none}
+.ballsrc{position:absolute!important;left:50%;bottom:10px;transform:translateX(-50%);width:66px;height:66px;border-radius:50%!important;padding:0!important;justify-content:center;background:rgba(255,255,255,.9)!important;box-shadow:0 4px 12px rgba(0,0,0,.18);z-index:5;animation:ballb 1.6s ease-in-out infinite}.ballsrc b{font-size:42px!important}@keyframes ballb{50%{transform:translateX(-50%) translateY(-5px)}}
 .psw{display:flex;justify-content:center;gap:8px;margin:10px 0 2px}.psw button{display:flex;flex-direction:column;align-items:center;gap:2px;border:2px solid #f6d5ef;background:#fff;border-radius:16px;padding:6px 10px;min-width:64px;font:inherit;color:#8a5a73;cursor:pointer}.psw button.on{border-color:#b0336f;background:#ffe9f3}.psw small{font-size:11px;font-weight:700}.psw .add{border-style:dashed;justify-content:center}.psw .add b{font-size:26px;line-height:1.2;color:#b0336f}
 .room.exa{background:linear-gradient(180deg,#bfe6ff,#e9f7ff 60%,#fde9c8)!important}.room.exp-bosque{background:linear-gradient(180deg,#c8f0c8,#8fd19e 70%,#5aa86b)!important}.room.exp-montana{background:linear-gradient(180deg,#d6dcff,#b7c4ee 60%,#8f9bc9)!important}
 .exs{overflow:hidden;border-radius:inherit;position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:16px;color:#4a2336;z-index:2;pointer-events:none}.exa-svg{position:absolute;inset:0;width:100%;height:100%;z-index:-1;border-radius:inherit}.exs b{background:rgba(255,255,255,.78);border-radius:999px;padding:6px 14px}.exs{justify-content:flex-end;padding-bottom:22px}.exs b{font-size:19px}.exs span{font-size:15px;background:rgba(255,255,255,.7);border-radius:999px;padding:6px 14px}@keyframes exb{50%{transform:translateY(-8px)}}
@@ -1231,7 +1232,7 @@ function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=gr
   <div class="mu">${XI} XP del nivel: ${S.xp%100} de 100</div></section>`}
 /* ---------- Expediciones: la mascota sale de viaje, vuelve con una postal y una pregunta ---------- */
 const EXPS=[{k:'playa',n:'Playa',e:'🏖️',h:1,c:4,x:4},{k:'bosque',n:'Bosque',e:'🌲',h:4,c:10,x:10},{k:'montana',n:'Montaña',e:'⛰️',h:8,c:25,x:25}];
-const EXPOST={playa:['Hoy vi el mar y pensé en ti 🌊','Encontré una concha con forma de corazón 🐚','Las olas me contaron un secreto 🏖️'],bosque:['Un búho me contó que duermes poco 🦉','Encontré un camino de hojas doradas 🍂','Aquí huele a tierra mojada y a recuerdos 🌲'],montana:['Desde la cima se ven todos tus recuerdos ⛰️','Escalé muy alto y me acordé de ti 🏔️','El aire de aquí te haría sonreír ☁️']};
+const EXPOST={playa:['Que las olas te traigan buenos recuerdos.','Hoy el mar me habló de ti.','Los mejores días son los que se comparten.','Respira hondo: lo bonito llega con calma.','Que nunca falte alguien con quien ver el atardecer.','Guarda este día como una concha: pequeño y para siempre.'],bosque:['En el bosque aprendí que crecer toma tiempo.','Cada hoja guarda una historia; cuéntame la tuya.','Que tu casa siempre huela a recuerdos bonitos.','Hay caminos que se hacen mejor en compañía.','Lo simple también es hermoso.','Que no te falten abrazos ni buena sombra.'],montana:['Desde aquí arriba todo se ve pequeño, menos tus recuerdos.','Subir cuesta, pero la vista siempre vale la pena.','Eres más fuerte de lo que imaginas.','Cuenta tus historias: son tu mejor cima.','Que cada paso te acerque a quien quieres.','Hoy puede ser un gran día.']};
 const EXQ=['¿Cuál es tu recuerdo favorito de un viaje?','¿Qué lugar te gustaría que visitáramos juntos?','¿Qué es lo más bonito que has visto en la naturaleza?','¿A quién le mandarías una postal hoy y qué le dirías?','¿Qué paisaje te da paz?','¿Cuál fue la mejor aventura de tu infancia?','¿Qué lugar de tu familia te trae buenos recuerdos?','¿Qué llevarías en una maleta para un viaje inolvidable?','¿Qué cosa nueva te gustaría probar este año?','¿Con quién te gustaría hacer una caminata?','¿Qué sabor te recuerda a unas vacaciones?','¿Qué canción pondrías en un viaje por carretera?'];
 const EXART={
 playa:'<circle cx="215" cy="52" r="26" fill="#ffd166"/><circle cx="215" cy="52" r="38" fill="#ffd166" opacity=".25"/><path d="M0 108q40-10 80 0t80 0t80 0t60 0v44H0z" fill="#5ec2e8"/><path d="M0 124q40-10 80 0t80 0t80 0t60 0v28H0z" fill="#3aa5d6" opacity=".7"/><path d="M0 146q60-20 120-6t180-4v64H0z" fill="#f6d9a0"/><path d="M62 150q4-40-6-70" stroke="#8a5a3c" stroke-width="7" fill="none" stroke-linecap="round"/><g fill="#3fa066"><path d="M56 80q-26-16-44 0q22-4 44 0z"/><path d="M56 80q-8-28-30-30q18 10 30 30z"/><path d="M56 80q14-26 38-22q-20 4-38 22z"/><path d="M56 80q26-12 42 6q-22-6-42-6z"/></g><circle cx="150" cy="168" r="7" fill="#ff8dbb"/>',
@@ -1250,9 +1251,35 @@ function exOpen(){ptTick();const p=S.pt;
 function exGo(k){const x=EXPS.find(a=>a.k===k);if(!x||exAway())return;ptTick();const p=S.pt;if(p.en<40||p.food<35)return;
  p.ex={k,t0:Date.now(),end:Date.now()+x.h*H,done:0};p.en=Math.max(0,p.en-12);p.food=Math.max(0,p.food-10);S.tool=null;cl();
  toast(S.pet.name+' salió a '+x.n+' '+x.e);save();try{remApply()}catch(e){}render()}
+/* ---------- Postal: imagen para guardar o mandar a la familia ---------- */
+const EXBG={playa:['#bfe6ff','#fde9c8'],bosque:['#c8f0c8','#8fd19e'],montana:['#d6dcff','#b7c4ee']};
+const wrapTxt=(t,n)=>{const w=t.split(' '),L=[];let c='';for(const x of w){if((c+' '+x).trim().length>n&&c){L.push(c);c=x}else c=(c+' '+x).trim()}if(c)L.push(c);return L};
+function postalSVG(k,pc,name,kind,wear){const x=EXPS.find(a=>a.k===k),L=wrapTxt(pc,20),bg=EXBG[k],y0=700-(L.length-1)*22;
+ const acc=(typeof accSvg==='function')?accSvg(wear||[],kind):'';
+ return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" width="600" height="800"><defs><linearGradient id="pbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${bg[0]}"/><stop offset="1" stop-color="${bg[1]}"/></linearGradient><clipPath id="pcl"><rect x="0" y="0" width="600" height="470" rx="0"/></clipPath></defs>
+ <rect width="600" height="800" fill="#fff7fb"/><rect x="14" y="14" width="572" height="772" rx="30" fill="url(#pbg)"/>
+ <g clip-path="url(#pcl)"><svg x="14" y="14" width="572" height="450" viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice">${EXART[k]}</svg></g>
+ <svg x="170" y="236" width="260" height="217" viewBox="0 0 120 100">${PETS[kind].draw()}${acc}</svg>
+ <rect x="44" y="486" width="512" height="${120+L.length*44}" rx="26" fill="#fff" opacity=".93"/>
+ <text x="300" y="534" text-anchor="middle" font-family="sans-serif" font-size="22" font-weight="700" fill="#b0336f">Postal de ${x.n}</text>
+ ${L.map((l,i)=>`<text x="300" y="${576+i*44}" text-anchor="middle" font-family="sans-serif" font-size="34" font-weight="800" fill="#4a2336">${esc(l)}</text>`).join('')}
+ <text x="300" y="${586+L.length*44}" text-anchor="middle" font-family="sans-serif" font-size="22" fill="#8a5a73">— ${esc(name)}</text>
+ <text x="300" y="774" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="700" fill="#4a2336" opacity=".75">Cápsula · historias con tu gente</text></svg>`}
+let EXLAST=null;
+async function exShare(){const L=EXLAST;if(!L)return;const txt='Mi mascota '+L.name+' me trajo esta postal 💌 Estoy usando Cápsula para guardar historias con mi gente y cuidar una mascota. Únete: '+(S.user?appLink():baseUrl());
+ try{const svg=postalSVG(L.k,L.pc,L.name,L.kind,L.wear),img=new Image(),u=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}));
+  await new Promise((ok,no)=>{img.onload=ok;img.onerror=no;img.src=u});
+  const c=document.createElement('canvas');c.width=900;c.height=1200;c.getContext('2d').drawImage(img,0,0,900,1200);URL.revokeObjectURL(u);
+  const blob=await new Promise(r=>c.toBlob(r,'image/png')),f=new File([blob],'postal-capsula.png',{type:'image/png'});
+  if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],text:txt});return}catch(e){if(e&&e.name==='AbortError')return}}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='postal-capsula.png';document.body.appendChild(a);a.click();a.remove();toast('Postal guardada. Mándala por WhatsApp 💌')}
+ catch(e){}
+ if(navigator.share){try{await navigator.share({title:'Cápsula',text:txt});return}catch(e){if(e&&e.name==='AbortError')return}}copy(txt)}
+const postalBox=L=>`<div class="postal" style="max-width:300px;margin:8px auto;border-radius:22px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.15)">${postalSVG(L.k,L.pc,L.name,L.kind,L.wear).replace('<svg ','<svg style="display:block;width:100%;height:auto" ')}</div>`;
+function exDone(L,g){showSheet(`<h2>💌 ¡Postal guardada!</h2><p class="mu">${g?'Ganaste '+g+' Lumis y tu respuesta quedó en tu diario.':'Tu respuesta quedó en tu diario.'}</p>${postalBox(L)}<button class="btn w" onclick="exShare()">Enviar a mi familia 💗</button><button class="btn s w" onclick="cl()" style="margin-top:8px">Cerrar</button>`)}
 function exPost(){const e=S.pt.ex;if(!e||e.done||Date.now()<e.end)return;const x=EXPS.find(a=>a.k===e.k);
- if(!e.q){e.q=EXQ[Math.floor(Math.random()*EXQ.length)];e.pc=EXPOST[e.k][Math.floor(Math.random()*3)];save()}
- showSheet(`<h2>${x.e} Postal de ${x.n}</h2><div class="paper" style="padding:14px;border-radius:12px;margin:8px 0">${esc(e.pc)}</div>
+ if(!e.q){e.q=EXQ[Math.floor(Math.random()*EXQ.length)];e.pc=EXPOST[e.k][Math.floor(Math.random()*EXPOST[e.k].length)];save()}
+ showSheet(`<h2>${x.e} Postal de ${x.n}</h2>${(EXLAST={k:e.k,pc:e.pc,name:S.pet.name,kind:S.pet.kind,wear:S.wear.slice()},postalBox(EXLAST))}<button class="btn s w" onclick="exShare()" style="margin-bottom:8px">Enviar esta postal a alguien 💌</button>
  <p><b>${esc(S.pet.name)} te pregunta:</b> ${esc(e.q)}</p>
  <textarea id="exa" class="in paper" rows="4" maxlength="300" placeholder="Escribe tu respuesta…" oninput="$('#exb').disabled=!this.value.trim()"></textarea>
  <button class="btn w" id="exb" disabled onclick="exAns()">Responder y guardar (+${x.c} Lumis)</button>
@@ -1261,7 +1288,7 @@ async function exAns(){const e=S.pt.ex,el=$('#exa'),t=(el?el.value:'').trim().sl
  if(!window.CLOUD||!CLOUD.ready){toast('Sin conexión con tu cuenta. Intenta de nuevo en un momento.');return}
  const x=EXPS.find(a=>a.k===e.k),q=e.q;
  try{await CLOUD.publish({k:'carta',t:('Postal: '+q).slice(0,120),x:{to:'Mi diario',tx:t},by:''})}catch(err){toast('Tu respuesta no se guardó. Revisa tu conexión.');return}
- S.pt.ex=null;S.pt.exn=(S.pt.exn||0)+1;S.pt.fun=Math.min(100,S.pt.fun+20);S.pt.love=Math.min(100,S.pt.love+6);track('exp');cl();burst(20,['🧭','✨','💗']);{const cp=capEnsure(),left=Math.max(0,CAP_E-(cp.e||0)),g=Math.min(x.c,left);cp.e=(cp.e||0)+g;if(g)rw(Math.min(x.x,g),g,{free:true});else toast('Hoy ya cobraste el máximo de expediciones; tu respuesta quedó en el diario 🧭')}save();render()}
+ const lastP=EXLAST||{k:e.k,pc:e.pc,name:S.pet.name,kind:S.pet.kind,wear:S.wear.slice()};S.pt.ex=null;S.pt.exn=(S.pt.exn||0)+1;S.pt.fun=Math.min(100,S.pt.fun+20);S.pt.love=Math.min(100,S.pt.love+6);track('exp');cl();burst(20,['🧭','✨','💗']);let gg=0;{const cp=capEnsure(),left=Math.max(0,CAP_E-(cp.e||0)),g=Math.min(x.c,left);cp.e=(cp.e||0)+g;gg=g;if(g)rw(Math.min(x.x,g),g,{free:true});else toast('Hoy ya cobraste el máximo de expediciones; tu respuesta quedó en el diario 🧭')}save();render();setTimeout(()=>exDone(lastP,gg),450)}
 function exSkip(){const e=S.pt.ex;if(e){S.pt.ex=null;S.pt.exn=(S.pt.exn||0)+1;S.pt.fun=Math.min(100,S.pt.fun+10)}cl();bubSay('¡Qué paseo! Te guardo la postal en mi corazón 💗');save();try{remApply()}catch(e){}render()}
 /* ---------- cuidado interactivo: acariciar, arrastrar comida, frotar para bañar, apagar la luz, hablar ---------- */
 const SC={acc:0,pet:0,last:0,drag:0,bt:0,hint:0};
@@ -1272,9 +1299,9 @@ function trayHTML(){const n=esc(S.pet.name),sl=asleep();
  if(sl)return `<div class="tw"><span class="mu" id="slt">${n} está durmiendo 💤${S.pt.rest>Date.now()?` · despierta en unos ${sleepMin()} min`:''}</span><button class="btn s w" onclick="wake()">🌙 Encender la luz</button></div>`;
  if(S.tool==='food')return `<div class="tw"><span class="mu">Arrastra la comida hasta la boca de ${n} (o tócala)</span><div class="fdt">${FOODS.map(f=>`<button class="dg" data-k="${f.k}" aria-label="Dar ${f.n}"><b>${f.e}</b><span>${f.n}</span></button>`).join('')}</div><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
  if(S.tool==='bath')return `<div class="tw"><span class="mu">Frota a ${n} con el dedo para bañarlo 🫧</span><div class="bar"><i id="scb" style="width:${Math.round(S.pt.clean)}%"></i></div><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
- if(S.tool==='play')return `<div class="tw"><span class="mu">Arrastra el balón al cuarto y suéltalo con un impulso para que ${n} lo persiga ⚽ <b>${S.pg||0}/5</b></span><div class="fdt"><button class="dg" data-k="ball" aria-label="Balón"><b>⚽</b><span>Balón</span></button></div><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
+ if(S.tool==='play')return `<div class="tw"><span class="mu">Arrastra el balón de abajo del cuarto y suéltalo con un impulso para que ${n} lo persiga ⚽ <b>${S.pg||0}/5</b></span><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
  return `<div class="tools">${TOOLS.map(([k,e,l])=>`<button class="tl" onclick="toolSet('${k}')"><b>${e}</b>${l}</button>`).join('')}</div><button class="btn s w" onclick="exOpen()" style="margin-top:8px">🧭 Mandar de expedición${S.pt.exn?' · '+S.pt.exn+' hechas':''}</button><span class="mu c">Toca o acaricia a ${n} con el dedo 💗</span>`}
-function trayUpd(){const t=$('#tray');if(t)t.innerHTML=trayHTML();const r=$('#room');if(r)r.classList.toggle('scrub',S.tool==='bath')}
+function trayUpd(){const t=$('#tray');if(t)t.innerHTML=trayHTML();const r=$('#room');if(r){r.classList.toggle('scrub',S.tool==='bath');const b=$('#ballsrc'),on=S.tool==='play';if(on&&!b){const el=document.createElement('button');el.id='ballsrc';el.className='dg ballsrc';el.dataset.k='ball';el.setAttribute('aria-label','Balón');el.innerHTML='<b>⚽</b>';r.appendChild(el)}else if(!on&&b)b.remove()}}
 function toolSet(k){if(exAway()){S.tool=null;return}S.tool=k||null;SC.acc=0;
  if(k==='sleep'){S.tool=null;rest();trayUpd();return}
  if(k==='play'){if(!playOk()){S.tool=null;return}S.pg=0}
@@ -1762,7 +1789,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=74;
+const BUILD=75;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
