@@ -905,7 +905,7 @@ async function remApply(){const P=NP('LocalNotifications');if(!P)return false;co
   const x=remText(k);list.push({id:100+k,title:x.title,body:x.body,largeBody:x.body,schedule:{at:d,allowWhileIdle:true}})}
  /* avisos inteligentes (máx. 2 al día, entre 9 a. m. y 9 p. m.) */
  if(c.pet!==false){const win=d=>{const h=d.getHours();if(h<9)d.setHours(9,0,0,0);else if(h>=21){d.setDate(d.getDate()+1);d.setHours(9,0,0,0)}return d},nm=(S.pet&&S.pet.name)||'Tu mascota';
-  const e=S.pt&&S.pt.ex;if(e&&!e.done&&e.end>Date.now())list.push({id:3,title:nm+' volvió de su expedición 💌',body:'Trae una postal y una pregunta para ti.',schedule:{at:win(new Date(e.end+60000)),allowWhileIdle:true}});
+  const away=[S.pt].concat((S.others||[]).map(o=>o.pt)).filter(q=>q&&q.ex&&!q.ex.done&&q.ex.end>Date.now()).sort((a,b)=>a.ex.end-b.ex.end)[0],e=away&&away.ex;if(e)list.push({id:3,title:'Tu mascota volvió de su expedición 💌',body:'Trae una postal y una pregunta para ti.',schedule:{at:win(new Date(e.end+60000)),allowWhileIdle:true}});
   list.push({id:4,title:nm+' te extraña 🐾',body:'Tiene hambre y quiere jugar un rato contigo.',schedule:{at:win(new Date(Date.now()+8*H)),allowWhileIdle:true}});
   if(S.streak>0&&S.last!==today()){const d=new Date();d.setHours(19,30,0,0);if(d>new Date())list.push({id:5,title:'🔥 Tu racha de '+S.streak+' día'+(S.streak>1?'s':'')+' está en peligro',body:'Cuenta una historia hoy para no perderla.',schedule:{at:d,allowWhileIdle:true}})}}
  if(list.length)await P.schedule({notifications:list});return true}
@@ -1127,7 +1127,6 @@ function mundo(){
  <section class="card"><span class="mu">Pregunta de la semana</span><h2>${esc(wqNow())}</h2><p class="mu">${wq}</p><button class="btn" onclick="chooser(wqNow())">Responder</button></section>
  <section class="card"><h3>¿Cómo quieres contar hoy?</h3><div class="qp">${Object.entries(TY).map(([k,v])=>`<button onclick="compose('${k}')">${ic(v.i,18)}${v.l}</button>`).join('')}</div></section>
  <div class="duo"><button class="tile2" onclick="goArc()">${ic('book',26)}<b>Mi archivo</b><span class="mu">${n} ${n===1?'historia':'historias'}</span></button><button class="tile2" onclick="go('triv')">${ic('star',26)}<b>Pregunta del día</b><span class="mu">Una para ti</span></button></div>
- <section class="card"><div class="row sp" style="gap:12px"><div class="tx"><h3>Parejas de recuerdos</h3><span class="mu">Cinco niveles, con intentos limitados${S.posts.some(p=>['foto','dibujo'].includes(p.k))?' con tus propias fotos':''}. Gana Lumis una vez al día.</span></div><button class="btn" onclick="mgStart()">Jugar</button></div></section>
  ${missionsHTML()}
  ${moodCard()}${badgesHTML()}${bookCard(n)}
  ${inviteApp()}`}
@@ -1703,11 +1702,14 @@ function caps(){
  ${L.length?L.map(f=>{const t=GT[f.type]?f.type:'familia';return `<button class="cpc" onclick="openCap('${esc(f.id)}')"><span class="cvs amb-${t}"${f.cover?` style="background-image:url('${okCover(f.cover)}');background-size:cover;background-position:center"`:''}></span><span class="tx"><b>${esc(f.name)}</b><span class="mu">${GT[t].n}</span></span>${ic('back',18).replace('class="ic"','class="ic" style="transform:rotate(180deg)"')}</button>`}).join(''):`<div class="card c">${ic('caps',48)}<h3>Aún no tienes cápsulas</h3><p class="mu">Crea una con quien quieras o únete con un código.</p></div>`}
  <button class="btn w" onclick="S.gname='';S.scr='group';S.gstep='create';render()">${ic('plus',18)} Crear una cápsula</button>
  <button class="btn s w" onclick="S.scr='group';S.gstep='join';render()">Unirme con código o enlace</button>
+ ${mgCard()}
  ${plusLive()&&!isPlus()?`<p class="mu c">${S.families.length} de ${LIM.free.caps} cápsulas en el plan gratis</p>`:''}`}
+const mgCard=()=>`<section class="card"><div class="row sp" style="gap:12px"><div class="tx"><h3>Parejas de recuerdos</h3><span class="mu">5 niveles${S.posts.some(p=>['foto','dibujo'].includes(p.k))?' con '+(S.group?'las fotos de esta cápsula':'tus fotos'):''} · Lumis 1 vez al día</span></div><button class="btn" onclick="mgStart()">Jugar</button></div></section>`;
 function capHome(){
  return `<section class="card"><span class="mu">Pregunta de esta cápsula</span><h3 style="font-size:17px">${esc(qaToday())}</h3><button class="btn" onclick="go('triv')">Responder</button></section>
  <div class="duo"><button class="tile2" onclick="chooser()">${ic('pen',26)}<b>Escribir aquí</b><span class="mu">Se guarda en ${esc(S.group.name)}</span></button><button class="tile2" onclick="S.sub='recuerdos';soft()">${ic('image',26)}<b>Recuerdos</b><span class="mu">${S.posts.length} ${S.posts.length===1?'historia':'historias'}</span></button></div>
  <div class="duo"><button class="tile2" onclick="S.sub='cartas';soft()">${ic('mail',26)}<b>Cartas</b><span class="mu">${S.posts.filter(p=>p.k==='carta').length} escritas</span></button><button class="tile2 off" disabled aria-disabled="true">${ic('chat',26)}<b>Conversaciones</b><span class="tag soon">Pronto</span></button></div>
+ ${mgCard()}
  ${bookCard(S.posts.length)}
  <section class="card"><div class="row sp"><span class="tx"><b>Invita a alguien</b><span class="mu">Ganas 15 Lumis por cada persona que se una</span></span><button class="btn" onclick="shareInvite()">Invitar</button></div></section>
  ${recentHTML(3)?`<h3>Actividad reciente</h3>${recentHTML(3)}`:''}`}
@@ -1728,10 +1730,12 @@ function act(){
 const GUIDES={
  mundo:{c:'m',k:'Tu mundo · el juego',s:[
   ['crown','Esta es tu mascota','Vive en Mi mundo, un espacio solo tuyo. Nadie más la ve ni entra a jugar con ella.'],
-  ['heart','Cuídala cada día','Acarícialo con el dedo, arrástrale comida a la boca, frótalo para bañarlo, apaga la luz para dormir o mantén presionado Hablar y repite lo que dices. Si sus barras bajan, te lo pide con cariño: aquí no hay castigos.'],
-  ['img:lumis','Lumis: la moneda','Los ganas despacio: contando historias, cuidando a tu mascota (comer, bañar, jugar, siesta), con el cofre diario, la pregunta del día, el juego de Parejas, las misiones de la semana y cuando alguien entra con tu invitación. Hay un tope por día para que valgan algo. Se gastan en la Tienda de Mi mundo: fondos del cuarto y el Sombrero de copa.'],
+  ['heart','Cuídala cada día','Acarícialo con el dedo, arrástrale comida a la boca, frótalo para bañarlo, apaga la luz para dormir o lanza el balón para jugar. Si sus barras bajan, te lo pide con cariño: aquí no hay castigos.'],
+  ['img:lumis','Lumis: la moneda','Los ganas despacio: contando historias, cuidando a tu mascota (comer, bañar, jugar, siesta), con el cofre diario, la pregunta del día, el juego de Parejas (en Mis cápsulas), las expediciones, las misiones de la semana y cuando alguien entra con tu invitación. Hay un tope por día para que valgan algo. Se gastan en la Tienda: fondos del cuarto, accesorios y mascotas nuevas.'],
+  ['🧭','Expediciones','Manda a tu mascota a la Playa (1 h), el Bosque (4 h) o la Montaña (8 h). Mientras está fuera no puedes cuidarla. Al volver trae una postal y una pregunta: si la respondes ganas Lumis y XP, y tu respuesta se guarda en tu diario. Entre más dure el viaje, mejor el premio.'],
+  ['🐾','Varias mascotas','Puedes tener hasta 3 mascotas. La segunda cuesta 400 Lumis y la tercera 800. Cada una tiene su propio ánimo, nivel y armario; los Lumis son compartidos.'],
   ['img:xp','XP: así crece tu mascota','La XP se gana con las mismas acciones, pero no se gasta. Cada 100 XP subes un nivel, y con los niveles tu mascota evoluciona: Bebé, Pequeño (nivel 4), Joven (nivel 11) y Adulto (nivel 26). Crecer es lento a propósito.'],
-  ['crown','Accesorios y recompensas','Algunos accesorios se desbloquean solos al subir de nivel o con logros, como contar tu primera historia, responder preguntas o mantener la racha. Otros se compran con Lumis. Los ves y los pones en el armario.'],
+  ['crown','Accesorios y recompensas','Algunos accesorios se desbloquean solos al subir de nivel o con logros, como contar tu primera historia, responder preguntas o mantener la racha. Otros se compran con Lumis. Los ves y los pones en el armario (el botón del gancho en el cuarto), una prenda por categoría.'],
   ['heart','Y los corazones','Los corazones 💗 ya no son monedas ni XP: son el ánimo de tu mascota y las vidas del juego de Parejas.'],
   ['gift','Cofre, racha y misiones','Abre el cofre una vez al día, mantén tu racha contando algo cada día y cumple las misiones de la semana para ganar más Lumis.',['Contar una historia','dest()']]]},
  cap:{c:'c',k:'Cápsulas · compartir',s:[
@@ -1754,7 +1758,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=69;
+const BUILD=70;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
