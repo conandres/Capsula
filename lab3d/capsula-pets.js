@@ -596,10 +596,38 @@ export class CapsulaPetViewer {
     let rz = 0, sx = 1, sy = 1, x = 0, headTilt = c.tilt, headScaleY = 1;
     const armZ = [0, 0], armX = [0, 0];
 
+    /* vida propia: de vez en cuando mira a un lado, mueve una oreja, se estira o se menea (solo sin acción ni sueño) */
+    let hyaw = 0, earFlick = 0, earSide = 0;
+    try {
+      const I = this.idle || (this.idle = { name: null, start: 0, dur: 1, next: 4, dir: 1, ear: 0 });
+      if (!still && !an && name !== "sleepy" && !I.name && t >= I.next) {
+        const opts = P.arms.length ? ["look", "twitch", "stretch", "wiggle"] : ["look", "wiggle"];
+        if ((P.ears || []).length) opts.push("twitch");
+        I.name = opts[Math.floor(Math.random() * opts.length)];
+        I.start = t; I.dir = Math.random() < 0.5 ? -1 : 1; I.ear = Math.floor(Math.random() * 2);
+        I.dur = { look: 2.2, twitch: 0.55, stretch: 1.8, wiggle: 1.1 }[I.name];
+      }
+      if (I.name) {
+        const ip = (t - I.start) / I.dur;
+        if (ip >= 1 || an || name === "sleepy") { I.name = null; I.next = t + 5 + Math.random() * 7; }
+        else {
+          const ie = Math.sin(Math.PI * ip);
+          if (I.name === "look") { hyaw = I.dir * 0.38 * ie; headTilt += I.dir * 0.05 * ie; }
+          else if (I.name === "twitch") { earFlick = Math.sin(ip * Math.PI * 6) * 0.28 * ie; earSide = I.ear; }
+          else if (I.name === "stretch") { sy *= 1 + 0.05 * ie; y += 0.03 * ie; P.arms.forEach((a, i) => { armZ[i] += a.userData.s * 1.5 * ie; }); }
+          else if (I.name === "wiggle") { rz += Math.sin(ip * Math.PI * 6) * 0.07 * ie; }
+        }
+      }
+    } catch (e) { this.idle = null; }
+    if (name === "sleepy") headTilt += Math.sin(t * 0.5) * 0.06;   /* cabeceo suave al dormir */
+    P.arms.forEach((a, i) => { armZ[i] += Math.sin(t * 1.3 + i * 2.1) * 0.03 * m; });   /* bracitos que se mecen */
+    this.hy = (this.hy || 0) + (hyaw - (this.hy || 0)) * (1 - Math.exp(-dt * 9));
+
     /* orejas (caídas con la tristeza), cola, órbita, destello, objeto en brazos */
     (P.ears || []).forEach((e, i) => {
       const out = e.position.x >= 0 ? -1 : 1;
-      e.rotation.z = e.userData.baseZ + out * c.droop * 0.9 + Math.sin(t * 2.4 + i * 1.7) * 0.04 * m;
+      e.rotation.z = e.userData.baseZ + out * c.droop * 0.9 + Math.sin(t * 2.4 + i * 1.7) * 0.04 * m
+        + out * Math.max(-0.25, Math.min(0.25, (this.vyS || 0) * 0.09)) + (i === earSide ? out * earFlick : 0);   /* las orejas se retrasan al saltar */
     });
     if (P.tail) P.tail.rotation.z = P.tail.userData.baseZ + Math.sin(t * 5) * 0.2 * (name === "happy" || an === "dance" ? 1 : 0.12) * m;
     if (P.orbit) P.orbit.rotation.z += dt * 0.5 * m;
@@ -638,6 +666,9 @@ export class CapsulaPetViewer {
     }
     P.arms.forEach((a, i) => { a.rotation.z = a.userData.baseZ + armZ[i]; a.rotation.x = a.userData.baseX + armX[i]; });
     P.head.rotation.z = headTilt * (P.arms.length ? 1 : 0.5);
+    P.head.rotation.y = this.hy || 0;
+    if (dt > 0 && !still) { const vy = (y - (this.prevY ?? y)) / dt; this.vyS = (this.vyS || 0) + (Math.max(-6, Math.min(6, vy)) - (this.vyS || 0)) * 0.25; }
+    this.prevY = y;
     P.head.scale.y = headScaleY * (this.stageHead || 1);
     this.character.position.set(x, y - (1 - (this.stageK || 1)) * 0.9, 0);
     this.character.rotation.z = rz;
