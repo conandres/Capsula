@@ -23,9 +23,9 @@ export const PETS = {
   bear: { kind: "Oso", app: "oso" }, capsule: { kind: "Cápsula (central)", app: "nube" }
 };
 export const EXPRESSIONS = ["neutral", "happy", "sleepy", "surprised", "sad", "wink"];
-export const ACTIONS = ["hello", "happy", "love", "surprise", "dance", "eat", "levelup"];
+export const ACTIONS = ["hello", "happy", "love", "surprise", "dance", "eat", "levelup", "spin", "shake", "yawn", "boing", "shiver"];
 export const ACCESSORIES = ["estrella", "mono", "corona", "flor", "lentes", "gorro", "bufanda", "sombrero", "audifonos", "alas"];
-const DUR = { hello: 0.9, happy: 1.3, love: 1.4, surprise: 1.0, dance: 3.0, eat: 2.4, levelup: 1.8 };
+const DUR = { hello: 0.9, happy: 1.3, love: 1.4, surprise: 1.0, dance: 3.0, eat: 2.4, levelup: 1.8, spin: 1.2, shake: 1.0, yawn: 2.0, boing: 1.1, shiver: 1.3 };
 
 /* Cada expresión son números hacia los que la cara se suaviza. */
 const EXPR = {
@@ -479,7 +479,7 @@ export class CapsulaPetViewer {
   play(action = "hello") {
     if (!ACTIONS.includes(action)) action = "hello";
     this.act = { name: action, start: this.t, dur: DUR[action] };
-    const ex = { surprise: "surprised", eat: "neutral" }[action] || "happy";
+    const ex = { surprise: "surprised", eat: "neutral", shake: "sad", yawn: "neutral" }[action] || "happy";
     this.tmp = { expr: ex, until: this.t + DUR[action] + 0.25 };
     if (action === "love") this.spawn("hearts");
     if (action === "levelup" || action === "dance") this.spawn("stars");
@@ -568,6 +568,7 @@ export class CapsulaPetViewer {
       if (q >= 1) { B.start = -1; if (!B.double && Math.random() < 0.15) { B.double = true; B.next = t + 0.1; } else { B.double = false; B.next = t + 2.2 + Math.random() * 3.3; } }
       else bm = 1 - Math.sin(Math.PI * q) * 0.93;
     }
+    if (an === "yawn") bm *= Math.max(0.08, 1 - env * 1.2);
     const F = P.face;
     F.eyes.forEach((e, i) => {
       const b = e.userData.base, ey = Math.max(0.05, c.eyeY * (i === 1 ? c.eyeR / c.eyeY : 1) * bm);
@@ -580,6 +581,7 @@ export class CapsulaPetViewer {
     F.blush.forEach(bl => { const b = bl.userData.base; bl.scale.set(b.x * c.blush, b.y * c.blush, b.z); });
     let mouth = c.mouthO;
     if (this.talk > 0) mouth = Math.max(mouth, this.talk);
+    if (an === "yawn") mouth = Math.max(mouth, env * 0.95);
     if (an === "eat") mouth = Math.max(mouth, Math.abs(Math.sin(p * Math.PI * 6)) * 0.85);
     F.smile.visible = mouth < 0.5;
     F.smile.scale.set(c.smileX, c.smileY, 1);
@@ -593,7 +595,7 @@ export class CapsulaPetViewer {
     P.body.scale.set(P.bodyBase.x * (1 - Math.sin(br) * 0.008), P.bodyBase.y * (1 + Math.sin(br) * 0.018), P.bodyBase.z);
     P.head.position.y = P.headBaseY + Math.sin(br + 0.6) * 0.012;
     let y = -0.12 + Math.sin(t * 2.2 * Math.min(1, c.breath)) * (P.arms.length ? 0.012 : 0.03) * m;
-    let rz = 0, sx = 1, sy = 1, x = 0, headTilt = c.tilt, headScaleY = 1;
+    let rz = 0, sx = 1, sy = 1, x = 0, headTilt = c.tilt, headScaleY = 1, spinA = 0, hyAct = 0;
     const armZ = [0, 0], armX = [0, 0];
 
     /* vida propia: de vez en cuando mira a un lado, mueve una oreja, se estira o se menea (solo sin acción ni sueño) */
@@ -601,11 +603,11 @@ export class CapsulaPetViewer {
     try {
       const I = this.idle || (this.idle = { name: null, start: 0, dur: 1, next: 4, dir: 1, ear: 0 });
       if (!still && !an && name !== "sleepy" && !I.name && t >= I.next) {
-        const opts = P.arms.length ? ["look", "twitch", "stretch", "wiggle"] : ["look", "wiggle"];
+        const opts = P.arms.length ? ["look", "twitch", "stretch", "wiggle", "hop", "sway"] : ["look", "wiggle", "hop", "sway"];
         if ((P.ears || []).length) opts.push("twitch");
         I.name = opts[Math.floor(Math.random() * opts.length)];
         I.start = t; I.dir = Math.random() < 0.5 ? -1 : 1; I.ear = Math.floor(Math.random() * 2);
-        I.dur = { look: 2.2, twitch: 0.55, stretch: 1.8, wiggle: 1.1 }[I.name];
+        I.dur = { look: 2.2, twitch: 0.55, stretch: 1.8, wiggle: 1.1, hop: 0.7, sway: 2.4 }[I.name];
       }
       if (I.name) {
         const ip = (t - I.start) / I.dur;
@@ -615,6 +617,8 @@ export class CapsulaPetViewer {
           if (I.name === "look") { hyaw = I.dir * 0.38 * ie; headTilt += I.dir * 0.05 * ie; }
           else if (I.name === "twitch") { earFlick = Math.sin(ip * Math.PI * 6) * 0.28 * ie; earSide = I.ear; }
           else if (I.name === "stretch") { sy *= 1 + 0.05 * ie; y += 0.03 * ie; P.arms.forEach((a, i) => { armZ[i] += a.userData.s * 1.5 * ie; }); }
+          else if (I.name === "hop") { y += Math.abs(Math.sin(ip * Math.PI)) * 0.09; sy *= 1 - 0.03 * Math.sin(ip * Math.PI * 2); }
+          else if (I.name === "sway") { x += Math.sin(ip * Math.PI * 2) * 0.06; rz += Math.sin(ip * Math.PI * 2) * 0.04; }
           else if (I.name === "wiggle") { rz += Math.sin(ip * Math.PI * 6) * 0.07 * ie; }
         }
       }
@@ -660,6 +664,22 @@ export class CapsulaPetViewer {
     } else if (an === "eat") {
       headScaleY = 1 - Math.abs(Math.sin(p * Math.PI * 6)) * 0.035;
       P.arms.forEach((a, i) => { armX[i] = -0.5 * env; });
+    } else if (an === "spin") {
+      const e2 = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+      spinA = e2 * Math.PI * 2; y += Math.sin(Math.PI * p) * 0.3 * Math.max(m, 0.3);
+      sy *= 1 + 0.04 * env; P.arms.forEach((a, i) => { armZ[i] = a.userData.s * 1.0 * env; });
+    } else if (an === "shake") {
+      hyAct = Math.sin(p * Math.PI * 5) * 0.55 * env; headTilt += 0.04 * env;
+    } else if (an === "yawn") {
+      headTilt -= 0.07 * env; sy *= 1 + 0.045 * env; y += 0.02 * env;
+      P.arms.forEach((a, i) => { armZ[i] = a.userData.s * 1.6 * env; });
+    } else if (an === "boing") {
+      const b = Math.sin(p * Math.PI * 4), d = Math.max(0, Math.sin(p * Math.PI * 2));
+      sy *= 1 + 0.13 * b * env; sx *= 1 - 0.09 * b * env; y += Math.abs(Math.sin(p * Math.PI * 2)) * 0.18 * env * Math.max(m, 0.3);
+    } else if (an === "shiver") {
+      rz = Math.sin(p * Math.PI * 20) * 0.06 * env; x = Math.sin(p * Math.PI * 24) * 0.025 * env;
+      P.arms.forEach((a, i) => { armZ[i] = Math.sin(p * Math.PI * 20 + i) * 0.3 * env; });
+      if (p < 0.5 && Math.floor(p * 40) % 4 === 0 && !still && (this.dropT || 0) < t - 0.1) { this.dropT = t; this.spawn("stars"); }
     } else if (an === "levelup") {
       const rise = p < 0.25 ? p / 0.25 : p < 0.6 ? 1 : p < 0.85 ? 1 - (p - 0.6) / 0.25 : 0;
       y += rise * 0.45 * Math.max(m, 0.3);
@@ -668,7 +688,7 @@ export class CapsulaPetViewer {
     }
     P.arms.forEach((a, i) => { a.rotation.z = a.userData.baseZ + armZ[i]; a.rotation.x = a.userData.baseX + armX[i]; });
     P.head.rotation.z = headTilt * (P.arms.length ? 1 : 0.5);
-    P.head.rotation.y = this.hy || 0;
+    P.head.rotation.y = (this.hy || 0) + hyAct;
     if (dt > 0 && !still) { const vy = (y - (this.prevY ?? y)) / dt; this.vyS = (this.vyS || 0) + (Math.max(-6, Math.min(6, vy)) - (this.vyS || 0)) * 0.25; }
     this.prevY = y;
     P.head.scale.y = headScaleY * (this.stageHead || 1);
@@ -686,7 +706,7 @@ export class CapsulaPetViewer {
 
     /* giro del usuario: vuelve solo al soltar */
     if (!this.drag) this.yawUser *= Math.exp(-dt * 1.6);
-    this.pivot.rotation.y = this.yawUser + Math.sin(t * 0.7) * 0.1 * m;
+    this.pivot.rotation.y = this.yawUser + Math.sin(t * 0.7) * 0.1 * m + spinA;
 
     /* destellos */
     this.fx.forEach(h => {

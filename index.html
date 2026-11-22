@@ -22,6 +22,9 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
 .exa-svg{animation:kb 9s ease-in-out infinite alternate}@keyframes kb{to{transform:scale(1.07)}}
 @media (prefers-reduced-motion:reduce){.psw button.on,.postal,.exa-svg{animation:none}}
 .pn>*{flex-shrink:0}.postal{flex:none}
+.qline{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;border:1px dashed rgba(120,90,140,.4);border-radius:16px;padding:10px 12px;font:inherit;color:inherit;cursor:pointer;margin:6px 0}
+.qline .qt{flex:1;min-width:0;font-size:14px;line-height:1.3}.qline .qt i{display:block;font-style:normal;font-size:11px;opacity:.6;margin-bottom:2px}
+.card.goal{padding:10px 14px}
 </style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1115,23 +1118,24 @@ function actGo(id){const p=S.posts.find(x=>x.id===id);if(!p){toast('Ese recuerdo
  if(S.group){const gid=S.group.id;spaceTo(gid);S.af='';S.sub=p.k==='carta'?'cartas':'recuerdos';go('cap')}
  setTimeout(()=>postOpen(id),180)}
 function home(){
- const n=S.families.length,rc=recentHTML(3);
+ const n=S.families.length,rc=recentHTML(2);
  return `${updCard()}<section class="card hw"><div style="max-width:210px"><span class="mu">Hola, ${esc(S.me.name)}</span><h2>Guarda lo que vive tu familia</h2><p class="mu" style="margin:4px 0 10px">Cada historia que cuentan hace crecer a ${esc(S.pet.name)}.</p><button class="btn" onclick="go('mundo')">Ver a ${esc(S.pet.name)}</button></div><span class="hp"><span id="pet3dh" class="p3 p3h${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,104,S.wear,stg())}</span></span></span></section>
  ${fpCard()}
- <div class="duo"><button class="tile2" onclick="go('mundo')">${ic('world',26)}<b>Mi mundo</b><span class="mu">Solo tuyo: tu mascota y tu diario</span></button><button class="tile2" onclick="go('caps')">${ic('caps',26)}<b>Mis cápsulas</b><span class="mu">${n?'Compartes historias en '+n+(n>1?' espacios':' espacio'):'Comparte historias con tu familia o amigos'}</span></button></div>
+ ${rc?`<div class="row sp"><h3>Lo nuevo</h3><button class="lnk" onclick="go('act')">Ver todo</button></div>${rc}`:''}
  ${dqCard()}
- ${goalCard()}
- ${rc?`<div class="row sp"><h3>Actividad reciente</h3><button class="lnk" onclick="go('act')">Ver todo</button></div>${rc}`:''}`}
+ <div class="duo"><button class="tile2" onclick="go('mundo')">${ic('world',26)}<b>Mi mundo</b><span class="mu">Solo tuyo: tu mascota y tu diario</span></button><button class="tile2" onclick="go('caps')">${ic('caps',26)}<b>Mis cápsulas</b><span class="mu">${n?'Compartes historias en '+n+(n>1?' espacios':' espacio'):'Comparte historias con tu familia o amigos'}</span></button></div>
+ ${goalCard()}`}
+const qLine=(q,oc,tag)=>`<button class="qline" onclick="${oc}"><span>💭</span><span class="qt"><i>${tag||'Pregunta del día'}</i>${esc(q)}</span>${ic('back',16).replace('class="ic"','class="ic" style="transform:rotate(180deg);opacity:.5"')}</button>`;
 const goTrivF=id=>{spaceTo(id);go('triv')};
 function dqCard(){const f=S.families[0],done=S.qd===dayKey();
- if(!f)return `<section class="card"><span class="mu">Pregunta del día</span><h2>${esc(qaToday(true))}</h2><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn" onclick="goTriv()">Responder</button><button class="btn s" onclick="go('caps')">Crear mi cápsula</button></div><p class="mu" style="margin-top:8px">Con una cápsula, todos responden la misma pregunta y se revelan juntos.</p></section>`;
- return `<section class="card"><span class="mu">Pregunta de hoy · ${esc(f.name)}</span><h2>${esc(qaToday(false,f))}</h2><p class="mu" style="margin:0 0 8px">${done?'Ya respondiste. Mira qué contestaron los demás.':'Lo que contesten los demás se revela cuando tú respondas.'}</p><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn" onclick="goTrivF('${esc(f.id)}')">${done?'Ver respuestas':'Responder'}</button><button class="btn s" onclick="dest()">Contar una historia</button></div></section>`}
+ if(!f)return qLine(qaToday(true),'goTriv()');
+ return qLine(qaToday(false,f),`goTrivF('${esc(f.id)}')`,done?'Ya respondiste · ver respuestas':'Pregunta de hoy · '+esc(f.name))}
 const FGOAL=10;
 function weekCount(){const t0=weekStart().getTime();return S.posts.filter(p=>p.ts>=t0&&TY[p.k]&&!isBlk(p.a)).length}
 function goalCheck(){if(!S.user||!S.families.length||!S.group)return;if(weekCount()>=FGOAL&&S.wkG!==wkKey()){S.wkG=wkKey();S.fg=(S.fg||0)+1;S.lm=(S.lm||0)+30;S.lmT=Date.now();save();checkUnl();toast('🎉 ¡Meta semanal cumplida! +30 Lumis');burst(40);hopPet();bubSay('¡Lo logramos en familia! 🎉');render()}}
 function goalCard(){if(!S.families.length||!S.group)return'';const c=Math.min(weekCount(),FGOAL),ok=S.wkG===wkKey(),fg=S.fg||0,pr=fg<1?'un gorro para '+S.pet.name:fg<3?'30 Lumis (y a la 3.ª semana, una bufanda)':'30 Lumis';
  setTimeout(goalCheck,500);
- return `<section class="card"><div class="row sp"><h3>Meta de la semana</h3><span class="mu">${ok?'¡Cumplida!':c+' de '+FGOAL}</span></div><div class="bar" style="margin:8px 0 4px"><i style="width:${(ok?1:c/FGOAL)*100}%"></i></div><span class="mu">${ok?'Vuelve el lunes por la siguiente. Semanas cumplidas: '+fg+'.':'Entre todos, cuenten '+FGOAL+' historias. Premio: '+pr+'.'}</span></section>`}
+ return `<section class="card goal"><div class="row sp"><b style="font-size:14px">Meta de la semana</b><span class="mu">${ok?'¡Cumplida!':c+' de '+FGOAL}</span></div><div class="bar" style="margin:6px 0 4px"><i style="width:${(ok?1:c/FGOAL)*100}%"></i></div><span class="mu" style="font-size:12px">${ok?'Vuelve el lunes por la siguiente. Semanas cumplidas: '+fg+'.':'Entre todos, cuenten '+FGOAL+' historias. Premio: '+pr+'.'}</span></section>`}
 function famReact(){try{if(!S.user||!S.petSet||exAway()||asleep())return;let seen=0,has=false;try{const v=localStorage.getItem('capsula_fs');if(v){seen=+v;has=true}}catch(e){}
  const L=S.posts.filter(p=>p.a!=='me'&&TY[p.k]&&!isBlk(p.a)&&!(S.user&&p.a===S.user.uid)&&p.ts>seen&&p.ts>Date.now()-864e5).sort((a,b)=>b.ts-a.ts);
  const mx=S.posts.reduce((m,p)=>Math.max(m,p.ts||0),0);if(mx)try{localStorage.setItem('capsula_fs',String(mx))}catch(e){}
@@ -1165,7 +1169,7 @@ function mundo(){
  ${S.chest===today()?`<section class="card c"><span class="mu">Cofre de hoy abierto. Vuelve mañana por otro 🎁</span></section>`:`<section class="card c hero"><div class="chest">🎁</div><h3>¡${esc(S.pet.name)} te trajo un regalo!</h3><button class="btn" onclick="chest()">Abrir cofre</button></section>`}
  <section class="card"><div class="row sp"><h3 class="row" style="gap:6px;color:var(--pd)"><span class="${S.streak?'flick':''}" style="display:inline-flex">${ic('flame',20)}</span><span style="color:var(--tx)">${S.streak?'Racha de '+S.streak+(S.streak>1?' días':' día'):'Empieza tu racha hoy'}</span></h3><span class="mu">${S.posted?'Hoy ya cuentas':'Cuenta algo hoy'}</span></div><div class="days">${strip()}</div></section>
  ${memCard()}
- <section class="card"><span class="mu">Pregunta de la semana</span><h2>${esc(wqNow())}</h2><p class="mu">${wq}</p><button class="btn" onclick="chooser(wqNow())">Responder</button></section>
+ ${qLine(wqNow(),'chooser(wqNow())','Pregunta de la semana')}
  <section class="card"><h3>¿Cómo quieres contar hoy?</h3><div class="qp">${Object.entries(TY).map(([k,v])=>`<button onclick="compose('${k}')">${ic(v.i,18)}${v.l}</button>`).join('')}</div></section>
  <div class="duo"><button class="tile2" onclick="goArc()">${ic('book',26)}<b>Mi archivo</b><span class="mu">${n} ${n===1?'historia':'historias'}</span></button><button class="tile2" onclick="go('triv')">${ic('star',26)}<b>Pregunta del día</b><span class="mu">Una para ti</span></button></div>
  ${missionsHTML()}
@@ -1381,9 +1385,9 @@ function dgStart(e,b){e.preventDefault();const k=b.dataset.k,f=FOODS.find(x=>x.k
 document.addEventListener('pointerdown',e=>{const t=e.target&&e.target.closest?e.target:null;if(!t)return;const b=t.closest('.dg');if(b){if(b.dataset.k==='ball'){ballStart(e);return}dgStart(e,b);return}},{passive:false});
 function petTap(){ptTick();const p=S.pt,now=Date.now();
  if(exAway()){bubSay(Date.now()>=p.ex.end?'¡Volví! Mira mi postal 💌':'Está de aventura, ¡ya vuelve! 🧭');return}
- if(asleep()){SC.pk=(SC.pk||[]).filter(x=>now-x<4000);SC.pk.push(now);if(SC.pk.length<3){bubSay(SC.pk.length===1?say(['Zzz… 💤','Mmm… cinco minutitos más 😴','Zzz… zzz… 💭']):'Mmm… si sigues, me despierto 🥱');return}SC.pk=[];p.rest=0;p.wk=now+4*3600000;p.love=Math.min(100,p.love+4);p3sync();bubSay('🥱 ¡Me despertaste! Pero con mimos te perdono.');petUI();trayUpd();hopPet();return}
- p3play('love');const wait=3*H-(now-p.lr),need=p.love<70;p.love=Math.min(100,p.love+12);burst(8,['💗','✨']);
- if(new Date().getHours()<6){bubSay('🥱 ¡Me despertaste! Pero con mimos te perdono.');hopPet();return}
+ if(asleep()){SC.pk=(SC.pk||[]).filter(x=>now-x<4000);SC.pk.push(now);if(SC.pk.length<3){bubSay(SC.pk.length===1?say(['Zzz… 💤','Mmm… cinco minutitos más 😴','Zzz… zzz… 💭']):'Mmm… si sigues, me despierto 🥱');return}SC.pk=[];p.rest=0;p.wk=now+4*3600000;p.love=Math.min(100,p.love+4);p3sync();p3play('yawn');bubSay('🥱 ¡Me despertaste! Pero con mimos te perdono.');petUI();trayUpd();hopPet();return}
+ p3play(say(['love','love','boing','spin']));const wait=3*H-(now-p.lr),need=p.love<70;p.love=Math.min(100,p.love+12);burst(8,['💗','✨']);
+ if(new Date().getHours()<6){p3play('yawn');bubSay('🥱 ¡Me despertaste! Pero con mimos te perdono.');hopPet();return}
  if(wait<=0&&need){p.lr=now;S.bub={t:say(['¡Qué rico mimo! 💗','Me encantas, '+S.me.name+' 💕','¡Soy la mascota más feliz! ☁️','Eso era justo lo que necesitaba 🥹','Ronroneo por dentro… 💗']),o:null,q:null};S.bubT=now;track('mimo');rw(2,1)}
  else if(!need){bubSay(say(['Ya estoy rebosante de cariño 💗 ¡pero no pares!','Mmm, qué rico. Hoy me siento muy querido.','¡Más mimos no caben en mi corazón, pero igual me gustan! 🥹']));hopPet()}
  else{bubSay('Mmm, qué rico 🥹 Mi próximo premio de mimos llega en '+fmtWait(wait));hopPet()}}
@@ -1418,13 +1422,13 @@ function ballFly(el,room,fl,x,y,vx,vy){const r=room.getBoundingClientRect(),floo
  requestAnimationFrame(step)}
 function ballCatch(el,fl){el.remove();setTimeout(()=>{if(fl)fl.style.transform=''},500);
  ptTick();const p=S.pt,now=Date.now(),need=p.fun<65;S.pg=(S.pg||0)+1;track('play');
- p.fun=Math.min(100,p.fun+9);p.en=Math.max(0,p.en-3);p.love=Math.min(100,p.love+1);p.food=Math.max(0,p.food-1);p3play('happy');burst(6,['⚽','✨']);
+ p.fun=Math.min(100,p.fun+9);p.en=Math.max(0,p.en-3);p.love=Math.min(100,p.love+1);p.food=Math.max(0,p.food-1);p3play(say(['happy','boing']));burst(6,['⚽','✨']);
  if(S.pg>=5){S.tool=null;if(need&&now-p.lp>2*H){p.lp=now;S.bub={t:say(['¡Qué partidazo! Otra vez mañana ⚽','¡Me encantó jugar contigo! 💗','¡Jajaja! Eres muy bueno en esto ⚽']),o:null,q:null};S.bubT=now;rw(3,3)}else bubSay(say(['¡Qué partidazo! Ahora a descansar un poquito 😮‍💨','¡Otra partida cuando quieras! ⚽']));trayUpd();petUI();return}
  bubSay(say(['¡La atrapé! ⚽','¡Otra, otra! 🎉','¡Wiii! ⚽','Casi se me escapa 😄']));trayUpd()}
 function bath(){ptTick();const p=S.pt,now=Date.now();
  if(asleep()){bubSay('Zzz… ahora no, estoy durmiendo 💤');return}
  if(p.clean>=90){bubSay(say(['¡Ya estoy limpio y brillante! ✨','Hoy ya me bañé, mira cómo huelo 🫧','Más tarde, ahora estoy impecable']));return}
- const need=p.clean<60;p.clean=100;p.love=Math.min(100,p.love+4);p3play('surprise');burst(18,['🫧','💦','✨']);
+ const need=p.clean<60;p.clean=100;p.love=Math.min(100,p.love+4);p3play('shiver');burst(18,['🫧','💦','✨']);
  if(need&&now-p.lb>6*H){p.lb=now;S.bub={t:say(['¡Qué fresquito! Huelo a nube 🫧','Burbujas, burbujas… ¡gracias! 🛁','¡Quedé como nuevo! ✨']),o:null,q:null};S.bubT=now;rw(3,3)}else{bubSay('¡Chap chap! Qué rico 🫧');hopPet();petUI()}}
 function rest(){ptTick();const p=S.pt,now=Date.now();
  if(p.rest>now){bubSay('Zzz… (ya estoy descansando) 💤');return}
@@ -1776,7 +1780,7 @@ function caps(){
  ${plusLive()&&!isPlus()?`<p class="mu c">${S.families.length} de ${LIM.free.caps} cápsulas en el plan gratis</p>`:''}`}
 const mgCard=()=>`<section class="card"><div class="row sp" style="gap:12px"><div class="tx"><h3>Parejas de recuerdos</h3><span class="mu">5 niveles${S.posts.some(p=>['foto','dibujo'].includes(p.k))?' con '+(S.group?'las fotos de esta cápsula':'tus fotos'):''} · Lumis 1 vez al día</span></div><button class="btn" onclick="mgStart()">Jugar</button></div></section>`;
 function capHome(){
- return `<section class="card"><span class="mu">Pregunta de esta cápsula</span><h3 style="font-size:17px">${esc(qaToday())}</h3><button class="btn" onclick="go('triv')">Responder</button></section>
+ return `${qLine(qaToday(),"go('triv')",S.qd===dayKey()?'Ya respondiste · ver respuestas':'Pregunta de hoy')}
  <div class="duo"><button class="tile2" onclick="chooser()">${ic('pen',26)}<b>Escribir aquí</b><span class="mu">Se guarda en ${esc(S.group.name)}</span></button><button class="tile2" onclick="S.sub='recuerdos';soft()">${ic('image',26)}<b>Recuerdos</b><span class="mu">${S.posts.length} ${S.posts.length===1?'historia':'historias'}</span></button></div>
  <div class="duo"><button class="tile2" onclick="S.sub='cartas';soft()">${ic('mail',26)}<b>Cartas</b><span class="mu">${S.posts.filter(p=>p.k==='carta').length} escritas</span></button><button class="tile2 off" disabled aria-disabled="true">${ic('chat',26)}<b>Conversaciones</b><span class="tag soon">Pronto</span></button></div>
  ${mgCard()}
@@ -1828,7 +1832,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=81;
+const BUILD=82;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
