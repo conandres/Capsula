@@ -25,6 +25,10 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
 .qline{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;border:1px dashed rgba(120,90,140,.4);border-radius:16px;padding:10px 12px;font:inherit;color:inherit;cursor:pointer;margin:6px 0}
 .qline .qt{flex:1;min-width:0;font-size:14px;line-height:1.3}.qline .qt i{display:block;font-style:normal;font-size:11px;opacity:.6;margin-bottom:2px}
 .card.goal{padding:10px 14px}
+.goal3{position:absolute;left:8%;right:8%;top:10%;height:52%;border:5px solid #fff;border-bottom:0;border-radius:10px 10px 0 0;background:repeating-linear-gradient(45deg,rgba(80,60,120,.22) 0 2px,transparent 2px 12px),repeating-linear-gradient(-45deg,rgba(80,60,120,.22) 0 2px,transparent 2px 12px),rgba(40,30,70,.12);box-shadow:0 0 0 2px rgba(60,40,90,.35),0 6px 0 rgba(255,255,255,.7);pointer-events:none}
+.room.pk{min-height:460px}.room.pk .fl{animation:none;transform:translateX(var(--kx,0)) rotate(var(--kr,0)) scale(.78);transform-origin:50% 8%;margin-top:6%}
+.pscore{position:absolute;right:12px;top:10px;background:rgba(0,0,0,.45);color:#fff;border-radius:999px;padding:4px 12px;font-weight:800;font-size:14px;z-index:6}
+.ballsrc{bottom:6px!important}
 </style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1342,12 +1346,12 @@ function trayHTML(){const n=esc(S.pet.name),sl=asleep();
  if(sl)return `<div class="tw"><span class="mu" id="slt">${n} está durmiendo 💤${S.pt.rest>Date.now()?` · despierta en unos ${sleepMin()} min`:''}</span><button class="btn s w" onclick="wake()">🌙 Encender la luz</button></div>`;
  if(S.tool==='food')return `<div class="tw"><span class="mu">Arrastra la comida hasta la boca de ${n} (o tócala)</span><div class="fdt">${FOODS.map(f=>`<button class="dg" data-k="${f.k}" aria-label="Dar ${f.n}"><b>${f.e}</b><span>${f.n}</span></button>`).join('')}</div><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
  if(S.tool==='bath')return `<div class="tw"><span class="mu">Frota a ${n} con el dedo para bañarlo 🫧</span><div class="bar"><i id="scb" style="width:${Math.round(S.pt.clean)}%"></i></div><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
- if(S.tool==='play')return `<div class="tw"><span class="mu">Arrastra el balón de abajo del cuarto y suéltalo con un impulso para que ${n} lo persiga ⚽ <b>${S.pg||0}/5</b></span><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
+ if(S.tool==='play')return `<div class="tw"><span class="mu">¡Penales! Lanza el balón hacia el arco con un tirón rápido; ${n} intentará atajarlo. ⚽ <b>${S.pgg||0} goles · ${S.pg||0}/5</b></span><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
  return `<div class="tools">${TOOLS.map(([k,e,l])=>`<button class="tl" onclick="toolSet('${k}')"><b>${e}</b>${l}</button>`).join('')}</div><button class="btn s w" onclick="exOpen()" style="margin-top:8px">🧭 Mandar de expedición${S.pt.exn?' · '+S.pt.exn+' hechas':''}</button><span class="mu c">Toca o acaricia a ${n} con el dedo 💗</span>`}
-function trayUpd(){const t=$('#tray');if(t)t.innerHTML=trayHTML();const r=$('#room');if(r){r.classList.toggle('scrub',S.tool==='bath');const b=$('#ballsrc'),on=S.tool==='play';if(on&&!b){const el=document.createElement('button');el.id='ballsrc';el.className='dg ballsrc';el.dataset.k='ball';el.setAttribute('aria-label','Balón');el.innerHTML='<b>⚽</b>';r.appendChild(el)}else if(!on&&b)b.remove()}}
+function trayUpd(){const t=$('#tray');if(t)t.innerHTML=trayHTML();const r=$('#room');if(r){r.classList.toggle('scrub',S.tool==='bath');const b=$('#ballsrc'),on=S.tool==='play';if(on&&!b){const el=document.createElement('button');el.id='ballsrc';el.className='dg ballsrc';el.dataset.k='ball';el.setAttribute('aria-label','Balón');el.innerHTML='<b>⚽</b>';r.appendChild(el)}else if(!on&&b)b.remove();const gl=$('#goal');if(on&&!gl){const g=document.createElement('div');g.id='goal';g.className='goal3';g.innerHTML='<i class="gp"></i>';r.insertBefore(g,r.firstChild)}else if(!on&&gl)gl.remove();r.classList.toggle('pk',on);scoreUpd();const fl=r.querySelector('.fl');if(fl&&!on){fl.style.removeProperty('--kx');fl.style.removeProperty('--kr')}}}
 function toolSet(k){if(exAway()){S.tool=null;return}S.tool=k||null;SC.acc=0;
  if(k==='sleep'){S.tool=null;rest();trayUpd();return}
- if(k==='play'){if(!playOk()){S.tool=null;return}S.pg=0}
+ if(k==='play'){if(!playOk()){S.tool=null;return}S.pg=0;S.pgg=0;S.pgs=0}
  if(k==='food'&&!feedOk()){S.tool=null;return}
  if(k==='bath'&&!bathOk()){S.tool=null;return}
  try{if(P3.v)P3.v.strokeExpr=k==='bath'?'wink':'happy'}catch(e){}
@@ -1407,24 +1411,42 @@ function ballStart(e){e.preventDefault();const room=$('#room'),fl=room&&room.que
  const end=ev=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',end);removeEventListener('pointercancel',end);
   const r=room.getBoundingClientRect();if(ev.type==='pointercancel'||x<r.left||x>r.right||y<r.top-30||y>r.bottom+30){el.remove();if(ev.type!=='pointercancel')toast('Suéltalo dentro del cuarto');return}
   const a=pts[0],b=pts[pts.length-1],dt=Math.max(16,b[0]-a[0]);let vx=(b[1]-a[1])/dt,vy=(b[2]-a[2])/dt;const sp=Math.hypot(vx,vy);if(sp>2.2){vx*=2.2/sp;vy*=2.2/sp}
-  ballFly(el,room,fl,x,y,vx,vy)};
+  shoot(el,room,fl,x,y,vx,vy,sp)};
  addEventListener('pointermove',mv);addEventListener('pointerup',end);addEventListener('pointercancel',end)}
-function ballFly(el,room,fl,x,y,vx,vy){const r=room.getBoundingClientRect(),floor=r.bottom-34,L=r.left+22,Rr=r.right-22,cx=(r.left+r.right)/2;let last=performance.now(),t0=last,rot=0,stop=0;el.classList.add('fly');
- if(fl)fl.style.transition='transform .35s ease-out';
- const step=now=>{const dt=Math.min(32,now-last);last=now;vy+=0.0022*dt;x+=vx*dt;y+=vy*dt;rot+=vx*dt*1.4;
-  if(x<L){x=L;vx=Math.abs(vx)*.7}if(x>Rr){x=Rr;vx=-Math.abs(vx)*.7}
-  if(y>floor){y=floor;vy=-Math.abs(vy)*.6;vx*=.82;if(Math.abs(vy)<.12)vy=0}
-  if(y<r.top+10){y=r.top+10;vy=Math.abs(vy)*.5}
-  el.style.transform=`translate(${x-30}px,${y-30}px) rotate(${rot}deg)`;
-  if(fl)fl.style.transform=`translateX(${Math.max(-90,Math.min(90,(x-cx)*.8))}px)`;
-  const settled=y>=floor-0.5&&Math.abs(vx)<.03&&vy===0;
-  if(settled||now-t0>2600){ballCatch(el,fl);return}requestAnimationFrame(step)};
+function keeperTo(fl,z){if(!fl)return;const dx=(z-1)*Math.min(90,fl.parentNode.clientWidth*.22);fl.style.transition='transform .28s cubic-bezier(.2,.9,.3,1.2)';fl.style.setProperty('--kx',dx+'px');fl.style.setProperty('--kr',(z-1)*14+'deg')}
+function scoreUpd(){let e=$('#pscore');const r=$('#room');if(!r)return;if(S.tool!=='play'){if(e)e.remove();return}if(!e){e=document.createElement('div');e.id='pscore';e.className='pscore';r.appendChild(e)}e.textContent='⚽ '+(S.pgg||0)+'  ·  🧤 '+(S.pgs||0)}
+/* Penales: tiras al arco con un tirón; la mascota elige un lado para atajar (a veces adivina). */
+function shoot(el,room,fl,x,y,vx,vy,sp){const r=room.getBoundingClientRect();
+ if(sp<.35||vy>-.1){el.remove();toast('Dale un tirón rápido hacia arriba ⚽');return}
+ if(room.dataset.busy==='1'){el.remove();return}room.dataset.busy='1';
+ const gx0=r.left+r.width*.14,gx1=r.right-r.width*.14,gy0=r.top+r.height*.08,gy1=r.top+r.height*.58,gw=gx1-gx0;
+ const gm=(gy0+gy1)/2,ax=x+(vx/Math.abs(vy))*Math.max(60,y-gm),hf=Math.max(0,Math.min(1.2,(sp-.4)/1.7)),ay=gy1-(gy1-gy0)*hf*1.05;
+ const out=ax<gx0-14||ax>gx1+14||ay<gy0-8;
+ const tx=Math.max(gx0-26,Math.min(gx1+26,ax)),ty=Math.max(gy0-34,Math.min(gy1-18,ay<gy0?gy0-24:Math.max(gy0+14,ay)));
+ const sz=Math.max(0,Math.min(2,Math.floor((tx-gx0)/gw*3)));
+ const lvl=Math.min(3,Math.floor(S.xp/100)>=10?3:stg()),guess=.34+lvl*.06;
+ const kz=Math.random()<guess?sz:(sz+1+Math.floor(Math.random()*2))%3;
+ const T=560,t0=performance.now();el.classList.add('fly');
+ setTimeout(()=>{keeperTo(fl,kz);p3play('boing')},170);
+ const step=now=>{const u=Math.min(1,(now-t0)/T),e=1-Math.pow(1-u,2.2);
+  const px=x+(tx-x)*e,py=y+(ty-y)*e-Math.sin(Math.PI*u)*36,sc=1-.45*e;
+  el.style.transform=`translate(${px-30}px,${py-30}px) rotate(${u*540}deg) scale(${sc})`;
+  if(u<1){requestAnimationFrame(step);return}
+  const saved=!out&&kz===sz;let ox=px,oy=py,u2=0;
+  if(saved){const t1=performance.now(),dir=(sz===2?1:-1)||1;const bounce=n=>{const q=Math.min(1,(n-t1)/450);el.style.transform=`translate(${ox+dir*q*60-30}px,${oy+q*(120)-30-Math.sin(Math.PI*q)*40}px) rotate(${q*400}deg) scale(${.55})`;if(q<1)requestAnimationFrame(bounce);else{el.remove();shotDone(room,fl,'save')}};requestAnimationFrame(bounce)}
+  else if(out){setTimeout(()=>{el.remove();shotDone(room,fl,'out')},350);el.style.transition='opacity .35s';el.style.opacity='0'}
+  else{el.style.transition='opacity .6s';setTimeout(()=>{el.style.opacity='0'},300);setTimeout(()=>{el.remove()},900);shotDone(room,fl,'goal')}};
  requestAnimationFrame(step)}
-function ballCatch(el,fl){el.remove();setTimeout(()=>{if(fl)fl.style.transform=''},500);
- ptTick();const p=S.pt,now=Date.now(),need=p.fun<65;S.pg=(S.pg||0)+1;track('play');
- p.fun=Math.min(100,p.fun+9);p.en=Math.max(0,p.en-3);p.love=Math.min(100,p.love+1);p.food=Math.max(0,p.food-1);p3play(say(['happy','boing']));burst(6,['⚽','✨']);
- if(S.pg>=5){S.tool=null;if(need&&now-p.lp>2*H){p.lp=now;S.bub={t:say(['¡Qué partidazo! Otra vez mañana ⚽','¡Me encantó jugar contigo! 💗','¡Jajaja! Eres muy bueno en esto ⚽']),o:null,q:null};S.bubT=now;rw(3,3)}else bubSay(say(['¡Qué partidazo! Ahora a descansar un poquito 😮‍💨','¡Otra partida cuando quieras! ⚽']));trayUpd();petUI();return}
- bubSay(say(['¡La atrapé! ⚽','¡Otra, otra! 🎉','¡Wiii! ⚽','Casi se me escapa 😄']));trayUpd()}
+function shotDone(room,fl,res){ptTick();const p=S.pt,now=Date.now(),need=p.fun<65;S.pg=(S.pg||0)+1;track('play');
+ p.fun=Math.min(100,p.fun+8);p.en=Math.max(0,p.en-3);p.love=Math.min(100,p.love+1);p.food=Math.max(0,p.food-1);
+ if(res==='goal'){S.pgg=(S.pgg||0)+1;p3play('shake');burst(14,['⚽','🎉','✨']);bubSay(say(['¡GOOOL! Me ganaste 🥅','¡Qué disparo! No lo vi venir 😮','Uy… se me coló ⚽']))}
+ else if(res==='save'){S.pgs=(S.pgs||0)+1;p3play(say(['happy','spin']));bubSay(say(['¡Atajé! 🧤','¡Lo olí venir! 🧤','¡Mía! 😎']))}
+ else{p3play('surprise');bubSay(say(['¡Afuera! Casi 😅','Fue por encima… ¡otra vez!','Uy, ese se perdió 🌙']))}
+ scoreUpd();
+ setTimeout(()=>{keeperTo(fl,1);room.dataset.busy='0'},650);
+ if(S.pg>=5){const g=S.pgg||0,sv=S.pgs||0;S.tool=null;
+  setTimeout(()=>{if(need&&g>=2&&now-p.lp>2*H){p.lp=now;S.bub={t:'Final: '+g+' goles. ¡Qué partidazo! Otra tanda mañana ⚽',o:null,q:null};S.bubT=Date.now();rw(3,3)}else bubSay('Final: '+g+' goles y '+sv+' atajadas. ¡Revancha cuando quieras! ⚽');trayUpd();scoreUpd();petUI()},900);return}
+ trayUpd()}
 function bath(){ptTick();const p=S.pt,now=Date.now();
  if(asleep()){bubSay('Zzz… ahora no, estoy durmiendo 💤');return}
  if(p.clean>=90){bubSay(say(['¡Ya estoy limpio y brillante! ✨','Hoy ya me bañé, mira cómo huelo 🫧','Más tarde, ahora estoy impecable']));return}
@@ -1804,19 +1826,23 @@ function act(){
 const GUIDES={
  mundo:{c:'m',k:'Tu mundo · el juego',s:[
   ['crown','Esta es tu mascota','Vive en Mi mundo, un espacio solo tuyo. Nadie más la ve ni entra a jugar con ella.'],
-  ['heart','Cuídala cada día','Acarícialo con el dedo, arrástrale comida a la boca, frótalo para bañarlo, apaga la luz para dormir o lanza el balón para jugar. Si sus barras bajan, te lo pide con cariño: aquí no hay castigos.'],
+  ['heart','Cuídala cada día','Acarícialo con el dedo, arrástrale comida a la boca, frótalo para bañarlo, apaga la luz para dormir o juega a los penales. Si sus barras bajan, te lo pide con cariño: aquí no hay castigos.'],
   ['img:lumis','Lumis: la moneda','Los ganas despacio: contando historias, cuidando a tu mascota (comer, bañar, jugar, siesta), con el cofre diario, la pregunta del día, el juego de Parejas (en Mis cápsulas), las expediciones, las misiones de la semana y cuando alguien entra con tu invitación. Hay un tope por día para que valgan algo. Se gastan en la Tienda: fondos del cuarto, accesorios y mascotas nuevas.'],
+  ['⚽','Penales','En Jugar aparece un arco detrás de tu mascota. Tira el balón con un tirón rápido hacia arriba: ella elige un lado para atajar y a veces adivina. Son 5 tiros por tanda; si metes 2 o más puedes ganar Lumis. Si tiras muy alto o muy afuera, ¡se va!'],
   ['🧭','Expediciones','Manda a tu mascota a la Playa (1 h), el Bosque (4 h) o la Montaña (8 h). Mientras está fuera no puedes cuidarla. Al volver trae una postal y una pregunta: si la respondes ganas Lumis y XP, y tu respuesta se guarda en tu diario. Entre más dure el viaje, mejor el premio (hasta 30 Lumis de expediciones por día).'],
   ['🐾','Varias mascotas','Puedes tener hasta 3 mascotas. La segunda cuesta 400 Lumis y la tercera 800. Cada una tiene su propio ánimo, nivel y armario; los Lumis son compartidos.'],
   ['img:xp','XP: así crece tu mascota','La XP se gana con las mismas acciones, pero no se gasta. Cada 100 XP subes un nivel, y con los niveles tu mascota evoluciona: Bebé, Pequeño (nivel 4), Joven (nivel 11) y Adulto (nivel 26). Crecer es lento a propósito.'],
   ['crown','Accesorios y recompensas','Algunos accesorios se desbloquean solos al subir de nivel o con logros, como contar tu primera historia, responder preguntas o mantener la racha. Otros se compran con Lumis. Los ves y los pones en el armario (el botón del gancho en el cuarto), una prenda por categoría.'],
   ['heart','Y los corazones','Los corazones 💗 ya no son monedas ni XP: son el ánimo de tu mascota y las vidas del juego de Parejas.'],
+  ['💗','Tu mascota reacciona','Cuando alguien de tu cápsula comparte algo, tu mascota te lo cuenta en su nube de pensamiento. Si está de expedición o durmiendo, espera a que vuelva o despierte.'],
   ['gift','Cofre, racha y misiones','Abre el cofre una vez al día, mantén tu racha contando algo cada día y cumple las misiones de la semana para ganar más Lumis.',['Contar una historia','dest()']]]},
  cap:{c:'c',k:'Cápsulas · compartir',s:[
   ['lock','Un espacio privado con los tuyos','Una cápsula junta a tu familia, tu pareja o tus amigos. Solo entra quien tenga el código.'],
   ['users','Invita con un código','En la pestaña Personas están el código y el enlace para invitar. Ganas Lumis cuando alguien entra.',['Ir a Personas',"guideInvite()"]],
   ['mail','Cuenten historias juntos','Fotos, cartas, notas de voz, dibujos y recetas. Reacciona a lo que cuentan los demás y marca con ★ tus favoritas.'],
-  ['book','Respondan y armen su libro','Cada día hay una pregunta para todos. Con 12 historias se arma un libro para leer y guardar.']]}};
+  ['star','Pregunta del día','Cada cápsula tiene su pregunta del día, en una línea discreta con una nube 💭. Lo que contestan los demás se revela cuando tú respondes.'],
+  ['flame','Meta de la semana','Entre todos cuenten 10 historias antes del lunes: ganan 30 Lumis y, la primera vez, un gorro para tu mascota (a la 3.ª semana, una bufanda).'],
+  ['book','Armen su libro','Con 12 historias se arma un libro para leer y guardar.']]}};
 const gSeen=k=>{try{return localStorage.getItem('capsula_g_'+k)==='1'}catch(e){return false}};
 function guideInvite(){cl();
  if(S.families.length){const f=S.group&&S.families.some(x=>x.id===S.group.id)?S.group:S.families[0];openCap(f.id);S.sub='personas';render();return}
@@ -1832,7 +1858,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=82;
+const BUILD=83;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
