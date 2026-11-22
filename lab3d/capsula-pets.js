@@ -486,7 +486,7 @@ export class CapsulaPetViewer {
   setTalk(v) { this.talk = Math.max(0, Math.min(1, +v || 0)); }
   setExpression(name) { this.expr = EXPR[name] ? name : "neutral"; }
   setAccessories(list) {
-    this.accList = (list || []).filter(a => ACCESSORIES.includes(a));
+    this.accList = this.current === "capsule" ? [] : (list || []).filter(a => ACCESSORIES.includes(a));   /* Nubi es la guía: no usa ropa */
     (this.accGroups || []).forEach(a => { disposeTree(a); if (a.parent) a.parent.remove(a); });
     this.accGroups = [];
     this.accList.forEach(id => {
