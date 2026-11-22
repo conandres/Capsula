@@ -67,6 +67,22 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
 @keyframes nbIn{0%{transform:translate(-170px,-70px) rotate(-28deg) scale(.45);opacity:0}55%{opacity:1;transform:translate(24px,10px) rotate(8deg) scale(1.1)}100%{transform:none;opacity:1}}
 @keyframes nbHover{50%{transform:translateY(-9px) rotate(2deg)}}
 .bz h2{padding:0!important;text-align:center}
+.wd{display:grid;grid-template-columns:76px 1fr;gap:10px;margin-top:10px;align-items:start}
+.wrail{display:flex;flex-direction:column;gap:8px;max-height:52vh;overflow-y:auto;scrollbar-width:none}.wrail::-webkit-scrollbar{display:none}
+.wrail button{position:relative;border:2px solid var(--soft2,#f3d9ec);background:var(--card,#fff);border-radius:18px;padding:8px 2px 6px;display:flex;flex-direction:column;align-items:center;gap:3px;font:inherit;font-size:11px;font-weight:700;color:var(--mu,#8a5a73);cursor:pointer}
+.wrail button.on{border-color:var(--pd,#b0336f);background:var(--soft,#ffe9f4);color:var(--tx)}
+.wrail .wdot{position:absolute;top:6px;right:8px;width:9px;height:9px;border-radius:50%;background:#3ddc84;border:2px solid var(--card,#fff)}
+.wpane{min-width:0;max-height:52vh;overflow-y:auto}
+.wl{display:flex;flex-direction:column;gap:8px}
+.wi{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:2px solid var(--soft2,#f3d9ec);background:var(--card,#fff);border-radius:18px;padding:10px 12px;font:inherit;color:var(--tx);cursor:pointer}
+.wi.on{border-color:var(--pd,#b0336f);background:var(--soft,#ffe9f4)}.wi.lk{opacity:.5}
+.wi .wic{flex:none;width:60px;height:60px;border-radius:16px;background:var(--tint-2,#f3eeff);display:grid;place-items:center}.wi .wic.dim{filter:grayscale(.55) opacity(.75)}
+.wi .wtx{display:flex;flex-direction:column;gap:2px;min-width:0}.wi .wtx b{font-size:15px}.wi .wtx small{color:var(--mu,#8a5a73);font-size:12px}
+.fl.wet{filter:brightness(.94) saturate(1.12) drop-shadow(0 8px 6px rgba(70,150,230,.35))}
+.foamp{position:absolute;left:50%;top:2%;width:64%;height:30%;transform:translateX(-50%) scale(var(--fp,.25));transform-origin:50% 100%;transition:transform .25s ease;pointer-events:none;z-index:2;
+ background:radial-gradient(circle at 20% 65%,#fff 0 20%,transparent 21%),radial-gradient(circle at 42% 38%,#fff 0 24%,transparent 25%),radial-gradient(circle at 66% 50%,#fff 0 22%,transparent 23%),radial-gradient(circle at 82% 72%,#fff 0 17%,transparent 18%),radial-gradient(circle at 52% 78%,#f4fbff 0 19%,transparent 20%);filter:drop-shadow(0 2px 2px rgba(80,140,200,.35))}
+.drip{position:absolute;font-size:14px;z-index:7;pointer-events:none;animation:dripf .9s ease-in forwards}
+@keyframes dripf{0%{transform:translateY(0) scale(.7);opacity:0}15%{opacity:1}100%{transform:translateY(70px) scale(1);opacity:0}}
 </style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -709,7 +725,7 @@ const NTIPS={food:['🍎','Hora de comer','¡Mira! Arrastra la comida de abajo h
 function guideTip(k,force){const t=NTIPS[k];if(!t)return;let seen=false;try{seen=localStorage.getItem('capsula_tg_'+k)==='1';localStorage.setItem('capsula_tg_'+k,'1')}catch(e){}
  if(seen&&!force)return;
  setTimeout(()=>nubiSheet({k:'Nubi te explica',ic:t[0],t:t[1],x:t[2],fly:1,extra:'<button class="btn w" onclick="cl()">¡Entendido!</button>'}),force?0:350)}
-function wardOpen(){if(S.pet.kind!=='nube')guideTip('ward');if(S.pet.kind==='nube'){showSheet(`<div class="ward"><h2>Nubi no usa ropa</h2><p class="mu">Nubi es la guía de Cápsula y se queda tal cual. Cambia a otra mascota (conejo, gato…) para vestirla.</p><button class="btn w" onclick="cl()">Entendido</button></div>`);return}showSheet(`<div class="ward"><h2>Armario de ${esc(S.pet.name)}</h2><p class="mu">Una prenda por categoría. Toca una para ponerla o quitarla.</p>${closetGrid()}</div>`)}
+function wardOpen(){if(S.pet.kind!=='nube')guideTip('ward');if(S.pet.kind==='nube'){showSheet(`<div class="ward"><h2>Nubi no usa ropa</h2><p class="mu">Nubi es la guía de Cápsula y se queda tal cual. Cambia a otra mascota (conejo, gato…) para vestirla.</p><button class="btn w" onclick="cl()">Entendido</button></div>`);return}showSheet(`<div class="ward"><h2>Armario de ${esc(S.pet.name)}</h2><p class="mu">Elige una categoría a la izquierda. Una prenda por categoría; la ves puesta en tu mascota.</p>${closetGrid()}</div>`)}
 const ROOMS=[{id:'',n:'Cielo',p:0,bg:'linear-gradient(180deg,#fde3f1,#f6d5ef)'},{id:'ocaso',n:'Atardecer',p:60,bg:'linear-gradient(180deg,#ffb199,#ff7aa2 70%,#c86dd7)'},{id:'bosque',n:'Bosque',p:90,bg:'linear-gradient(180deg,#b9e6a8,#6fc28b 75%,#3f8f6a)'},{id:'playa',n:'Playa',p:110,bg:'linear-gradient(180deg,#9fdcff,#6cc3f0 60%,#f4dca0)'},{id:'espacio',n:'Espacio',p:150,bg:'linear-gradient(180deg,#1b1650,#2e2a7a 70%,#4b3aa0)'}];
 const ACCP={sombrero:150,camiseta:120,rayas:160,sudadera:220,jean:140,falda:160,short:120};
 const ownedRoom=id=>!id||S.unl.includes('rm:'+id);
@@ -729,13 +745,33 @@ const shopHTML=()=>{return `<section class="card" id="shop"><div class="row sp">
  <b>Fondos del cuarto</b><div class="shr">${ROOMS.map(r=>{const o=ownedRoom(r.id),on=(S.rm||'')===r.id;return `<button class="${on?'on':''}" onclick="shopAsk('room','${r.id}')"><i style="background:${r.bg}"></i>${r.n}<small>${on?'Puesto':o?'Toca para usar':LI+' '+r.p}</small></button>`}).join('')}</div>
 </section>`};
 const closetHTML=()=>`<section class="card"><h3>Armario de ${esc(S.pet.name)}</h3><span class="mu">Desbloquea accesorios; una prenda por categoría</span>${closetGrid()}</section>`;
+const TEE='<path d="M21 10 L6 20 L13 33 L21 28 V56 H43 V28 L51 33 L58 20 L43 10 Q32 18 21 10Z"';
+const AI={
+ estrella:'<polygon points="32,5 39,24 59,25 43,38 49,58 32,46 15,58 21,38 5,25 25,24" fill="#ffd54a" stroke="#e0a800" stroke-width="2.5" stroke-linejoin="round"/>',
+ mono:'<path d="M32 32 L6 17 V47Z" fill="#ff7fb0"/><path d="M32 32 L58 17 V47Z" fill="#ff7fb0"/><circle cx="32" cy="32" r="8" fill="#e0568f"/>',
+ corona:'<path d="M7 50 L5 19 L22 33 L32 10 L42 33 L59 19 L57 50Z" fill="#ffd54a" stroke="#e0a800" stroke-width="2.5" stroke-linejoin="round"/><circle cx="32" cy="40" r="4.5" fill="#ff5c8a"/><circle cx="16" cy="42" r="3" fill="#7ad7ff"/><circle cx="48" cy="42" r="3" fill="#7ad7ff"/>',
+ flor:'<g fill="#ff8dbb"><circle cx="32" cy="15" r="11"/><circle cx="49" cy="27" r="11"/><circle cx="43" cy="47" r="11"/><circle cx="21" cy="47" r="11"/><circle cx="15" cy="27" r="11"/></g><circle cx="32" cy="34" r="9" fill="#ffd54a"/>',
+ lentes:'<circle cx="19" cy="34" r="13" fill="#bde6ff" fill-opacity=".65" stroke="#3a2a4a" stroke-width="4.5"/><circle cx="45" cy="34" r="13" fill="#bde6ff" fill-opacity=".65" stroke="#3a2a4a" stroke-width="4.5"/><path d="M32 32 q0-4 0 0" stroke="#3a2a4a" stroke-width="4.5"/><path d="M5 30 L2 24 M59 30 L62 24" stroke="#3a2a4a" stroke-width="4" stroke-linecap="round"/>',
+ gorro:'<path d="M32 6 L51 55 H13Z" fill="#8f6bff"/><path d="M24 30 L40 30 L44 41 L20 41Z" fill="#ffd54a"/><circle cx="32" cy="9" r="6" fill="#ff7fb0"/><circle cx="28" cy="48" r="2.6" fill="#fff"/><circle cx="38" cy="47" r="2.6" fill="#fff"/>',
+ bufanda:'<path d="M5 20 Q32 36 59 20 V36 Q32 52 5 36Z" fill="#e0475b"/><rect x="40" y="34" width="12" height="25" rx="3" fill="#e0475b"/><path d="M14 27 l6 12 M28 31 l6 12 M42 27 l6 12" stroke="#fff" stroke-width="3.5" opacity=".7"/>',
+ camiseta:TEE+' fill="#5aa9ff"/><rect x="21" y="30" width="22" height="5" fill="#fff"/>',
+ rayas:'<clipPath id="tcp">'+TEE+'/></clipPath><g clip-path="url(#tcp)"><rect width="64" height="64" fill="#fff"/><g fill="#e0475b"><rect y="10" width="64" height="7"/><rect y="24" width="64" height="7"/><rect y="38" width="64" height="7"/><rect y="52" width="64" height="7"/></g></g>',
+ sudadera:'<path d="M20 12 L4 24 L9 44 L21 40 V57 H43 V40 L55 44 L60 24 L44 12 Q32 22 20 12Z" fill="#ff8dbb"/><path d="M22 12 Q32 26 42 12 Q32 20 22 12Z" fill="#ff6fa6"/><rect x="22" y="40" width="20" height="10" rx="4" fill="#ff6fa6"/><path d="M28 24 v9 M36 24 v9" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>',
+ jean:'<path d="M16 8 H48 L52 57 H35 L32 30 L29 57 H12Z" fill="#3f6fc4"/><rect x="16" y="8" width="32" height="6" fill="#5b3a26"/><path d="M32 14 V30" stroke="#2d4f93" stroke-width="2"/>',
+ falda:'<path d="M20 12 H44 L58 54 H6Z" fill="#ff7fb0"/><path d="M8 48 Q16 56 24 48 Q32 56 40 48 Q48 56 56 48 L58 54 H6Z" fill="#ffc2dc"/><rect x="20" y="12" width="24" height="5" fill="#e0568f"/>',
+ short:'<path d="M16 10 H48 L52 42 H35 L32 28 L29 42 H12Z" fill="#3bb273"/><rect x="16" y="10" width="32" height="6" fill="#fff"/>',
+ sombrero:'<rect x="19" y="10" width="26" height="32" rx="4" fill="#3b2a4d"/><ellipse cx="32" cy="45" rx="26" ry="8" fill="#3b2a4d"/><rect x="19" y="33" width="26" height="7" fill="#ff7fb0"/>',
+ audifonos:'<path d="M10 40 V34 Q10 10 32 10 Q54 10 54 34 V40" fill="none" stroke="#6b4bd8" stroke-width="5" stroke-linecap="round"/><rect x="5" y="36" width="14" height="22" rx="6" fill="#ff7fb0"/><rect x="45" y="36" width="14" height="22" rx="6" fill="#ff7fb0"/>',
+ alas:'<path d="M31 30 Q8 2 2 24 Q0 42 24 52 Q30 44 31 30Z" fill="#fff" stroke="#f0c75e" stroke-width="3" stroke-linejoin="round"/><path d="M33 30 Q56 2 62 24 Q64 42 40 52 Q34 44 33 30Z" fill="#fff" stroke="#f0c75e" stroke-width="3" stroke-linejoin="round"/>'};
+const accIc=(id,sz=52)=>`<svg class="ai" width="${sz}" height="${sz}" viewBox="0 0 64 64" aria-hidden="true">${AI[id]||'<circle cx="32" cy="32" r="18" fill="#c9b8f0"/>'}</svg>`;
+const wrailIc={cab:'sombrero',cara:'lentes',cuello:'bufanda',esp:'alas',cam:'camiseta',pan:'jean'};
 const closetGrid=()=>{const vis=ACCS.filter(accVisible),tabs=WTABS.filter(([k])=>k==='cam'||k==='pan'||vis.some(a=>ACAT[a.id]===k)),cur=tabs.some(t=>t[0]===S.wtab)?S.wtab:'cab',list=vis.filter(a=>ACAT[a.id]===cur);
- const bar=`<div class="wtabs" role="tablist">${tabs.map(([k,n])=>{const w=vis.find(a=>ACAT[a.id]===k&&S.wear.includes(a.id));return `<button role="tab" aria-selected="${k===cur}" class="${k===cur?'on':''}" onclick="wtab('${k}')">${n}${w?' <i></i>':''}</button>`}).join('')}</div>`;
- return bar+(list.length?closetItems(list):`<p class="mu c" style="padding:22px 0">Aquí no hay prendas todavía 👕</p>`)};
-const closetItems=L=>`<div class="cl">${L.map(a=>{const un=owned(a),on=S.wear.includes(a.id);
+ const rail=`<div class="wrail" role="tablist" aria-label="Categorías">${tabs.map(([k,n])=>{const w=vis.find(a=>ACAT[a.id]===k&&S.wear.includes(a.id));return `<button role="tab" aria-selected="${k===cur}" class="${k===cur?'on':''}" onclick="wtab('${k}')">${accIc(wrailIc[k],34)}<span>${n}</span>${w?'<i class="wdot"></i>':''}</button>`}).join('')}</div>`;
+ return `<div class="wd">${rail}<div class="wpane">${list.length?closetItems(list):`<p class="mu c" style="padding:22px 0">Aquí no hay prendas todavía 👕</p>`}</div></div>`};
+const closetItems=L=>`<div class="wl">${L.map(a=>{const un=owned(a),on=S.wear.includes(a.id);
  const act=un?`onclick="wear('${a.id}')" aria-pressed="${on}"`:a.src==='ad'?`onclick="shopAsk('acc','${a.id}')"`:a.src==='plus'?`onclick="plusOpen('acc')"`:a.src==='pago'?`onclick="BILLING.buy(SKU.alas)"`:'disabled';
- const tag=un?(on?'Puesto':'Toca para ponerlo'):a.src==='ad'?LI+' '+ACCP[a.id]:a.src==='plus'?'✨ Plus':a.src==='pago'?(BILLING.ok()?'🛍 Comprar':'🛍 Tienda · pronto'):a.u;
- return `<button class="cli ${on?'on':''} ${un||a.src?'':'lk'}" ${act}>${pet(S.pet.kind,70,[a.id],stg(),true)}<span>${a.n}</span><small>${tag}</small></button>`}).join('')}</div>`;
+ const tag=un?(on?'Puesto ✓':'Toca para ponerlo'):a.src==='ad'?LI+' '+ACCP[a.id]:a.src==='plus'?'✨ Plus':a.src==='pago'?(BILLING.ok()?'🛍 Comprar':'🛍 Tienda · pronto'):a.u;
+ return `<button class="wi ${on?'on':''} ${un||a.src?'':'lk'}" ${act}><span class="wic ${un?'':'dim'}">${accIc(a.id,48)}</span><span class="wtx"><b>${a.n}</b><small>${tag}</small></span></button>`}).join('')}</div>`;
 /* ---------- Cápsula Plus: límites, tienda y anuncios. Apagado para todos hasta que plusOn sea true ----------  */
 const LIM={free:{caps:3,members:5,media:40},plus:{caps:999,members:999,media:400}};
 const MEDIA=['foto','dibujo','voz','video'];
@@ -1430,9 +1466,17 @@ function roomSync(){const r=$('#room');if(!r)return;const sl=asleep();r.classLis
 setInterval(()=>{if(!exAway()||!$('#tray'))return;const e=S.pt.ex;if(Date.now()>=e.end&&!e.rdy){e.rdy=1;save();{const r=$('#exr');if(r)r.textContent='¡Ya volvió! Trae una postal 💌'}bubSay('¡Volví de mi expedición! 💌');trayUpd();try{remApply()}catch(x){}}else{const l=$('#exl');if(l){const x=EXPS.find(a=>a.k===e.k);const r=$('#exr');if(r)r.textContent='Vuelve en '+fmtWait(exLeft());l.textContent=S.pet.name+' está de expedición en '+x.n+' '+x.e+' · vuelve en '+fmtWait(exLeft())}}},20000);
 function petClick(){if(SC.drag){SC.drag=0;return}petTap()}
 function spg(x,y){let e=$('#spg');if(!e){e=document.createElement('span');e.id='spg';e.textContent='🧽';e.style.cssText='position:fixed;left:0;top:0;font-size:38px;pointer-events:none;z-index:60;transition:opacity .25s';document.body.appendChild(e)}e.style.opacity='1';e.style.transform=`translate(${x-19}px,${y-30}px) rotate(${Math.sin(Date.now()/90)*18}deg)`;clearTimeout(spg.t);spg.t=setTimeout(()=>{e.style.opacity='0';setTimeout(()=>e.remove(),300)},350)}
+function spray(n){const r=$('#room'),fl=r&&r.querySelector('.fl');if(!r||!fl)return;const rr=r.getBoundingClientRect(),fr=fl.getBoundingClientRect(),cx=fr.left-rr.left+fr.width/2,cy=fr.top-rr.top+fr.height*.45;
+ for(let i=0;i<(n||12);i++){const d=document.createElement('span');d.className='spl';d.textContent=['💦','💧','🫧'][i%3];d.style.cssText=`left:${cx}px;top:${cy}px;--dx:${(Math.random()-.5)*300}px;--dy:${-30-Math.random()*90}px`;r.appendChild(d);setTimeout(()=>d.remove(),1000)}}
+function wetDrips(on){clearInterval(wetDrips.t);if(!on)return;wetDrips.t=setInterval(()=>{const r=$('#room'),fl=r&&r.querySelector('.fl');if(!r||!fl||!fl.classList.contains('wet')){clearInterval(wetDrips.t);return}const rr=r.getBoundingClientRect(),fr=fl.getBoundingClientRect(),d=document.createElement('span');d.className='drip';d.textContent='💧';d.style.cssText=`left:${fr.left-rr.left+fr.width*(.3+Math.random()*.4)}px;top:${fr.top-rr.top+fr.height*(.25+Math.random()*.3)}px`;r.appendChild(d);setTimeout(()=>d.remove(),900)},330)}
+function tubOut(){const r=$('#room'),fl=r&&r.querySelector('.fl');if(!fl){S.outB=0;S.tool=null;bath();trayUpd();return}
+ fl.style.transition='transform .5s cubic-bezier(.2,1.5,.4,1)';fl.style.setProperty('--dy','-70px');p3play('boing');spray(14);
+ setTimeout(()=>{p3play('shiver');spray(16)},560);
+ setTimeout(()=>{S.outB=0;S.tubIn=false;S.tool=null;bath();trayUpd();const f2=$('#room .fl');if(f2){const fp=f2.querySelector('.foamp');if(fp)fp.remove();f2.classList.add('wet');wetDrips(true);setTimeout(()=>{f2.classList.remove('wet');wetDrips(false);burst(10,['✨','🫧'])},4200)}},1700)}
 function tubSplash(){const r=$('#room'),fl=r&&r.querySelector('.fl'),tb=$('#tub');if(!r||!fl||!tb)return;
- fl.style.transition='transform .22s cubic-bezier(.5,0,.9,.6)';fl.style.setProperty('--dy','22px');
- setTimeout(()=>{fl.style.transition='transform .5s cubic-bezier(.2,1.6,.4,1)';fl.style.setProperty('--dy','0px');S.tubIn=true;
+ const cur=parseFloat(fl.style.getPropertyValue('--dy'))||-84,b0=fl.getBoundingClientRect().bottom,tr0=tb.getBoundingClientRect(),fin=Math.round(cur+(tr0.top+tr0.height*.4-b0));S.tubDy=fin;
+ fl.style.transition='transform .22s cubic-bezier(.5,0,.9,.6)';fl.style.setProperty('--dy',(fin+24)+'px');
+ setTimeout(()=>{fl.style.transition='transform .6s cubic-bezier(.2,1.5,.4,1)';fl.style.setProperty('--dy',S.tubDy+'px');S.tubIn=true;fl.classList.add('wet');if(!fl.querySelector('.foamp'))fl.insertAdjacentHTML('beforeend','<i class="foamp"></i>');wetDrips(true);
   const rr=r.getBoundingClientRect(),tr=tb.getBoundingClientRect(),cx=tr.left-rr.left+tr.width/2,cy=tr.top-rr.top+8;
   for(let i=0;i<14;i++){const d=document.createElement('span');d.className='spl';d.textContent=['💦','🫧','💧'][i%3];d.style.cssText=`left:${cx}px;top:${cy}px;--dx:${(Math.random()-.5)*230}px;--dy:${-60-Math.random()*110}px;animation-delay:${Math.random()*.08}s`;r.appendChild(d);setTimeout(()=>d.remove(),1100)}
   const rp=document.createElement('i');rp.className='rip';rp.style.cssText=`left:${cx}px;top:${cy+14}px`;r.appendChild(rp);setTimeout(()=>rp.remove(),1000);
@@ -1445,8 +1489,8 @@ document.addEventListener('pointerdown',e=>{if(S.tool!=='bath'||S.tubIn)return;c
  addEventListener('pointermove',mv);addEventListener('pointerup',up);addEventListener('pointercancel',up)},true);
 function bbl(x,y){const b=document.createElement('span');b.className='bbl';const z=14+Math.random()*22;b.style.cssText=`left:${x-z/2+(Math.random()*30-15)}px;top:${y-z/2}px;width:${z}px;height:${z}px`;document.body.appendChild(b);setTimeout(()=>b.remove(),1700)}
 function onStroke(d){SC.drag=1;if(asleep())return;const now=Date.now();
- if(S.tool==='bath'){if(!S.tubIn)return;spg(d.x,d.y);if(now-SC.bt>70){SC.bt=now;bbl(d.x,d.y)}SC.acc+=d.d;const f=Math.min(1,SC.acc/650),sb=$('#scb');if(sb)sb.style.width=Math.round(S.pt.clean+(100-S.pt.clean)*f)+'%';
-  if(SC.acc>=650){SC.acc=0;S.tool=null;bath();trayUpd()}return}
+ if(S.tool==='bath'){if(!S.tubIn)return;spg(d.x,d.y);if(now-SC.bt>70){SC.bt=now;bbl(d.x,d.y)}SC.acc+=d.d;const f=Math.min(1,SC.acc/650),sb=$('#scb');if(sb)sb.style.width=Math.round(S.pt.clean+(100-S.pt.clean)*f)+'%';{const fp=document.querySelector('#room .foamp');if(fp)fp.style.setProperty('--fp',(.25+f*.9).toFixed(2))}
+  if(SC.acc>=650&&!S.outB){S.outB=1;SC.acc=0;tubOut()}return}
  if(S.tool)return;
  SC.pet+=d.d;if(now-SC.hint>500){SC.hint=now;burst(2,['💗'])}
  if(SC.pet>=450&&now-SC.last>2500){SC.pet=0;SC.last=now;petTap()}}
@@ -1968,7 +2012,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=88;
+const BUILD=89;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
