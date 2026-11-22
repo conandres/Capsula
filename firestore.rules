@@ -74,10 +74,18 @@ service cloud.firestore {
     function typeOk(v) { return v in ['familia', 'pareja', 'amigos']; }
 
     // ---------- Progreso personal y diario individual (solo el dueño) ----------
+    // Tope por escritura para Lumis y XP: no frena a quien repita la jugada, pero impide inflar el saldo de golpe desde la consola.
+    function gainOk(campo, tope, maximo) {
+      let nuevo = request.resource.data.get(campo, 0);
+      let viejo = resource.data.get(campo, 0);
+      return nuevo is number && nuevo >= 0 && nuevo <= maximo && (!(viejo is number) || nuevo <= viejo + tope);
+    }
+
     match /users/{uid} {
       allow read, create, delete: if signedIn() && request.auth.uid == uid;
       // El nombre solo puede cambiar una vez cada 15 días: el cambio debe traer la hora del servidor y haber pasado ese tiempo desde el anterior.
       allow update: if signedIn() && request.auth.uid == uid
+        && gainOk('lm', 1000, 200000) && gainOk('xp', 5000, 100000000)
         && (request.resource.data.get('name', '') == resource.data.get('name', '')
             && request.resource.data.get('ln', '') == resource.data.get('ln', '')
           || resource.data.get('name', '') == ''

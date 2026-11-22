@@ -34,6 +34,15 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
 .room.pkf{min-height:460px}.room.pkf .fl{animation:none;transform:scale(.9);transform-origin:50% 0;margin-top:5%}
 .room.pkf .foodsrc{bottom:14px}.room.pkf .foodsrc .dg{background:rgba(255,255,255,.95);border-radius:20px}
 .room.pkf::after{content:'Arrastra la comida a su boca';position:absolute;left:0;right:0;bottom:92px;text-align:center;font-size:13px;font-weight:700;color:var(--mu,#8a5a73);opacity:.85;pointer-events:none}
+.room.pkb{min-height:460px}.room.pkb .fl{animation:none;transform:scale(.85);transform-origin:50% 0;margin-top:3%}
+.tub{position:absolute;left:7%;right:7%;bottom:5%;height:34%;border-radius:14px 14px 80px 80px/14px 14px 60px 60px;background:linear-gradient(180deg,rgba(190,232,255,.92),rgba(110,190,240,.96));border:5px solid #fff;box-shadow:0 8px 0 rgba(0,0,0,.14),inset 0 8px 18px rgba(255,255,255,.5);z-index:3;overflow:hidden;pointer-events:none}
+.tub .foam{position:absolute;left:0;right:0;top:-2px;height:26px;background:radial-gradient(circle at 12px 10px,#fff 11px,transparent 12px) 0 0/30px 22px repeat-x,radial-gradient(circle at 26px 14px,#fff 9px,transparent 10px) 0 0/34px 26px repeat-x;animation:foamb 3s ease-in-out infinite}
+.tub .wv{position:absolute;left:-10%;right:-10%;top:30%;height:14px;background:radial-gradient(ellipse at 50% 100%,transparent 60%,rgba(255,255,255,.55) 61%,transparent 64%) 0 0/36px 14px repeat-x;animation:wvm 2.4s linear infinite}
+.tub .duck{position:absolute;right:12%;top:22%;font-size:32px;animation:duckb 2.2s ease-in-out infinite}
+@keyframes foamb{50%{transform:translateY(3px)}}@keyframes wvm{to{background-position:36px 0}}@keyframes duckb{50%{transform:translateY(-6px) rotate(6deg)}}
+.bbl{animation-duration:1.7s!important}
+.pkm{position:absolute;left:0;right:0;top:44%;text-align:center;font-weight:900;font-size:34px;text-shadow:0 3px 0 rgba(0,0,0,.35);z-index:8;pointer-events:none;animation:pkpop 1.1s ease-out forwards}
+@keyframes pkpop{0%{transform:scale(.4);opacity:0}25%{transform:scale(1.15);opacity:1}100%{transform:translateY(-40px) scale(1);opacity:0}}
 </style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -627,6 +636,12 @@ const ACCS=[
  {id:'gorro',n:'Gorro de fiesta',u:'Cuenta 10 historias',s:()=>'<path d="M48 24L60 2L72 24z" fill="#8ec5ff" stroke="#5aa0e6" stroke-width="2" stroke-linejoin="round"/><circle cx="60" cy="3" r="3" fill="#ffd54a"/>'},
  {id:'bufanda',n:'Bufanda',u:'Racha de 7 días',s:k=>{const y=EY[k]+18;return `<path d="M30 ${y}q30 14 60 0v9q-30 14-60 0z" fill="#ff8dbb" stroke="#c43d7a" stroke-width="2" stroke-linejoin="round"/><path d="M80 ${y+6}l5 11 7-3-3-9z" fill="#ff8dbb" stroke="#c43d7a" stroke-width="2" stroke-linejoin="round"/>`}}];
 ACCS.push(
+ {id:'camiseta',n:'Camiseta azul',u:'Tienda',src:'ad',s:()=>''},
+ {id:'rayas',n:'Camisa de rayas',u:'Tienda',src:'ad',s:()=>''},
+ {id:'sudadera',n:'Sudadera rosa',u:'Tienda',src:'ad',s:()=>''},
+ {id:'jean',n:'Jean',u:'Tienda',src:'ad',s:()=>''},
+ {id:'falda',n:'Falda',u:'Tienda',src:'ad',s:()=>''},
+ {id:'short',n:'Short verde',u:'Tienda',src:'ad',s:()=>''},
  {id:'sombrero',n:'Sombrero de copa',u:'Mira un anuncio',src:'ad',s:()=>'<ellipse cx="60" cy="22" rx="27" ry="5" fill="#4a2336"/><rect x="46" y="2" width="28" height="20" rx="3" fill="#4a2336"/><rect x="46" y="13" width="28" height="4" fill="#ff8dbb"/>'},
  {id:'audifonos',n:'Audífonos',u:'Cápsula Plus',src:'plus',s:k=>{const y=EY[k];return `<path d="M26 ${y} Q60 ${y-62} 94 ${y}" fill="none" stroke="#4a2336" stroke-width="4" stroke-linecap="round"/><rect x="19" y="${y-8}" width="12" height="18" rx="5" fill="#ff8dbb" stroke="#c43d7a" stroke-width="2"/><rect x="89" y="${y-8}" width="12" height="18" rx="5" fill="#ff8dbb" stroke="#c43d7a" stroke-width="2"/>`}},
  {id:'alas',n:'Alas de ángel',u:'Tienda · próximamente',src:'pago',s:()=>'<path d="M24 66q-22-4-20-28q15 3 22 20z" fill="#fff" stroke="#ffb1d0" stroke-width="2.5" stroke-linejoin="round"/><path d="M96 66q22-4 20-28q-15 3-22 20z" fill="#fff" stroke="#ffb1d0" stroke-width="2.5" stroke-linejoin="round"/>'});
@@ -640,7 +655,7 @@ function checkUnl(){if(!S.user||!S.petSet)return;const lvl=Math.floor(S.xp/100);
  const t={estrella:lvl>=1,mono:lvl>=2,corona:lvl>=3,flor:S.types.size>=1,lentes:!!S.perfect||(S.qaN||0)>=7,gorro:(S.total||0)>=10||(S.fg||0)>=1,bufanda:(S.best||0)>=7||(S.fg||0)>=3};
  const nu=ACCS.filter(a=>t[a.id]&&!S.unl.includes(a.id));if(!nu.length)return;
  nu.forEach(a=>{S.unl.push(a.id);wearPut(a.id)});toast('🎀 ¡Nuevo accesorio: '+nu.map(a=>a.n).join(', ')+'!')}
-const ACAT={estrella:'cab',mono:'cab',corona:'cab',flor:'cab',gorro:'cab',sombrero:'cab',audifonos:'cab',lentes:'cara',bufanda:'cuello',alas:'esp'};
+const ACAT={camiseta:'cam',rayas:'cam',sudadera:'cam',jean:'pan',falda:'pan',short:'pan',estrella:'cab',mono:'cab',corona:'cab',flor:'cab',gorro:'cab',sombrero:'cab',audifonos:'cab',lentes:'cara',bufanda:'cuello',alas:'esp'};
 const WTABS=[['cab','Cabeza'],['cara','Cara'],['cuello','Cuello'],['esp','Espalda'],['cam','Camisas'],['pan','Pantalones']];
 function wearPut(id){const on=S.wear.includes(id),c=ACAT[id];S.wear=S.wear.filter(x=>ACAT[x]!==c);if(!on)S.wear.push(id)}
 function wtab(k){S.wtab=k;if(document.querySelector('#sh .ward'))wardOpen();else render()}
@@ -660,7 +675,7 @@ const pswHTML=()=>{const L=[{kind:S.pet.kind,name:S.pet.name,on:1,st:stg(),w:S.w
 function wear(id){if(!ownedId(id))return;wearPut(id);const w=document.querySelector('#sh .ward');render();if(w)wardOpen()}
 function wardOpen(){showSheet(`<div class="ward"><h2>Armario de ${esc(S.pet.name)}</h2><p class="mu">Una prenda por categoría. Toca una para ponerla o quitarla.</p>${closetGrid()}</div>`)}
 const ROOMS=[{id:'',n:'Cielo',p:0,bg:'linear-gradient(180deg,#fde3f1,#f6d5ef)'},{id:'ocaso',n:'Atardecer',p:60,bg:'linear-gradient(180deg,#ffb199,#ff7aa2 70%,#c86dd7)'},{id:'bosque',n:'Bosque',p:90,bg:'linear-gradient(180deg,#b9e6a8,#6fc28b 75%,#3f8f6a)'},{id:'playa',n:'Playa',p:110,bg:'linear-gradient(180deg,#9fdcff,#6cc3f0 60%,#f4dca0)'},{id:'espacio',n:'Espacio',p:150,bg:'linear-gradient(180deg,#1b1650,#2e2a7a 70%,#4b3aa0)'}];
-const ACCP={sombrero:150};
+const ACCP={sombrero:150,camiseta:120,rayas:160,sudadera:220,jean:140,falda:160,short:120};
 const ownedRoom=id=>!id||S.unl.includes('rm:'+id);
 function shopSave(){S.lmT=Date.now();save();render()}
 function shopAsk(kind,id){let n,p;
@@ -671,7 +686,7 @@ function shopAsk(kind,id){let n,p;
 function shopBuy(kind,id){cl();let p;
  if(kind==='acc'){const a=ACCS.find(x=>x.id===id);if(!a||owned(a))return;p=ACCP[id];if((S.lm||0)<p)return;S.lm-=p;S.unl.push(id);if(!S.wear.includes(id))wearPut(id)}
  else{const r=ROOMS.find(x=>x.id===id);if(!r||ownedRoom(id))return;p=r.p;if((S.lm||0)<p)return;S.lm-=p;S.unl.push('rm:'+id);S.rm=id}
- burst(26,['✨','🎀']);toast('¡Listo! Ya es de '+S.pet.name+' ✨');shopSave()}
+ burst(26,['✨','🎀']);p3play('cheer');toast('¡Listo! Ya es de '+S.pet.name+' ✨');shopSave()}
 function shopOpen(){S.tab='tienda';render();setTimeout(()=>{const e=$('#shop');if(e)e.scrollIntoView({behavior:'smooth',block:'center'})},60)}
 const shopHTML=()=>{return `<section class="card" id="shop"><div class="row sp"><h3>Tienda</h3><b class="pr">${LI} ${S.lm||0}</b></div>
  <span class="mu">Los Lumis son la moneda: se ganan poco a poco cuidando a ${esc(S.pet.name)}, contando historias y con las misiones. Guárdalos para lo que de verdad quieras.</span>
@@ -680,7 +695,7 @@ const shopHTML=()=>{return `<section class="card" id="shop"><div class="row sp">
 const closetHTML=()=>`<section class="card"><h3>Armario de ${esc(S.pet.name)}</h3><span class="mu">Desbloquea accesorios; una prenda por categoría</span>${closetGrid()}</section>`;
 const closetGrid=()=>{const vis=ACCS.filter(accVisible),tabs=WTABS.filter(([k])=>k==='cam'||k==='pan'||vis.some(a=>ACAT[a.id]===k)),cur=tabs.some(t=>t[0]===S.wtab)?S.wtab:'cab',list=vis.filter(a=>ACAT[a.id]===cur);
  const bar=`<div class="wtabs" role="tablist">${tabs.map(([k,n])=>{const w=vis.find(a=>ACAT[a.id]===k&&S.wear.includes(a.id));return `<button role="tab" aria-selected="${k===cur}" class="${k===cur?'on':''}" onclick="wtab('${k}')">${n}${w?' <i></i>':''}</button>`}).join('')}</div>`;
- return bar+(list.length?closetItems(list):`<p class="mu c" style="padding:22px 0">Aquí llegarán ${cur==='cam'?'camisas y sudaderas':'pantalones y faldas'} muy pronto 👕</p>`)};
+ return bar+(list.length?closetItems(list):`<p class="mu c" style="padding:22px 0">Aquí no hay prendas todavía 👕</p>`)};
 const closetItems=L=>`<div class="cl">${L.map(a=>{const un=owned(a),on=S.wear.includes(a.id);
  const act=un?`onclick="wear('${a.id}')" aria-pressed="${on}"`:a.src==='ad'?`onclick="shopAsk('acc','${a.id}')"`:a.src==='plus'?`onclick="plusOpen('acc')"`:a.src==='pago'?`onclick="BILLING.buy(SKU.alas)"`:'disabled';
  const tag=un?(on?'Puesto':'Toca para ponerlo'):a.src==='ad'?LI+' '+ACCP[a.id]:a.src==='plus'?'✨ Plus':a.src==='pago'?(BILLING.ok()?'🛍 Comprar':'🛍 Tienda · pronto'):a.u;
@@ -927,7 +942,7 @@ async function nativeLogin(){const g=$('#gst');if(g)g.textContent='Entrando…';
 const remGet=()=>{try{return JSON.parse(localStorage.getItem('capsula_rem')||'null')||{on:true,h:20,fresh:true}}catch(e){return{on:true,h:20,fresh:true}}};
 /* Al abrir la app: el recordatorio nace activado y se vuelve a programar (Android pide el permiso una sola vez). */
 async function remInit(){if(!NATIVE)return;const c=remGet();if(c.fresh){delete c.fresh;try{localStorage.setItem('capsula_rem',JSON.stringify(c))}catch(e){}}await remApply().catch(()=>{})}
-const REM_IDS=Array.from({length:15},(_,i)=>({id:i+100})).concat([{id:1},{id:2},{id:3},{id:4},{id:5}]);
+const REM_IDS=Array.from({length:15},(_,i)=>({id:i+100})).concat([{id:1},{id:2},{id:3},{id:4},{id:5},{id:6}]);
 function remText(k){ /* texto del aviso del día k (0 = hoy): la pregunta de ese día */
  const P=S.group&&S.group.type==='pareja'?QD_P:QD_G,n=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5)+k,q=P[n%P.length],nm=(S.pet&&S.pet.name)||'Tu mascota',who=(S.me.name||'').split(' ')[0];
  return k%3===2?{title:nm+' te espera 🐾',body:'Hoy toca: '+q}:{title:'¿Qué recuerdas hoy'+(who?', '+who:'')+'?',body:q}}
@@ -943,13 +958,14 @@ async function remApply(){const P=NP('LocalNotifications');if(!P)return false;co
   const away=[S.pt].concat((S.others||[]).map(o=>o.pt)).filter(q=>q&&q.ex&&!q.ex.done&&q.ex.end>Date.now()).sort((a,b)=>a.ex.end-b.ex.end)[0],e=away&&away.ex;if(e)list.push({id:3,title:'Tu mascota volvió de su expedición 💌',body:'Trae una postal y una pregunta para ti.',schedule:{at:win(new Date(e.end+60000)),allowWhileIdle:true}});
   list.push({id:4,title:nm+' te extraña 🐾',body:'Tiene hambre y quiere jugar un rato contigo.',schedule:{at:win(new Date(Date.now()+8*H)),allowWhileIdle:true}});
   if(S.streak>0&&S.last!==today()){const d=new Date();d.setHours(19,30,0,0);if(d>new Date())list.push({id:5,title:'🔥 Tu racha de '+S.streak+' día'+(S.streak>1?'s':'')+' está en peligro',body:'Cuenta una historia hoy para no perderla.',schedule:{at:d,allowWhileIdle:true}})}}
+  if(c.pet!==false&&S.families.length&&S.qd!==dayKey()){const d=new Date();d.setHours(20,0,0,0);if(d<=new Date())d.setDate(d.getDate()+1);list.push({id:6,title:'💭 Ya llegó la pregunta de hoy',body:'Respóndela y mira qué contestó tu familia.',schedule:{at:d,allowWhileIdle:true}})}
  if(list.length)await P.schedule({notifications:list});return true}
 async function remSet(on,h){const c=remGet();if(on!==null)c.on=!!on;if(h!==null)c.h=+h;try{localStorage.setItem('capsula_rem',JSON.stringify(c))}catch(e){}
  const ok=await remApply();toast(c.on?(ok?'Recordatorio diario activado':'No diste permiso para avisos'):'Recordatorio apagado');render()}
 function remPet(v){const c=remGet();c.pet=!!v;try{localStorage.setItem('capsula_rem',JSON.stringify(c))}catch(e){}remApply().catch(()=>{});toast(v?'Avisos de la mascota activados':'Avisos de la mascota apagados')}
 const remCard=()=>{if(!NATIVE)return'';const c=remGet();return `<div class="card"><h3>Recordatorio diario</h3><label class="chk"><input type="checkbox" ${c.on?'checked':''} onchange="remSet(this.checked,null)"> Avisarme cada día</label>
  <label class="lb" for="remh">Hora del aviso</label><select id="remh" class="in" onchange="remSet(null,this.value)">${Array.from({length:17},(_,i)=>i+6).map(h=>`<option value="${h}" ${c.h===h?'selected':''}>${h>12?h-12:h}:00 ${h>=12?'p. m.':'a. m.'}</option>`).join('')}</select>
- <label class="chk"><input type="checkbox" ${c.pet!==false?'checked':''} onchange="remPet(this.checked)"> Avisos de la mascota (racha, hambre, expediciones)</label>
+ <label class="chk"><input type="checkbox" ${c.pet!==false?'checked':''} onchange="remPet(this.checked)"> Avisos de la mascota y de la pregunta del día</label>
  <p class="mu">Cada día te mostramos la pregunta del día. Los avisos se programan en tu teléfono; no usan internet ni se envían a ningún servidor.</p></div>`};
 function gsheet(){
  const id=CFG().googleClientId,ok=!!(id&&!/^PEGA/i.test(id)&&window.CLOUD&&CLOUD.configured);
@@ -1141,7 +1157,7 @@ function dqCard(){const f=S.families[0],done=S.qd===dayKey();
  return qLine(qaToday(false,f),`goTrivF('${esc(f.id)}')`,done?'Ya respondiste · ver respuestas':'Pregunta de hoy · '+esc(f.name))}
 const FGOAL=10;
 function weekCount(){const t0=weekStart().getTime();return S.posts.filter(p=>p.ts>=t0&&TY[p.k]&&!isBlk(p.a)).length}
-function goalCheck(){if(!S.user||!S.families.length||!S.group)return;if(weekCount()>=FGOAL&&S.wkG!==wkKey()){S.wkG=wkKey();S.fg=(S.fg||0)+1;S.lm=(S.lm||0)+30;S.lmT=Date.now();save();checkUnl();toast('🎉 ¡Meta semanal cumplida! +30 Lumis');burst(40);hopPet();bubSay('¡Lo logramos en familia! 🎉');render()}}
+function goalCheck(){if(!S.user||!S.families.length||!S.group)return;if(weekCount()>=FGOAL&&S.wkG!==wkKey()){S.wkG=wkKey();S.fg=(S.fg||0)+1;S.lm=(S.lm||0)+30;S.lmT=Date.now();save();checkUnl();toast('🎉 ¡Meta semanal cumplida! +30 Lumis');burst(40);p3play('cheer');bubSay('¡Lo logramos en familia! 🎉');render()}}
 function goalCard(){if(!S.families.length||!S.group)return'';const c=Math.min(weekCount(),FGOAL),ok=S.wkG===wkKey(),fg=S.fg||0,pr=fg<1?'un gorro para '+S.pet.name:fg<3?'30 Lumis (y a la 3.ª semana, una bufanda)':'30 Lumis';
  setTimeout(goalCheck,500);
  return `<section class="card goal"><div class="row sp"><b style="font-size:14px">Meta de la semana</b><span class="mu">${ok?'¡Cumplida!':c+' de '+FGOAL}</span></div><div class="bar" style="margin:6px 0 4px"><i style="width:${(ok?1:c/FGOAL)*100}%"></i></div><span class="mu" style="font-size:12px">${ok?'Vuelve el lunes por la siguiente. Semanas cumplidas: '+fg+'.':'Entre todos, cuenten '+FGOAL+' historias. Premio: '+pr+'.'}</span></section>`}
@@ -1162,7 +1178,7 @@ function fpCard(){let off=0,was=0;try{off=localStorage.getItem('capsula_fp')==='
  return `<section class="card" id="fp"><div class="row sp"><h3>Tus 3 primeros pasos</h3><button class="lnk" onclick="fpOff()">Ocultar</button></div><span class="mu">${d} de ${L.length} · Así queda Cápsula lista para tu familia.</span><div class="bar" style="margin:8px 0 4px"><i style="width:${d/L.length*100}%"></i></div>${L.map((x,k)=>`<button class="opc ${k===cur?'fpc':''}" ${x[3]?'disabled':''} onclick="${x[4]}"><span class="ti">${ic(x[3]?'check':k===cur?'pen':'star',22)}</span><span class="tx"><b style="${x[3]?'text-decoration:line-through;opacity:.6':''}">${x[1]}</b><span class="mu">${x[2]}${x[6]&&!x[3]?' · +'+x[6]+' Lumis':''}</span></span>${k===cur?`<span class="fpb">${x[5]}</span>`:''}</button>`).join('')}</section>`}
 let fpBusy=false;
 function fpClaim(L){if(fpBusy||!S.user)return;fpBusy=true;let g=0;S.fpR=S.fpR||{};L.forEach(x=>{if(x[3]&&x[6]&&!S.fpR[x[0]]){S.fpR[x[0]]=1;g+=x[6]}});
- if(g){S.lm=(S.lm||0)+g;S.lmT=Date.now();save();toast('+'+g+' Lumis por tu paso 🎉');burst(24);hopPet()}fpBusy=false}
+ if(g){S.lm=(S.lm||0)+g;S.lmT=Date.now();save();toast('+'+g+' Lumis por tu paso 🎉');burst(24);p3play('cheer')}fpBusy=false}
 function fpOff(){try{localStorage.setItem('capsula_fp','1')}catch(e){}render()}
 function dest(){showSheet(`<h2>¿Dónde lo guardas?</h2><p class="mu">Elige el lugar antes de escribir.</p>
  <button class="opc" onclick="cl();spaceTo(null);chooser()"><span class="ti">${ic('world',24)}</span><span class="tx"><b>Mi mundo</b><span class="mu">Solo tú lo ves</span></span></button>
@@ -1233,7 +1249,7 @@ function mgWin(){burst(36);const lv=MG.lv;try{if(lv<5&&mgLv()<=lv)localStorage.s
  if(d!==today()){try{localStorage.setItem('capsula_mg',today())}catch(e){}setTimeout(()=>rw(2+lv,2+lv),500)}
  else if(lv===5&&d5!==today()){try{localStorage.setItem('capsula_mg5',today())}catch(e){}setTimeout(()=>rw(4,8),500)}}
 function mgClose(){MG=null;const o=$('#mgo');if(o)o.remove()}
-function chest(){const c=3+Math.floor(Math.random()*5);S.chest=today();burst(32);rw(3,c)}
+function chest(){const c=3+Math.floor(Math.random()*5);S.chest=today();burst(32);p3play('bow');rw(3,c)}
 const H=3600e3;
 const QS=[
  {k:'dia',mood:1,t:()=>'¿Cómo te fue hoy, '+S.me.name+'?',o:[['😄 Genial','¡Qué alegría! Cuéntale tu día a alguien que quieres 💗',4],['🙂 Bien','Me alegra. Los días tranquilos también cuentan ✨',3],['😕 Regular','Te entiendo. Mañana es otra oportunidad y yo estoy contigo 🫶',2],['😢 Mal','Ven, te doy un abrazo gigante 🤗 Cuando quieras, me cuentas qué pasó.',1]]},
@@ -1350,13 +1366,13 @@ function trayHTML(){const n=esc(S.pet.name),sl=asleep();
  if(exAway()){const e=S.pt.ex,x=EXPS.find(a=>a.k===e.k);return Date.now()>=e.end?`<div class="tw"><span class="mu">¡${n} volvió de ${x.n} ${x.e} con una postal!</span><button class="btn s w" onclick="exPost()">💌 Ver postal</button></div>`:`<div class="tw"><span class="mu" id="exl">${n} está de expedición en ${x.n} ${x.e} · vuelve en ${fmtWait(exLeft())}</span><span class="mu c">Mientras esté fuera no puedes cuidarla 🧭 Expediciones hechas: <b>${S.pt.exn||0}</b></span></div>`}
  if(sl)return `<div class="tw"><span class="mu" id="slt">${n} está durmiendo 💤${S.pt.rest>Date.now()?` · despierta en unos ${sleepMin()} min`:''}</span><button class="btn s w" onclick="wake()">🌙 Encender la luz</button></div>`;
  if(S.tool==='food')return `<div class="tw"><span class="mu">Arrastra la comida de abajo del cuarto hasta la boca de ${n} (o tócala)</span><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
- if(S.tool==='bath')return `<div class="tw"><span class="mu">Frota a ${n} con el dedo para bañarlo 🫧</span><div class="bar"><i id="scb" style="width:${Math.round(S.pt.clean)}%"></i></div><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
+ if(S.tool==='bath')return `<div class="tw"><span class="mu">Frota a ${n} con la esponja (tu dedo) hasta llenar la barra 🫧</span><div class="bar"><i id="scb" style="width:${Math.round(S.pt.clean)}%"></i></div><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
  if(S.tool==='play')return `<div class="tw"><span class="mu">¡Penales! Lanza el balón hacia el arco con un tirón rápido; ${n} intentará atajarlo. ⚽ <b>${S.pgg||0} goles · ${S.pg||0}/5</b></span><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
  return `<div class="tools">${TOOLS.map(([k,e,l])=>`<button class="tl" onclick="toolSet('${k}')"><b>${e}</b>${l}</button>`).join('')}</div><button class="btn s w" onclick="exOpen()" style="margin-top:8px">🧭 Mandar de expedición${S.pt.exn?' · '+S.pt.exn+' hechas':''}</button><span class="mu c">Toca o acaricia a ${n} con el dedo 💗</span>`}
-function trayUpd(){const t=$('#tray');if(t)t.innerHTML=trayHTML();const r=$('#room');if(r){r.classList.toggle('scrub',S.tool==='bath');const b=$('#ballsrc'),on=S.tool==='play';if(on&&!b){const el=document.createElement('button');el.id='ballsrc';el.className='dg ballsrc';el.dataset.k='ball';el.setAttribute('aria-label','Balón');el.innerHTML='<b>⚽</b>';r.appendChild(el)}else if(!on&&b)b.remove();const gl=$('#goal');if(on&&!gl){const g=document.createElement('div');g.id='goal';g.className='goal3';g.innerHTML='<i class="gp"></i>';r.insertBefore(g,r.firstChild)}else if(!on&&gl)gl.remove();r.classList.toggle('pk',on);r.classList.toggle('pkf',S.tool==='food');if((on||S.tool==='food')&&!r.dataset.sc){r.dataset.sc='1';setTimeout(()=>{try{r.scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}},80)}else if(!on&&S.tool!=='food')delete r.dataset.sc;const fs=$('#foodsrc'),fon=S.tool==='food';if(fon&&!fs){const d=document.createElement('div');d.id='foodsrc';d.className='foodsrc';d.innerHTML=FOODS.map(f=>`<button class="dg" data-k="${f.k}" aria-label="Dar ${f.n}"><b>${f.e}</b><span>${f.n}</span></button>`).join('');r.appendChild(d)}else if(!fon&&fs)fs.remove();r.classList.toggle('fd',fon);scoreUpd();const fl=r.querySelector('.fl');if(fl&&!on&&S.tool!=='food'){fl.style.removeProperty('--kx');fl.style.removeProperty('--kr')}}}
+function trayUpd(){const t=$('#tray');if(t)t.innerHTML=trayHTML();const r=$('#room');if(r){r.classList.toggle('scrub',S.tool==='bath');const b=$('#ballsrc'),on=S.tool==='play';if(on&&!b){const el=document.createElement('button');el.id='ballsrc';el.className='dg ballsrc';el.dataset.k='ball';el.setAttribute('aria-label','Balón');el.innerHTML='<b>⚽</b>';r.appendChild(el)}else if(!on&&b)b.remove();const gl=$('#goal');if(on&&!gl){const g=document.createElement('div');g.id='goal';g.className='goal3';g.innerHTML='<i class="gp"></i>';r.insertBefore(g,r.firstChild)}else if(!on&&gl)gl.remove();r.classList.toggle('pk',on);r.classList.toggle('pkf',S.tool==='food');r.classList.toggle('pkb',S.tool==='bath');{const tb=$('#tub'),bo=S.tool==='bath';if(bo&&!tb){const d=document.createElement('div');d.id='tub';d.className='tub';d.innerHTML='<i class="foam"></i><span class="duck">🦆</span><i class="wv"></i>';r.appendChild(d)}else if(!bo&&tb)tb.remove()}if((on||S.tool==='food'||S.tool==='bath')&&!r.dataset.sc){r.dataset.sc='1';setTimeout(()=>{try{r.scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}},80)}else if(!on&&S.tool!=='food'&&S.tool!=='bath')delete r.dataset.sc;const fs=$('#foodsrc'),fon=S.tool==='food';if(fon&&!fs){const d=document.createElement('div');d.id='foodsrc';d.className='foodsrc';d.innerHTML=FOODS.map(f=>`<button class="dg" data-k="${f.k}" aria-label="Dar ${f.n}"><b>${f.e}</b><span>${f.n}</span></button>`).join('');r.appendChild(d)}else if(!fon&&fs)fs.remove();r.classList.toggle('fd',fon);scoreUpd();const fl=r.querySelector('.fl');if(fl&&!on&&S.tool!=='food'){fl.style.removeProperty('--kx');fl.style.removeProperty('--kr')}}}
 function toolSet(k){if(exAway()){S.tool=null;return}S.tool=k||null;SC.acc=0;
  if(k==='sleep'){S.tool=null;rest();trayUpd();return}
- if(k==='play'){if(!playOk()){S.tool=null;return}S.pg=0;S.pgg=0;S.pgs=0}
+ if(k==='play'){if(!playOk()){S.tool=null;return}S.pg=0;S.pgg=0;S.pgs=0;S.pgst=0;setTimeout(pkSway,300)}
  if(k==='food'&&!feedOk()){S.tool=null;return}
  if(k==='bath'&&!bathOk()){S.tool=null;return}
  try{if(P3.v)P3.v.strokeExpr=k==='bath'?'wink':'happy'}catch(e){}
@@ -1375,9 +1391,10 @@ function roomSync(){const r=$('#room');if(!r)return;const sl=asleep();r.classLis
  if(!sl&&P3.zt){clearInterval(P3.zt);P3.zt=0}}
 setInterval(()=>{if(!exAway()||!$('#tray'))return;const e=S.pt.ex;if(Date.now()>=e.end&&!e.rdy){e.rdy=1;save();{const r=$('#exr');if(r)r.textContent='¡Ya volvió! Trae una postal 💌'}bubSay('¡Volví de mi expedición! 💌');trayUpd();try{remApply()}catch(x){}}else{const l=$('#exl');if(l){const x=EXPS.find(a=>a.k===e.k);const r=$('#exr');if(r)r.textContent='Vuelve en '+fmtWait(exLeft());l.textContent=S.pet.name+' está de expedición en '+x.n+' '+x.e+' · vuelve en '+fmtWait(exLeft())}}},20000);
 function petClick(){if(SC.drag){SC.drag=0;return}petTap()}
-function bbl(x,y){const b=document.createElement('span');b.className='bbl';const z=14+Math.random()*22;b.style.cssText=`left:${x-z/2+(Math.random()*30-15)}px;top:${y-z/2}px;width:${z}px;height:${z}px`;document.body.appendChild(b);setTimeout(()=>b.remove(),1100)}
+function spg(x,y){let e=$('#spg');if(!e){e=document.createElement('span');e.id='spg';e.textContent='🧽';e.style.cssText='position:fixed;left:0;top:0;font-size:38px;pointer-events:none;z-index:60;transition:opacity .25s';document.body.appendChild(e)}e.style.opacity='1';e.style.transform=`translate(${x-19}px,${y-30}px) rotate(${Math.sin(Date.now()/90)*18}deg)`;clearTimeout(spg.t);spg.t=setTimeout(()=>{e.style.opacity='0';setTimeout(()=>e.remove(),300)},350)}
+function bbl(x,y){const b=document.createElement('span');b.className='bbl';const z=14+Math.random()*22;b.style.cssText=`left:${x-z/2+(Math.random()*30-15)}px;top:${y-z/2}px;width:${z}px;height:${z}px`;document.body.appendChild(b);setTimeout(()=>b.remove(),1700)}
 function onStroke(d){SC.drag=1;if(asleep())return;const now=Date.now();
- if(S.tool==='bath'){if(now-SC.bt>70){SC.bt=now;bbl(d.x,d.y)}SC.acc+=d.d;const f=Math.min(1,SC.acc/650),sb=$('#scb');if(sb)sb.style.width=Math.round(S.pt.clean+(100-S.pt.clean)*f)+'%';
+ if(S.tool==='bath'){spg(d.x,d.y);if(now-SC.bt>70){SC.bt=now;bbl(d.x,d.y)}SC.acc+=d.d;const f=Math.min(1,SC.acc/650),sb=$('#scb');if(sb)sb.style.width=Math.round(S.pt.clean+(100-S.pt.clean)*f)+'%';
   if(SC.acc>=650){SC.acc=0;S.tool=null;bath();trayUpd()}return}
  if(S.tool)return;
  SC.pet+=d.d;if(now-SC.hint>500){SC.hint=now;burst(2,['💗'])}
@@ -1419,6 +1436,8 @@ function ballStart(e){e.preventDefault();const room=$('#room'),fl=room&&room.que
   shoot(el,room,fl,x,y,vx,vy,sp)};
  addEventListener('pointermove',mv);addEventListener('pointerup',end);addEventListener('pointercancel',end)}
 function keeperTo(fl,z){if(!fl)return;const dx=(z-1)*Math.min(90,fl.parentNode.clientWidth*.22);fl.style.transition='transform .28s cubic-bezier(.2,.9,.3,1.2)';fl.style.setProperty('--kx',dx+'px');fl.style.setProperty('--kr',(z-1)*14+'deg')}
+function pkMsg(t,c){const r=$('#room');if(!r)return;const e=document.createElement('div');e.className='pkm';e.textContent=t;e.style.color=c;r.appendChild(e);setTimeout(()=>e.remove(),1100)}
+function pkSway(){if(S.tool!=='play'||pkSway.t)return;pkSway.t=setInterval(()=>{const r=$('#room'),fl=r&&r.querySelector('.fl');if(S.tool!=='play'||!fl){clearInterval(pkSway.t);pkSway.t=0;return}if(r.dataset.busy==='1')return;fl.style.transition='transform .7s ease-in-out';fl.style.setProperty('--kx',((Math.random()-.5)*44)+'px');fl.style.setProperty('--kr',((Math.random()-.5)*6)+'deg')},900)}
 function scoreUpd(){let e=$('#pscore');const r=$('#room');if(!r)return;if(S.tool!=='play'){if(e)e.remove();return}if(!e){e=document.createElement('div');e.id='pscore';e.className='pscore';r.appendChild(e)}e.textContent='⚽ '+(S.pgg||0)+'  ·  🧤 '+(S.pgs||0)}
 /* Penales: tiras al arco con un tirón; la mascota elige un lado para atajar (a veces adivina). */
 function shoot(el,room,fl,x,y,vx,vy,sp){const r=room.getBoundingClientRect();
@@ -1444,13 +1463,13 @@ function shoot(el,room,fl,x,y,vx,vy,sp){const r=room.getBoundingClientRect();
  requestAnimationFrame(step)}
 function shotDone(room,fl,res){ptTick();const p=S.pt,now=Date.now(),need=p.fun<65;S.pg=(S.pg||0)+1;track('play');
  p.fun=Math.min(100,p.fun+8);p.en=Math.max(0,p.en-3);p.love=Math.min(100,p.love+1);p.food=Math.max(0,p.food-1);
- if(res==='goal'){S.pgg=(S.pgg||0)+1;p3play('shake');burst(14,['⚽','🎉','✨']);bubSay(say(['¡GOOOL! Me ganaste 🥅','¡Qué disparo! No lo vi venir 😮','Uy… se me coló ⚽']))}
- else if(res==='save'){S.pgs=(S.pgs||0)+1;p3play(say(['happy','spin']));bubSay(say(['¡Atajé! 🧤','¡Lo olí venir! 🧤','¡Mía! 😎']))}
- else{p3play('surprise');bubSay(say(['¡Afuera! Casi 😅','Fue por encima… ¡otra vez!','Uy, ese se perdió 🌙']))}
+ if(res==='goal'){S.pgg=(S.pgg||0)+1;S.pgst=(S.pgst||0)+1;pkMsg(S.pgst>=2?'¡GOL! 🔥 x'+S.pgst:'¡GOL!','#3ddc84');p3play('shake');burst(14,['⚽','🎉','✨']);bubSay(say(['¡GOOOL! Me ganaste 🥅','¡Qué disparo! No lo vi venir 😮','Uy… se me coló ⚽']))}
+ else if(res==='save'){S.pgs=(S.pgs||0)+1;S.pgst=0;pkMsg('¡ATAJADA! 🧤','#5aa9ff');p3play(say(['happy','spin']));bubSay(say(['¡Atajé! 🧤','¡Lo olí venir! 🧤','¡Mía! 😎']))}
+ else{S.pgst=0;pkMsg('¡AFUERA!','#ff8a5a');p3play('surprise');bubSay(say(['¡Afuera! Casi 😅','Fue por encima… ¡otra vez!','Uy, ese se perdió 🌙']))}
  scoreUpd();
  setTimeout(()=>{keeperTo(fl,1);room.dataset.busy='0'},650);
  if(S.pg>=5){const g=S.pgg||0,sv=S.pgs||0;S.tool=null;
-  setTimeout(()=>{if(need&&g>=2&&now-p.lp>2*H){p.lp=now;S.bub={t:'Final: '+g+' goles. ¡Qué partidazo! Otra tanda mañana ⚽',o:null,q:null};S.bubT=Date.now();rw(3,3)}else bubSay('Final: '+g+' goles y '+sv+' atajadas. ¡Revancha cuando quieras! ⚽');trayUpd();scoreUpd();petUI()},900);return}
+  setTimeout(()=>{if(need&&g>=2&&now-p.lp>2*H){p.lp=now;S.bub={t:'Final: '+g+' goles. ¡Qué partidazo! Otra tanda mañana ⚽',o:null,q:null};S.bubT=Date.now();rw(3,3)}else bubSay((g>sv?'¡Ganaste ':g<sv?'¡Gané yo ':'Empate ')+g+' a '+sv+'! ¡Revancha cuando quieras! ⚽');if(g>sv)burst(30);trayUpd();scoreUpd();petUI()},900);return}
  trayUpd()}
 function bath(){ptTick();const p=S.pt,now=Date.now();
  if(asleep()){bubSay('Zzz… ahora no, estoy durmiendo 💤');return}
@@ -1564,11 +1583,37 @@ const fdate=ts=>ts?new Date(ts).toLocaleDateString('es-CO',{day:'numeric',month:
 function bookOpen(){const L=bookPosts();if(L.length<12){toast('Aún faltan '+(12-L.length)+' historias para armar el libro.');return}S.bkL=L;S.bk=0;bookPage()}
 function bookPage(){const L=S.bkL||[],i=S.bk,T=L.length+2;let h;
  if(i===0)h=`<div class="bkc"><span class="bk2">${ic('book',56)}</span><h2>${esc(libName())}</h2><p class="mu">${L.length} historias${L[0]?' · desde '+fdate(L[0].ts):''}</p><p class="mu">Pasa las páginas para leerlo.</p></div>`;
- else if(i===T-1)h=`<div class="bkc"><span class="bk2">${ic('star',56)}</span><h2>Fin… por ahora</h2><p class="mu">Cada historia nueva se suma a este libro.</p></div>`;
+ else if(i===T-1)h=`<div class="bkc"><span class="bk2">${ic('star',56)}</span><h2>Fin… por ahora</h2><p class="mu">Cada historia nueva se suma a este libro.</p><button class="btn" onclick="bookShare()">Compartir el libro</button></div>`;
  else{const p=L[i-1];h=`<span class="tag">${ic(TY[p.k].i,14)}${TY[p.k].l}</span><h3>${esc(p.t)}</h3><p class="mu">${esc(who(p.a,p))}${p.by?' · contada por '+esc(p.by):''} · ${fdate(p.ts)}</p>${postBody(p)}`}
  showSheet(`<div class="bkr" aria-live="polite">${h}</div><div class="bkn"><button class="btn s" ${i?'':'disabled'} onclick="bookGo(-1)">Anterior</button><span class="mu">${i+1} de ${T}</span><button class="btn" ${i<T-1?'':'disabled'} onclick="bookGo(1)">Siguiente</button></div>`)}
+
+/* Compartir el libro como imágenes (portada + páginas) para mandar por WhatsApp */
+function wrapT(c,t,x,y,w,lh,max){const ws=String(t||'').split(/\s+/);let line='',n=0;for(const wd of ws){const tt=line?line+' '+wd:wd;if(c.measureText(tt).width>w&&line){c.fillText(line,x,y);y+=lh;line=wd;if(++n>=max){c.fillText('…',x,y);return y+lh}}else line=tt}c.fillText(line,x,y);return y+lh}
+const loadImg=u=>new Promise(ok=>{if(!u)return ok(null);const i=new Image();i.onload=()=>ok(i);i.onerror=()=>ok(null);i.src=u});
+async function bookShare(){const L=bookPosts();if(L.length<12){toast('Aún faltan '+(12-L.length)+' historias para armar el libro.');return}
+ toast('Preparando tu libro…');const W=900,H=1200,link=S.user?appLink():baseUrl();
+ const mk=()=>{const cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d'),gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#fbe9ff');gr.addColorStop(1,'#ffe3ee');g.fillStyle=gr;g.fillRect(0,0,W,H);g.textAlign='left';g.textBaseline='alphabetic';return [cv,g]};
+ const foot=g=>{g.fillStyle='#8a5a73';g.font='600 28px sans-serif';g.textAlign='center';g.fillText('Hecho con Cápsula 💗',W/2,H-60);g.textAlign='left'};
+ const pages=[];
+ {const [cv,g]=mk();g.textAlign='center';g.fillStyle='#b0336f';g.font='900 150px sans-serif';g.fillText('📖',W/2,330);g.fillStyle='#3a1a30';g.font='900 78px sans-serif';let y=wrapT(g,libName(),W/2,520,760,92,2);
+  g.textAlign='center';g.fillStyle='#8a5a73';g.font='600 40px sans-serif';g.fillText(L.length+' historias',W/2,y+40);g.fillText((S.group?S.group.name+' · ':'')+'desde '+fdate(L[0].ts),W/2,y+100);foot(g);pages.push(cv)}
+ const n=Math.min(8,L.length),pick=[];for(let i=0;i<n;i++)pick.push(L[Math.floor(i*(L.length-1)/Math.max(1,n-1))]);
+ for(const p of pick){const [cv,g]=mk();g.fillStyle='#b0336f';g.font='800 30px sans-serif';g.fillText((TY[p.k]?TY[p.k].l:'Historia').toUpperCase(),70,110);
+  g.fillStyle='#3a1a30';g.font='900 54px sans-serif';let y=wrapT(g,p.t,70,190,760,64,2);
+  g.fillStyle='#8a5a73';g.font='600 30px sans-serif';g.fillText(who(p.a,p)+' · '+fdate(p.ts),70,y+10);y+=70;
+  const x=p.x||{};
+  if(p.k==='foto'||p.k==='dibujo'){const im=await loadImg(okSrc(x.src));if(im){const mw=760,mh=700,r=Math.min(mw/im.width,mh/im.height),w=im.width*r,h=im.height*r;g.save();g.shadowColor='rgba(0,0,0,.2)';g.shadowBlur=24;g.fillStyle='#fff';g.fillRect(W/2-w/2-14,y-14,w+28,h+28);g.restore();g.drawImage(im,W/2-w/2,y,w,h);y+=h+60;if(x.cap){g.fillStyle='#3a1a30';g.font='italic 34px sans-serif';wrapT(g,x.cap,70,y,760,44,3)}}}
+  else if(p.k==='carta'){g.fillStyle='#3a1a30';g.font='38px serif';wrapT(g,(x.to?'Para '+x.to+':\n':'')+(x.tx||''),70,y+20,760,54,14)}
+  else if(p.k==='receta'){g.fillStyle='#3a1a30';g.font='36px sans-serif';wrapT(g,(Array.isArray(x.ing)?x.ing.slice(0,8).join(', '):'')+'. '+(x.stp||''),70,y+20,760,50,12)}
+  else{g.fillStyle='#3a1a30';g.font='900 120px sans-serif';g.textAlign='center';g.fillText('🎙️',W/2,y+220);g.font='600 38px sans-serif';g.fillText('Nota de voz · escúchala en Cápsula',W/2,y+300)}
+  foot(g);pages.push(cv)}
+ try{const files=[];for(let i=0;i<pages.length;i++){const b=await new Promise(r=>pages[i].toBlob(r,'image/jpeg',.88));files.push(new File([b],'libro-capsula-'+(i+1)+'.jpg',{type:'image/jpeg'}))}
+  const txt='Mira el libro de recuerdos que armamos en Cápsula 📖💗 Únete: '+link;
+  if(navigator.canShare&&navigator.canShare({files})){try{await navigator.share({files,text:txt});return}catch(e){if(e&&e.name==='AbortError')return}}
+  files.slice(0,1).forEach(f=>{const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();a.remove()});toast('Portada guardada. Compártela por WhatsApp 📖')}
+ catch(e){toast('No se pudo preparar el libro. Inténtalo de nuevo.')}}
 function bookGo(d){S.bk=Math.max(0,Math.min((S.bkL||[]).length+1,S.bk+d));bookPage()}
-function bookCard(n){const ok=n>=12;return `<section class="card"><div class="row sp"><span class="tx"><b>${esc(libName())}</b><span class="mu">${ok?'¡Listo para leer!':Math.min(n,12)+' de 12 historias · con 12 se arma'}</span></span>${ok?'<button class="btn" onclick="bookOpen()">Abrir</button>':''}</div>${ok?'':`<div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div>`}</section>`}
+function bookCard(n){const ok=n>=12;return `<section class="card"><div class="row sp"><span class="tx"><b>${esc(libName())}</b><span class="mu">${ok?'¡Listo para leer!':Math.min(n,12)+' de 12 historias · con 12 se arma'}</span></span>${ok?'<span class="row" style="gap:6px"><button class="btn s" onclick="bookShare()" aria-label="Compartir el libro">Compartir</button><button class="btn" onclick="bookOpen()">Abrir</button></span>':''}</div>${ok?'':`<div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div>`}</section>`}
 function arcList(kind){
  const all=S.posts.filter(p=>TY[p.k]&&!isBlk(p.a)),L=kind==='fav'?all.filter(p=>isFav(p.id)):kind?all.filter(p=>p.k===kind):all;
  if(!all.length)return `<div class="card c">${S.group?ic('book',48):pet3('pet3dx',150)}<h3>Aún no hay historias</h3><p class="mu">${S.group?'Cuenta la primera y quedará aquí para todos.':'Cuenta la primera y '+esc(S.pet.name)+' te lo agradecerá.'}</p><button class="btn" onclick="chooser()">Contar la primera</button></div>`;
@@ -1837,7 +1882,7 @@ const GUIDES={
   ['🧭','Expediciones','Manda a tu mascota a la Playa (1 h), el Bosque (4 h) o la Montaña (8 h). Mientras está fuera no puedes cuidarla. Al volver trae una postal y una pregunta: si la respondes ganas Lumis y XP, y tu respuesta se guarda en tu diario. Entre más dure el viaje, mejor el premio (hasta 30 Lumis de expediciones por día).'],
   ['🐾','Varias mascotas','Puedes tener hasta 3 mascotas. La segunda cuesta 400 Lumis y la tercera 800. Cada una tiene su propio ánimo, nivel y armario; los Lumis son compartidos.'],
   ['img:xp','XP: así crece tu mascota','La XP se gana con las mismas acciones, pero no se gasta. Cada 100 XP subes un nivel, y con los niveles tu mascota evoluciona: Bebé, Pequeño (nivel 4), Joven (nivel 11) y Adulto (nivel 26). Crecer es lento a propósito.'],
-  ['crown','Accesorios y recompensas','Algunos accesorios se desbloquean solos al subir de nivel o con logros, como contar tu primera historia, responder preguntas o mantener la racha. Otros se compran con Lumis. Los ves y los pones en el armario (el botón del gancho en el cuarto), una prenda por categoría.'],
+  ['crown','Accesorios y recompensas','Algunos accesorios se desbloquean solos al subir de nivel o con logros, como contar tu primera historia, responder preguntas o mantener la racha. Otros se compran con Lumis. Los ves y los pones en el armario (el botón del gancho en el cuarto), una prenda por categoría. Hay camisetas, sudaderas, jeans, falda y short que se compran con Lumis.'],
   ['heart','Y los corazones','Los corazones 💗 ya no son monedas ni XP: son el ánimo de tu mascota y las vidas del juego de Parejas.'],
   ['💗','Tu mascota reacciona','Cuando alguien de tu cápsula comparte algo, tu mascota te lo cuenta en su nube de pensamiento. Si está de expedición o durmiendo, espera a que vuelva o despierte.'],
   ['gift','Cofre, racha y misiones','Abre el cofre una vez al día, mantén tu racha contando algo cada día y cumple las misiones de la semana para ganar más Lumis.',['Contar una historia','dest()']]]},
@@ -1847,7 +1892,7 @@ const GUIDES={
   ['mail','Cuenten historias juntos','Fotos, cartas, notas de voz, dibujos y recetas. Reacciona a lo que cuentan los demás y marca con ★ tus favoritas.'],
   ['star','Pregunta del día','Cada cápsula tiene su pregunta del día, en una línea discreta con una nube 💭. Lo que contestan los demás se revela cuando tú respondes.'],
   ['flame','Meta de la semana','Entre todos cuenten 10 historias antes del lunes: ganan 30 Lumis y, la primera vez, un gorro para tu mascota (a la 3.ª semana, una bufanda).'],
-  ['book','Armen su libro','Con 12 historias se arma un libro para leer y guardar.']]}};
+  ['book','Armen su libro','Con 12 historias se arma un libro para leer. Al final (o en el botón Compartir) lo mandas como imágenes por WhatsApp para invitar a más gente.']]}};
 const gSeen=k=>{try{return localStorage.getItem('capsula_g_'+k)==='1'}catch(e){return false}};
 function guideInvite(){cl();
  if(S.families.length){const f=S.group&&S.families.some(x=>x.id===S.group.id)?S.group:S.families[0];openCap(f.id);S.sub='personas';render();return}
@@ -1863,7 +1908,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=84;
+const BUILD=85;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
