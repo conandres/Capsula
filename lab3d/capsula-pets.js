@@ -724,6 +724,7 @@ export class CapsulaPetViewer {
     P.head.rotation.x = hrx;
     (P.feet || []).forEach((ft, i) => { if (ft.userData.by == null) ft.userData.by = ft.position.y; ft.position.y = ft.userData.by + Math.max(0, footL * (i % 2 ? 1 : -1)) * 0.05; });
     if (dt > 0 && !still) { const vy = (y - (this.prevY ?? y)) / dt; this.vyS = (this.vyS || 0) + (Math.max(-6, Math.min(6, vy)) - (this.vyS || 0)) * 0.25; }
+    if (!still && dt > 0 && this.prevY != null && (this.vyS || 0) < -0.9 && y < -0.08 && (this.landT == null || t - this.landT > 0.4)) this.landT = t;
     this.prevY = y;
     P.head.scale.y = headScaleY * (this.stageHead || 1);
     this.character.position.set(x, y - (1 - (this.stageK || 1)) * 0.9, 0);
@@ -733,6 +734,7 @@ export class CapsulaPetViewer {
     let pf = 1;
     if (!still && this.popT != null) { const q = (t - this.popT) / 0.6; if (q < 1) { const u = q - 1; pf = 0.62 + 0.38 * (1 + 2.70158 * u * u * u + 1.70158 * u * u); } }
     sx *= pf; sy *= pf;
+    if (this.landT != null) { const q = (t - this.landT) / 0.32; if (q < 1) { const w = Math.sin(Math.PI * q) * (1 - q); sy *= 1 - 0.1 * w; sx *= 1 + 0.07 * w; } else this.landT = null; }
     this.character.scale.set(this.charBase * sx, this.charBase * sy, this.charBase * sx);
 
     /* burbujas al dormir */

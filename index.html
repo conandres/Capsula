@@ -1781,7 +1781,9 @@ function perfil(){
  <p class="mu c" onclick="admTap()" style="user-select:none;padding:8px">Cápsula · versión 21</p>`}
 let admN=0;
 const admCard=()=>S.adm?admPlus()+admCard0():'';
-const admCard0=()=>S.adm?`<div class="card"><h3>Panel de administrador</h3><div id="adm" class="mu">Cargando…</div><p class="mu">Se cuenta desde que cada persona abre la versión nueva. Solo tú puedes ver esto.</p><h3>Reportes</h3><div id="admr" class="mu">Cargando…</div><button class="btn s w" onclick="admLoad()">Actualizar</button></div>${(setTimeout(admLoad,80),'')}`:'';
+const admCard0=()=>S.adm?`<div class="card"><h3>Panel de administrador</h3><div id="adm" class="mu">Cargando…</div><p class="mu">Se cuenta desde que cada persona abre la versión nueva. Solo tú puedes ver esto.</p><h3>Reportes</h3><div id="admr" class="mu">Cargando…</div><button class="btn s w" onclick="admLoad()">Actualizar</button><h3>Modo prueba</h3><p class="mu">Solo para ti, para probar la tienda y las prendas.</p><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn s" onclick="admLumis()">+500 Lumis</button><button class="btn s" onclick="admPrendas()">Desbloquear prendas</button></div></div>${(setTimeout(admLoad,80),'')}`:'';
+function admLumis(){if(!S.adm)return;S.lm=(S.lm||0)+500;S.lmT=Date.now();save();toast('+500 Lumis (modo prueba)');render()}
+function admPrendas(){if(!S.adm)return;ACCS.forEach(a=>{if(!S.unl.includes(a.id))S.unl.push(a.id)});save();toast('Prendas desbloqueadas. Míralas en el armario 👕');render()}
 function admTap(){if(++admN<7)return;admN=0;admTry()}
 async function admTry(){try{await CLOUD.adminStats();S.adm=true;try{localStorage.setItem('capsula_adm','1')}catch(e){}toast('Panel de administrador activado');render()}catch(e){toast('Esta cuenta no es de administrador')}}
 const RL=Object.fromEntries(RSN);
@@ -1908,7 +1910,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=85;
+const BUILD=86;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
