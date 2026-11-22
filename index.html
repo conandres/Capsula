@@ -625,7 +625,7 @@ const accSvg=(ids,k)=>ACCS.filter(a=>ids.includes(a.id)&&owned(a)).map(a=>a.s(k)
 const PSC=[.66,.8,.92,1];
 const pet2d=(k,w,wear=[],st)=>{const b=`${PETS[k].draw()}${accSvg(wear,k)}`,sc=st==null?1:PSC[st];return `<svg viewBox="0 0 120 100" width="${w}" height="${w*100/120}" aria-hidden="true">${sc===1?b:`<g transform="translate(60 98) scale(${sc}) translate(-60 -98)">${b}</g>`}</svg>`};
 function checkUnl(){if(!S.user||!S.petSet)return;const lvl=Math.floor(S.xp/100);
- const t={estrella:lvl>=1,mono:lvl>=2,corona:lvl>=3,flor:S.types.size>=1,lentes:!!S.perfect||(S.qaN||0)>=7,gorro:(S.total||0)>=10,bufanda:(S.best||0)>=7};
+ const t={estrella:lvl>=1,mono:lvl>=2,corona:lvl>=3,flor:S.types.size>=1,lentes:!!S.perfect||(S.qaN||0)>=7,gorro:(S.total||0)>=10||(S.fg||0)>=1,bufanda:(S.best||0)>=7||(S.fg||0)>=3};
  const nu=ACCS.filter(a=>t[a.id]&&!S.unl.includes(a.id));if(!nu.length)return;
  nu.forEach(a=>{S.unl.push(a.id);wearPut(a.id)});toast('🎀 ¡Nuevo accesorio: '+nu.map(a=>a.n).join(', ')+'!')}
 const ACAT={estrella:'cab',mono:'cab',corona:'cab',flor:'cab',gorro:'cab',sombrero:'cab',audifonos:'cab',lentes:'cara',bufanda:'cuello',alas:'esp'};
@@ -763,7 +763,7 @@ try{const q=new URLSearchParams(location.search),c=q.get('codigo'),sf=v=>String(
  if(c||rf||de)history.replaceState(null,'',location.pathname)}catch(e){}
 
 /* Lo personal (mascota, corazones, racha...) viaja a la nube; la copia local sirve de respaldo sin internet */
-const personal=()=>({name:S.me.name,ln:S.me.ln||'',pet:S.pet,petSet:S.petSet,xp:S.xp,lm:S.lm||0,lmT:S.lmT||0,cap:S.cap||null,rm:S.rm||'',streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,favs:S.favs||[],best:S.best,total:S.total,types:[...S.types],pt:S.pt,others:S.others||[],solo:S.solo,theme:S.theme,showSeen:S.showSeen,birth:S.birth,legal:S.legal,blk:S.blk,refC:S.refC,invD:S.invD,qd:S.qd,qaN:S.qaN,accent:S.accent||'',active:S.group?S.group.id:null});
+const personal=()=>({name:S.me.name,ln:S.me.ln||'',pet:S.pet,petSet:S.petSet,xp:S.xp,lm:S.lm||0,lmT:S.lmT||0,cap:S.cap||null,rm:S.rm||'',streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,favs:S.favs||[],best:S.best,total:S.total,types:[...S.types],pt:S.pt,others:S.others||[],solo:S.solo,theme:S.theme,showSeen:S.showSeen,birth:S.birth,legal:S.legal,blk:S.blk,refC:S.refC,invD:S.invD,qd:S.qd,qaN:S.qaN,fpR:S.fpR||{},fg:S.fg||0,wkG:S.wkG||'',accent:S.accent||'',active:S.group?S.group.id:null});
 let remK='',remT=0;
 function save(){try{if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()){const k=(S.me.name||'')+'|'+((S.pet&&S.pet.name)||'');if(k!==remK){remK=k;clearTimeout(remT);remT=setTimeout(()=>{try{remApply()}catch(e){}},2500)}}}catch(e){}
  if(S.user){try{localStorage.setItem(KEY,JSON.stringify({...personal(),uid:S.user.uid,familyIds:S.families.map(f=>f.id)}))}catch(e){}}
@@ -772,7 +772,7 @@ function resetPersonal(){S.nameAt=0;S.nameP=0;Object.assign(S,{accent:'',ent:nul
 function applyPersonal(o){if(!o)return;
  if(THEMES.some(t=>t.id===o.theme))applyTheme(o.theme);
  if(typeof o.accent==='string')S.accent=o.accent;
- ['petSet','xp','lm','lmT','cap','rm','streak','last','chest','mis','petDone','inv','perfect','solo','best','total','showSeen','qd','qaN','birth','legal','blk','refC','invD'].forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
+ ['petSet','xp','lm','lmT','cap','rm','streak','last','chest','mis','petDone','inv','perfect','solo','best','total','showSeen','qd','qaN','fpR','fg','wkG','birth','legal','blk','refC','invD'].forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
  if(o.pet&&PETS[o.pet.kind])S.pet={kind:o.pet.kind,name:String(o.pet.name||PETS[o.pet.kind].n).slice(0,14)};
  S.others=Array.isArray(o.others)?o.others.slice(0,2).filter(x=>x&&x.pet&&PETS[x.pet.kind]).map(x=>({pet:{kind:x.pet.kind,name:String(x.pet.name||PETS[x.pet.kind].n).slice(0,14)},pt:Object.assign(PT0(),x.pt||{}),wear:Array.isArray(x.wear)?x.wear.filter(w=>typeof w==='string'):[],xp:+x.xp||0})):[];
  S.types=new Set(o.types||[]);S.wk=o.wk||null;S.unl=Array.isArray(o.unl)?o.unl.filter(x=>typeof x==='string'):[];S.wear=Array.isArray(o.wear)?o.wear.filter(x=>typeof x==='string').reduce((a,x)=>a.filter(y=>ACAT[y]!==ACAT[x]).concat(x),[]):[];S.favs=Array.isArray(o.favs)?o.favs.filter(x=>typeof x==='string').slice(-300):[];S.pt=Object.assign(PT0(),o.pt||{});S.pt.t=S.pt.t||Date.now();S.bub=null;
@@ -1116,22 +1116,40 @@ function actGo(id){const p=S.posts.find(x=>x.id===id);if(!p){toast('Ese recuerdo
  setTimeout(()=>postOpen(id),180)}
 function home(){
  const n=S.families.length,rc=recentHTML(3);
- return `${updCard()}<section class="card hw"><div style="max-width:200px"><span class="mu">Hola, ${esc(S.me.name)}</span><h2>Tu mundo te espera</h2><p class="mu" style="margin:4px 0 10px">Tu mascota ${esc(S.pet.name)} te espera. Cuídala y gana Lumis.</p><button class="btn" onclick="go('mundo')">Entrar</button></div><span class="hp"><span id="pet3dh" class="p3 p3h${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,104,S.wear,stg())}</span></span></span></section>
+ return `${updCard()}<section class="card hw"><div style="max-width:210px"><span class="mu">Hola, ${esc(S.me.name)}</span><h2>Guarda lo que vive tu familia</h2><p class="mu" style="margin:4px 0 10px">Cada historia que cuentan hace crecer a ${esc(S.pet.name)}.</p><button class="btn" onclick="go('mundo')">Ver a ${esc(S.pet.name)}</button></div><span class="hp"><span id="pet3dh" class="p3 p3h${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,104,S.wear,stg())}</span></span></span></section>
  ${fpCard()}
  <div class="duo"><button class="tile2" onclick="go('mundo')">${ic('world',26)}<b>Mi mundo</b><span class="mu">Solo tuyo: tu mascota y tu diario</span></button><button class="tile2" onclick="go('caps')">${ic('caps',26)}<b>Mis cápsulas</b><span class="mu">${n?'Compartes historias en '+n+(n>1?' espacios':' espacio'):'Comparte historias con tu familia o amigos'}</span></button></div>
- <section class="card"><span class="mu">Pregunta del día · una nueva cada día</span><h2>${esc(qaToday(true))}</h2><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn" onclick="goTriv()">Responder</button><button class="btn s" onclick="dest()">Contar una historia</button></div></section>
+ ${dqCard()}
+ ${goalCard()}
  ${rc?`<div class="row sp"><h3>Actividad reciente</h3><button class="lnk" onclick="go('act')">Ver todo</button></div>${rc}`:''}`}
+const goTrivF=id=>{spaceTo(id);go('triv')};
+function dqCard(){const f=S.families[0],done=S.qd===dayKey();
+ if(!f)return `<section class="card"><span class="mu">Pregunta del día</span><h2>${esc(qaToday(true))}</h2><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn" onclick="goTriv()">Responder</button><button class="btn s" onclick="go('caps')">Crear mi cápsula</button></div><p class="mu" style="margin-top:8px">Con una cápsula, todos responden la misma pregunta y se revelan juntos.</p></section>`;
+ return `<section class="card"><span class="mu">Pregunta de hoy · ${esc(f.name)}</span><h2>${esc(qaToday(false,f))}</h2><p class="mu" style="margin:0 0 8px">${done?'Ya respondiste. Mira qué contestaron los demás.':'Lo que contesten los demás se revela cuando tú respondas.'}</p><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn" onclick="goTrivF('${esc(f.id)}')">${done?'Ver respuestas':'Responder'}</button><button class="btn s" onclick="dest()">Contar una historia</button></div></section>`}
+const FGOAL=10;
+function weekCount(){const t0=weekStart().getTime();return S.posts.filter(p=>p.ts>=t0&&TY[p.k]&&!isBlk(p.a)).length}
+function goalCheck(){if(!S.user||!S.families.length||!S.group)return;if(weekCount()>=FGOAL&&S.wkG!==wkKey()){S.wkG=wkKey();S.fg=(S.fg||0)+1;S.lm=(S.lm||0)+30;S.lmT=Date.now();save();checkUnl();toast('🎉 ¡Meta semanal cumplida! +30 Lumis');burst(40);hopPet();bubSay('¡Lo logramos en familia! 🎉');render()}}
+function goalCard(){if(!S.families.length||!S.group)return'';const c=Math.min(weekCount(),FGOAL),ok=S.wkG===wkKey(),fg=S.fg||0,pr=fg<1?'un gorro para '+S.pet.name:fg<3?'30 Lumis (y a la 3.ª semana, una bufanda)':'30 Lumis';
+ setTimeout(goalCheck,500);
+ return `<section class="card"><div class="row sp"><h3>Meta de la semana</h3><span class="mu">${ok?'¡Cumplida!':c+' de '+FGOAL}</span></div><div class="bar" style="margin:8px 0 4px"><i style="width:${(ok?1:c/FGOAL)*100}%"></i></div><span class="mu">${ok?'Vuelve el lunes por la siguiente. Semanas cumplidas: '+fg+'.':'Entre todos, cuenten '+FGOAL+' historias. Premio: '+pr+'.'}</span></section>`}
+function famReact(){try{if(!S.user||!S.petSet||exAway()||asleep())return;let seen=0,has=false;try{const v=localStorage.getItem('capsula_fs');if(v){seen=+v;has=true}}catch(e){}
+ const L=S.posts.filter(p=>p.a!=='me'&&TY[p.k]&&!isBlk(p.a)&&!(S.user&&p.a===S.user.uid)&&p.ts>seen&&p.ts>Date.now()-864e5).sort((a,b)=>b.ts-a.ts);
+ const mx=S.posts.reduce((m,p)=>Math.max(m,p.ts||0),0);if(mx)try{localStorage.setItem('capsula_fs',String(mx))}catch(e){}
+ if(!L.length)return;const p=L[0],nm=String(who(p.a,p)).split(' ')[0];bubSay('¡'+nm+' '+(VERB[p.k]||'compartió algo')+'! 💗');hopPet()}catch(e){}}
 function fpCard(){let off=0,was=0;try{off=localStorage.getItem('capsula_fp')==='1';was=localStorage.getItem('capsula_fpd')==='1'}catch(e){}
- const mem=Object.keys(S.members||{}).length,f0=S.families[0],nf=S.families.length;
- const L=[['Cuenta tu primera historia','Una foto, carta, dibujo o nota de voz. Tarda un minuto.',S.total>0||S.posts.some(p=>p.a==='me'),'dest()','Empezar'],
-  ['Responde la pregunta del día','Una pregunta nueva cada día, para recordar cómo eres hoy.',(S.qaN||0)>=1,'goTriv()','Responder'],
-  ['Crea tu primera cápsula','Un espacio privado para tu familia, tu pareja o tus amigos.',nf>0,"go('caps')",'Crear'],
-  ['Invita a una persona','Con un enlace o código. Ganas 15 Lumis cuando entra.',!!S.inv||mem>1,'guideInvite()','Invitar']];
- const d=L.filter(x=>x[2]).length;
- if(d===L.length){if(!was){try{localStorage.setItem('capsula_fpd','1')}catch(e){}setTimeout(()=>{toast('🎉 ¡Completaste tus primeros pasos!');burst(36)},400)}return''}
+ const mem=Object.keys(S.members||{}).length,nf=S.families.length;
+ const L=[['c','Crea tu cápsula','El espacio privado de tu familia, tu pareja o tus amigos.',nf>0,"go('caps')",'Crear',20],
+  ['i','Invita a alguien','Con un enlace o código. Ganas 15 Lumis cuando entra.',!!S.inv||mem>1,'guideInvite()','Invitar',0],
+  ['h','Cuenta la primera historia','Una foto, carta, dibujo o nota de voz. Tarda un minuto.',S.total>0||S.posts.some(p=>p.a==='me'),'dest()','Empezar',10]];
+ const d=L.filter(x=>x[3]).length;
+ S.fpR=S.fpR||{};if(L.some(x=>x[3]&&x[6]&&!S.fpR[x[0]])&&S.user)setTimeout(fpClaim,350,L);
+ if(d===L.length){if(!was){try{localStorage.setItem('capsula_fpd','1')}catch(e){}setTimeout(()=>{toast('🎉 ¡Tu cápsula está lista!');burst(36);hopPet();bubSay('¡Lo logramos! Ahora a llenarla de recuerdos 💗')},400)}return''}
  if(off)return'';
- const cur=L.findIndex(x=>!x[2]);
- return `<section class="card" id="fp"><div class="row sp"><h3>Primeros pasos</h3><button class="lnk" onclick="fpOff()">Ocultar</button></div><span class="mu">${d} de ${L.length} · Sigue este camino y Cápsula queda lista para ti.</span><div class="bar" style="margin:8px 0 4px"><i style="width:${d/L.length*100}%"></i></div>${L.map((x,k)=>`<button class="opc ${k===cur?'fpc':''}" ${x[2]?'disabled':''} onclick="${x[3]}"><span class="ti">${ic(x[2]?'check':k===cur?'pen':'star',22)}</span><span class="tx"><b style="${x[2]?'text-decoration:line-through;opacity:.6':''}">${x[0]}</b><span class="mu">${x[1]}</span></span>${k===cur?`<span class="fpb">${x[4]}</span>`:''}</button>`).join('')}</section>`}
+ const cur=L.findIndex(x=>!x[3]);
+ return `<section class="card" id="fp"><div class="row sp"><h3>Tus 3 primeros pasos</h3><button class="lnk" onclick="fpOff()">Ocultar</button></div><span class="mu">${d} de ${L.length} · Así queda Cápsula lista para tu familia.</span><div class="bar" style="margin:8px 0 4px"><i style="width:${d/L.length*100}%"></i></div>${L.map((x,k)=>`<button class="opc ${k===cur?'fpc':''}" ${x[3]?'disabled':''} onclick="${x[4]}"><span class="ti">${ic(x[3]?'check':k===cur?'pen':'star',22)}</span><span class="tx"><b style="${x[3]?'text-decoration:line-through;opacity:.6':''}">${x[1]}</b><span class="mu">${x[2]}${x[6]&&!x[3]?' · +'+x[6]+' Lumis':''}</span></span>${k===cur?`<span class="fpb">${x[5]}</span>`:''}</button>`).join('')}</section>`}
+let fpBusy=false;
+function fpClaim(L){if(fpBusy||!S.user)return;fpBusy=true;let g=0;S.fpR=S.fpR||{};L.forEach(x=>{if(x[3]&&x[6]&&!S.fpR[x[0]]){S.fpR[x[0]]=1;g+=x[6]}});
+ if(g){S.lm=(S.lm||0)+g;S.lmT=Date.now();save();toast('+'+g+' Lumis por tu paso 🎉');burst(24);hopPet()}fpBusy=false}
 function fpOff(){try{localStorage.setItem('capsula_fp','1')}catch(e){}render()}
 function dest(){showSheet(`<h2>¿Dónde lo guardas?</h2><p class="mu">Elige el lugar antes de escribir.</p>
  <button class="opc" onclick="cl();spaceTo(null);chooser()"><span class="ti">${ic('world',24)}</span><span class="tx"><b>Mi mundo</b><span class="mu">Solo tú lo ves</span></span></button>
@@ -1139,7 +1157,7 @@ function dest(){showSheet(`<h2>¿Dónde lo guardas?</h2><p class="mu">Elige el l
 function badgesHTML(){const B=[['pen','Primera historia',S.total>0||S.posts.some(p=>p.a==='me')],['flame','Racha de 3',S.streak>=3],['brush','Multiformato',S.types.size>=3],['star','Pregunta del día',(S.qaN||0)>=1||!!S.perfect],['users','Invitador',!!S.inv],['book','Libro listo',S.posts.length>=12]];
  return `<div class="card"><h3>Insignias</h3><div class="bd">${B.map(b=>`<div class="${b[2]?'':'lk'}">${ic(b[0],28)}${b[1]}</div>`).join('')}</div></div>`}
 function mundo(){
- const lvl=Math.floor(S.xp/100),n=S.posts.length;
+ setTimeout(famReact,900);const lvl=Math.floor(S.xp/100),n=S.posts.length;
  const wq=S.group?'Cuéntale a '+fm()+' cómo lo viviste.':'Respóndela para tu diario.';
  return `
  <div class="spch"><h2>Mi mundo</h2>${spaceTag()}</div>
@@ -1449,7 +1467,7 @@ const hs=s=>{let h=2166136261;for(const c of String(s)){h^=c.charCodeAt(0);h=Mat
 /* Cada ciclo recorre todo el banco en un orden distinto (sin repetir hasta agotarlo). Misma pregunta para todos los miembros de una cápsula el mismo día. */
 function qPerm(L,c,salt){let s=(Math.imul(c+1,2654435761)^salt)>>>0;const ix=Array.from({length:L},(_,j)=>j);for(let j=L-1;j>0;j--){s=(Math.imul(s,1664525)+1013904223)>>>0;const k=s%(j+1);[ix[j],ix[k]]=[ix[k],ix[j]]}return ix}
 function qPick(B,n,salt){const L=B.length,c=Math.floor(n/L),i=n%L,ix=qPerm(L,c,salt);if(c>0&&L>1){const pv=qPerm(L,c-1,salt);if(ix[0]===pv[L-1]){[ix[0],ix[1]]=[ix[1],ix[0]]}}return B[ix[i]]}
-const qaToday=solo=>{const t=!solo&&S.group?S.group.type:'',B=solo||!S.group?QD_S:t==='pareja'?QD_P:t==='amigos'?QD_A:QD_G,n=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5),salt=hs((solo||!S.group)?(S.user&&S.user.uid)||'yo':S.group.id);return qPick(B,n,salt)};
+const qaToday=(solo,g0)=>{const g=g0||S.group,t=!solo&&g?g.type:'',B=solo||!g?QD_S:t==='pareja'?QD_P:t==='amigos'?QD_A:QD_G,n=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5),salt=hs((solo||!g)?(S.user&&S.user.uid)||'yo':g.id);return qPick(B,n,salt)};
 function qaForm(solo){return `<textarea id="qat" class="in paper" rows="4" maxlength="300" placeholder="Escribe tu respuesta…" oninput="S.qtx=this.value;$('#qab').disabled=!this.value.trim()">${esc(S.qtx||'')}</textarea>
  <button class="btn w" id="qab" onclick="qaSend()" ${S.qtx&&S.qtx.trim()?'':'disabled'}>${solo?'Guardar en mi diario':'Responder'}</button>
  <p class="mu c">${solo?'Tu respuesta se guarda en tu Archivo.':'Cuando respondas, verás lo que contestaron los demás.'}</p>`}
@@ -1810,7 +1828,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=80;
+const BUILD=81;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
