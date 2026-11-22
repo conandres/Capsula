@@ -43,6 +43,30 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
 .bbl{animation-duration:1.7s!important}
 .pkm{position:absolute;left:0;right:0;top:44%;text-align:center;font-weight:900;font-size:34px;text-shadow:0 3px 0 rgba(0,0,0,.35);z-index:8;pointer-events:none;animation:pkpop 1.1s ease-out forwards}
 @keyframes pkpop{0%{transform:scale(.4);opacity:0}25%{transform:scale(1.15);opacity:1}100%{transform:translateY(-40px) scale(1);opacity:0}}
+.room.pkb .fl{transform:translateY(var(--dy,0px)) scale(.85)!important}
+.room.pkb.tubin .fl{animation:tubbob 2.6s ease-in-out infinite!important}
+@keyframes tubbob{50%{transform:translateY(calc(var(--dy,0px) - 5px)) scale(.85) rotate(1deg)}}
+.spl{position:absolute;font-size:22px;z-index:7;pointer-events:none;animation:splf .9s ease-out forwards}
+@keyframes splf{0%{transform:translate(0,0) scale(.5);opacity:1}60%{opacity:1}100%{transform:translate(var(--dx),calc(var(--dy) + 120px)) scale(1);opacity:0}}
+.rip{position:absolute;width:20px;height:8px;margin:-4px 0 0 -10px;border:3px solid rgba(255,255,255,.85);border-radius:50%;z-index:7;pointer-events:none;animation:ripo 1s ease-out forwards}
+@keyframes ripo{to{transform:scale(11,5);opacity:0}}
+.tub.wob{animation:tubw .6s ease-out}@keyframes tubw{20%{transform:translateY(5px) scaleY(.97)}50%{transform:translateY(-3px)}100%{transform:none}}
+.dg.rl{position:relative;pointer-events:none;opacity:.55;filter:grayscale(.3)}
+.dg.rl::after{content:'';position:absolute;inset:-4px;border-radius:inherit;background:conic-gradient(var(--pd,#6b4bd8) 0 0,transparent 0);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));animation:rlr var(--rl,1.5s) linear forwards}
+@property --rlp{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes rlr{from{background:conic-gradient(var(--pd,#6b4bd8) 360deg,transparent 0)}to{background:conic-gradient(var(--pd,#6b4bd8) 0deg,transparent 0)}}
+.dg.rl.ballsrc::before{content:'Recargando…';position:absolute;left:50%;top:-22px;transform:translateX(-50%);font-size:12px;font-weight:800;white-space:nowrap;color:var(--mu,#7a6a8a)}
+.foodsrc .dg.rl::before{content:'Masticando…';position:absolute;left:0;right:0;top:-18px;text-align:center;font-size:11px;font-weight:800;color:var(--mu,#7a6a8a)}
+.nbx{gap:8px}.nbx .ngp{position:relative;display:flex;justify-content:center;min-height:96px}.nbx .ngp .ps{display:inline-block}
+.nbub{position:relative;width:100%;background:var(--tint-2,#f1ecff);border-radius:22px;padding:14px 16px;text-align:center}
+.nbub::before{content:'';position:absolute;left:50%;top:-9px;margin-left:-10px;border:10px solid transparent;border-top:0;border-bottom-color:var(--tint-2,#f1ecff)}
+.nbub .nbt{display:flex;align-items:center;justify-content:center;gap:10px;margin:2px 0 6px}.nbub h2{margin:0!important;padding:0!important;font-size:22px}.nbub .gk{display:block}.nbub .nbi{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--card,#fff);flex:none;color:var(--pd)}
+.nbub p{margin:0}
+.nsp{position:absolute;font-style:normal;font-size:16px;opacity:0;animation:nsp 2.4s ease-in-out infinite}.nsp.s1{left:22%;top:8%}.nsp.s2{right:22%;top:30%;animation-delay:1.1s}@keyframes nsp{40%{opacity:1;transform:scale(1.2) rotate(15deg)}80%{opacity:0}}
+.nfly{animation:nbIn 1.1s cubic-bezier(.2,1.2,.4,1) both,nbHover 3.2s ease-in-out 1.1s infinite}.nhov{animation:nbHover 3.2s ease-in-out infinite}
+@keyframes nbIn{0%{transform:translate(-170px,-70px) rotate(-28deg) scale(.45);opacity:0}55%{opacity:1;transform:translate(24px,10px) rotate(8deg) scale(1.1)}100%{transform:none;opacity:1}}
+@keyframes nbHover{50%{transform:translateY(-9px) rotate(2deg)}}
+.bz h2{padding:0!important;text-align:center}
 </style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -663,7 +687,7 @@ function wtab(k){S.wtab=k;if(document.querySelector('#sh .ward'))wardOpen();else
 const PET_PRICE=[0,400,800];
 const petOwned=()=>[S.pet.kind].concat((S.others||[]).map(o=>o.pet.kind));
 function petSwap(i){const o=S.others[i];if(!o)return;ptTick();const cur={pet:S.pet,pt:S.pt,wear:S.wear,xp:S.xp};S.pet=o.pet;S.pt=o.pt;S.wear=o.wear;S.xp=o.xp;S.others[i]=cur;S.tool=null;S.bub=null;ptTick();cl();save();p3sync();render();toast('Ahora cuidas a '+S.pet.name+' 💗')}
-function petAdoptOpen(){const n=1+S.others.length;if(n>=3){toast('Ya tienes 3 mascotas 💗');return}const p=PET_PRICE[n],have=petOwned(),free=Object.entries(PETS).filter(([k])=>!have.includes(k));
+function petAdoptOpen(){const n=1+S.others.length;if(n>=3){toast('Ya tienes 3 mascotas 💗');return}const p=PET_PRICE[n],have=petOwned(),free=Object.entries(PETS).filter(([k])=>k!=='nube'&&!have.includes(k));
  showSheet(`<h2>Adoptar una mascota</h2><p class="mu">Cuesta <b>${LI} ${p} Lumis</b> y cada mascota tiene su propio ánimo, nivel y armario. Tienes ${LI} ${S.lm||0}.</p>
  <div class="pg">${free.map(([k,v])=>`<button class="pk ${S.adk===k?'sel':''}" onclick="S.adk='${k}';petAdoptOpen()" aria-pressed="${S.adk===k}">${pet(k,76,[],0)}<b>${v.d}</b></button>`).join('')}</div>
  <label class="lb" for="adn">¿Cómo se llama?</label><input id="adn" class="in" maxlength="14" value="${esc(S.adk?PETS[S.adk].n:'')}">
@@ -673,16 +697,18 @@ function petAdopt(){const n=1+S.others.length,p=PET_PRICE[n],k=S.adk;if(n>=3||!P
 const pswHTML=()=>{const L=[{kind:S.pet.kind,name:S.pet.name,on:1,st:stg(),w:S.wear}].concat(S.others.map((o,i)=>({kind:o.pet.kind,name:o.pet.name,i,st:stgL(Math.floor(o.xp/100)),w:o.wear})));
  return `<div class="psw">${L.map(x=>`<button class="${x.on?'on':''}" ${x.on?'aria-current="true"':`onclick="petSwap(${x.i})"`} aria-label="${esc(x.name)}">${pet(x.kind,46,x.w,x.st,true)}<small>${esc(x.name)}</small></button>`).join('')}${L.length<3?`<button class="add" onclick="petAdoptOpen()" aria-label="Adoptar otra mascota"><b>+</b><small>${LI} ${PET_PRICE[L.length]}</small></button>`:''}</div>`};
 function wear(id){if(!ownedId(id))return;wearPut(id);const w=document.querySelector('#sh .ward');render();if(w)wardOpen()}
-const NTIPS={food:['Dar de comer','Arrastra la comida de abajo hasta la boca de tu mascota. Si ya está llena, te lo dice. ¡No te preocupes por equivocarte!'],
- bath:['Baño','Frota a tu mascota con el dedo: la esponja hace burbujas. Cuando la barra se llene, queda limpia y brillante.'],
- play:['Penales','Tira el balón con un tirón rápido hacia el arco. Entre más fuerte, más alto va. Tu mascota intentará atajarlo. Son 5 tiros por tanda.'],
- sleep:['Dormir','Al apagar la luz tu mascota descansa y recupera energía. Puedes encender la luz cuando quieras, o despierta sola.'],
- exp:['Expediciones','Mándala de viaje: mientras está fuera no puedes cuidarla, pero vuelve con una postal, una pregunta y premios. Entre más dure, mejor el premio.'],
- ward:['Armario','Aquí eliges las prendas de tu mascota, una por categoría. Las nuevas se compran en la Tienda con Lumis.'],
- shop:['Tienda','Aquí gastas tus Lumis: fondos del cuarto, ropa y mascotas nuevas. Se ganan poco a poco cuidando a tu mascota y contando historias.']};
+const guideIc=x=>!x?'':x.startsWith('img:')?`<img src="img/${x.slice(4)}-lg.png" alt="" style="width:34px;height:34px;object-fit:contain">`:/^[a-z]+$/.test(x)?ic(x,26,1.8):`<span style="font-size:26px;line-height:1">${x}</span>`;
+function nubiSheet(o){showSheet(`<div class="gd nbx ${o.c||'m'}">${o.dots||''}<span class="ngp ${o.fly?'nfly':'nhov'}">${pet('nube',96,[],3,true)}<i class="nsp s1">✨</i><i class="nsp s2">✨</i></span><div class="nbub"><span class="gk">${o.k||''}</span><div class="nbt">${o.ic?`<span class="nbi">${guideIc(o.ic)}</span>`:''}<h2>${o.t}</h2></div><p class="mu">${o.x}</p></div>${o.extra||''}</div>`)}
+const NTIPS={food:['🍎','Hora de comer','¡Mira! Arrastra la comida de abajo hasta la boca de tu mascota. Si ya está llena, te lo dirá. ¡No pasa nada si te equivocas!'],
+ bath:['🛁','Hora del baño','Primero arrastra a tu mascota hacia la tina y suéltala para darle un chapuzón 💦. Luego frótala con el dedo: la esponja hace burbujas. Cuando la barra se llene, queda limpia.'],
+ play:['⚽','¡Penales!','Tira el balón con un tirón rápido hacia el arco: entre más fuerte, más alto va. Tu mascota intentará atajarlo. Son 5 tiros; si metes 2 o más, ganas Lumis.'],
+ sleep:['🌙','A dormir','Al apagar la luz tu mascota descansa y recupera energía. Puedes encender la luz cuando quieras, o despierta sola.'],
+ exp:['🧭','Expediciones','Mándala de viaje: mientras está fuera no puedes cuidarla, pero vuelve con una postal, una pregunta y premios. Entre más dure, mejor el premio.'],
+ ward:['👕','El armario','Aquí eliges la ropa de tu mascota, una prenda por categoría. Las nuevas se compran en la Tienda con Lumis.'],
+ shop:['🛍️','La Tienda','Aquí gastas tus Lumis: fondos del cuarto, ropa y mascotas nuevas. Se ganan poco a poco cuidando a tu mascota y contando historias.']};
 function guideTip(k,force){const t=NTIPS[k];if(!t)return;let seen=false;try{seen=localStorage.getItem('capsula_tg_'+k)==='1';localStorage.setItem('capsula_tg_'+k,'1')}catch(e){}
  if(seen&&!force)return;
- setTimeout(()=>showSheet(`<div class="ng"><span class="ngp">${pet('nube',104,[],3,true)}</span><span class="mu">Nubi, tu guía</span><h2>${t[0]}</h2><p class="mu">${t[1]}</p><button class="btn w" onclick="cl()">¡Entendido!</button></div>`),force?0:350)}
+ setTimeout(()=>nubiSheet({k:'Nubi te explica',ic:t[0],t:t[1],x:t[2],fly:1,extra:'<button class="btn w" onclick="cl()">¡Entendido!</button>'}),force?0:350)}
 function wardOpen(){if(S.pet.kind!=='nube')guideTip('ward');if(S.pet.kind==='nube'){showSheet(`<div class="ward"><h2>Nubi no usa ropa</h2><p class="mu">Nubi es la guía de Cápsula y se queda tal cual. Cambia a otra mascota (conejo, gato…) para vestirla.</p><button class="btn w" onclick="cl()">Entendido</button></div>`);return}showSheet(`<div class="ward"><h2>Armario de ${esc(S.pet.name)}</h2><p class="mu">Una prenda por categoría. Toca una para ponerla o quitarla.</p>${closetGrid()}</div>`)}
 const ROOMS=[{id:'',n:'Cielo',p:0,bg:'linear-gradient(180deg,#fde3f1,#f6d5ef)'},{id:'ocaso',n:'Atardecer',p:60,bg:'linear-gradient(180deg,#ffb199,#ff7aa2 70%,#c86dd7)'},{id:'bosque',n:'Bosque',p:90,bg:'linear-gradient(180deg,#b9e6a8,#6fc28b 75%,#3f8f6a)'},{id:'playa',n:'Playa',p:110,bg:'linear-gradient(180deg,#9fdcff,#6cc3f0 60%,#f4dca0)'},{id:'espacio',n:'Espacio',p:150,bg:'linear-gradient(180deg,#1b1650,#2e2a7a 70%,#4b3aa0)'}];
 const ACCP={sombrero:150,camiseta:120,rayas:160,sudadera:220,jean:140,falda:160,short:120};
@@ -790,7 +816,7 @@ const libName=()=>S.group?GT[gtype()].lib:'Mi libro';
 const today=()=>new Date().toDateString(),KEY='capsula_v3',LEGACY='capsula_v2';
 const PT0=()=>({love:80,food:75,clean:80,fun:70,en:90,rest:0,said:[],lb:0,lp:0,lz:0,t:Date.now(),lr:0,lf:0,ans:0,ad:'',asked:{},moods:[],seen:{},tv:{d:'',n:0},tvb:''});
 const THEMES=[{id:'rosa',n:'Rosa',bg:'#FFF6FA',pr:'#B5336E',bar:'#FFF6FA'},{id:'azul',n:'Cápsula',bg:'#F6F3FF',pr:'#6A4CD6',bar:'#F6F3FF'},{id:'negro',n:'Negro',bg:'#000000',pr:'#F5F5F7',bar:'#000000'}];
-const S={birth:'',legal:null,blk:[],refC:0,invD:[],adm:(()=>{try{return localStorage.getItem('capsula_adm')==='1'}catch(e){return false}})(),showSeen:true,qd:'',qaN:0,qa:null,gtype:'familia',gname:'',qtx:'',theme:document.documentElement.dataset.theme||'azul',bub:null,bubT:0,pt:PT0(),scr:'boot',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,group:null,
+const S={birth:'',legal:null,blk:[],refC:0,invD:[],adm:(()=>{try{return localStorage.getItem('capsula_adm')==='1'}catch(e){return false}})(),showSeen:true,qd:'',qaN:0,qa:null,gtype:'familia',gname:'',qtx:'',theme:document.documentElement.dataset.theme||'azul',bub:null,bubT:0,pt:PT0(),scr:'boot',tab:'home',gstep:'pick',me:{name:''},pet:{kind:'conejo',name:'Coco'},pe:0,petSet:false,group:null,
  others:[],user:null,families:[],members:{},solo:false,cloudErr:'',bootSlow:0,joinCode:'',
  xp:0,lm:0,lmT:0,cap:null,rm:'',streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],favs:[],best:0,total:0,prompt:null,posts:[],plim:25};
 let T={i:0,s:0,a:null},C={};const LIVE=new Set();
@@ -805,11 +831,13 @@ let remK='',remT=0;
 function save(){try{if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()){const k=(S.me.name||'')+'|'+((S.pet&&S.pet.name)||'');if(k!==remK){remK=k;clearTimeout(remT);remT=setTimeout(()=>{try{remApply()}catch(e){}},2500)}}}catch(e){}
  if(S.user){try{localStorage.setItem(KEY,JSON.stringify({...personal(),uid:S.user.uid,familyIds:S.families.map(f=>f.id)}))}catch(e){}}
  if(window.CLOUD&&CLOUD.ready)CLOUD.dirty()}
-function resetPersonal(){S.nameAt=0;S.nameP=0;Object.assign(S,{accent:'',ent:null,birth:'',legal:null,blk:[],refC:0,invD:[],xp:0,lm:0,lmT:0,cap:null,rm:'',streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],favs:[],best:0,total:0,others:[],pt:PT0(),pet:{kind:'nube',name:'Nubi'},pe:0,petSet:false,solo:false,showSeen:true,qd:'',qaN:0,qa:null,group:null,bub:null,posts:[],members:{},families:[]});T={i:0,s:0,a:null}}
+function resetPersonal(){S.nameAt=0;S.nameP=0;Object.assign(S,{accent:'',ent:null,birth:'',legal:null,blk:[],refC:0,invD:[],xp:0,lm:0,lmT:0,cap:null,rm:'',streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],favs:[],best:0,total:0,others:[],pt:PT0(),pet:{kind:'conejo',name:'Coco'},pe:0,petSet:false,solo:false,showSeen:true,qd:'',qaN:0,qa:null,group:null,bub:null,posts:[],members:{},families:[]});T={i:0,s:0,a:null}}
 function applyPersonal(o){if(!o)return;
  if(THEMES.some(t=>t.id===o.theme))applyTheme(o.theme);
  if(typeof o.accent==='string')S.accent=o.accent;
  ['petSet','xp','lm','lmT','cap','rm','streak','last','chest','mis','petDone','inv','perfect','solo','best','total','showSeen','qd','qaN','fpR','fg','wkG','birth','legal','blk','refC','invD'].forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
+ {const NG=['conejo','gato','perro','oso'],taken=[];const own=p=>p&&p.kind!=='nube'&&taken.push(p.kind);own(o.pet);(o.others||[]).forEach(x=>x&&own(x.pet));
+  const fix=p=>{if(p&&p.kind==='nube'){const k=NG.find(x=>!taken.includes(x))||'conejo';taken.push(k);if(!p.name||p.name==='Nubi')p.name=PETS[k].n;p.kind=k}};fix(o.pet);(o.others||[]).forEach(x=>x&&fix(x.pet))}
  if(o.pet&&PETS[o.pet.kind])S.pet={kind:o.pet.kind,name:String(o.pet.name||PETS[o.pet.kind].n).slice(0,14)};
  S.others=Array.isArray(o.others)?o.others.slice(0,2).filter(x=>x&&x.pet&&PETS[x.pet.kind]).map(x=>({pet:{kind:x.pet.kind,name:String(x.pet.name||PETS[x.pet.kind].n).slice(0,14)},pt:Object.assign(PT0(),x.pt||{}),wear:Array.isArray(x.wear)?x.wear.filter(w=>typeof w==='string'):[],xp:+x.xp||0})):[];
  S.types=new Set(o.types||[]);S.wk=o.wk||null;S.unl=Array.isArray(o.unl)?o.unl.filter(x=>typeof x==='string'):[];S.wear=Array.isArray(o.wear)?o.wear.filter(x=>typeof x==='string').reduce((a,x)=>a.filter(y=>ACAT[y]!==ACAT[x]).concat(x),[]):[];S.favs=Array.isArray(o.favs)?o.favs.filter(x=>typeof x==='string').slice(-300):[];S.pt=Object.assign(PT0(),o.pt||{});S.pt.t=S.pt.t||Date.now();S.bub=null;
@@ -1071,13 +1099,13 @@ function soloGo(){S.solo=true;S.group=null;if(window.CLOUD&&CLOUD.ready)CLOUD.sw
 function nextScr(){S.scr=S.petSet?'main':'pet';S.tab='home';render()}
 
 function petScr(){return `<div class="ob"><h1>Elige tu mascota</h1><p class="mu">Crecerá con cada historia que cuentes.</p>
- <div class="pg">${Object.entries(PETS).map(([k,v])=>`<button class="pk ${S.pet.kind===k?'sel':''}" onclick="selPet('${k}')" aria-pressed="${S.pet.kind===k}">${pet(k,78)}<b>${v.d}</b></button>`).join('')}</div>
+ <div class="pg">${Object.entries(PETS).filter(([k])=>k!=='nube').map(([k,v])=>`<button class="pk ${S.pet.kind===k?'sel':''}" onclick="selPet('${k}')" aria-pressed="${S.pet.kind===k}">${pet(k,78)}<b>${v.d}</b></button>`).join('')}</div>
  <label class="lb" for="pn">¿Cómo se llama?</label>
  <input id="pn" class="in" maxlength="14" value="${esc(S.pet.name)}" oninput="S.pet.name=this.value;S.pe=1">
  <button class="btn w" onclick="startGame()">Empezar</button></div>`}
 function selPet(k){S.pet.kind=k;if(!S.pe)S.pet.name=PETS[k].n;render()}
 function startGame(){S.pet.name=S.pet.name.trim()||PETS[S.pet.kind].n;S.petSet=true;S.scr='main';S.tab='home';render();if((S.total||0)>0||S.posts.length){toast('¡'+S.pet.name+' ya está contigo!');return}petHello()}
-function petHello(){const n=esc(S.pet.name);showSheet(`<div class="bz"><div style="display:flex;justify-content:center;margin-bottom:6px">${pet(S.pet.kind,120,[],0)}</div><h2>¡Hola, soy ${n}!</h2><p class="mu">Voy a crecer con cada historia que cuentes. Para empezar, cuéntame algo: una foto, una carta, un dibujo o tu voz.</p><p class="mu">Todo es privado. Solo lo ven las personas que tú invites.</p></div><button class="btn w" onclick="cl();dest()">Contar mi primera historia</button><button class="btn s w" onclick="cl();toast('Tus primeros pasos están en Inicio')">Mirar la app primero</button>`);psFill()}
+function petHello(){const n=esc(S.pet.name);nubiSheet({k:'Tu guía',ic:'',t:'¡Hola! Soy Nubi',x:`Yo te voy a ir explicando todo. Aquí guardas lo que vive tu familia y <b>${n}</b> crece con cada historia que cuentas.<br><br>Para empezar, cuéntame algo: una foto, una carta, un dibujo o tu voz. Todo es privado: solo lo ven las personas que tú invites.`,fly:1,extra:`<button class="btn w" onclick="cl();dest()">Contar mi primera historia</button><button class="btn s w" onclick="cl();toast('Tus primeros pasos están en Inicio')">Mirar la app primero</button>`})}
 
 /* ---------- main shell ---------- */
 const spaceId=()=>S.group?S.group.id:null;
@@ -1282,7 +1310,7 @@ const fmtWait=ms=>{const m=Math.ceil(ms/60000);return m>=60?Math.floor(m/60)+' h
 function ptTick(){const p=S.pt,now=Date.now(),m=Math.max(0,(now-p.t)/60000),ms=Math.min(m,Math.max(0,((p.rest||0)-p.t)/60000)),ma=m-ms;
  p.love=Math.max(0,p.love-ms/20-ma/9);p.food=Math.max(0,p.food-ms/14-ma/7);
  p.clean=Math.max(0,(p.clean??80)-m/16);p.fun=Math.max(0,(p.fun??70)-ms/30-ma/11);
- p.en=Math.max(0,Math.min(100,(p.en??90)+ms*3)-ma/18);p.t=now}
+ p.en=Math.max(0,Math.min(100,(p.en??90)+ms*6)-ma/18);p.t=now}
 function say(pool){const L=S.pt.said||(S.pt.said=[]);let c=pool.filter(x=>!L.includes(x));if(!c.length)c=pool;const t=c[Math.floor(Math.random()*c.length)];L.push(t);if(L.length>8)L.shift();return t}
 const tod=()=>{const h=new Date().getHours();return h<6?'noche':h<12?'mañana':h<19?'tarde':'noche'};
 function greet(away){if(asleep())return{t:'Zzz… (tócame para despertarme)',o:null,q:null};const n=S.me.name,t0=tod(),p=S.pt;
@@ -1376,10 +1404,10 @@ function trayHTML(){const n=esc(S.pet.name),sl=asleep();
  if(exAway()){const e=S.pt.ex,x=EXPS.find(a=>a.k===e.k);return Date.now()>=e.end?`<div class="tw"><span class="mu">¡${n} volvió de ${x.n} ${x.e} con una postal!</span><button class="btn s w" onclick="exPost()">💌 Ver postal</button></div>`:`<div class="tw"><span class="mu" id="exl">${n} está de expedición en ${x.n} ${x.e} · vuelve en ${fmtWait(exLeft())}</span><span class="mu c">Mientras esté fuera no puedes cuidarla 🧭 Expediciones hechas: <b>${S.pt.exn||0}</b></span></div>`}
  if(sl)return `<div class="tw"><span class="mu" id="slt">${n} está durmiendo 💤${S.pt.rest>Date.now()?` · despierta en unos ${sleepMin()} min`:''}</span><button class="btn s w" onclick="wake()">🌙 Encender la luz</button></div>`;
  if(S.tool==='food')return `<div class="tw"><span class="mu">Arrastra la comida de abajo del cuarto hasta la boca de ${n} (o tócala)</span><button class="lnk" onclick="guideTip('food',1)" aria-label="Ayuda">?</button><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
- if(S.tool==='bath')return `<div class="tw"><span class="mu">Frota a ${n} con la esponja (tu dedo) hasta llenar la barra 🫧</span><div class="bar"><i id="scb" style="width:${Math.round(S.pt.clean)}%"></i></div><button class="lnk" onclick="guideTip('bath',1)" aria-label="Ayuda">?</button><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
+ if(S.tool==='bath')return !S.tubIn?`<div class="tw"><span class="mu">Arrastra a ${n} hacia la tina y suéltala: ¡chapuzón! 🛁</span><button class="lnk" onclick="guideTip('bath',1)" aria-label="Ayuda">?</button><button class="btn s" onclick="toolSet(null)">Listo</button></div>`:`<div class="tw"><span class="mu">Frota a ${n} con la esponja (tu dedo) hasta llenar la barra 🫧</span><div class="bar"><i id="scb" style="width:${Math.round(S.pt.clean)}%"></i></div><button class="lnk" onclick="guideTip('bath',1)" aria-label="Ayuda">?</button><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
  if(S.tool==='play')return `<div class="tw"><span class="mu">¡Penales! Lanza el balón hacia el arco con un tirón rápido; ${n} intentará atajarlo. ⚽ <b>${S.pgg||0} goles · ${S.pg||0}/5</b></span><button class="lnk" onclick="guideTip('play',1)" aria-label="Ayuda">?</button><button class="btn s" onclick="toolSet(null)">Listo</button></div>`;
  return `<div class="tools">${TOOLS.map(([k,e,l])=>`<button class="tl" onclick="toolSet('${k}')"><b>${e}</b>${l}</button>`).join('')}</div><button class="btn s w" onclick="exOpen()" style="margin-top:8px">🧭 Mandar de expedición${S.pt.exn?' · '+S.pt.exn+' hechas':''}</button><span class="mu c">Toca o acaricia a ${n} con el dedo 💗</span>`}
-function trayUpd(){const t=$('#tray');if(t)t.innerHTML=trayHTML();const r=$('#room');if(r){r.classList.toggle('scrub',S.tool==='bath');const b=$('#ballsrc'),on=S.tool==='play';if(on&&!b){const el=document.createElement('button');el.id='ballsrc';el.className='dg ballsrc';el.dataset.k='ball';el.setAttribute('aria-label','Balón');el.innerHTML='<b>⚽</b>';r.appendChild(el)}else if(!on&&b)b.remove();const gl=$('#goal');if(on&&!gl){const g=document.createElement('div');g.id='goal';g.className='goal3';g.innerHTML='<i class="gp"></i>';r.insertBefore(g,r.firstChild)}else if(!on&&gl)gl.remove();r.classList.toggle('pk',on);r.classList.toggle('pkf',S.tool==='food');r.classList.toggle('pkb',S.tool==='bath');{const tb=$('#tub'),bo=S.tool==='bath';if(bo&&!tb){const d=document.createElement('div');d.id='tub';d.className='tub';d.innerHTML='<i class="foam"></i><span class="duck">🦆</span><i class="wv"></i>';r.appendChild(d)}else if(!bo&&tb)tb.remove()}if((on||S.tool==='food'||S.tool==='bath')&&!r.dataset.sc){r.dataset.sc='1';setTimeout(()=>{try{r.scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}},80)}else if(!on&&S.tool!=='food'&&S.tool!=='bath')delete r.dataset.sc;const fs=$('#foodsrc'),fon=S.tool==='food';if(fon&&!fs){const d=document.createElement('div');d.id='foodsrc';d.className='foodsrc';d.innerHTML=FOODS.map(f=>`<button class="dg" data-k="${f.k}" aria-label="Dar ${f.n}"><b>${f.e}</b><span>${f.n}</span></button>`).join('');r.appendChild(d)}else if(!fon&&fs)fs.remove();r.classList.toggle('fd',fon);scoreUpd();const fl=r.querySelector('.fl');if(fl&&!on&&S.tool!=='food'){fl.style.removeProperty('--kx');fl.style.removeProperty('--kr')}}}
+function trayUpd(){const t=$('#tray');if(t)t.innerHTML=trayHTML();const r=$('#room');if(r){r.classList.toggle('scrub',S.tool==='bath');const b=$('#ballsrc'),on=S.tool==='play';if(on&&!b){const el=document.createElement('button');el.id='ballsrc';el.className='dg ballsrc';el.dataset.k='ball';el.setAttribute('aria-label','Balón');el.innerHTML='<b>⚽</b>';r.appendChild(el)}else if(!on&&b)b.remove();const gl=$('#goal');if(on&&!gl){const g=document.createElement('div');g.id='goal';g.className='goal3';g.innerHTML='<i class="gp"></i>';r.insertBefore(g,r.firstChild)}else if(!on&&gl)gl.remove();r.classList.toggle('pk',on);r.classList.toggle('pkf',S.tool==='food');r.classList.toggle('pkb',S.tool==='bath');{const tb=$('#tub'),bo=S.tool==='bath';{const f2=r.querySelector('.fl');if(bo&&!tb&&f2){S.tubIn=false;f2.style.transition='transform .4s ease';f2.style.setProperty('--dy','-84px')}else if(!bo&&tb&&f2){S.tubIn=false;f2.style.removeProperty('--dy')}}r.classList.toggle('tubin',!!S.tubIn&&bo);if(bo&&!tb){const d=document.createElement('div');d.id='tub';d.className='tub';d.innerHTML='<i class="foam"></i><span class="duck">🦆</span><i class="wv"></i>';r.appendChild(d)}else if(!bo&&tb)tb.remove()}if((on||S.tool==='food'||S.tool==='bath')&&!r.dataset.sc){r.dataset.sc='1';setTimeout(()=>{try{r.scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}},80)}else if(!on&&S.tool!=='food'&&S.tool!=='bath')delete r.dataset.sc;const fs=$('#foodsrc'),fon=S.tool==='food';if(fon&&!fs){const d=document.createElement('div');d.id='foodsrc';d.className='foodsrc';d.innerHTML=FOODS.map(f=>`<button class="dg" data-k="${f.k}" aria-label="Dar ${f.n}"><b>${f.e}</b><span>${f.n}</span></button>`).join('');r.appendChild(d)}else if(!fon&&fs)fs.remove();r.classList.toggle('fd',fon);scoreUpd();const fl=r.querySelector('.fl');if(fl&&!on&&S.tool!=='food'){fl.style.removeProperty('--kx');fl.style.removeProperty('--kr')}}}
 function toolSet(k){if(exAway()){S.tool=null;return}S.tool=k||null;SC.acc=0;
  if(k==='sleep'){S.tool=null;guideTip('sleep');rest();trayUpd();return}
  if(k==='play'){if(!playOk()){S.tool=null;return}guideTip('play');S.pg=0;S.pgg=0;S.pgs=0;S.pgst=0;setTimeout(pkSway,300)}
@@ -1390,11 +1418,11 @@ function toolSet(k){if(exAway()){S.tool=null;return}S.tool=k||null;SC.acc=0;
 function wake(){ptTick();const p=S.pt;if(p.rest>Date.now()){p.rest=0;p.love=Math.min(100,p.love+3);bubSay('¡Buenos días! 🥱☀️ Gracias por encender la luz.')}p.wk=Date.now()+4*3600000;p3sync();petUI();trayUpd();hopPet()}
 function feedOk(){ptTick();const p=S.pt;
  if(asleep()){bubSay('Zzz… tengo sueño, ahora no 💤');return false}
- if(p.food>=90){bubSay(say(['Estoy llenita 🥹 Gracias, más tarde me da hambre.','Ya no me cabe ni una migaja 🍪','Mi panza dice: «gracias, luego»']));return false}
+ if(p.food>=90){p3play('shake');bubSay(say(['Estoy llenita 🥹 Gracias, más tarde me da hambre.','Ya no me cabe ni una migaja 🍪','Mi panza dice: «gracias, luego»']));return false}
  return true}
 function bathOk(){ptTick();const p=S.pt;
  if(asleep()){bubSay('Zzz… ahora no, estoy durmiendo 💤');return false}
- if(p.clean>=90){bubSay(say(['¡Ya estoy limpio y brillante! ✨','Hoy ya me bañé, mira cómo huelo 🫧','Más tarde, ahora estoy impecable']));return false}
+ if(p.clean>=90){p3play('shake');bubSay(say(['¡Ya estoy limpio y brillante! ✨','Hoy ya me bañé, mira cómo huelo 🫧','Más tarde, ahora estoy impecable']));return false}
  return true}
 function roomSync(){const r=$('#room');if(!r)return;const sl=asleep();r.classList.toggle('night',sl);r.classList.toggle('dirty',S.pt.clean<35);const dc=$('#dirtc');if(dc)dc.hidden=!(S.pt.clean<35&&!S.tool);
  if(sl&&!P3.zt){P3.zt=setInterval(()=>{if(!asleep()){clearInterval(P3.zt);P3.zt=0;trayUpd();return}const st=$('#slt');if(st&&S.pt.rest>Date.now())st.textContent=S.pet.name+' está durmiendo 💤 · despierta en unos '+sleepMin()+' min';try{P3.v&&P3.v.spawn&&P3.v.spawn('zzz')}catch(e){}},2600)}
@@ -1402,21 +1430,38 @@ function roomSync(){const r=$('#room');if(!r)return;const sl=asleep();r.classLis
 setInterval(()=>{if(!exAway()||!$('#tray'))return;const e=S.pt.ex;if(Date.now()>=e.end&&!e.rdy){e.rdy=1;save();{const r=$('#exr');if(r)r.textContent='¡Ya volvió! Trae una postal 💌'}bubSay('¡Volví de mi expedición! 💌');trayUpd();try{remApply()}catch(x){}}else{const l=$('#exl');if(l){const x=EXPS.find(a=>a.k===e.k);const r=$('#exr');if(r)r.textContent='Vuelve en '+fmtWait(exLeft());l.textContent=S.pet.name+' está de expedición en '+x.n+' '+x.e+' · vuelve en '+fmtWait(exLeft())}}},20000);
 function petClick(){if(SC.drag){SC.drag=0;return}petTap()}
 function spg(x,y){let e=$('#spg');if(!e){e=document.createElement('span');e.id='spg';e.textContent='🧽';e.style.cssText='position:fixed;left:0;top:0;font-size:38px;pointer-events:none;z-index:60;transition:opacity .25s';document.body.appendChild(e)}e.style.opacity='1';e.style.transform=`translate(${x-19}px,${y-30}px) rotate(${Math.sin(Date.now()/90)*18}deg)`;clearTimeout(spg.t);spg.t=setTimeout(()=>{e.style.opacity='0';setTimeout(()=>e.remove(),300)},350)}
+function tubSplash(){const r=$('#room'),fl=r&&r.querySelector('.fl'),tb=$('#tub');if(!r||!fl||!tb)return;
+ fl.style.transition='transform .22s cubic-bezier(.5,0,.9,.6)';fl.style.setProperty('--dy','22px');
+ setTimeout(()=>{fl.style.transition='transform .5s cubic-bezier(.2,1.6,.4,1)';fl.style.setProperty('--dy','0px');S.tubIn=true;
+  const rr=r.getBoundingClientRect(),tr=tb.getBoundingClientRect(),cx=tr.left-rr.left+tr.width/2,cy=tr.top-rr.top+8;
+  for(let i=0;i<14;i++){const d=document.createElement('span');d.className='spl';d.textContent=['💦','🫧','💧'][i%3];d.style.cssText=`left:${cx}px;top:${cy}px;--dx:${(Math.random()-.5)*230}px;--dy:${-60-Math.random()*110}px;animation-delay:${Math.random()*.08}s`;r.appendChild(d);setTimeout(()=>d.remove(),1100)}
+  const rp=document.createElement('i');rp.className='rip';rp.style.cssText=`left:${cx}px;top:${cy+14}px`;r.appendChild(rp);setTimeout(()=>rp.remove(),1000);
+  tb.classList.add('wob');setTimeout(()=>tb.classList.remove('wob'),700);
+  p3play('boing');burst(10,['💦','🫧']);bubSay(say(['¡Chapuzón! 💦 Uy, qué fresquita está','¡Splash! 🛁 ¡Ahora frótame, porfa!','¡Brrr, qué rico! 🫧']));try{navigator.vibrate&&navigator.vibrate(30)}catch(e){}
+  trayUpd()},230)}
+document.addEventListener('pointerdown',e=>{if(S.tool!=='bath'||S.tubIn)return;const r=$('#room');if(!r||!r.contains(e.target)||e.target.closest('button'))return;const fl=r.querySelector('.fl');if(!fl)return;e.preventDefault();e.stopPropagation();
+ const sy=e.clientY;let dy=-84;const mv=ev=>{dy=Math.max(-84,Math.min(30,-84+(ev.clientY-sy)));fl.style.transition='none';fl.style.setProperty('--dy',dy+'px')};
+ const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);removeEventListener('pointercancel',up);if(dy>-40)tubSplash();else{fl.style.transition='transform .35s cubic-bezier(.2,1.4,.4,1)';fl.style.setProperty('--dy','-84px');if(dy>-83)toast('Más abajo, hasta la tina 🛁')}};
+ addEventListener('pointermove',mv);addEventListener('pointerup',up);addEventListener('pointercancel',up)},true);
 function bbl(x,y){const b=document.createElement('span');b.className='bbl';const z=14+Math.random()*22;b.style.cssText=`left:${x-z/2+(Math.random()*30-15)}px;top:${y-z/2}px;width:${z}px;height:${z}px`;document.body.appendChild(b);setTimeout(()=>b.remove(),1700)}
 function onStroke(d){SC.drag=1;if(asleep())return;const now=Date.now();
- if(S.tool==='bath'){spg(d.x,d.y);if(now-SC.bt>70){SC.bt=now;bbl(d.x,d.y)}SC.acc+=d.d;const f=Math.min(1,SC.acc/650),sb=$('#scb');if(sb)sb.style.width=Math.round(S.pt.clean+(100-S.pt.clean)*f)+'%';
+ if(S.tool==='bath'){if(!S.tubIn)return;spg(d.x,d.y);if(now-SC.bt>70){SC.bt=now;bbl(d.x,d.y)}SC.acc+=d.d;const f=Math.min(1,SC.acc/650),sb=$('#scb');if(sb)sb.style.width=Math.round(S.pt.clean+(100-S.pt.clean)*f)+'%';
   if(SC.acc>=650){SC.acc=0;S.tool=null;bath();trayUpd()}return}
  if(S.tool)return;
  SC.pet+=d.d;if(now-SC.hint>500){SC.hint=now;burst(2,['💗'])}
  if(SC.pet>=450&&now-SC.last>2500){SC.pet=0;SC.last=now;petTap()}}
 /* Arrastrar comida hasta la boca */
-function dgStart(e,b){e.preventDefault();const k=b.dataset.k,f=FOODS.find(x=>x.k===k);if(!f)return;
- const el=document.createElement('div');el.className='dgf';el.textContent=f.e;document.body.appendChild(el);const sx=e.clientX,sy=e.clientY;let moved=0,over=false;
+let RLD=0;
+function reload(ms){RLD=Date.now()+ms;document.querySelectorAll('.dg').forEach(b=>{b.classList.add('rl');b.style.setProperty('--rl',ms+'ms')});setTimeout(()=>document.querySelectorAll('.dg.rl').forEach(b=>b.classList.remove('rl')),ms+30)}
+function flyBack(el,b,ok){try{const r=b.getBoundingClientRect(),m=el.style.transform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/);if(!m)throw 0;el.style.transition='transform .28s cubic-bezier(.4,0,.2,1),opacity .28s';el.style.transform=`translate(${r.left+r.width/2-30}px,${r.top+r.height/2-30}px) scale(.3)`;el.style.opacity='0'}catch(e){}setTimeout(()=>el.remove(),320)}
+document.addEventListener('pointerup',()=>setTimeout(()=>document.querySelectorAll('.dgf').forEach(x=>{if(!x.dataset.live)x.remove()}),900),true);
+function dgStart(e,b){e.preventDefault();if(Date.now()<RLD){toast('Un momento, se está recargando…');return}const k=b.dataset.k,f=FOODS.find(x=>x.k===k);if(!f)return;
+ const el=document.createElement('div');el.className='dgf';el.dataset.live='1';el.textContent=f.e;document.body.appendChild(el);const sx=e.clientX,sy=e.clientY;let moved=0,over=false;
  const pos=ev=>{el.style.transform=`translate(${ev.clientX-30}px,${ev.clientY-30}px)`};pos(e);
  const mouth=ev=>{const r=P3.host&&P3.host.getBoundingClientRect();if(!r||!r.width)return false;const x=(ev.clientX-r.left)/r.width,y=(ev.clientY-r.top)/r.height;return x>.28&&x<.72&&y>.28&&y<.78};
  const mv=ev=>{moved=Math.max(moved,Math.hypot(ev.clientX-sx,ev.clientY-sy));pos(ev);const o=mouth(ev);if(o!==over){over=o;el.classList.toggle('near',o);try{P3.v&&P3.v.setExpression(o?'surprised':p3expr())}catch(_){}}};
- const end=ev=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',end);removeEventListener('pointercancel',end);el.remove();try{P3.v&&P3.v.setExpression(p3expr())}catch(_){}
-  if(ev.type==='pointercancel')return;if(moved<10||mouth(ev)){if(feedOk())eat(k)}};
+ const end=ev=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',end);removeEventListener('pointercancel',end);delete el.dataset.live;try{P3.v&&P3.v.setExpression(p3expr())}catch(_){}
+  if(ev.type==='pointercancel'){el.remove();return}if(moved<10||mouth(ev)){el.style.transition='transform .22s ease-in,opacity .22s';el.style.opacity='0';el.style.transform=el.style.transform+' scale(.2)';setTimeout(()=>el.remove(),240);if(feedOk()){eat(k);reload(1700)}else{p3play('shake');reload(1200)}}else{flyBack(el,b);toast('Llévala hasta la boca 🍎')}};
  addEventListener('pointermove',mv);addEventListener('pointerup',end);addEventListener('pointercancel',end)}
 document.addEventListener('pointerdown',e=>{const t=e.target&&e.target.closest?e.target:null;if(!t)return;const b=t.closest('.dg');if(b){if(b.dataset.k==='ball'){ballStart(e);return}dgStart(e,b);return}},{passive:false});
 function petTap(){ptTick();const p=S.pt,now=Date.now();
@@ -1427,9 +1472,9 @@ function petTap(){ptTick();const p=S.pt,now=Date.now();
  if(wait<=0&&need){p.lr=now;S.bub={t:say(['¡Qué rico mimo! 💗','Me encantas, '+S.me.name+' 💕','¡Soy la mascota más feliz! ☁️','Eso era justo lo que necesitaba 🥹','Ronroneo por dentro… 💗']),o:null,q:null};S.bubT=now;track('mimo');rw(2,1)}
  else if(!need){bubSay(say(['Ya estoy rebosante de cariño 💗 ¡pero no pares!','Mmm, qué rico. Hoy me siento muy querido.','¡Más mimos no caben en mi corazón, pero igual me gustan! 🥹']));hopPet()}
  else{bubSay('Mmm, qué rico 🥹 Mi próximo premio de mimos llega en '+fmtWait(wait));hopPet()}}
-const FOODS=[{k:'galleta',e:'🍪',n:'Galleta',f:30,l:3,c:-3,u:0},{k:'manzana',e:'🍎',n:'Manzana',f:22,l:6,c:0,u:6},{k:'pastel',e:'🍰',n:'Pastel',f:42,l:10,c:-10,u:-4}];
+const FOODS=[{k:'galleta',e:'🍪',n:'Galleta',f:9,l:2,c:-2,u:0,y:3},{k:'manzana',e:'🍎',n:'Manzana',f:7,l:3,c:0,u:5,y:1},{k:'pastel',e:'🍰',n:'Pastel',f:16,l:5,c:-6,u:-2,y:7}];
 function eat(k){const f=FOODS.find(x=>x.k===k);if(!f)return;cl();ptTick();const p=S.pt,now=Date.now(),need=p.food<60;p3play('eat');
- p.food=Math.min(100,p.food+f.f);p.love=Math.min(100,p.love+f.l);p.clean=Math.max(0,p.clean+f.c);p.en=Math.min(100,p.en+f.u);burst(8,[f.e,'💗']);
+ p.food=Math.min(100,p.food+f.f);p.love=Math.min(100,p.love+f.l);p.clean=Math.max(0,p.clean+f.c);p.en=Math.min(100,p.en+f.u);p.fun=Math.min(100,(p.fun??70)+(f.y||0));burst(8,[f.e,'💗']);
  if(need&&now-p.lf>3*H){p.lf=now;S.bub={t:say(['¡Ñam ñam! Estaba riquísimo '+f.e,'¡Delicioso! Eres el mejor cocinero '+f.e,'Mmm… '+f.n.toLowerCase()+', mi favorita del día '+f.e]),o:null,q:null};S.bubT=now;rw(3,2)}else{bubSay(say(['¡Ñam ñam! Gracias '+f.e,'Qué rico '+f.e+' ¡repito mañana!']));hopPet();petUI()}}
 function playOk(){ptTick();const p=S.pt;
  if(asleep()){bubSay('Zzz… tengo sueño, ahora no 💤');return false}
@@ -1437,13 +1482,18 @@ function playOk(){ptTick();const p=S.pt;
  return true}
 /* Jugar: arrastra el balón al cuarto y suéltalo con impulso; rebota y la mascota lo persigue. */
 function ballStart(e){e.preventDefault();const room=$('#room'),fl=room&&room.querySelector('.fl');if(!room)return;
- const el=document.createElement('div');el.className='dgf ball';el.textContent='⚽';document.body.appendChild(el);let x=e.clientX,y=e.clientY,pts=[[performance.now(),x,y]];
+ if(Date.now()<RLD||room.dataset.busy==='1'){toast('El balón se está recargando…');return}
+ const el=document.createElement('div');el.className='dgf ball';el.dataset.live='1';el.textContent='⚽';document.body.appendChild(el);const sx=e.clientX,sy=e.clientY;let x=sx,y=sy,pts=[[performance.now(),x,y]];
  const pos=()=>{el.style.transform=`translate(${x-30}px,${y-30}px)`};pos();
- const mv=ev=>{x=ev.clientX;y=ev.clientY;pos();const t=performance.now();pts.push([t,x,y]);while(pts.length>2&&t-pts[0][0]>120)pts.shift()};
- const end=ev=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',end);removeEventListener('pointercancel',end);
-  const r=room.getBoundingClientRect();if(ev.type==='pointercancel'||x<r.left||x>r.right||y<r.top-30||y>r.bottom+30){el.remove();if(ev.type!=='pointercancel')toast('Suéltalo dentro del cuarto');return}
-  const a=pts[0],b=pts[pts.length-1],dt=Math.max(16,b[0]-a[0]);let vx=(b[1]-a[1])/dt,vy=(b[2]-a[2])/dt;const sp=Math.hypot(vx,vy);if(sp>2.2){vx*=2.2/sp;vy*=2.2/sp}
-  shoot(el,room,fl,x,y,vx,vy,sp)};
+ const mv=ev=>{x=ev.clientX;y=ev.clientY;pos();const t=performance.now();pts.push([t,x,y]);while(pts.length>2&&t-pts[0][0]>140)pts.shift()};
+ const end=ev=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',end);removeEventListener('pointercancel',end);delete el.dataset.live;
+  const r=room.getBoundingClientRect();if(ev.type==='pointercancel'||x<r.left-40||x>r.right+40||y>r.bottom+40){flyBack(el,$('#ballsrc')||el);if(ev.type!=='pointercancel')toast('Tira hacia el arco ⚽');return}
+  const a=pts[0],b=pts[pts.length-1],dt=Math.max(16,b[0]-a[0]);let vx=(b[1]-a[1])/dt,vy=(b[2]-a[2])/dt,sp=Math.hypot(vx,vy);
+  if((vy>-.1||sp<.35)&&sy-y>40){const h=Math.hypot(x-sx,y-sy)||1;vx=(x-sx)/h*.9;vy=(y-sy)/h*.9;sp=.9}
+  if(sp>2.2){vx*=2.2/sp;vy*=2.2/sp;sp=2.2}
+  x=Math.max(r.left+10,Math.min(r.right-10,x));y=Math.max(r.top+20,Math.min(r.bottom-10,y));pos();
+  if(sp<.35||vy>-.1){flyBack(el,$('#ballsrc')||el);toast('Dale un tirón hacia arriba ⚽');return}
+  reload(1900);shoot(el,room,fl,x,y,vx,vy,sp)};
  addEventListener('pointermove',mv);addEventListener('pointerup',end);addEventListener('pointercancel',end)}
 function keeperTo(fl,z){if(!fl)return;const dx=(z-1)*Math.min(90,fl.parentNode.clientWidth*.22);fl.style.transition='transform .28s cubic-bezier(.2,.9,.3,1.2)';fl.style.setProperty('--kx',dx+'px');fl.style.setProperty('--kr',(z-1)*14+'deg')}
 function pkMsg(t,c){const r=$('#room');if(!r)return;const e=document.createElement('div');e.className='pkm';e.textContent=t;e.style.color=c;r.appendChild(e);setTimeout(()=>e.remove(),1100)}
@@ -1451,8 +1501,7 @@ function pkSway(){if(S.tool!=='play'||pkSway.t)return;pkSway.t=setInterval(()=>{
 function scoreUpd(){let e=$('#pscore');const r=$('#room');if(!r)return;if(S.tool!=='play'){if(e)e.remove();return}if(!e){e=document.createElement('div');e.id='pscore';e.className='pscore';r.appendChild(e)}e.textContent='⚽ '+(S.pgg||0)+'  ·  🧤 '+(S.pgs||0)}
 /* Penales: tiras al arco con un tirón; la mascota elige un lado para atajar (a veces adivina). */
 function shoot(el,room,fl,x,y,vx,vy,sp){const r=room.getBoundingClientRect();
- if(sp<.35||vy>-.1){el.remove();toast('Dale un tirón rápido hacia arriba ⚽');return}
- if(room.dataset.busy==='1'){el.remove();return}room.dataset.busy='1';
+  if(room.dataset.busy==='1'){el.remove();return}room.dataset.busy='1';
  const gx0=r.left+r.width*.14,gx1=r.right-r.width*.14,gy0=r.top+r.height*.08,gy1=r.top+r.height*.58,gw=gx1-gx0;
  const gm=(gy0+gy1)/2,ax=x+(vx/Math.abs(vy))*Math.max(60,y-gm),hf=Math.max(0,Math.min(1.2,(sp-.4)/1.7)),ay=gy1-(gy1-gy0)*hf*1.05;
  const out=ax<gx0-14||ax>gx1+14||ay<gy0-8;
@@ -1460,7 +1509,7 @@ function shoot(el,room,fl,x,y,vx,vy,sp){const r=room.getBoundingClientRect();
  const sz=Math.max(0,Math.min(2,Math.floor((tx-gx0)/gw*3)));
  const lvl=Math.min(3,Math.floor(S.xp/100)>=10?3:stg()),guess=.34+lvl*.06;
  const kz=Math.random()<guess?sz:(sz+1+Math.floor(Math.random()*2))%3;
- const T=560,t0=performance.now();el.classList.add('fly');
+ const T=560,t0=performance.now();el.classList.add('fly');el.dataset.live='1';
  setTimeout(()=>{keeperTo(fl,kz);p3play('boing')},170);
  const step=now=>{const u=Math.min(1,(now-t0)/T),e=1-Math.pow(1-u,2.2);
   const px=x+(tx-x)*e,py=y+(ty-y)*e-Math.sin(Math.PI*u)*36,sc=1-.45*e;
@@ -1472,7 +1521,7 @@ function shoot(el,room,fl,x,y,vx,vy,sp){const r=room.getBoundingClientRect();
   else{el.style.transition='opacity .6s';setTimeout(()=>{el.style.opacity='0'},300);setTimeout(()=>{el.remove()},900);shotDone(room,fl,'goal')}};
  requestAnimationFrame(step)}
 function shotDone(room,fl,res){ptTick();const p=S.pt,now=Date.now(),need=p.fun<65;S.pg=(S.pg||0)+1;track('play');
- p.fun=Math.min(100,p.fun+8);p.en=Math.max(0,p.en-3);p.love=Math.min(100,p.love+1);p.food=Math.max(0,p.food-1);
+ p.fun=Math.min(100,p.fun+(res==='goal'?5:4));p.en=Math.max(0,p.en-3);p.love=Math.min(100,p.love+1);p.food=Math.max(0,p.food-1);
  if(res==='goal'){S.pgg=(S.pgg||0)+1;S.pgst=(S.pgst||0)+1;pkMsg(S.pgst>=2?'¡GOL! 🔥 x'+S.pgst:'¡GOL!','#3ddc84');p3play('shake');burst(14,['⚽','🎉','✨']);bubSay(say(['¡GOOOL! Me ganaste 🥅','¡Qué disparo! No lo vi venir 😮','Uy… se me coló ⚽']))}
  else if(res==='save'){S.pgs=(S.pgs||0)+1;S.pgst=0;pkMsg('¡ATAJADA! 🧤','#5aa9ff');p3play(say(['happy','spin']));bubSay(say(['¡Atajé! 🧤','¡Lo olí venir! 🧤','¡Mía! 😎']))}
  else{S.pgst=0;pkMsg('¡AFUERA!','#ff8a5a');p3play('surprise');bubSay(say(['¡Afuera! Casi 😅','Fue por encima… ¡otra vez!','Uy, ese se perdió 🌙']))}
@@ -1483,13 +1532,13 @@ function shotDone(room,fl,res){ptTick();const p=S.pt,now=Date.now(),need=p.fun<6
  trayUpd()}
 function bath(){ptTick();const p=S.pt,now=Date.now();
  if(asleep()){bubSay('Zzz… ahora no, estoy durmiendo 💤');return}
- if(p.clean>=90){bubSay(say(['¡Ya estoy limpio y brillante! ✨','Hoy ya me bañé, mira cómo huelo 🫧','Más tarde, ahora estoy impecable']));return}
+ if(p.clean>=90){p3play('shake');bubSay(say(['¡Ya estoy limpio y brillante! ✨','Hoy ya me bañé, mira cómo huelo 🫧','Más tarde, ahora estoy impecable']));return}
  const need=p.clean<60;p.clean=100;p.love=Math.min(100,p.love+4);p3play('shiver');burst(18,['🫧','💦','✨']);
  if(need&&now-p.lb>6*H){p.lb=now;S.bub={t:say(['¡Qué fresquito! Huelo a nube 🫧','Burbujas, burbujas… ¡gracias! 🛁','¡Quedé como nuevo! ✨']),o:null,q:null};S.bubT=now;rw(3,3)}else{bubSay('¡Chap chap! Qué rico 🫧');hopPet();petUI()}}
 function rest(){ptTick();const p=S.pt,now=Date.now();
  if(p.rest>now){bubSay('Zzz… (ya estoy descansando) 💤');return}
  if(p.en>=88){bubSay(say(['No tengo sueño todavía 😄 Juguemos un rato.','Estoy lleno de energía, ¡aún no!']));return}
- const need=p.en<55,dur=Math.max(4,Math.min(20,Math.ceil((78-p.en)/3)));p.rest=now+dur*60000;p.wk=0;p3sync();burst(6,['💤','🌙']);
+ const need=p.en<55,dur=Math.max(2,Math.min(10,Math.ceil((78-p.en)/6)));p.rest=now+dur*60000;p.wk=0;p3sync();burst(6,['💤','🌙']);
  if(need&&now-p.lz>4*H){p.lz=now;S.bub={t:'Zzz… voy a dormir una siestita 🌙 Descansaré unos minutos y despertaré con energía.',o:null,q:null};S.bubT=now;rw(2,0)}else{bubSay('Zzz… una siestita corta 💤')}
  petUI();trayUpd();setTimeout(()=>{ptTick();p3sync();petUI();trayUpd()},dur*60000+500)}
 const FACTS=['¿Sabías que cada historia me hace crecer? 🌱','Me gusta cuando cuentas cosas de tu infancia','Hoy es buen día para una historia ✨','Las recetas de la abuela son mis favoritas 🍲','Una carta escrita a mano es un tesoro; una aquí también 💌','Si grabas tu voz, tu familia la escuchará siempre 🎙️','Pregúntale hoy a alguien cómo era su barrio de niño','Una foto vieja y dos frases valen un recuerdo entero 📷','Los recuerdos compartidos pesan menos y brillan más','Yo cuido tus historias mientras duermes 🌙','Cada pregunta del día es una conversación que empieza','Los abuelos tienen mil historias esperando que alguien las pida','Hoy podrías contar algo que nunca has contado 🌟','Una historia cortita también cuenta 💗','Si no sabes por dónde empezar, responde la pregunta del día','Los mejores recuerdos casi nunca fueron planeados','Tu voz de hoy será un tesoro mañana 🎙️','Un dibujo sencillo puede decir más que mil palabras ✏️','Pídele a alguien de tu familia su receta favorita 🍲','Cuando cuentas algo, lo vuelves a vivir un ratito','Las cartas se disfrutan más con los años 💌','Ponle fecha a tus fotos: tu yo del futuro te lo agradecerá 📷','Cada persona que invitas hace más grande la cápsula','Compartir un recuerdo es regalar un pedacito de ti','Una pregunta bonita puede abrir una charla de horas','Con 12 historias armas tu libro 📖','Descansar también es cuidarte 🌙','Me encanta cuando vuelves a visitarme 🥹','Las cosas pequeñas de hoy serán los grandes recuerdos de mañana','Cada día que vuelves, yo también crezco un poquito 🌱','Los recuerdos se guardan mejor cuando se comparten','¿Y si hoy le preguntas algo a alguien de tu familia?','Una foto vieja también es una historia 📷','Me encantan las tardes de balón ⚽','Una expedición me trae postales, ¡mándame! 🧭','Un abrazo hoy vale por mil mañana 🤗','Si hoy no sabes qué contar, empieza por lo que desayunaste','Las voces de la gente que quieres valen oro: grábalas 🎙️','Escríbele una carta a alguien, aunque no la envíes ✉️'];
@@ -1886,47 +1935,46 @@ function act(){
  <p class="mu c">Por ahora ves la actividad de la cápsula abierta. Los avisos al teléfono llegarán más adelante.</p>`}
 /* ---------- mini guías (una para el juego, otra para las cápsulas; se ven la primera vez y se reabren desde Perfil) ---------- */
 const GUIDES={
- mundo:{c:'m',k:'Tu mundo · el juego',s:[
-  ['crown','Esta es tu mascota','Vive en Mi mundo, un espacio solo tuyo. Nadie más la ve ni entra a jugar con ella.'],
-  ['heart','Cuídala cada día','Acarícialo con el dedo, arrástrale comida a la boca, frótalo para bañarlo, apaga la luz para dormir o juega a los penales. Si sus barras bajan, te lo pide con cariño: aquí no hay castigos.'],
-  ['img:lumis','Lumis: la moneda','Los ganas despacio: contando historias, cuidando a tu mascota (comer, bañar, jugar, siesta), con el cofre diario, la pregunta del día, el juego de Parejas (en Mis cápsulas), las expediciones, las misiones de la semana y cuando alguien entra con tu invitación. Hay un tope por día para que valgan algo. Se gastan en la Tienda: fondos del cuarto, accesorios y mascotas nuevas.'],
-  ['⚽','Penales','En Jugar aparece un arco detrás de tu mascota. Tira el balón con un tirón rápido hacia arriba: ella elige un lado para atajar y a veces adivina. Son 5 tiros por tanda; si metes 2 o más puedes ganar Lumis. Si tiras muy alto o muy afuera, ¡se va!'],
-  ['🧭','Expediciones','Manda a tu mascota a la Playa (1 h), el Bosque (4 h) o la Montaña (8 h). Mientras está fuera no puedes cuidarla. Al volver trae una postal y una pregunta: si la respondes ganas Lumis y XP, y tu respuesta se guarda en tu diario. Entre más dure el viaje, mejor el premio (hasta 30 Lumis de expediciones por día).'],
-  ['🐾','Varias mascotas','Puedes tener hasta 3 mascotas. La segunda cuesta 400 Lumis y la tercera 800. Cada una tiene su propio ánimo, nivel y armario; los Lumis son compartidos.'],
-  ['img:xp','XP: así crece tu mascota','La XP se gana con las mismas acciones, pero no se gasta. Cada 100 XP subes un nivel, y con los niveles tu mascota evoluciona: Bebé, Pequeño (nivel 4), Joven (nivel 11) y Adulto (nivel 26). Crecer es lento a propósito.'],
-  ['crown','Accesorios y recompensas','Algunos accesorios se desbloquean solos al subir de nivel o con logros, como contar tu primera historia, responder preguntas o mantener la racha. Otros se compran con Lumis. Los ves y los pones en el armario (el botón del gancho en el cuarto), una prenda por categoría. Hay camisetas, sudaderas, jeans, falda y short que se compran con Lumis.'],
-  ['heart','Y los corazones','Los corazones 💗 ya no son monedas ni XP: son el ánimo de tu mascota y las vidas del juego de Parejas.'],
-  ['💗','Tu mascota reacciona','Cuando alguien de tu cápsula comparte algo, tu mascota te lo cuenta en su nube de pensamiento. Si está de expedición o durmiendo, espera a que vuelva o despierte.'],
+ mundo:{c:'m',k:'Tu mundo',s:[
+  ['crown','Esta es tu mascota','¡Hola! Soy Nubi y te acompaño. Aquí vive tu mascota: es tu espacio, solo tuyo. Nadie más la ve ni entra a jugar con ella.'],
+  ['heart','Cuídala cada día','Acarícala con el dedo, arrástrale la comida a la boca, dale un chapuzón en la tina, apaga la luz para que duerma o juega a los penales. Si sus barras bajan, te lo pide con cariño: aquí no hay castigos.'],
+  ['⚽','Penales','Toca Jugar y verás un arco detrás de tu mascota. Tira el balón con un tirón rápido hacia arriba; ella elige un lado para atajar y a veces adivina. Son 5 tiros por tanda y con 2 goles o más ganas Lumis.'],
+  ['🛁','Baño con chapuzón','Toca Bañar, arrastra a tu mascota hasta la tina y suéltala: ¡chapuzón! Luego frótala con el dedo hasta llenar la barra.'],
+  ['img:lumis','Lumis: la moneda','Los ganas despacio: contando historias, cuidando a tu mascota, con el cofre diario, la pregunta del día, el juego de Parejas, las expediciones y cuando alguien entra con tu invitación. Hay un tope por día para que valgan algo. Se gastan en la Tienda.'],
+  ['🧭','Expediciones','Manda a tu mascota a la Playa (1 h), el Bosque (4 h) o la Montaña (8 h). Mientras está fuera no puedes cuidarla. Al volver trae una postal que puedes mandarle a tu familia, y una pregunta con premio.'],
+  ['🐾','Varias mascotas','Puedes tener hasta 3 mascotas: la segunda cuesta 400 Lumis y la tercera 800. Cada una tiene su ánimo, nivel y armario. Yo no cuento, soy la guía 😉'],
+  ['img:xp','XP: así crece','La XP se gana con las mismas acciones y no se gasta. Cada 100 XP subes un nivel y tu mascota evoluciona: Bebé, Pequeño (nivel 4), Joven (nivel 11) y Adulto (nivel 26). Crecer es lento a propósito.'],
+  ['👕','Ropa y accesorios','Algunos accesorios se desbloquean solos con logros. Otros, como camisetas, sudaderas, jeans y falda, se compran con Lumis. Los pones en el armario (el gancho del cuarto), una prenda por categoría.'],
+  ['💗','Tu mascota te cuenta','Cuando alguien de tu cápsula comparte algo, tu mascota te lo dice en su nube de pensamiento.'],
   ['gift','Cofre, racha y misiones','Abre el cofre una vez al día, mantén tu racha contando algo cada día y cumple las misiones de la semana para ganar más Lumis.',['Contar una historia','dest()']]]},
- cap:{c:'c',k:'Cápsulas · compartir',s:[
-  ['lock','Un espacio privado con los tuyos','Una cápsula junta a tu familia, tu pareja o tus amigos. Solo entra quien tenga el código.'],
+ cap:{c:'c',k:'Cápsulas',s:[
+  ['lock','Un espacio privado con los tuyos','Una cápsula junta a tu familia, tu pareja o tus amigos. Solo entra quien tenga el código. ¡Yo te enseño cómo funciona!'],
   ['users','Invita con un código','En la pestaña Personas están el código y el enlace para invitar. Ganas Lumis cuando alguien entra.',['Ir a Personas',"guideInvite()"]],
   ['mail','Cuenten historias juntos','Fotos, cartas, notas de voz, dibujos y recetas. Reacciona a lo que cuentan los demás y marca con ★ tus favoritas.'],
-  ['star','Pregunta del día','Cada cápsula tiene su pregunta del día, en una línea discreta con una nube 💭. Lo que contestan los demás se revela cuando tú respondes.'],
+  ['💭','Pregunta del día','Cada cápsula tiene su pregunta del día. Respóndela y se revela lo que contestaron los demás.'],
   ['flame','Meta de la semana','Entre todos cuenten 10 historias antes del lunes: ganan 30 Lumis y, la primera vez, un gorro para tu mascota (a la 3.ª semana, una bufanda).'],
-  ['book','Armen su libro','Con 12 historias se arma un libro para leer. Al final (o en el botón Compartir) lo mandas como imágenes por WhatsApp para invitar a más gente.']]}};
+  ['book','Armen su libro','Con 12 historias se arma un libro para leer. Al final (o con el botón Compartir) lo mandas como imágenes por WhatsApp para invitar a más gente.']]}};
 const gSeen=k=>{try{return localStorage.getItem('capsula_g_'+k)==='1'}catch(e){return false}};
 function guideInvite(){cl();
  if(S.families.length){const f=S.group&&S.families.some(x=>x.id===S.group.id)?S.group:S.families[0];openCap(f.id);S.sub='personas';render();return}
  S.invFlow=1;S.gname='';S.scr='group';S.gstep='create';render();toast('Primero crea tu cápsula; al terminar podrás invitar.')}
 function guideOpen(k,i){const g=GUIDES[k];if(!g)return;i=i||0;try{localStorage.setItem('capsula_g_'+k,'1')}catch(e){}
  const st=g.s[i],last=i===g.s.length-1;
- showSheet(`<div class="gd ${g.c}"><div class="obs gs" aria-hidden="true">${g.s.map((_,j)=>`<i class="${j<=i?'on':''}"></i>`).join('')}</div><span class="gk">${g.k} · ${i+1} de ${g.s.length}</span><span class="ge" aria-hidden="true">${st[0].startsWith('img:')?`<img src="img/${st[0].slice(4)}-lg.png" alt="" style="width:64px;height:64px;object-fit:contain">`:ic(st[0],46,1.8)}</span><h2 style="padding:0">${st[1]}</h2><p class="mu">${st[2]}</p>
- ${st[3]?`<button class="btn s w" onclick="cl();${st[3][1]}">${st[3][0]}</button>`:''}
- <div class="row" style="gap:8px;width:100%">${i?`<button class="btn s" style="flex:1" onclick="guideOpen('${k}',${i-1})">Atrás</button>`:`<button class="btn s" style="flex:1" onclick="cl()">Saltar</button>`}<button class="btn" style="flex:2" onclick="${last?'cl()':`guideOpen('${k}',${i+1})`}">${last?'Entendido':'Siguiente'}</button></div></div>`)}
+ nubiSheet({c:g.c,fly:i===0,k:g.k+' · '+(i+1)+' de '+g.s.length,ic:st[0],t:st[1],x:st[2],dots:`<div class="obs gs" aria-hidden="true">${g.s.map((_,j)=>`<i class="${j<=i?'on':''}"></i>`).join('')}</div>`,
+  extra:(st[3]?`<button class="btn s w" onclick="cl();${st[3][1]}">${st[3][0]}</button>`:'')+`<div class="row" style="gap:8px;width:100%">${i?`<button class="btn s" style="flex:1" onclick="guideOpen('${k}',${i-1})">Atrás</button>`:`<button class="btn s" style="flex:1" onclick="cl()">Saltar</button>`}<button class="btn" style="flex:2" onclick="${last?'cl()':`guideOpen('${k}',${i+1})`}">${last?'Entendido':'Siguiente'}</button></div>`})}
 function guideAuto(k){if(S.scr!=='main'||gSeen(k)||!legalOk())return;setTimeout(()=>{if(S.scr!=='main'||gSeen(k)||$('#sh.open')||$('.lvup'))return;if(k==='mundo'&&S.tab!=='mundo')return;if(k==='cap'&&S.tab!=='cap')return;guideOpen(k,0)},900)}
 const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa cómo funciona cada parte.</span><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn s" onclick="guideOpen('mundo',0)">Guía de Mi mundo</button><button class="btn s" onclick="guideOpen('cap',0)">Guía de las cápsulas</button></div></div>`;
 /* ---------- favoritas (solo las ves tú) ---------- */
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=87;
+const BUILD=88;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
 function updX(){S.upd=0;try{sessionStorage.setItem('capsula_updx','1')}catch(e){}soft()}
 const petShopHTML=()=>{const have=petOwned(),n=have.length,price=PET_PRICE[n];
- return `<section class="card"><h3>Mascotas</h3><span class="mu">Puedes tener hasta 3. ${n<3?'La próxima cuesta '+LI+' '+price+'.':'Ya tienes las 3 que caben.'}</span><div class="pg" style="margin-top:10px">${Object.entries(PETS).map(([k,v])=>{const own=have.includes(k);return `<button class="pk" ${own||n>=3?'disabled':''} onclick="S.adk='${k}';petAdoptOpen()" aria-label="${v.d}">${pet(k,76,[],0)}<b>${v.d}</b><small>${own?'Ya la tienes ✓':n>=3?'Sin espacio':LI+' '+price}</small></button>`}).join('')}</div></section>`};
+ return `<section class="card"><h3>Mascotas</h3><span class="mu">Puedes tener hasta 3. ${n<3?'La próxima cuesta '+LI+' '+price+'.':'Ya tienes las 3 que caben.'}</span><div class="pg" style="margin-top:10px">${Object.entries(PETS).filter(([k])=>k!=='nube').map(([k,v])=>{const own=have.includes(k);return `<button class="pk" ${own||n>=3?'disabled':''} onclick="S.adk='${k}';petAdoptOpen()" aria-label="${v.d}">${pet(k,76,[],0)}<b>${v.d}</b><small>${own?'Ya la tienes ✓':n>=3?'Sin espacio':LI+' '+price}</small></button>`}).join('')}</div></section>`};
 function tienda(){return `<div class="spch"><h2>Tienda</h2></div>${petShopHTML()}${shopHTML()}${closetHTML()}<p class="mu c">Los Lumis se ganan despacio cuidando a ${esc(S.pet.name)} y contando historias.</p>`}
 const VIEW={home,mundo,caps,cap,act,tienda,perfil,arc,triv};
 
