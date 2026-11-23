@@ -307,7 +307,7 @@ textarea.in{resize:vertical;line-height:1.45;min-height:132px;padding-top:12px}t
 .mic.rc{animation:pl 1.2s infinite}@keyframes pl{50%{transform:scale(1.1)}}
 .ts{position:absolute;top:14px;left:50%;transform:translate(-50%,-160px);opacity:0;pointer-events:none;background:var(--tx);color:#fff;padding:10px 18px;border-radius:99px;font-weight:500;transition:transform .35s,opacity .25s;z-index:30;max-width:92%;text-align:center}
 .ts.show{transform:translate(-50%,0)}
-.soc{display:flex;flex-direction:column;gap:12px;background:linear-gradient(135deg,var(--soft),var(--card))}.soc h3{margin:0 0 4px}.soc p{margin:0}.socic{flex:none;width:46px;height:46px;border-radius:16px;background:var(--color-primary);color:var(--color-on-primary);display:flex;align-items:center;justify-content:center}.cvs{display:flex;align-items:center;justify-content:center;font:800 26px var(--f);color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.18)}.cf{position:absolute;bottom:38%;font-size:22px;pointer-events:none;z-index:50;animation:cf 1.5s ease-out forwards}
+.soc{display:flex;flex-direction:column;gap:12px;background:linear-gradient(135deg,var(--soft),var(--card))}.soc h3{margin:0 0 4px}.soc p{margin:0}.socic{flex:none;width:46px;height:46px;border-radius:16px;background:var(--color-primary);color:var(--color-on-primary);display:flex;align-items:center;justify-content:center}.flm{position:relative;flex:none;width:58px;height:58px;display:flex;align-items:center;justify-content:center}.flm b{position:absolute;left:0;right:0;bottom:11px;text-align:center;font:800 16px var(--f);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4)}.flbig{display:flex;justify-content:center;margin:6px 0 4px}.flbig svg{animation:flick 1.4s ease-in-out infinite;transform-origin:50% 90%}.streak h3{margin:0}.streak p{margin:0}.cvs{display:flex;align-items:center;justify-content:center;font:800 26px var(--f);color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.18)}.cf{position:absolute;bottom:38%;font-size:22px;pointer-events:none;z-index:50;animation:cf 1.5s ease-out forwards}
 @keyframes cf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--r));opacity:0}}
 .fh{position:absolute;left:50%;top:32%;font-weight:600;font-size:28px;color:var(--color-accent-pink);z-index:50;pointer-events:none;animation:fh 1.2s ease-out forwards}
 @keyframes fh{0%{transform:translate(-50%,0) scale(.6);opacity:0}20%{opacity:1;transform:translate(-50%,-10px) scale(1.2)}100%{transform:translate(-50%,-90px) scale(1);opacity:0}}
@@ -845,7 +845,7 @@ function admGrant(t){const u=($('#gu').value||'').trim(),d=parseInt($('#gd').val
  CLOUD.adminGrant(u,t,d).then(()=>toast(t==='plus'?'Plus concedido por '+d+' días.':'Plus retirado.')).catch(()=>toast('No se pudo. ¿Publicaste las reglas nuevas?'))}
 const STG=['Bebé','Pequeño','Joven','Adulto'];
 const stgL=l=>l<3?0:l<10?1:l<25?2:3;
-const socCap=()=>(S.soc||0)>=2?3:((S.soc||0)>=1||S.families.length)?2:1;const stm=(pt,xp)=>{if(pt&&pt.stm===undefined&&S.legacyStm)pt.stm=stgL(Math.floor((xp||0)/100));return(pt&&pt.stm)||0};
+const socCap=()=>3;const stm=(pt,xp)=>{if(pt&&pt.stm===undefined&&S.legacyStm)pt.stm=stgL(Math.floor((xp||0)/100));return(pt&&pt.stm)||0};
 const stg=()=>Math.max(Math.min(stgL(Math.floor(S.xp/100)),socCap()),stm(S.pt,S.xp));
 function socUpd(){stm(S.pt,S.xp);(S.others||[]).forEach(o=>stm(o.pt,o.xp));let v=S.soc||0;if(S.families.length&&v<1)v=1;if(S.group&&Object.keys(S.members).length>1)v=2;if(v!==(S.soc||0)){S.soc=v;try{save()}catch(e){}}}
 
@@ -954,6 +954,15 @@ const av=pAv;
 const who=(id,p)=>id==='me'?S.me.name:((S.members[id]||{}).name||(p&&p.an)||'Familiar');
 const rel=t=>{const m=Math.floor((Date.now()-t)/6e4);if(m<1)return'ahora';if(m<60)return'hace '+m+' min';const h=Math.floor(m/60);if(h<24)return'hace '+h+(h>1?' horas':' hora');const d=Math.floor(h/24);if(d<7)return'hace '+d+(d>1?' días':' día');if(d<30){const w=Math.floor(d/7);return'hace '+w+(w>1?' semanas':' semana')}if(d<365){const mo=Math.floor(d/30);return'hace '+mo+(mo>1?' meses':' mes')}const y=Math.floor(d/365);return'hace '+y+(y>1?' años':' año')};
 const bars=(n=16,anim)=>Array.from({length:n},(_,i)=>`<i style="${anim?`animation-delay:${(i*.07).toFixed(2)}s;`:''}height:${8+(i*7)%30}px"></i>`).join('');
+const FLAME=[[0,'#C9C4D8','#9C96B3','Apagada'],[1,'#FFC24D','#FF7A1A','Naranja'],[7,'#FF8A3D','#E8352B','Roja'],[14,'#FF6A9E','#C2186B','Rosa'],[30,'#C08CFF','#6B3FD6','Violeta'],[60,'#6FD0FF','#2F6FE0','Azul'],[100,'#8BF7E4','#12A7C9','Cian']];
+const STK_MS={3:15,7:40,14:80,30:200,60:400,100:800};
+const flameTier=n=>{let t=FLAME[0];for(const f of FLAME)if(n>=f[0])t=f;return t};
+function flameSvg(n,sz=44){const t=flameTier(n),id='fg'+sz+'_'+n;return `<svg viewBox="0 0 24 24" width="${sz}" height="${sz}" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${t[2]}"/><stop offset="1" stop-color="${t[1]}"/></linearGradient></defs><path d="M12 2.5c.6 3 2.2 4.6 3.9 6.2 1.8 1.7 3.1 3.6 3.1 6.2A7 7 0 0 1 5 14.9c0-1.6.6-3 1.6-4.1.4 1.5 1.4 2.4 2.7 2.6-.6-3.2.4-6.4 2.7-10.9z" fill="url(#${id})"/><path d="M12 21a3.6 3.6 0 0 1-3.6-3.6c0-1.8 1.2-2.800 2-4 .5 1 1.2 1.5 1.8 1.5 1.1.7 3.4 1.6 3.4 3.3A3.6 3.6 0 0 1 12 21z" fill="#fff" opacity=".55"/></svg>`}
+function streakReward(){const n=S.streak,d=Math.min(2+n,12),b=STK_MS[n]||0;rw(0,d+b,{free:true});if(b)setTimeout(()=>showSheet(`<div style="text-align:center;display:flex;flex-direction:column;align-items:stretch;gap:8px"><div class="flbig">${flameSvg(n,110)}</div><h2 style="margin:0;padding:0;width:100%;text-align:center">¡${n} días de racha!</h2><p class="mu">Tu llama ahora es ${flameTier(n)[3].toLowerCase()}. Premio: +${b} Lumis.</p><button class="btn" style="margin-top:10px;width:100%" onclick="cl()">Seguir</button></div>`),1800)}
+function streakCard(){const n=S.streak,t=flameTier(n),nf=FLAME.find(f=>f[0]>n),nm=Object.keys(STK_MS).map(Number).find(k=>k>n);
+ const sub=n?`Llama ${t[3].toLowerCase()}. ${nf?'En '+(nf[0]-n)+(nf[0]-n>1?' días':' día')+' cambia de color.':'Llegaste al color máximo.'}`:'Cuenta una historia y gana Lumis cada día.';
+ const nx=nm?`Premio grande en ${nm-n} ${nm-n>1?'días':'día'}: +${STK_MS[nm]} Lumis`:'';
+ return `<section class="card streak"><div class="row" style="gap:14px;align-items:center"><div class="flm ${n&&S.posted?'flick':''}">${flameSvg(n,58)}<b>${n}</b></div><div class="tx"><h3>${n?'Racha de '+n+(n>1?' días':' día'):'Empieza tu racha hoy'}</h3><p class="mu">${sub}</p><p class="mu" style="margin-top:2px">${S.posted?nx:'Hoy: +'+Math.min(2+n+1,12)+' Lumis si cuentas algo'}</p></div></div><div class="days">${strip()}</div></section>`}
 function strip(){const t=new Date(),L='DLMXJVS',last=S.posted?6:5;
  return Array.from({length:7},(_,i)=>{const d=new Date(t);d.setDate(t.getDate()-6+i);const on=i>last-S.streak&&i<=last;return `<span class="${on?'on':''} ${i===6?'now':''}">${L[d.getDay()]}</span>`}).join('')}
 
@@ -1275,9 +1284,9 @@ function dest(){showSheet(`<h2>¿Dónde lo guardas?</h2><p class="mu">Elige el l
  ${S.families.map(f=>`<button class="opc" onclick="cl();spaceTo('${esc(f.id)}');chooser()"><span class="ti">${ic('caps',24)}</span><span class="tx"><b>${esc(f.name)}</b><span class="mu">Compartido · ${GT[GT[f.type]?f.type:'familia'].n}</span></span></button>`).join('')}`)}
 function badgesHTML(){const B=[['pen','Primera historia',S.total>0||S.posts.some(p=>p.a==='me')],['flame','Racha de 3',S.streak>=3],['brush','Multiformato',S.types.size>=3],['star','Pregunta del día',(S.qaN||0)>=1||!!S.perfect],['users','Invitador',!!S.inv],['book','Libro listo',S.posts.length>=12]];
  return `<div class="card"><h3>Insignias</h3><div class="bd">${B.map(b=>`<div class="${b[2]?'':'lk'}">${ic(b[0],28)}${b[1]}</div>`).join('')}</div></div>`}
-function socCard(){const n=esc(S.pet.name),lv=Math.floor(S.xp/100),want=stgL(lv),cap=socCap(),f0=S.families[0];
- if(!S.families.length)return `<section class="card soc"><div class="row" style="gap:12px;align-items:flex-start"><span class="socic">${ic('caps',26,1.8)}</span><div class="tx"><h3>${n} quiere conocer a tu familia</h3><p class="mu">Solo contigo, ${n} se queda pequeño. Para crecer necesita historias con tu gente: crea una cápsula y que entren ellos.</p></div></div><button class="btn w" onclick="S.gname='';S.scr='group';S.gstep='create';render()">Crear mi cápsula</button><button class="btn s w" style="margin-top:8px" onclick="S.scr='group';S.gstep='join';render()">Unirme con un código</button></section>`;
- if((S.soc||0)<2)return `<section class="card soc"><div class="row" style="gap:12px;align-items:flex-start"><span class="socic">${ic('users',26,1.8)}</span><div class="tx"><h3>${n} espera a alguien más</h3><p class="mu">${want>cap?n+' ya podría crecer, pero tu cápsula aún está vacía. ':''}Invita a una persona y ${n} podrá llegar a adulto. Ganas Lumis cuando entre.</p></div></div><button class="btn w" onclick="openCap('${esc(f0.id)}');S.sub='personas';render()">Invitar a alguien</button></section>`;
+function socCard(){const n=esc(S.pet.name),f0=S.families[0];
+ if(!S.families.length)return `<section class="card soc"><div class="row" style="gap:12px;align-items:flex-start"><span class="socic">${ic('caps',26,1.8)}</span><div class="tx"><h3>${n} quiere conocer a tu gente</h3><p class="mu">Tu familia, tus amigos o tu pareja. Crea una cápsula y deja que ${n} los conozca.</p></div></div><button class="btn w" onclick="S.gname='';S.scr='group';S.gstep='create';render()">Crear mi cápsula</button><button class="btn s w" style="margin-top:8px" onclick="S.scr='group';S.gstep='join';render()">Unirme con un código</button></section>`;
+ if((S.soc||0)<2)return `<section class="card soc"><div class="row" style="gap:12px;align-items:flex-start"><span class="socic">${ic('users',26,1.8)}</span><div class="tx"><h3>${n} quiere conocer a tu familia, amigos o pareja</h3><p class="mu">Invita a alguien a ${esc(f0.name)}. Ganas Lumis cuando entre.</p></div></div><button class="btn w" onclick="openCap('${esc(f0.id)}');S.sub='personas';render()">Invitar a alguien</button></section>`;
  return `<section class="card soc"><div class="row" style="gap:12px;align-items:center"><span class="socic">${ic('caps',26,1.8)}</span><div class="tx"><h3>${esc(f0.name)}</h3><p class="mu">Lo que cuentas ahí vale más: +50% de Lumis y XP.</p></div><button class="btn" onclick="openCap('${esc(f0.id)}');chooser()">Contar</button></div></section>`}
 function mundo(){
  setTimeout(famReact,900);const lvl=Math.floor(S.xp/100),n=S.posts.length;
@@ -1287,7 +1296,7 @@ function mundo(){
  ${heroHTML()}
  ${socCard()}
  ${S.chest===today()?`<section class="card c"><span class="mu">Cofre de hoy abierto. Vuelve mañana por otro</span></section>`:`<section class="card c hero"><div class="chest">${ic('gift',44,1.6)}</div><h3>¡${esc(S.pet.name)} te trajo un regalo!</h3><button class="btn" onclick="chest()">Abrir cofre</button></section>`}
- <section class="card"><div class="row sp"><h3 class="row" style="gap:6px;color:var(--pd)"><span class="${S.streak?'flick':''}" style="display:inline-flex">${ic('flame',20)}</span><span style="color:var(--tx)">${S.streak?'Racha de '+S.streak+(S.streak>1?' días':' día'):'Empieza tu racha hoy'}</span></h3><span class="mu">${S.posted?'Hoy ya cuentas':'Cuenta algo hoy'}</span></div><div class="days">${strip()}</div></section>
+ ${streakCard()}
  ${memCard()}
  ${qLine(wqNow(),'chooser(wqNow())','Pregunta de la semana')}
  <section class="card"><h3>¿Cómo quieres contar hoy?</h3><div class="qp">${Object.entries(TY).map(([k,v])=>`<button onclick="compose('${k}')">${ic(v.i,18)}${v.l}</button>`).join('')}</div></section>
@@ -1627,8 +1636,8 @@ function petIdle(force){if(S.scr!=='main'||S.tab!=='mundo'||document.hidden||$('
  if(p.fun<30&&p.en>30&&r<.7){bubSay(say(['Me aburro… ¿jugamos?','¡Quiero bailar contigo!']));return}
  if(p.en<25&&r<.7){bubSay(say(['Tengo sueñito… ¿una siesta?','Se me cierran los ojos']));return}
  if(p.love<35&&r<.7){bubSay(say(['Me siento solita… ¿me das un mimo?','¿Me das un abracito?']));return}
- if(!S.families.length&&r<.45){bubSay(say(['Me siento solito… ¿creamos una cápsula con tu familia?','Quiero conocer a tu gente. ¿Armamos una cápsula?','Sin cápsula no puedo crecer. ¡Invitemos a alguien!']));return}
- if(S.families.length&&(S.soc||0)<2&&r<.35){bubSay(say(['¿Invitamos a alguien a nuestra cápsula? Así crezco','Tu cápsula está muy callada… ¡llámalos!']));return}
+ if(!S.families.length&&r<.45){bubSay(say(['Quiero conocer a tu familia… ¿armamos una cápsula?','¿Y si creamos una cápsula con tus amigos o tu pareja?','Me encantaría conocer a tu gente. ¿Creamos una cápsula?']));return}
+ if(S.families.length&&(S.soc||0)<2&&r<.35){bubSay(say(['¿Invitamos a alguien a nuestra cápsula? Quiero conocerlos','Tu cápsula está muy callada… ¡llama a alguien!']));return}
  if(force||r<.55)chat();else bubSay(say(FACTS))}
 function moodCard(){const m=S.pt.moods||[];if(!m.length)return'';const E=['','😢','😕','🙂','😄'],L='DLMXJVS';
  return `<section class="card"><h3>Tu ánimo esta semana</h3><div class="days">${Array.from({length:7},(_,i)=>{const dt=new Date(Date.now()-(6-i)*864e5),e=m.find(x=>x.d===dt.toDateString());return `<span style="${e?'font-size:20px;background:var(--soft2)':''}">${e?E[e.v]:L[dt.getDay()]}</span>`}).join('')}</div><p class="mu">${esc(S.pet.name)} lo recuerda cada vez que le cuentas cómo te fue.</p></section>`}
@@ -2037,7 +2046,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=94;
+const BUILD=95;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
@@ -2137,7 +2146,7 @@ function doPub(k,ok){
  draftClear(k);
  CLOUD.publish(p).then(()=>{track('post',k);soft()}).catch(()=>toast('Tu historia no se guardó. Revisa tu conexión e inténtalo otra vez.'));
  S.types.add(k);S.total=(S.total||0)+1;
- if(!S.posted){S.posted=true;S.streak++;S.best=Math.max(S.best||0,S.streak);S.last=today();setTimeout(()=>{toast('¡Racha de '+S.streak+(S.streak>1?' días':' día')+'!');burst(26)},1100)}
+ if(!S.posted){S.posted=true;S.streak++;S.best=Math.max(S.best||0,S.streak);S.last=today();setTimeout(()=>{toast('¡Racha de '+S.streak+(S.streak>1?' días':' día')+'!');burst(26);streakReward()},1100)}
  S.prompt=null;cl();if(S.group){S.tab='cap';S.sub='recuerdos'}else S.tab='arc';S.bub={t:say(PREACT[k]||PREACT.foto),o:null,q:null};S.bubT=Date.now();{const sh=S.group&&Object.keys(S.members).length>1,m=sh?1.5:S.group?1:.5;rw(Math.max(1,Math.round(TY[k].xp*m)),Math.max(1,Math.round(TY[k].c*m)))}
 }
 
