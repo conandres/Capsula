@@ -723,7 +723,7 @@ function petAdoptOpen(){const n=1+S.others.length;if(n>=3){toast('Ya tienes 3 ma
  <button class="btn w" ${S.adk&&(S.lm||0)>=p?'':'disabled'} onclick="petAdopt()">${(S.lm||0)>=p?'Adoptar':'Te faltan '+(p-(S.lm||0))+' Lumis'}</button>`)}
 function petAdopt(){const n=1+S.others.length,p=PET_PRICE[n],k=S.adk;if(n>=3||!PETS[k]||petOwned().includes(k)||(S.lm||0)<p)return;
  const nm=(($('#adn')||{}).value||'').trim().slice(0,14)||PETS[k].n;S.lm-=p;S.lmT=Date.now();S.others.push({pet:{kind:k,name:nm},pt:PT0(),wear:[],xp:0});S.adk=null;cl();burst(30);save();petSwap(S.others.length-1)}
-const pswHTML=()=>{const L=[{kind:S.pet.kind,name:S.pet.name,on:1,st:stg(),w:S.wear}].concat(S.others.map((o,i)=>({kind:o.pet.kind,name:o.pet.name,i,st:Math.min(stgL(Math.floor(o.xp/100)),socCap()),w:o.wear})));
+const pswHTML=()=>{const L=[{kind:S.pet.kind,name:S.pet.name,on:1,st:stg(),w:S.wear}].concat(S.others.map((o,i)=>({kind:o.pet.kind,name:o.pet.name,i,st:Math.max(Math.min(stgL(Math.floor(o.xp/100)),socCap()),stm(o.pt,o.xp)),w:o.wear})));
  return `<div class="psw">${L.map(x=>`<button class="${x.on?'on':''}" ${x.on?'aria-current="true"':`onclick="petSwap(${x.i})"`} aria-label="${esc(x.name)}">${pet(x.kind,46,x.w,x.st,true)}<small>${esc(x.name)}</small></button>`).join('')}${L.length<3?`<button class="add" onclick="petAdoptOpen()" aria-label="Adoptar otra mascota"><b>+</b><small>${LI} ${PET_PRICE[L.length]}</small></button>`:''}</div>`};
 function wear(id){if(!ownedId(id))return;wearPut(id);const w=document.querySelector('#sh .ward');render();if(w)wardOpen()}
 const guideIc=x=>!x?'':x.startsWith('img:')?`<img src="img/${x.slice(4)}-lg.png" alt="" style="width:34px;height:34px;object-fit:contain">`:/^[a-z]+$/.test(x)?ic(x,26,1.8):`<span style="font-size:26px;line-height:1">${x}</span>`;
@@ -845,8 +845,9 @@ function admGrant(t){const u=($('#gu').value||'').trim(),d=parseInt($('#gd').val
  CLOUD.adminGrant(u,t,d).then(()=>toast(t==='plus'?'Plus concedido por '+d+' días.':'Plus retirado.')).catch(()=>toast('No se pudo. ¿Publicaste las reglas nuevas?'))}
 const STG=['Bebé','Pequeño','Joven','Adulto'];
 const stgL=l=>l<3?0:l<10?1:l<25?2:3;
-const socCap=()=>(S.soc||0)>=2?3:((S.soc||0)>=1||S.families.length)?2:1;const stg=()=>Math.min(stgL(Math.floor(S.xp/100)),socCap());
-function socUpd(){let v=S.soc||0;if(S.families.length&&v<1)v=1;if(S.group&&Object.keys(S.members).length>1)v=2;if(v!==(S.soc||0)){S.soc=v;try{save()}catch(e){}}}
+const socCap=()=>(S.soc||0)>=2?3:((S.soc||0)>=1||S.families.length)?2:1;const stm=(pt,xp)=>{if(pt&&pt.stm===undefined&&S.legacyStm)pt.stm=stgL(Math.floor((xp||0)/100));return(pt&&pt.stm)||0};
+const stg=()=>Math.max(Math.min(stgL(Math.floor(S.xp/100)),socCap()),stm(S.pt,S.xp));
+function socUpd(){stm(S.pt,S.xp);(S.others||[]).forEach(o=>stm(o.pt,o.xp));let v=S.soc||0;if(S.families.length&&v<1)v=1;if(S.group&&Object.keys(S.members).length>1)v=2;if(v!==(S.soc||0)){S.soc=v;try{save()}catch(e){}}}
 
 /* ---------- data ---------- */
 const TY={
@@ -890,6 +891,7 @@ function applyPersonal(o){if(!o)return;
   const fix=p=>{if(p&&p.kind==='nube'){const k=NG.find(x=>!taken.includes(x))||'conejo';taken.push(k);if(!p.name||p.name==='Nubi')p.name=PETS[k].n;p.kind=k}};fix(o.pet);(o.others||[]).forEach(x=>x&&fix(x.pet))}
  if(o.pet&&PETS[o.pet.kind])S.pet={kind:o.pet.kind,name:String(o.pet.name||PETS[o.pet.kind].n).slice(0,14)};
  S.others=Array.isArray(o.others)?o.others.slice(0,2).filter(x=>x&&x.pet&&PETS[x.pet.kind]).map(x=>({pet:{kind:x.pet.kind,name:String(x.pet.name||PETS[x.pet.kind].n).slice(0,14)},pt:Object.assign(PT0(),x.pt||{}),wear:Array.isArray(x.wear)?x.wear.filter(w=>typeof w==='string'):[],xp:+x.xp||0})):[];
+ if(o.soc===undefined)S.legacyStm=1;
  S.types=new Set(o.types||[]);S.wk=o.wk||null;S.unl=Array.isArray(o.unl)?o.unl.filter(x=>typeof x==='string'):[];S.wear=Array.isArray(o.wear)?o.wear.filter(x=>typeof x==='string').reduce((a,x)=>a.filter(y=>ACAT[y]!==ACAT[x]).concat(x),[]):[];S.favs=Array.isArray(o.favs)?o.favs.filter(x=>typeof x==='string').slice(-300):[];S.pt=Object.assign(PT0(),o.pt||{});S.pt.t=S.pt.t||Date.now();S.bub=null;
  const y=new Date(Date.now()-864e5).toDateString();S.posted=S.last===today();if(!S.posted&&S.last!==y)S.streak=0}
 function legacy(){try{const o=JSON.parse(localStorage.getItem(LEGACY)||'null');if(o&&o.me&&o.me.name)return{pet:o.pet,petSet:o.petSet,xp:o.xp,streak:o.streak,last:o.last,chest:o.chest,mis:o.mis,petDone:o.petDone,inv:o.inv,perfect:o.perfect,types:o.types,pt:o.pt}}catch(e){}return null}
@@ -930,7 +932,7 @@ function p3mount(){const ph=$('#pet3dx')||$('#pet3d')||$('#pet3dh');if(!ph||P3.s
  }).catch(()=>{P3.st='fail'});
 }
 function hopPet(){const f=$('.hero .fl');if(f){f.classList.remove('hop');void f.offsetWidth;f.classList.add('hop')}}
-function levelUp(l){p3play('levelup');const o=document.createElement('div');o.className='lvup';o.innerHTML=`<div class="lvc"><div class="lvp">${pet3('pet3dx',200)}</div><h1>¡${esc(S.pet.name)} subió de nivel!</h1><p><img class="ci" style="width:1.8em;height:1.8em" src="img/xp.png" alt="XP"> <b>Nivel ${l+1}</b> · ${STG[stgL(l)]}</p><p class="mu">${stgL(l)>stgL(l-1)?(stgL(l)>socCap()?'Ya podría crecer, pero necesita a tu familia: crea o llena una cápsula.':'¡Evolucionó! Ahora es '+STG[stgL(l)].toLowerCase()+'.'):l===1?'Estrenó una estrellita':l===2?'Estrenó un moño':l>=3?'¡Ahora lleva corona!':''}</p><button class="btn" onclick="this.closest('.lvup').remove();p3mount()">¡Qué orgullo!</button></div>`;$('.app').appendChild(o);p3mount();burst(44)}
+function levelUp(l){p3play('levelup');const o=document.createElement('div');o.className='lvup';o.innerHTML=`<div class="lvc"><div class="lvp">${pet3('pet3dx',200)}</div><h1>¡${esc(S.pet.name)} subió de nivel!</h1><p><img class="ci" style="width:1.8em;height:1.8em" src="img/xp.png" alt="XP"> <b>Nivel ${l+1}</b> · ${STG[stgL(l)]}</p><p class="mu">${stgL(l)>stgL(l-1)?(stgL(l)>Math.max(socCap(),stm(S.pt,S.xp))?'Ya podría crecer, pero necesita a tu familia: crea o llena una cápsula.':'¡Evolucionó! Ahora es '+STG[stgL(l)].toLowerCase()+'.'):l===1?'Estrenó una estrellita':l===2?'Estrenó un moño':l>=3?'¡Ahora lleva corona!':''}</p><button class="btn" onclick="this.closest('.lvup').remove();p3mount()">¡Qué orgullo!</button></div>`;$('.app').appendChild(o);p3mount();burst(44)}
 
 /* ---------- helpers ---------- */
 function toast(m){const t=$('#ts');t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),2000)}
@@ -2035,7 +2037,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=92;
+const BUILD=93;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
