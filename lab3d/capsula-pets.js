@@ -272,10 +272,59 @@ function makeMonkey() {
   return g;
 }
 /* ropa: cascos de esfera abiertos que se pegan al cuerpo (hijos del cuerpo, heredan su forma y su respiración) */
-function band(g, t0, t1, color, r = 1.045) {
-  const m = new THREE.MeshStandardMaterial({ color, roughness: 0.85, metalness: 0, side: THREE.DoubleSide });
-  const b = new THREE.Mesh(new THREE.SphereGeometry(r, 40, 14, 0, Math.PI * 2, t0 * Math.PI, (t1 - t0) * Math.PI), m);
-  b.castShadow = true; b.receiveShadow = true; g.add(b); return b;
+const FAB = new Map();
+function fabric(kind, color) {
+  const key = kind + color; if (FAB.has(key)) return FAB.get(key);
+  const c = document.createElement("canvas"); c.width = c.height = 256; const x = c.getContext("2d");
+  const hex = "#" + color.toString(16).padStart(6, "0"); x.fillStyle = hex; x.fillRect(0, 0, 256, 256);
+  const R = (a, b) => a + Math.random() * (b - a);
+  if (kind === "denim") {
+    for (let i = 0; i < 256; i += 2) { x.fillStyle = `rgba(255,255,255,${i % 4 ? 0.05 : 0.11})`; x.fillRect(i, 0, 1, 256); }
+    for (let j = 0; j < 256; j += 3) { x.fillStyle = "rgba(10,20,60,.10)"; x.fillRect(0, j, 256, 1); }
+    for (let k = 0; k < 900; k++) { x.fillStyle = `rgba(255,255,255,${R(.02, .08)})`; x.fillRect(R(0, 256), R(0, 256), 2, 1); }
+  } else if (kind === "knit") {
+    for (let j = 0; j < 256; j += 8) for (let i = 0; i < 256; i += 8) {
+      x.fillStyle = "rgba(0,0,0,.10)"; x.beginPath(); x.moveTo(i, j + 8); x.lineTo(i + 4, j); x.lineTo(i + 8, j + 8); x.lineTo(i + 4, j + 5); x.fill();
+      x.fillStyle = "rgba(255,255,255,.08)"; x.fillRect(i + 3, j + 1, 2, 4);
+    }
+  } else if (kind === "stripes") {
+    const n = 8, h = 256 / n;
+    for (let k = 0; k < n; k++) { x.fillStyle = k % 2 ? "#ffffff" : hex; x.fillRect(0, k * h, 256, h); }
+    for (let j = 0; j < 256; j += 8) for (let i = 0; i < 256; i += 8) { x.fillStyle = "rgba(0,0,0,.07)"; x.fillRect(i + 3, j, 2, 8); }
+  } else if (kind === "fleece") {
+    for (let k = 0; k < 2500; k++) { x.fillStyle = `rgba(${Math.random() < .5 ? "255,255,255" : "120,40,80"},${R(.03, .09)})`; x.beginPath(); x.arc(R(0, 256), R(0, 256), R(.6, 1.6), 0, 7); x.fill(); }
+  } else if (kind === "plaid") {
+    x.fillStyle = "rgba(255,255,255,.35)"; for (let i = 0; i < 256; i += 64) { x.fillRect(i, 0, 10, 256); x.fillRect(0, i, 256, 10); }
+    x.fillStyle = "rgba(120,20,60,.25)"; for (let i = 32; i < 256; i += 64) { x.fillRect(i, 0, 22, 256); x.fillRect(0, i, 256, 22); }
+  } else {
+    for (let j = 0; j < 256; j += 4) { x.fillStyle = "rgba(0,0,0,.035)"; x.fillRect(0, j, 256, 1); }
+    for (let i = 0; i < 256; i += 4) { x.fillStyle = "rgba(255,255,255,.04)"; x.fillRect(i, 0, 1, 256); }
+  }
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace;
+  const rep = kind === "stripes" ? [1, 1] : kind === "denim" ? [10, 3] : [8, 3]; t.repeat.set(rep[0], rep[1]);
+  FAB.set(key, t); return t;
+}
+function band(g, t0, t1, color, r = 1.045, o = {}) {
+  const kind = o.kind || "cotton", tex = fabric(kind, color);
+  const m = new THREE.MeshStandardMaterial({ color: kind === "stripes" ? 0xffffff : 0xffffff, map: tex, bumpMap: tex, bumpScale: kind === "denim" ? 1.2 : 0.8, roughness: 0.9, metalness: 0, side: THREE.DoubleSide });
+  const geo = new THREE.SphereGeometry(r, 56, 18, 0, Math.PI * 2, t0 * Math.PI, (t1 - t0) * Math.PI);
+  if (o.pleat) { const pa = geo.attributes.position; for (let k = 0; k < pa.count; k++) { const x = pa.getX(k), z = pa.getZ(k), a = Math.atan2(x, z), f = 1 + o.pleat[1] * Math.sin(a * o.pleat[0]); pa.setX(k, x * f); pa.setZ(k, z * f); } geo.computeVertexNormals(); }
+  const b = new THREE.Mesh(geo, m); b.castShadow = true; b.receiveShadow = true; g.add(b); return b;
+}
+/* detalles de costura: aro (cuello, dobladillo) y puntadas */
+function ring(g, t, color, tube = 0.035, r = 1.05, rough = 0.8) {
+  const y = Math.cos(t * Math.PI) * r, rad = Math.sin(t * Math.PI) * r;
+  const m = new THREE.MeshStandardMaterial({ color, roughness: rough });
+  const tr = new THREE.Mesh(new THREE.TorusGeometry(rad, tube, 10, 56), m); tr.rotation.x = Math.PI / 2; tr.position.y = y; tr.castShadow = true; g.add(tr); return tr;
+}
+function sleeves(g, y, color, len = 0.22, kind = "cotton", spread = 0.9) {
+  for (const sg of [-1, 1]) {
+    const sl = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 14), new THREE.MeshStandardMaterial({ color: 0xffffff, map: fabric(kind, color), roughness: 0.9 }));
+    sl.scale.set(len * 0.95, len * 1.25, len * 0.95); sl.position.set(sg * spread, y, 0); sl.rotation.z = sg * -0.75; sl.castShadow = true; g.add(sl);
+  }
+}
+function stitch(g, pos, rot, rad = 0.13, color = 0xf0c46b, arc = Math.PI) {
+  const t = new THREE.Mesh(new THREE.TorusGeometry(rad, 0.009, 6, 24, arc), new THREE.MeshBasicMaterial({ color })); t.position.set(...pos); t.rotation.set(...rot); g.add(t); return t;
 }
 function makeAccessory(id, P) {
   const [rx, ry, rz] = P.hr, g = new THREE.Group(); g.name = "acc-" + id;
@@ -326,19 +375,45 @@ function makeAccessory(id, P) {
     for (const sg of [-1, 1]) ball(g, "cup", 0, [sg * rx * 1.0, 0, 0], [0.09, 0.12, 0.07], { material: cm });
     g.position.set(0, ry * 0.15, 0);
   } else if (id === "camiseta") {
-    parent = "bodym"; band(g, 0.14, 0.7, 0x5aa9ff); band(g, 0.42, 0.48, 0xffffff, 1.05);
+    parent = "bodym"; band(g, 0.14, 0.7, 0x4f9df5, 1.045, { kind: "cotton" });
+    ring(g, 0.145, 0xf4f4ff, 0.045, 1.05); ring(g, 0.7, 0x3c7fd0, 0.03, 1.05);
+    sleeves(g, 0.5, 0x4f9df5, 0.2, "cotton", 0.9);
+    const st = makeStar(0.12, 0.055, 0.03, new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.7 })); st.position.set(0, 0.2, 1.06); g.add(st);
   } else if (id === "rayas") {
-    parent = "bodym"; for (let i = 0; i < 6; i++) band(g, 0.14 + i * 0.095, 0.14 + (i + 1) * 0.095, i % 2 ? 0xffffff : 0xe0475b, 1.045 + (i % 2) * 0.004);
+    parent = "bodym"; band(g, 0.14, 0.7, 0xe0475b, 1.045, { kind: "stripes" });
+    ring(g, 0.145, 0xffffff, 0.045, 1.05); ring(g, 0.7, 0xe0475b, 0.03, 1.05);
+    sleeves(g, 0.5, 0xe0475b, 0.2, "stripes", 0.9);
   } else if (id === "sudadera") {
-    parent = "bodym"; band(g, 0.1, 0.72, 0xff8dbb, 1.06);
-    ball(g, "pocket", 0xff6fa6, [0, -0.22, 0.98], [0.4, 0.17, 0.09], { noShadow: true });
-    for (const sg of [-1, 1]) ball(g, "cord", 0xffffff, [sg * 0.13, 0.22, 1.04], [0.03, 0.09, 0.03], { noShadow: true });
+    parent = "bodym"; band(g, 0.1, 0.74, 0xff8dbb, 1.06, { kind: "fleece" });
+    const hm = new THREE.MeshStandardMaterial({ color: 0xff74a8, roughness: 0.95 });
+    const hood = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), hm); hood.scale.set(0.55, 0.3, 0.3); hood.position.set(0, 0.86, -0.6); hood.castShadow = true; g.add(hood);
+    const hr = ring(g, 0.115, 0xff74a8, 0.1, 1.07);
+    ball(g, "pocket", 0xff6fa6, [0, -0.2, 1.0], [0.42, 0.16, 0.1], { noShadow: true });
+    stitch(g, [-0.2, -0.2, 1.08], [0, 0, 0], 0.01, 0xffb3d1, 0); 
+    for (const sg of [-1, 1]) ball(g, "cord", 0xffffff, [sg * 0.14, 0.18, 1.06], [0.028, 0.1, 0.028], { noShadow: true });
+    ring(g, 0.74, 0xf0629a, 0.06, 1.06);
+    sleeves(g, 0.4, 0xff8dbb, 0.26, "fleece", 0.92);
+    for (const sg of [-1, 1]) { const cf = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 12), new THREE.MeshStandardMaterial({ color: 0xf0629a, roughness: 0.9 })); cf.scale.set(0.2, 0.09, 0.2); cf.position.set(sg * 1.17, 0.12, 0); cf.rotation.z = sg * -0.75; g.add(cf); }
   } else if (id === "jean") {
-    parent = "bodym"; band(g, 0.62, 1.0, 0x3f6fc4, 1.048); band(g, 0.62, 0.665, 0x5b3a26, 1.058);
+    parent = "bodym"; band(g, 0.62, 1.0, 0x3f6fc4, 1.048, { kind: "denim" });
+    band(g, 0.62, 0.665, 0x2f55a0, 1.058, { kind: "denim" });
+    const y0 = Math.cos(0.64 * Math.PI), rr = Math.sin(0.64 * Math.PI) * 1.06;
+    for (const a of [-0.9, -0.45, 0.45, 0.9, Math.PI]) { const lp = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.13, 0.02), new THREE.MeshStandardMaterial({ color: 0x2f55a0, roughness: 0.9 })); lp.position.set(Math.sin(a) * rr, y0, Math.cos(a) * rr); lp.rotation.y = a; g.add(lp); }
+    ball(g, "btn", 0xd9b04a, [0, y0 - 0.02, 1.0], [0.05, 0.05, 0.03], { noShadow: true });
+    for (const sg of [-1, 1]) stitch(g, [sg * 0.5, y0 - 0.2, 0.88], [0.2, sg * 0.55, sg * 0.4], 0.17, 0xf0c46b, Math.PI * 0.9);
+    stitch(g, [0, y0 - 0.28, 1.0], [Math.PI / 2, 0, 0], 0.009, 0xf0c46b, 0);
   } else if (id === "falda") {
-    parent = "bodym"; band(g, 0.64, 0.97, 0xff7fb0, 1.075); band(g, 0.9, 0.97, 0xffc2dc, 1.11);
+    parent = "bodym"; band(g, 0.64, 0.97, 0xff7fb0, 1.075, { kind: "plaid", pleat: [18, 0.03] });
+    band(g, 0.62, 0.67, 0xe8528f, 1.07, { kind: "cotton" });
+    ring(g, 0.965, 0xffd0e4, 0.03, 1.1);
+    ball(g, "bow", 0xffffff, [0.28, Math.cos(0.64 * Math.PI) * 1.0, 0.95], [0.07, 0.05, 0.03], { noShadow: true });
   } else if (id === "short") {
-    parent = "bodym"; band(g, 0.64, 0.88, 0x3bb273, 1.05); band(g, 0.64, 0.68, 0xffffff, 1.058);
+    parent = "bodym"; band(g, 0.64, 0.88, 0x3bb273, 1.05, { kind: "cotton" });
+    band(g, 0.62, 0.68, 0xffffff, 1.06, { kind: "cotton" });
+    ring(g, 0.88, 0x2e9a62, 0.045, 1.06);
+    const yw = Math.cos(0.66 * Math.PI);
+    for (const sg of [-1, 1]) ball(g, "cord", 0xffffff, [sg * 0.08, yw - 0.06, 1.0], [0.02, 0.09, 0.02], { noShadow: true });
+    for (const sg of [-1, 1]) stitch(g, [sg * 0.52, yw - 0.18, 0.84], [0.2, sg * 0.6, sg * 0.4], 0.14, 0xffffff, Math.PI * 0.8);
   } else if (id === "alas") {
     parent = "body";
     const m = mat(0xffffff, 0.6);
