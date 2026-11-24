@@ -91,7 +91,7 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
 .smc{position:absolute;left:12px;right:12px;top:50%;transform:translateY(-50%);background:#fff;padding:16px;border-radius:18px;box-shadow:0 8px 30px #0002;display:flex;flex-direction:column;gap:10px;text-align:center}
 .twz{flex:1;display:flex;flex-direction:column;gap:6px;justify-content:center;max-width:420px;width:100%;margin:0 auto}.twl{text-align:center;font-size:13px;font-weight:600;color:var(--pd);margin:4px 0 0}
 .twr{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;align-items:end}.twp{border:0;background:none;padding:0;display:flex;flex-direction:column;align-items:center;cursor:pointer;border-radius:14px}.twp.sel{background:var(--tint-2)}.twp:disabled{cursor:default}
-.twst{display:flex;flex-direction:column-reverse;align-items:center;justify-content:flex-start;min-height:176px;width:100%;gap:2px;padding-bottom:2px}.tg .twst{min-height:92px}
+.twst{display:flex;flex-direction:column-reverse;align-items:center;justify-content:flex-start;min-height:176px;width:100%;gap:2px;padding-bottom:2px}.twtg .twst{min-height:0}
 .twb{position:relative;display:block;width:78%;height:38px;background:var(--c);border-radius:6px 6px 4px 4px;margin-top:8px}.twb i{position:absolute;left:-8%;right:-8%;top:-8px;height:9px;background:var(--c);filter:brightness(.82);border-radius:6px 6px 2px 2px}.twb u{position:absolute;left:42%;bottom:0;width:16%;height:55%;background:#2b1b2e;border-radius:8px 8px 0 0}
 .twb.m{height:18px;margin-top:5px}.twb.m i{height:5px;top:-5px}
 .twbase{display:block;width:92%;height:8px;background:#b79a98;border-radius:4px}
@@ -111,6 +111,12 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
 @media (prefers-reduced-motion:reduce){.days span.on,.twb.nw,.mgw,.mgc.ok,.wal.bumpw{animation:none}}
 .hw2{padding:0 12px;font-size:14px}.brand{min-width:0}
 .memc .memi{width:52px;height:52px;border-radius:14px;object-fit:cover;flex:none}.memt{display:grid;place-items:center;background:var(--tint-2);color:var(--pd)}.memc .tx{min-width:0}.memc b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.famc{background:var(--soft)}.shl{color:var(--pd);vertical-align:-3px;margin-left:6px}
+
+.twz{gap:4px}.twr{display:flex;gap:8px;align-items:flex-end;justify-content:center}.twp{flex:1;min-width:0;max-width:110px}
+.twtg{background:var(--tint-2);border-radius:16px;padding:10px 8px 8px;gap:6px;pointer-events:none}.twtg .twp{max-width:70px}
+.twtg .twb{height:14px;margin-top:4px;width:84%}.twtg .twb i{height:4px;top:-4px}.twtg .twb u{display:none}.twtg .twbase{height:5px;width:96%}
+.twr:not(.twtg) .twst{min-height:150px}.twr:not(.twtg) .twb{height:30px;margin-top:6px}.twr:not(.twtg) .twb i{height:7px;top:-7px}
+.twl{margin:8px 0 2px}
 </style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -782,7 +788,7 @@ function shopBuy(kind,id){cl();let p;
  burst(26);p3play('cheer');toast('¡Listo! Ya es de '+S.pet.name+'');shopSave()}
 function shopOpen(){S.tab='tienda';render();setTimeout(()=>{const e=$('#shop');if(e)e.scrollIntoView({behavior:'smooth',block:'center'})},60)}
 const shopHTML=()=>{return `<section class="card" id="shop"><div class="row sp"><h3>Tienda</h3><b class="pr">${LI} ${S.lm||0}</b></div>
- <span class="mu">Los Lumis son la moneda: se ganan poco a poco cuidando a ${esc(S.pet.name)}, contando historias y con las misiones. Guárdalos para lo que de verdad quieras.</span>
+
  <b>Fondos del cuarto</b><div class="shr">${ROOMS.map(r=>{const o=ownedRoom(r.id),on=(S.rm||'')===r.id;return `<button class="${on?'on':''}" onclick="shopAsk('room','${r.id}')"><i style="background:${r.bg}"></i>${r.n}<small>${on?'Puesto':o?'Toca para usar':LI+' '+r.p}</small></button>`}).join('')}</div>
 </section>`};
 const closetHTML=()=>`<section class="card"><h3>Armario de ${esc(S.pet.name)}</h3><span class="mu">Desbloquea accesorios; una prenda por categoría</span>${closetGrid()}</section>`;
@@ -1094,8 +1100,7 @@ async function remSet(on,h){const c=remGet();if(on!==null)c.on=!!on;if(h!==null)
 function remPet(v){const c=remGet();c.pet=!!v;try{localStorage.setItem('capsula_rem',JSON.stringify(c))}catch(e){}remApply().catch(()=>{});toast(v?'Avisos de la mascota activados':'Avisos de la mascota apagados')}
 const remCard=()=>{if(!NATIVE)return'';const c=remGet();return `<div class="card"><h3>Recordatorio diario</h3><label class="chk"><input type="checkbox" ${c.on?'checked':''} onchange="remSet(this.checked,null)"> Avisarme cada día</label>
  <label class="lb" for="remh">Hora del aviso</label><select id="remh" class="in" onchange="remSet(null,this.value)">${Array.from({length:17},(_,i)=>i+6).map(h=>`<option value="${h}" ${c.h===h?'selected':''}>${h>12?h-12:h}:00 ${h>=12?'p. m.':'a. m.'}</option>`).join('')}</select>
- <label class="chk"><input type="checkbox" ${c.pet!==false?'checked':''} onchange="remPet(this.checked)"> Avisos de la mascota y de la pregunta del día</label>
- <p class="mu">Cada día te mostramos la pregunta del día. Los avisos se programan en tu teléfono; no usan internet ni se envían a ningún servidor.</p></div>`};
+ <label class="chk"><input type="checkbox" ${c.pet!==false?'checked':''} onchange="remPet(this.checked)"> Avisos de la mascota y de la pregunta del día</label></div>`};
 function gsheet(){
  const id=CFG().googleClientId,ok=!!(id&&!/^PEGA/i.test(id)&&window.CLOUD&&CLOUD.configured);
  showSheet(`<div class="ch">${GLOGO}<h2>Inicia sesión</h2></div>
@@ -1438,8 +1443,8 @@ function twDraw(){const a=$('.app');let o=$('#mgo');if(!o){o=document.createElem
  const t=TW,win=t.st==='win';
  const peg=(arr,i,mini)=>`<button class="twp${!mini&&t.sel===i?' sel':''}" ${mini||win?'disabled':''} ${mini?'':`onclick="twTap(${i})" aria-label="Torre ${i+1}"`}><span class="twst">${arr.map((c,j)=>twTower(c,mini).replace('class="twb',!mini&&t.last===i&&j===arr.length-1?'class="twb nw':'class="twb')).join('')}</span><span class="twbase"></span></button>`;
  o.innerHTML=`<div class="mgh"><button class="x" onclick="mgClose()" aria-label="Cerrar">${ic('x',20)}</button><div class="tx"><h2>Torres · nivel ${t.lv} de 4</h2><span class="mu">Movimientos: ${t.moves}</span></div></div>
- <div class="twz"><p class="twl">Torres objetivo</p><div class="twr tg">${t.tgt.map((a,i)=>peg(a,i,1)).join('')}</div>
- <p class="twl">Tus torres · toca una torre y luego otra</p><div class="twr">${t.cur.map((a,i)=>peg(a,i,0)).join('')}</div></div>
+ <div class="twz"><p class="twl">Así deben quedar</p><div class="twr twtg">${t.tgt.map((a,i)=>peg(a,i,1)).join('')}</div>
+ <p class="twl">Tus torres: toca una y luego otra</p><div class="twr">${t.cur.map((a,i)=>peg(a,i,0)).join('')}</div></div>
  ${win?`<div class="mgw"><h2>${t.lv<4?'¡Torres en orden!':'¡Maestro de las torres!'}</h2><p class="mu">Lo lograste en ${t.moves} movimientos</p>${t.lv<4?`<button class="btn w" onclick="twStart(${t.lv+1})">Siguiente nivel</button>`:`<button class="btn w" onclick="twStart(1)">Jugar desde el nivel 1</button>`}<button class="btn s w" onclick="retar('tw','Ordené las torres del nivel ${t.lv} en ${t.moves} movimientos.')">Retar a alguien</button><button class="btn s w" onclick="mgClose()">Salir</button></div>`:`<button class="btn s w" onclick="twStart(${t.lv})">Reiniciar</button>`}`}
 function twTap(i){const t=TW;if(!t||t.st!=='play')return;
  if(t.sel<0){if(t.cur[i].length){t.sel=i;twDraw()}return}
@@ -1501,7 +1506,6 @@ function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=gr
   <div class="room${sl?' night':''}${S.pt.clean<35?' dirty':''}${S.rm&&ownedRoom(S.rm)?' rm-'+S.rm:''}${exAway()?' exa exp-'+S.pt.ex.k:''}" id="room">${exAway()?exScene():''}<div class="fl ${sl?'sleep':''}${exAway()?' away':''}" onclick="petClick()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div><button class="hang" onclick="wardOpen()" aria-label="Armario">${ic('hanger',22)}</button><div class="dirt" aria-hidden="true"><i></i><i></i><i></i><i></i><b>🪰</b><b>🪰</b><span class="stk"><u></u><u></u><u></u></span></div><button class="dchip" id="dirtc" ${S.pt.clean<35&&!S.tool?'':'hidden'} onclick="toolSet(\'bath\')">Necesito un baño</button></div>
   ${pswHTML()}<h2>${esc(S.pet.name)}</h2>
   <button class="wal" onclick="shopOpen()" aria-label="Tus Lumis">${LI} <span class="cnt" data-n="${S.lm||0}">${S.lm||0}</span> Lumis</button>
-  <div class="mu">${STG[stg()]} · nivel ${lvl+1} · crece poco a poco</div>
   <div id="bubw" class="bw" aria-live="polite">${bubHTML()}</div>
   <div class="stw" id="stw">${statsHTML()}</div>
   <div class="tray" id="tray">${trayHTML()}</div>
@@ -2003,8 +2007,7 @@ function perfil(){
  <div class="card"><div class="pfc">${pfAv()}<span class="tx"><b>${esc(S.me.name)}</b><span class="mu" style="overflow-wrap:anywhere">${esc((S.user&&S.user.email)||'')}</span></span></div>
  ${nameForm()}</div>
  <div class="card"><label class="lb" id="thl">Apariencia</label>
- <div class="th" role="radiogroup" aria-labelledby="thl">${THEMES.map(t=>`<button class="thb ${S.theme===t.id?'on':''}" role="radio" aria-checked="${S.theme===t.id}" onclick="setTheme('${t.id}')"><span class="sw" style="background:${t.bg}"><i style="background:${t.pr}"></i></span>${t.n}</button>`).join('')}</div>
- <p class="mu">Tu apariencia y tu nombre se guardan en tu cuenta y te acompañan en todos tus dispositivos.</p></div>
+ <div class="th" role="radiogroup" aria-labelledby="thl">${THEMES.map(t=>`<button class="thb ${S.theme===t.id?'on':''}" role="radio" aria-checked="${S.theme===t.id}" onclick="setTheme('${t.id}')"><span class="sw" style="background:${t.bg}"><i style="background:${t.pr}"></i></span>${t.n}</button>`).join('')}</div></div>
  <div class="card"><h3>Privacidad</h3><label class="chk"><input type="checkbox" ${S.showSeen!==false?'checked':''} onchange="setSeen(this.checked)"> Mostrar cuando estoy activo</label>
  <p class="mu">Si lo apagas, los demás no verán "en línea" ni tu última vez.</p></div>
  <div class="card"><h3>Mi mascota</h3><div class="pfp">${pet(S.pet.kind,52)}<input id="pfm" class="in" aria-label="Nombre de tu mascota" maxlength="14" value="${esc(S.pet.name)}" onchange="setPetName(this.value)"></div><p class="mu">Vive en Mi mundo. No aparece dentro de las cápsulas.</p></div>
@@ -2017,7 +2020,7 @@ function perfil(){
  ${(S.blk||[]).length?`<button class="btn s w" onclick="blkList()">Personas bloqueadas (${S.blk.length})</button>`:''}
  <button class="btn s w" onclick="delAsk()" style="color:#B3261E">Eliminar mi cuenta y mis datos</button></div>
  ${plusCard()}
- <div class="card"><div class="row sp"><h3>Actividad</h3><button class="lnk" onclick="go('act')">Ver todo</button></div>${recentHTML(3)||'<p class="mu">Aquí verás las cartas, respuestas e invitaciones de tus cápsulas.</p>'}</div>
+ <div class="card"><div class="row sp"><h3>Actividad</h3><button class="lnk" onclick="go('act')">Ver todo</button></div>${recentHTML(3)||''}</div>
  ${remCard()}
  ${guideCard()}
  ${admCard()}
@@ -2100,7 +2103,7 @@ const mgCard=()=>`<section class="card"><div class="mgcs"><h3>Juegos de memoria 
  <div class="mrow"><div class="tx"><b>Parejas de recuerdos</b><span class="mu">5 niveles${S.posts.some(p=>['foto','dibujo'].includes(p.k))?' con '+(S.group?'las fotos de esta cápsula':'tus fotos'):''}</span></div><button class="btn" onclick="mgStart()">Jugar</button></div>
  <div class="mrow"><div class="tx"><b>Semáforo</b><span class="mu">Toca solo el verde · 4 velocidades</span></div><button class="btn" onclick="smStart()">Jugar</button></div>
  <div class="mrow"><div class="tx"><b>Torres</b><span class="mu">Ordena los bloques como el objetivo</span></div><button class="btn" onclick="twStart()">Jugar</button></div>
- <span class="mu">Lumis 1 vez al día en cada juego</span></div></section>`;
+</div></section>`;
 function capHome(){
  return `${famCard()}${memCard()}${qLine(qaToday(),"go('triv')",S.qd===dayKey()?'Ya respondiste · ver respuestas':'Pregunta de hoy')}
  <div class="duo"><button class="tile2" onclick="chooser()">${ic('pen',26)}<b>Escribir aquí</b><span class="mu">Se guarda en ${esc(S.group.name)}</span></button><button class="tile2" onclick="S.sub='recuerdos';soft()">${ic('image',26)}<b>Recuerdos</b><span class="mu">${S.posts.length} ${S.posts.length===1?'historia':'historias'}</span></button></div>
@@ -2157,14 +2160,14 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=101;
+const BUILD=102;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
 function updX(){S.upd=0;try{sessionStorage.setItem('capsula_updx','1')}catch(e){}soft()}
 const petShopHTML=()=>{const have=petOwned(),n=have.length,price=PET_PRICE[n];
  return `<section class="card"><h3>Mascotas</h3><span class="mu">Puedes tener hasta 3. ${n<3?'La próxima cuesta '+LI+' '+price+'.':'Ya tienes las 3 que caben.'}</span><div class="pg" style="margin-top:10px">${Object.entries(PETS).filter(([k])=>k!=='nube').map(([k,v])=>{const own=have.includes(k);return `<button class="pk" ${own||n>=3?'disabled':''} onclick="S.adk='${k}';petAdoptOpen()" aria-label="${v.d}">${pet(k,76,[],0)}<b>${v.d}</b><small>${own?'Ya la tienes ✓':n>=3?'Sin espacio':LI+' '+price}</small></button>`}).join('')}</div></section>`};
-function tienda(){return `<div class="spch"><h2>Tienda</h2></div>${petShopHTML()}${shopHTML()}${closetHTML()}<p class="mu c">Los Lumis se ganan despacio cuidando a ${esc(S.pet.name)} y contando historias.</p>`}
+function tienda(){return `<div class="spch"><h2>Tienda</h2></div>${petShopHTML()}${shopHTML()}${closetHTML()}`}
 const VIEW={home,mundo,caps,cap,act,tienda,perfil,arc,triv};
 
 /* ---------- publish ---------- */
