@@ -401,6 +401,15 @@ function start() {
   CLOUD.submitPurchase = async (sku, token) => { await addDoc(collection(db, 'purchases'), { uid: me.uid, sku: String(sku).slice(0, 40), token: String(token).slice(0, 400), at: serverTimestamp() }); };
   CLOUD.adminPurchases = async () => (await getDocs(query(collection(db, 'purchases'), limit(40)))).docs.map(d => ({ id: d.id, ...d.data() }));
   CLOUD.adminApprove = async (pid, uid, days) => { await CLOUD.adminGrant(uid, 'plus', days); await deleteDoc(doc(db, 'purchases', pid)); };
+  /* Blaze (apagado): token de avisos push y subida de archivos. No se llaman mientras pushOn/storageOn sean false (ver BLAZE.md). */
+  CLOUD.saveToken = async (token) => { if (!me || !token) return; await setDoc(doc(db, 'users', me.uid, 'tokens', String(token).slice(0, 400)), { at: serverTimestamp(), p: 'android' }); };
+  CLOUD.uploadFile = async (fid, file) => {
+    if (!(window.CAPSULA_CONFIG || {}).storageOn) throw new Error('storage-off');
+    const S = await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js');
+    const r = S.ref(S.getStorage(app), 'families/' + fid + '/' + Date.now() + '_' + Math.random().toString(36).slice(2, 8));
+    await S.uploadBytes(r, file, { contentType: file.type, customMetadata: { uid: me.uid } });
+    return S.getDownloadURL(r);
+  };
   CLOUD.syncPlan = async (fid, plan) => { await updateDoc(doc(db, 'families', fid), { plan }); };
   CLOUD.mediaCount = async () => {
     if (!active) return 0;

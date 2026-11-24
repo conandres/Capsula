@@ -92,6 +92,11 @@ service cloud.firestore {
           || (request.resource.data.get('nameAt', null) == request.time
             && (resource.data.get('nameAt', null) == null
               || request.time > resource.data.nameAt + duration.value(15, 'd'))));
+      // Avisos push (se usan cuando se activa el servidor): cada dispositivo guarda su propio token.
+      match /tokens/{tid} {
+        allow read, delete: if signedIn() && request.auth.uid == uid;
+        allow create: if signedIn() && request.auth.uid == uid && tid.size() <= 400;
+      }
       match /posts/{pid} {
         allow read, delete: if signedIn() && request.auth.uid == uid;
         allow create: if signedIn() && request.auth.uid == uid && pid.matches('[A-Za-z0-9]{20}') && postOk();
@@ -115,6 +120,11 @@ service cloud.firestore {
     }
 
     // ---------- Cápsula Plus: solo el administrador (o, a futuro, un servidor de verificación) concede el plan; cada persona lee el suyo ----------
+    // Alertas de ganancias sospechosas (las escribe el servidor; solo el administrador las lee)
+    match /flags/{id} {
+      allow read: if isAdmin();
+    }
+
     match /entitlements/{uid} {
       allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
       allow write: if isAdmin();

@@ -15,6 +15,9 @@ window.CAPSULA_CONFIG = {
   plusOn: false,
   /* AdMob: anuncios APAGADOS (adsOn:false). No se pedirá ningún anuncio hasta que lo enciendas a propósito.
      El ID de abajo es el ID de PRUEBA oficial de Google. Con anuncios reales y tu ID propio, un toque tuyo o de tus amigos puede hacer que AdMob bloquee tu cuenta. */
+  /* Blaze: avisos push y archivos grandes. APAGADOS hasta activar el plan (mira BLAZE.md). */
+  pushOn: false,
+  storageOn: false,
   adsOn: false,
   admobRewardedId: 'ca-app-pub-3940256099942544/5224354917',
   admobProd: false,

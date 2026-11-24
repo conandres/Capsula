@@ -1,0 +1,19 @@
+rules_version = '2';
+// Archivos de las cápsulas (fotos grandes, audio, video corto). Solo miembros; límites de tamaño y de tipo.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /families/{fid}/{allPaths=**} {
+      function miembro() {
+        return request.auth != null
+          && firestore.exists(/databases/(default)/documents/families/$(fid)/members/$(request.auth.uid));
+      }
+      allow read: if miembro();
+      allow create: if miembro()
+        && request.resource.metadata.uid == request.auth.uid
+        && request.resource.size < 15 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*|audio/.*|video/mp4|video/webm');
+      allow delete: if miembro() && resource.metadata.uid == request.auth.uid;
+      allow update: if false;
+    }
+  }
+}
