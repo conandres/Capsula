@@ -83,6 +83,18 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
  background:radial-gradient(circle at 20% 65%,#fff 0 20%,transparent 21%),radial-gradient(circle at 42% 38%,#fff 0 24%,transparent 25%),radial-gradient(circle at 66% 50%,#fff 0 22%,transparent 23%),radial-gradient(circle at 82% 72%,#fff 0 17%,transparent 18%),radial-gradient(circle at 52% 78%,#f4fbff 0 19%,transparent 20%);filter:drop-shadow(0 2px 2px rgba(80,140,200,.35))}
 .drip{position:absolute;font-size:14px;z-index:7;pointer-events:none;animation:dripf .9s ease-in forwards}
 @keyframes dripf{0%{transform:translateY(0) scale(.7);opacity:0}15%{opacity:1}100%{transform:translateY(70px) scale(1);opacity:0}}
+.mgcs{display:flex;flex-direction:column;gap:10px}.mgcs .mrow{display:flex;align-items:center;justify-content:space-between;gap:12px}.mgcs .mrow+.mrow{border-top:1px solid var(--line,#0001);padding-top:10px}
+.smo{background:#fff}.smf{position:relative;flex:1;min-height:300px;background:#fff;border-radius:18px;overflow:hidden;touch-action:manipulation}
+.smx,.smy{position:absolute;left:50%;top:50%;background:#222;border-radius:2px;transform:translate(-50%,-50%)}.smx{width:34px;height:4px}.smy{width:4px;height:34px}
+.smb{position:absolute;border:0;border-radius:50%;cursor:pointer;animation:smp .12s ease-out;box-shadow:inset 0 -6px 0 #0003,0 4px 10px #0003;touch-action:manipulation}
+.smb.g{background:#2fbf6b}.smb.r{background:#e0364f}@keyframes smp{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.smc{position:absolute;left:12px;right:12px;top:50%;transform:translateY(-50%);background:#fff;padding:16px;border-radius:18px;box-shadow:0 8px 30px #0002;display:flex;flex-direction:column;gap:10px;text-align:center}
+.twz{flex:1;display:flex;flex-direction:column;gap:6px;justify-content:center;max-width:420px;width:100%;margin:0 auto}.twl{text-align:center;font-size:13px;font-weight:600;color:var(--pd);margin:4px 0 0}
+.twr{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;align-items:end}.twp{border:0;background:none;padding:0;display:flex;flex-direction:column;align-items:center;cursor:pointer;border-radius:14px}.twp.sel{background:var(--tint-2)}.twp:disabled{cursor:default}
+.twst{display:flex;flex-direction:column-reverse;align-items:center;justify-content:flex-start;min-height:176px;width:100%;gap:2px;padding-bottom:2px}.tg .twst{min-height:92px}
+.twb{position:relative;display:block;width:78%;height:38px;background:var(--c);border-radius:6px 6px 4px 4px;margin-top:8px}.twb i{position:absolute;left:-8%;right:-8%;top:-8px;height:9px;background:var(--c);filter:brightness(.82);border-radius:6px 6px 2px 2px}.twb u{position:absolute;left:42%;bottom:0;width:16%;height:55%;background:#2b1b2e;border-radius:8px 8px 0 0}
+.twb.m{height:18px;margin-top:5px}.twb.m i{height:5px;top:-5px}
+.twbase{display:block;width:92%;height:8px;background:#b79a98;border-radius:4px}
 </style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -962,7 +974,7 @@ function streakReward(){const n=S.streak,d=Math.min(2+n,12),b=STK_MS[n]||0;rw(0,
 function streakCard(){const n=S.streak,t=flameTier(n),nf=FLAME.find(f=>f[0]>n),nm=Object.keys(STK_MS).map(Number).find(k=>k>n);
  const sub=n?`Llama ${t[3].toLowerCase()}. ${nf?'En '+(nf[0]-n)+(nf[0]-n>1?' días':' día')+' cambia de color.':'Llegaste al color máximo.'}`:'Cuenta una historia y gana Lumis cada día.';
  const nx=nm?`Premio grande en ${nm-n} ${nm-n>1?'días':'día'}: +${STK_MS[nm]} Lumis`:'';
- return `<section class="card streak"><div class="row" style="gap:14px;align-items:center"><div class="flm ${n&&S.posted?'flick':''}">${flameSvg(n,58)}<b>${n}</b></div><div class="tx"><h3>${n?'Racha de '+n+(n>1?' días':' día'):'Empieza tu racha hoy'}</h3><p class="mu">${sub}</p><p class="mu" style="margin-top:2px">${S.posted?nx:'Hoy: +'+Math.min(2+n+1,12)+' Lumis si cuentas algo'}</p></div></div><div class="days">${strip()}</div></section>`}
+ return `<section class="card streak"><div class="row" style="gap:14px;align-items:center"><div class="flm ${n&&S.posted?'flick':''}">${flameSvg(n,58)}<b>${n}</b></div><div class="tx"><h3>${n?'Racha de '+n+(n>1?' días':' día'):'Empieza tu racha hoy'}</h3></div></div><div class="days">${strip()}</div></section>`}
 function strip(){const t=new Date(),L='DLMXJVS',last=S.posted?6:5;
  return Array.from({length:7},(_,i)=>{const d=new Date(t);d.setDate(t.getDate()-6+i);const on=i>last-S.streak&&i<=last;return `<span class="${on?'on':''} ${i===6?'now':''}">${L[d.getDay()]}</span>`}).join('')}
 
@@ -1357,8 +1369,62 @@ function mgWin(){burst(36);const lv=MG.lv;try{if(lv<5&&mgLv()<=lv)localStorage.s
  let d='',d5='';try{d=localStorage.getItem('capsula_mg');d5=localStorage.getItem('capsula_mg5')}catch(e){}
  if(d!==today()){try{localStorage.setItem('capsula_mg',today())}catch(e){}setTimeout(()=>rw(2+lv,2+lv),500)}
  else if(lv===5&&d5!==today()){try{localStorage.setItem('capsula_mg5',today())}catch(e){}setTimeout(()=>rw(4,8),500)}}
-function mgClose(){MG=null;const o=$('#mgo');if(o)o.remove()}
+function mgClose(){MG=null;SM=null;TW=null;const o=$('#mgo');if(o)o.remove()}
 function chest(){const c=3+Math.floor(Math.random()*5);S.chest=today();burst(32);p3play('bow');rw(3,c)}
+/* ---------- Semáforo y Torres: más minijuegos de memoria y reflejos ---------- */
+let SM=null,TW=null;
+const SML=[[1100,12],[850,14],[650,16],[480,18]];
+const smLv=()=>{let n=1;try{n=Math.min(4,Math.max(1,+localStorage.getItem('capsula_sml')||1))}catch(e){}return n};
+function smStart(lv){lv=Math.min(4,Math.max(1,lv||smLv()));mgClose();SM={lv,n:0,need:SML[lv-1][1],ms:SML[lv-1][0],st:'ready',tk:(SM&&SM.tk||0)+1,b:null};smDraw()}
+function smDraw(){const a=$('.app');let o=$('#mgo');if(!o){o=document.createElement('div');o.id='mgo';o.className='mgo smo';a.appendChild(o)}
+ const s=SM,end=s.st==='win'||s.st==='lose';
+ o.innerHTML=`<div class="mgh"><button class="x" onclick="mgClose()" aria-label="Cerrar">${ic('x',20)}</button><div class="tx"><h2>Semáforo · velocidad ${s.lv} de 4</h2><span class="mu">${s.st==='play'?s.n+' de '+s.need+' verdes':'Toca solo el verde'}</span></div></div>
+ <div class="smf" id="smf"><i class="smx"></i><b class="smy"></b>
+ ${s.st==='ready'?`<div class="mgw smc"><h2>¿Listo?</h2><p class="mu">Van a aparecer botones. Toca los <b style="color:#1f9d55">verdes</b>. Si tocas uno <b style="color:#d6334a">rojo</b>, pierdes.</p><button class="btn w" onclick="smGo()">Empezar</button></div>`:''}
+ ${s.st==='win'?`<div class="mgw smc"><h2>${s.lv<4?'¡Superaste esta velocidad!':'¡Reflejos de campeón!'}</h2><p class="mu">${s.need} verdes sin tocar ningún rojo</p>${s.lv<4?`<button class="btn w" onclick="smStart(${s.lv+1})">Más rápido</button>`:`<button class="btn w" onclick="smStart(1)">Jugar desde el inicio</button>`}<button class="btn s w" onclick="mgClose()">Salir</button></div>`:''}
+ ${s.st==='lose'?`<div class="mgw smc"><h2>¡Era rojo!</h2><p class="mu">Llevabas ${s.n} de ${s.need}. Inténtalo otra vez</p><button class="btn w" onclick="smStart(${s.lv})">Reintentar</button><button class="btn s w" onclick="mgClose()">Salir</button></div>`:''}
+ </div>`}
+function smGo(){SM.st='play';SM.n=0;smDraw();smNext(500)}
+function smNext(d){const tk=SM.tk;setTimeout(()=>{if(!SM||SM.tk!==tk||SM.st!=='play')return;smShow(tk)},d)}
+function smShow(tk){const f=$('#smf');if(!f)return;const red=Math.random()<.35,w=f.clientWidth,h=f.clientHeight,sz=76;
+ let x,y,t=0;do{x=Math.random()*(w-sz-20)+10;y=Math.random()*(h-sz-20)+10;t++}while(t<20&&Math.abs(x+sz/2-w/2)<50&&Math.abs(y+sz/2-h/2)<50);
+ const b=document.createElement('button');b.className='smb '+(red?'r':'g');b.style.cssText=`left:${x}px;top:${y}px;width:${sz}px;height:${sz}px`;b.setAttribute('aria-label',red?'Rojo, no lo toques':'Verde, tócalo');
+ b.onpointerdown=e=>{e.preventDefault();if(!SM||SM.tk!==tk||SM.st!=='play')return;b.remove();SM.b=null;
+  if(red){SM.st='lose';if(navigator.vibrate)try{navigator.vibrate(120)}catch(e){}smDraw()}
+  else{SM.n++;if(SM.n>=SM.need){SM.st='win';smWin();smDraw()}else{const p=$('.smo .mu');if(p)p.textContent=SM.n+' de '+SM.need+' verdes';smNext(180+Math.random()*320)}}};
+ f.appendChild(b);SM.b=b;
+ setTimeout(()=>{if(!SM||SM.tk!==tk||SM.st!=='play'||SM.b!==b)return;b.remove();SM.b=null;smNext(160+Math.random()*300)},SM.ms*(.85+Math.random()*.3))}
+function smWin(){burst(36);const lv=SM.lv;let d='';try{if(lv<4&&smLv()<=lv)localStorage.setItem('capsula_sml',String(lv+1));if(lv===4)localStorage.setItem('capsula_sml','1');d=localStorage.getItem('capsula_sm')}catch(e){}
+ if(d!==today()){try{localStorage.setItem('capsula_sm',today())}catch(e){}setTimeout(()=>rw(2+lv,2+lv),500)}}
+/* Torres: ordena los bloques de colores para que tus torres queden como las torres objetivo. */
+const TWL=[[3,3],[4,3],[5,3],[6,3]],TWC=['#F2B705','#C23FB5','#17B6C9','#E8662B','#6B4CD6','#3BAA5C'];
+function twStart(lv){lv=Math.min(4,Math.max(1,lv||twLv()));mgClose();const n=TWL[lv-1][0],cap=4;
+ const mk=()=>{const p=[[],[],[]];return p},tgt=mk(),cur=mk();
+ const cols=TWC.slice(0,n);cols.forEach((c,i)=>tgt[i%3].push(c));
+ cols.forEach(c=>cur[0].push(c));
+ // mezcla: movimientos válidos aleatorios desde el objetivo
+ for(let k=0;k<n*8;k++){const a=Math.floor(Math.random()*3),b=Math.floor(Math.random()*3);if(a!==b&&cur[a].length&&cur[b].length<cap)cur[b].push(cur[a].pop())}
+ // la fuente real parte del objetivo mezclado
+ const start=tgt.map(x=>x.slice());for(let k=0;k<n*10;k++){const a=Math.floor(Math.random()*3),b=Math.floor(Math.random()*3);if(a!==b&&start[a].length&&start[b].length<cap)start[b].push(start[a].pop())}
+ const same=()=>start.every((t,i)=>t.join()===tgt[i].join());if(same()&&start[0].length){start[1].push(start[0].pop())}
+ TW={lv,tgt,cur:start,sel:-1,moves:0,st:'play',cap};twDraw()}
+const twLv=()=>{let n=1;try{n=Math.min(4,Math.max(1,+localStorage.getItem('capsula_twl')||1))}catch(e){}return n};
+const twTower=(c,mini)=>`<span class="twb${mini?' m':''}" style="--c:${c}"><i></i><u></u></span>`;
+function twDraw(){const a=$('.app');let o=$('#mgo');if(!o){o=document.createElement('div');o.id='mgo';o.className='mgo two';a.appendChild(o)}
+ const t=TW,win=t.st==='win';
+ const peg=(arr,i,mini)=>`<button class="twp${!mini&&t.sel===i?' sel':''}" ${mini||win?'disabled':''} ${mini?'':`onclick="twTap(${i})" aria-label="Torre ${i+1}"`}><span class="twst">${arr.map((c,j)=>twTower(c,mini)).join('')}</span><span class="twbase"></span></button>`;
+ o.innerHTML=`<div class="mgh"><button class="x" onclick="mgClose()" aria-label="Cerrar">${ic('x',20)}</button><div class="tx"><h2>Torres · nivel ${t.lv} de 4</h2><span class="mu">Movimientos: ${t.moves}</span></div></div>
+ <div class="twz"><p class="twl">Torres objetivo</p><div class="twr tg">${t.tgt.map((a,i)=>peg(a,i,1)).join('')}</div>
+ <p class="twl">Tus torres · toca una torre y luego otra</p><div class="twr">${t.cur.map((a,i)=>peg(a,i,0)).join('')}</div></div>
+ ${win?`<div class="mgw"><h2>${t.lv<4?'¡Torres en orden!':'¡Maestro de las torres!'}</h2><p class="mu">Lo lograste en ${t.moves} movimientos</p>${t.lv<4?`<button class="btn w" onclick="twStart(${t.lv+1})">Siguiente nivel</button>`:`<button class="btn w" onclick="twStart(1)">Jugar desde el nivel 1</button>`}<button class="btn s w" onclick="mgClose()">Salir</button></div>`:`<button class="btn s w" onclick="twStart(${t.lv})">Reiniciar</button>`}`}
+function twTap(i){const t=TW;if(!t||t.st!=='play')return;
+ if(t.sel<0){if(t.cur[i].length){t.sel=i;twDraw()}return}
+ if(t.sel===i){t.sel=-1;twDraw();return}
+ if(t.cur[i].length>=t.cap){toast('Esa torre está llena');t.sel=-1;twDraw();return}
+ t.cur[i].push(t.cur[t.sel].pop());t.sel=-1;t.moves++;
+ if(t.cur.every((a,k)=>a.join()===t.tgt[k].join())){t.st='win';twWin()}twDraw()}
+function twWin(){burst(36);const lv=TW.lv;let d='';try{if(lv<4&&twLv()<=lv)localStorage.setItem('capsula_twl',String(lv+1));if(lv===4)localStorage.setItem('capsula_twl','1');d=localStorage.getItem('capsula_tw')}catch(e){}
+ if(d!==today()){try{localStorage.setItem('capsula_tw',today())}catch(e){}setTimeout(()=>rw(2+lv,2+lv),500)}}
 const H=3600e3;
 const QS=[
  {k:'dia',mood:1,t:()=>'¿Cómo te fue hoy, '+S.me.name+'?',o:[['Genial','¡Qué alegría! Cuéntale tu día a alguien que quieres',4],['Bien','Me alegra. Los días tranquilos también cuentan',3],['Regular','Te entiendo. Mañana es otra oportunidad y yo estoy contigo 🫶',2],['Mal','Ven, te doy un abrazo gigante Cuando quieras, me cuentas qué pasó.',1]]},
@@ -1994,7 +2060,11 @@ function caps(){
  <button class="btn s w" onclick="S.scr='group';S.gstep='join';render()">Unirme con código o enlace</button>
  ${mgCard()}
  ${plusLive()&&!isPlus()?`<p class="mu c">${S.families.length} de ${LIM.free.caps} cápsulas en el plan gratis</p>`:''}`}
-const mgCard=()=>`<section class="card"><div class="row sp" style="gap:12px"><div class="tx"><h3>Parejas de recuerdos</h3><span class="mu">5 niveles${S.posts.some(p=>['foto','dibujo'].includes(p.k))?' con '+(S.group?'las fotos de esta cápsula':'tus fotos'):''} · Lumis 1 vez al día</span></div><button class="btn" onclick="mgStart()">Jugar</button></div></section>`;
+const mgCard=()=>`<section class="card"><div class="mgcs"><h3>Juegos de memoria y reflejos</h3>
+ <div class="mrow"><div class="tx"><b>Parejas de recuerdos</b><span class="mu">5 niveles${S.posts.some(p=>['foto','dibujo'].includes(p.k))?' con '+(S.group?'las fotos de esta cápsula':'tus fotos'):''}</span></div><button class="btn" onclick="mgStart()">Jugar</button></div>
+ <div class="mrow"><div class="tx"><b>Semáforo</b><span class="mu">Toca solo el verde · 4 velocidades</span></div><button class="btn" onclick="smStart()">Jugar</button></div>
+ <div class="mrow"><div class="tx"><b>Torres</b><span class="mu">Ordena los bloques como el objetivo</span></div><button class="btn" onclick="twStart()">Jugar</button></div>
+ <span class="mu">Lumis 1 vez al día en cada juego</span></div></section>`;
 function capHome(){
  return `${qLine(qaToday(),"go('triv')",S.qd===dayKey()?'Ya respondiste · ver respuestas':'Pregunta de hoy')}
  <div class="duo"><button class="tile2" onclick="chooser()">${ic('pen',26)}<b>Escribir aquí</b><span class="mu">Se guarda en ${esc(S.group.name)}</span></button><button class="tile2" onclick="S.sub='recuerdos';soft()">${ic('image',26)}<b>Recuerdos</b><span class="mu">${S.posts.length} ${S.posts.length===1?'historia':'historias'}</span></button></div>
@@ -2051,7 +2121,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=96;
+const BUILD=98;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
