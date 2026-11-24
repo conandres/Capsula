@@ -117,6 +117,7 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
 .twtg .twb{height:14px;margin-top:4px;width:84%}.twtg .twb i{height:4px;top:-4px}.twtg .twb u{display:none}.twtg .twbase{height:5px;width:96%}
 .twr:not(.twtg) .twst{min-height:150px}.twr:not(.twtg) .twb{height:30px;margin-top:6px}.twr:not(.twtg) .twb i{height:7px;top:-7px}
 .twl{margin:8px 0 2px}
+.shi{display:grid!important;place-items:center;color:var(--pd);background:var(--tint-2)}
 </style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -786,10 +787,15 @@ function shopBuy(kind,id){cl();let p;
  if(kind==='acc'){const a=ACCS.find(x=>x.id===id);if(!a||owned(a))return;p=ACCP[id];if((S.lm||0)<p)return;S.lm-=p;S.unl.push(id);if(!S.wear.includes(id))wearPut(id)}
  else{const r=ROOMS.find(x=>x.id===id);if(!r||ownedRoom(id))return;p=r.p;if((S.lm||0)<p)return;S.lm-=p;S.unl.push('rm:'+id);S.rm=id}
  burst(26);p3play('cheer');toast('¡Listo! Ya es de '+S.pet.name+'');shopSave()}
+const SHP=120,SHMAX=2;
+function shieldBuy(){cl();if((S.sh||0)>=SHMAX||(S.lm||0)<SHP)return;S.lm-=SHP;S.sh=(S.sh||0)+1;burst(22);toast('¡Escudo listo! Cuida tu racha');shopSave()}
+function shieldAsk(){const n=S.sh||0;if(n>=SHMAX){toast('Ya tienes el máximo de escudos');return}if((S.lm||0)<SHP){toast('Te faltan '+(SHP-(S.lm||0))+' Lumis');return}
+ showSheet(`<div class="gd"><h2 style="text-align:center">Escudo de racha</h2><p class="mu c">Si un día no cuentas nada, el escudo protege tu racha. Cuesta ${LI} ${SHP}.</p><button class="btn w" onclick="shieldBuy()">Comprar</button><button class="btn s w" onclick="cl()">Ahora no</button></div>`)}
 function shopOpen(){S.tab='tienda';render();setTimeout(()=>{const e=$('#shop');if(e)e.scrollIntoView({behavior:'smooth',block:'center'})},60)}
 const shopHTML=()=>{return `<section class="card" id="shop"><div class="row sp"><h3>Tienda</h3><b class="pr">${LI} ${S.lm||0}</b></div>
 
  <b>Fondos del cuarto</b><div class="shr">${ROOMS.map(r=>{const o=ownedRoom(r.id),on=(S.rm||'')===r.id;return `<button class="${on?'on':''}" onclick="shopAsk('room','${r.id}')"><i style="background:${r.bg}"></i>${r.n}<small>${on?'Puesto':o?'Toca para usar':LI+' '+r.p}</small></button>`}).join('')}</div>
+ <b style="display:block;margin-top:14px">Protección</b><div class="shr"><button onclick="shieldAsk()"><i class="shi"><svg viewBox="0 0 24 24" width="34" height="34" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></i>Escudo de racha<small>${(S.sh||0)>=SHMAX?'Máximo':LI+' '+SHP+' · tienes '+(S.sh||0)}</small></button></div>
 </section>`};
 const closetHTML=()=>`<section class="card"><h3>Armario de ${esc(S.pet.name)}</h3><span class="mu">Desbloquea accesorios; una prenda por categoría</span>${closetGrid()}</section>`;
 const TEE='<path d="M21 10 L6 20 L13 33 L21 28 V56 H43 V28 L51 33 L58 20 L43 10 Q32 18 21 10Z"';
@@ -928,8 +934,8 @@ function applyPersonal(o){if(!o)return;
  if(o.soc===undefined)S.legacyStm=1;
  S.types=new Set(o.types||[]);S.wk=o.wk||null;S.unl=Array.isArray(o.unl)?o.unl.filter(x=>typeof x==='string'):[];S.wear=Array.isArray(o.wear)?o.wear.filter(x=>typeof x==='string').reduce((a,x)=>a.filter(y=>ACAT[y]!==ACAT[x]).concat(x),[]):[];S.favs=Array.isArray(o.favs)?o.favs.filter(x=>typeof x==='string').slice(-300):[];S.pt=Object.assign(PT0(),o.pt||{});S.pt.t=S.pt.t||Date.now();S.bub=null;
  const y=new Date(Date.now()-864e5).toDateString(),y2=new Date(Date.now()-1728e5).toDateString();S.posted=S.last===today();
- {const d=new Date(),m=new Date(d);m.setDate(d.getDate()-((d.getDay()+6)%7));const wk=m.toDateString();if(S.shW!==wk){S.shW=wk;S.sh=1}}
- if(!S.posted&&S.last!==y){if(S.last===y2&&S.streak>0&&S.sh>0){S.sh=0;S.last=y;setTimeout(()=>toast('Tu escudo salvó tu racha de '+S.streak+' días'),1800)}else S.streak=0}}
+ {const d=new Date(),m=new Date(d);m.setDate(d.getDate()-((d.getDay()+6)%7));const wk=m.toDateString();if(S.shW!==wk){S.shW=wk;S.sh=Math.max(S.sh||0,1)}}
+ if(!S.posted&&S.last!==y){if(S.last===y2&&S.streak>0&&S.sh>0){S.sh--;S.last=y;setTimeout(()=>toast('Tu escudo salvó tu racha de '+S.streak+' días'),1800)}else S.streak=0}}
 function legacy(){try{const o=JSON.parse(localStorage.getItem(LEGACY)||'null');if(o&&o.me&&o.me.name)return{pet:o.pet,petSet:o.petSet,xp:o.xp,streak:o.streak,last:o.last,chest:o.chest,mis:o.mis,petDone:o.petDone,inv:o.inv,perfect:o.perfect,types:o.types,pt:o.pt}}catch(e){}return null}
 async function logout(){try{if(window.google&&google.accounts)google.accounts.id.disableAutoSelect()}catch(e){}try{localStorage.removeItem(KEY);localStorage.removeItem('capsula_adm')}catch(e){}try{if(window.CLOUD&&CLOUD.signOut)await CLOUD.signOut()}catch(e){}try{const P=NP('FirebaseAuthentication');if(P)await P.signOut()}catch(e){}location.reload()}
 const BCOL=['#6B4CD6','#FF8FB8','#FFC15E','#5ED1B0','#7FB8FF'];function burst(n=28,em=['✦','●','✧','◆']){const a=$('.app');for(let i=0;i<n;i++){const e=document.createElement('span');e.className='cf';e.textContent=em[i%em.length];const dec=/^[✦●✧◆]$/.test(em[i%em.length]);e.style.cssText=`${dec?'color:'+BCOL[i%BCOL.length]+';':''}left:${50+(Math.random()-.5)*20}%;--dx:${(Math.random()-.5)*360}px;--dy:${-120-Math.random()*320}px;--r:${(Math.random()-.5)*720}deg;animation-delay:${Math.random()*.2}s`;a.appendChild(e);setTimeout(()=>e.remove(),1900)}}
@@ -2160,7 +2166,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=102;
+const BUILD=103;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
