@@ -119,11 +119,11 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
 .twl{margin:8px 0 2px}
 .shi{display:grid!important;place-items:center;color:var(--pd);background:var(--tint-2)}
 
-.cloud{position:absolute;top:10px;right:10px;max-width:58%;z-index:4;pointer-events:none}
+.cloud{position:absolute;top:10px;right:10px;max-width:66%;z-index:4;pointer-events:none;display:flex;flex-direction:column;align-items:flex-end}
 .cloud .bub{font-size:14px;padding:10px 14px;border-radius:22px;text-align:center;box-shadow:0 4px 14px #0002;border:0;background:#fffffff2;color:#2a2140}
 .cloud .bub::before{left:12px;top:auto;bottom:-14px;margin-left:0;width:11px;height:11px;border:0;background:#fffffff2;box-shadow:0 2px 6px #0002}
 .cloud .bub::after{left:2px;top:auto;bottom:-26px;margin-left:0;width:7px;height:7px;border:0;background:#fffffff2;box-shadow:0 2px 6px #0002}
-.qw{margin-top:10px}.qw:empty{display:none}
+.qw{margin-top:26px;pointer-events:auto}.qw:empty{display:none}.qw .qr{flex-direction:column;align-items:flex-end;gap:6px}.qw .qr button{padding:7px 12px;font-size:13px;box-shadow:0 3px 10px #0002}
 </style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -832,6 +832,8 @@ const closetItems=L=>`<div class="wl">${L.map(a=>{const un=owned(a),on=S.wear.in
  const tag=un?(on?'Puesto ✓':'Toca para ponerlo'):a.src==='ad'?LI+' '+ACCP[a.id]:a.src==='plus'?'Plus':a.src==='pago'?(BILLING.ok()?'🛍 Comprar':'🛍 Tienda · pronto'):a.u;
  return `<button class="wi ${on?'on':''} ${un||a.src?'':'lk'}" ${act}><span class="wic ${un?'':'dim'}">${accIc(a.id,48)}</span><span class="wtx"><b>${a.n}</b><small>${tag}</small></span></button>`}).join('')}</div>`;
 /* ---------- Cápsula Plus: límites, tienda y anuncios. Apagado para todos hasta que plusOn sea true ----------  */
+const CAPMAX=3;
+const capType=f=>GT[f.type]?f.type:'familia';
 const LIM={free:{caps:3,members:5,media:40},plus:{caps:999,members:999,media:400}};
 const MEDIA=['foto','dibujo','voz','video'];
 const plusLive=()=>!!CFG().plusOn;
@@ -865,9 +867,9 @@ const BILLING={ok:()=>!!BPL()&&!!CFG().billingOn,
  async buy(sku){if(!BILLING.ok()){toast('Las compras llegan pronto con Google Play.');return}
   try{const r=await BPL().purchase({productId:sku});await CLOUD.submitPurchase(sku,(r&&(r.purchaseToken||r.token))||'');cl();toast('¡Gracias! Estamos confirmando tu compra; tu Plus se activa en unos minutos.')}catch(e){toast('No se completó la compra. No se te cobró.')}}};
 function plusOpen(why){
- const R={caps:'Llegaste al máximo de '+LIM.free.caps+' cápsulas del plan gratis (creadas o a las que te uniste).',members:'Esa cápsula ya tiene '+LIM.free.members+' personas, el máximo del plan gratis.',media:'Esta cápsula llegó al espacio del plan gratis ('+LIM.free.media+' fotos, dibujos, videos y audios).',acc:'Ese accesorio es de Cápsula Plus.',col:'Elegir tus colores es de Cápsula Plus.'}[why]||'';
+ const R={members:'Esa cápsula ya tiene '+LIM.free.members+' personas, el máximo del plan gratis.',media:'Esta cápsula llegó al espacio del plan gratis ('+LIM.free.media+' fotos, dibujos, videos y audios).',acc:'Ese accesorio es de Cápsula Plus.',col:'Elegir tus colores es de Cápsula Plus.'}[why]||'';
  showSheet(`<h2>Cápsula Plus</h2>${R?`<p><b>${R}</b></p>`:''}
- <ul class="mu" style="padding-left:18px;line-height:1.7"><li>Cápsulas ilimitadas</li><li>Sin límite de personas en tus cápsulas</li><li>Más espacio: ${LIM.plus.media} fotos, dibujos, videos y audios por cápsula</li><li>Colores a tu gusto, sin límites</li><li>Accesorios exclusivos para tu mascota</li><li>Sin anuncios</li></ul>
+ <ul class="mu" style="padding-left:18px;line-height:1.7"><li>Sin límite de personas en tus cápsulas</li><li>Más espacio: ${LIM.plus.media} fotos, dibujos, videos y audios por cápsula</li><li>Colores a tu gusto, sin límites</li><li>Accesorios exclusivos para tu mascota</li><li>Sin anuncios</li></ul>
  <p class="mu">Tus recuerdos nunca se borran: si llegas a un límite solo no podrás añadir más hasta que liberes espacio o te pases a Plus.</p>
  ${BILLING.ok()?`<button class="btn w" onclick="BILLING.buy(SKU.anio)">Plus anual</button><button class="btn s w" onclick="BILLING.buy(SKU.mes)">Plus mensual</button><p class="mu">El precio final lo ves en Google Play antes de pagar. Cancelas cuando quieras desde Google Play.</p>`:'<button class="btn w" disabled>Próximamente en Google Play</button>'}
  <button class="btn s w" onclick="cl()">Ahora no</button>`)}
@@ -875,7 +877,7 @@ function plusSync(){if(!S.user||!window.CLOUD||!CLOUD.ready||!plusLive())return;
  S.families.forEach(f=>{if(f.ownerUid!==S.user.uid||!S.ent)return;const want=realPlus()?'plus':'free';if((f.plan||'free')!==want)CLOUD.syncPlan(f.id,want).then(()=>{f.plan=want}).catch(()=>{})})}
 function plusCard(){if(!plusLive())return'';const n=S.families.length;
  return `<div class="card"><h3>Cápsula Plus</h3><p>Tu plan: <b>${isPlus()?'Plus':'Gratis'}</b></p>
- ${isPlus()?'':`<p class="mu">Cápsulas: ${n} de ${LIM.free.caps} · hasta ${LIM.free.members} personas por cápsula.</p>`}
+ ${isPlus()?'':`<p class="mu">Hasta ${LIM.free.members} personas por cápsula.</p>`}
  <label class="lb" id="acl">Color de la app</label><div class="th" role="radiogroup" aria-labelledby="acl">${ACOL.map(x=>`<button class="thb ${S.accent===x.c&&isPlus()?'on':''}" role="radio" aria-checked="${S.accent===x.c&&isPlus()}" onclick="setAccent('${x.c}')"><span class="sw" style="background:${x.c}">${isPlus()?'':ic('lock',12,2.2)}</span>${x.n}</button>`).join('')}</div>
  ${S.accent&&isPlus()?'<button class="btn s w" onclick="setAccent(\'\')">Quitar color</button>':''}
  <button class="btn ${isPlus()?'s ':''}w" onclick="plusOpen('')">${isPlus()?'Ver mis ventajas':'Ver Cápsula Plus'}</button>
@@ -1172,7 +1174,7 @@ function groupScr(){
   <button class="opc" onclick="S.gstep='join';render()"><span class="ti">${ic('heart',24)}</span><span class="tx"><b>Unirme a una cápsula</b><span class="mu">Si alguien ya creó una, usa su código.</span></span></button>
   ${S.petSet||S.families.length?'':`<button class="lnk" onclick="soloGo()">Empezar solo con Mi mundo</button>`}`;
  if(S.gstep==='create')b=`${back}<h1>Crea tu cápsula</h1><label class="lb" id="gtl">¿Con quién juegas?</label>
-  <div class="gt" role="radiogroup" aria-labelledby="gtl">${Object.keys(GT).map(k=>`<button class="gtb ${S.gtype===k?'on':''}" role="radio" aria-checked="${S.gtype===k}" onclick="S.gname=$('#gname').value;S.gtype='${k}';render()"><b>${GT[k].n}</b><span class="mu">${GT[k].d}</span></button>`).join('')}</div>
+  <div class="gt" role="radiogroup" aria-labelledby="gtl">${Object.keys(GT).map(k=>`<button class="gtb ${S.gtype===k?'on':''}" role="radio" aria-checked="${S.gtype===k}" onclick="S.gname=$('#gname').value;S.gtype='${k}';render()"><b>${GT[k].n}</b><span class="mu">${S.families.some(f=>capType(f)===k)?'Ya tienes una':GT[k].d}</span></button>`).join('')}</div>
   <label class="lb" for="gname">Nombre de la cápsula</label>
   <input id="gname" class="in" maxlength="30" placeholder="${GT[S.gtype].ph}" value="${esc(S.gname)}" onkeydown="if(event.key==='Enter')mk()">
   <p class="err" id="err"></p>
@@ -1189,18 +1191,19 @@ function groupScr(){
   <button class="btn w" id="jnb" onclick="jn()">Unirme</button>`;
  return `<div class="ob">${b}</div>`}
 async function mk(){const b=$('#mkb');if(!b||b.disabled)return;
- if(plusLive()&&!isPlus()&&S.families.length>=LIM.free.caps){plusOpen('caps');return}
+ if(S.families.some(f=>capType(f)===S.gtype)){gerr('Ya tienes una cápsula de '+GT[S.gtype].n+'. Solo puedes tener una de cada tipo.');return}
+ if(S.families.length>=CAPMAX){gerr('Llegaste al máximo de '+CAPMAX+' cápsulas.');return}
  if(!navigator.onLine){gerr('Necesitas internet para crear el grupo.');return}
  b.disabled=true;b.textContent='Creando…';gerr('');
  try{await CLOUD.createFamily($('#gname').value.trim()||GT[S.gtype].dn,S.gtype);S.gname='';S.gstep='created';render()}
  catch(e){b.disabled=false;b.textContent='Crear grupo';gerr('No pudimos crear el grupo. Intenta de nuevo.')}}
 async function jn(){const b=$('#jnb'),c=$('#gc').value.trim().toUpperCase();if(!b||b.disabled)return;
- if(plusLive()&&!isPlus()&&S.families.length>=LIM.free.caps&&!S.families.some(f=>f.code===c)){plusOpen('caps');return}
+ if(S.families.length>=CAPMAX&&!S.families.some(f=>f.code===c)){gerr('Llegaste al máximo de '+CAPMAX+' cápsulas: una de familia, una de pareja y una de amigos.');return}
  if(c.length<4){gerr('Escribe el código completo.');return}
  if(!navigator.onLine){gerr('Necesitas internet para unirte.');return}
  b.disabled=true;b.textContent='Entrando…';gerr('');
  try{const r=await CLOUD.joinFamily(c);
-  if(r.err){b.disabled=false;b.textContent='Unirme';if(r.err==='members'){plusOpen('members');return}gerr(r.err==='full'?'Ese grupo es de pareja y ya tiene a sus dos personas.':'No encontramos ese código. Revisa que esté bien escrito.');return}
+  if(r.err){b.disabled=false;b.textContent='Unirme';if(r.err==='members'){plusOpen('members');return}if(r.err==='type'||r.err==='max'){gerr(r.err==='max'?'Llegaste al máximo de '+CAPMAX+' cápsulas.':'Ya tienes una cápsula de '+GT[r.t||'familia'].n+'. Solo puedes tener una de cada tipo.');return}gerr(r.err==='full'?'Ese grupo es de pareja y ya tiene a sus dos personas.':'No encontramos ese código. Revisa que esté bien escrito.');return}
   S.joinCode='';nextScr();toast('Ya eres parte de '+S.group.name+'')}
  catch(e){b.disabled=false;b.textContent='Unirme';gerr('No pudimos unirte. Revisa tu conexión e intenta de nuevo.')}}
 function soloGo(){S.solo=true;S.group=null;if(window.CLOUD&&CLOUD.ready)CLOUD.switchFamily(null);nextScr()}
@@ -1516,10 +1519,9 @@ function bubSay(t,o,q){S.bub={t,o:o||null,q:q||null};S.bubT=Date.now();petUI()}
 function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=greet(away);
  const lvl=Math.floor(S.xp/100),sz=150,sl=asleep();
  return `<section class="card hero">
-  <div class="room${sl?' night':''}${S.pt.clean<35?' dirty':''}${S.rm&&ownedRoom(S.rm)?' rm-'+S.rm:''}${exAway()?' exa exp-'+S.pt.ex.k:''}" id="room"><div id="bubw" class="cloud" aria-live="polite">${bubHTML()}</div>${exAway()?exScene():''}<div class="fl ${sl?'sleep':''}${exAway()?' away':''}" onclick="petClick()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div><button class="hang" onclick="wardOpen()" aria-label="Armario">${ic('hanger',22)}</button><div class="dirt" aria-hidden="true"><i></i><i></i><i></i><i></i><b>🪰</b><b>🪰</b><span class="stk"><u></u><u></u><u></u></span></div><button class="dchip" id="dirtc" ${S.pt.clean<35&&!S.tool?'':'hidden'} onclick="toolSet(\'bath\')">Necesito un baño</button></div>
+  <div class="room${sl?' night':''}${S.pt.clean<35?' dirty':''}${S.rm&&ownedRoom(S.rm)?' rm-'+S.rm:''}${exAway()?' exa exp-'+S.pt.ex.k:''}" id="room"><div class="cloud"><div id="bubw" aria-live="polite">${bubHTML()}</div><div id="qrw" class="qw">${qrHTML()}</div></div>${exAway()?exScene():''}<div class="fl ${sl?'sleep':''}${exAway()?' away':''}" onclick="petClick()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div><button class="hang" onclick="wardOpen()" aria-label="Armario">${ic('hanger',22)}</button><div class="dirt" aria-hidden="true"><i></i><i></i><i></i><i></i><b>🪰</b><b>🪰</b><span class="stk"><u></u><u></u><u></u></span></div><button class="dchip" id="dirtc" ${S.pt.clean<35&&!S.tool?'':'hidden'} onclick="toolSet(\'bath\')">Necesito un baño</button></div>
   ${pswHTML()}<h2>${esc(S.pet.name)}</h2>
   <button class="wal" onclick="shopOpen()" aria-label="Tus Lumis">${LI} <span class="cnt" data-n="${S.lm||0}">${S.lm||0}</span> Lumis</button>
-  <div id="qrw" class="bw qw">${qrHTML()}</div>
   <div class="stw" id="stw">${statsHTML()}</div>
   <div class="tray" id="tray">${trayHTML()}</div>
   <div class="mu">${XI} XP del nivel: ${S.xp%100} de 100</div></section>`}
@@ -2108,10 +2110,10 @@ function caps(){
  return `<div class="spch"><h2>Mis cápsulas</h2><span class="tag spc shr">${ic('users',14)}Compartido</span></div>
  <p class="mu">Tus espacios compartidos con las personas que quieres. Lo que escribes en Mi mundo no se mezcla con ellos.</p>
  ${L.length?L.map(f=>{const t=GT[f.type]?f.type:'familia';return `<button class="cpc" onclick="openCap('${esc(f.id)}')"><span class="cvs amb-${t}"${f.cover?` style="background-image:url('${okCover(f.cover)}');background-size:cover;background-position:center"`:''}>${f.cover?'':esc(String(f.name||'?').trim().charAt(0).toUpperCase())}</span><span class="tx"><b>${esc(f.name)}</b><span class="mu">${GT[t].n}</span></span>${ic('back',18).replace('class="ic"','class="ic" style="transform:rotate(180deg)"')}</button>`}).join(''):`<div class="card c">${ic('caps',48)}<h3>Aún no tienes cápsulas</h3><p class="mu">Crea una con quien quieras o únete con un código.</p></div>`}
- <button class="btn w" onclick="S.gname='';S.scr='group';S.gstep='create';render()">${ic('plus',18)} Crear una cápsula</button>
- <button class="btn s w" onclick="S.scr='group';S.gstep='join';render()">Unirme con código o enlace</button>
+ ${S.families.length>=CAPMAX?'<p class="mu c">Tienes tus 3 cápsulas: familia, pareja y amigos.</p>':`<button class="btn w" onclick="S.gname='';S.scr='group';S.gstep='create';render()">${ic('plus',18)} Crear una cápsula</button>
+ <button class="btn s w" onclick="S.scr='group';S.gstep='join';render()">Unirme con código o enlace</button>`}
  ${mgCard()}
- ${plusLive()&&!isPlus()?`<p class="mu c">${S.families.length} de ${LIM.free.caps} cápsulas en el plan gratis</p>`:''}`}
+`}
 const mgCard=()=>`<section class="card"><div class="mgcs"><h3>Juegos de memoria y reflejos</h3>
  <div class="mrow"><div class="tx"><b>Parejas de recuerdos</b><span class="mu">5 niveles${S.posts.some(p=>['foto','dibujo'].includes(p.k))?' con '+(S.group?'las fotos de esta cápsula':'tus fotos'):''}</span></div><button class="btn" onclick="mgStart()">Jugar</button></div>
  <div class="mrow"><div class="tx"><b>Semáforo</b><span class="mu">Toca solo el verde · 4 velocidades</span></div><button class="btn" onclick="smStart()">Jugar</button></div>
@@ -2173,7 +2175,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=104;
+const BUILD=105;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
@@ -2340,7 +2342,7 @@ window.APP={
  signedOut(){resetPersonal();S.user=null;S.cloudErr='';S.scr=S.u13?'under13':'welcome';cl();render()},
  applyUser(d,u){resetPersonal();try{Object.keys(localStorage).filter(k=>/^capsula_ai/.test(k)).forEach(k=>localStorage.removeItem(k))}catch(e){}S.user=u;S.me.name=String(d.name||u.name||'Amigo').slice(0,24);S.me.ln=String(d.ln||'').slice(0,24);S.nameAt=d.nameAt&&d.nameAt.toMillis?d.nameAt.toMillis():Number(d.nameAt)||0;S.nameP=0;S.me.email=u.email;S.me.pic=u.photo;applyPersonal(d)},
  families(l){S.families=l},
- plusOn:()=>plusLive(),limits:()=>LIM.free,ent(e){S.ent=e;try{applyAccent()}catch(x){}plusSync();soft()},
+ typeTaken:(t,fid)=>S.families.some(f=>f.id!==fid&&capType(f)===(GT[t]?t:'familia')),plusOn:()=>plusLive(),limits:()=>LIM.free,ent(e){S.ent=e;try{applyAccent()}catch(x){}plusSync();soft()},
  setGroup(g){S.group=g?{id:g.id,name:g.name,code:g.code,ownerUid:g.ownerUid,type:g.type||'familia',plan:g.plan||'free'}:null},
  kicked(fid){S.families=S.families.filter(f=>f.id!==fid);if(S.group&&S.group.id===fid){S.group=null;S.members={};S.posts=[];S.sub='inicio';const n=S.families[0];if(n)CLOUD.switchFamily(n.id);go('caps')}toast('Ya no estás en esa cápsula.');render()},
  group(g){if(S.group&&S.group.id===g.id){Object.assign(S.group,{name:g.name,code:g.code,ownerUid:g.ownerUid,type:g.type||'familia',plan:g.plan||'free',cover:g.cover||''});S.families=S.families.map(f=>f.id===g.id?{...f,name:g.name,plan:g.plan||'free',cover:g.cover||''}:f);soft()}},

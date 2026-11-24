@@ -239,6 +239,8 @@ function start() {
   }
 
   CLOUD.createFamily = async (name, type) => {
+    if (famIds.length >= 3) throw new Error('max');
+    if (A.typeTaken && A.typeTaken(TYPES.includes(type) ? type : 'familia', '')) throw new Error('type');
     let withType = TYPES.includes(type);
     for (let i = 0; i < 6; i++) {
       const code = genCode(), fref = doc(collection(db, 'families')), b = writeBatch(db);
@@ -266,6 +268,7 @@ function start() {
     const fid = cs.data().familyId;
     if (typeof fid !== 'string' || !SAFE_ID.test(fid)) return { err: 'notfound' };
     const wasIn = famIds.includes(fid);
+    if (!wasIn && famIds.length >= 3) return { err: 'max' };
     if (!wasIn) {
       const b = writeBatch(db);
       b.set(doc(db, 'families', fid, 'members', me.uid), memberData(code));
@@ -275,6 +278,15 @@ function start() {
     const fs = await getDoc(doc(db, 'families', fid));
     if (!fs.exists()) return { err: 'notfound' };
     const fam = pick(fid, fs.data());
+    if (!wasIn && A.typeTaken && A.typeTaken(fam.type || 'familia', fid)) {
+      /* Una cápsula por tipo: si ya tienes una de este tipo, se revierte la unión. */
+      const b = writeBatch(db);
+      b.delete(doc(db, 'families', fid, 'members', me.uid));
+      b.set(userRef(), { familyIds: arrayRemove(fid) }, { merge: true });
+      await b.commit();
+      famIds = famIds.filter(i => i !== fid);
+      return { err: 'type', t: fam.type || 'familia' };
+    }
     if (!wasIn && A.plusOn && A.plusOn() && fam.plan !== 'plus') {
       /* Límite de miembros del plan gratis (5). Si se pasa, se revierte la unión. */
       const cnt = (await getCountFromServer(collection(db, 'families', fid, 'members'))).data().count;
