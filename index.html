@@ -95,6 +95,20 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
 .twb{position:relative;display:block;width:78%;height:38px;background:var(--c);border-radius:6px 6px 4px 4px;margin-top:8px}.twb i{position:absolute;left:-8%;right:-8%;top:-8px;height:9px;background:var(--c);filter:brightness(.82);border-radius:6px 6px 2px 2px}.twb u{position:absolute;left:42%;bottom:0;width:16%;height:55%;background:#2b1b2e;border-radius:8px 8px 0 0}
 .twb.m{height:18px;margin-top:5px}.twb.m i{height:5px;top:-5px}
 .twbase{display:block;width:92%;height:8px;background:#b79a98;border-radius:4px}
+
+.card .mu a,.pfl a{display:inline-block;padding:11px 4px}.wal{min-height:40px}
+.wal.bumpw{animation:bump .6s}
+.btn,.tile2,.cpc{transition:transform .14s ease,box-shadow .2s ease,filter .2s ease}.tile2:active,.cpc:active{transform:scale(.97)}
+.card{transition:box-shadow .25s ease}
+.days span.on{animation:dpop .5s backwards}.days span.on:nth-child(1){animation-delay:.05s}.days span.on:nth-child(2){animation-delay:.1s}.days span.on:nth-child(3){animation-delay:.15s}.days span.on:nth-child(4){animation-delay:.2s}.days span.on:nth-child(5){animation-delay:.25s}.days span.on:nth-child(6){animation-delay:.3s}.days span.on:nth-child(7){animation-delay:.35s}
+@keyframes dpop{0%{transform:scale(.4);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+.twb.nw{animation:twd .35s cubic-bezier(.3,1.4,.5,1)}.twp.sel .twb:last-child{transform:translateY(-10px);transition:transform .2s}
+@keyframes twd{0%{transform:translateY(-26px);opacity:.3}100%{transform:none;opacity:1}}
+.twp:active{transform:scale(.97)}.mgo{animation:fi .25s}.mgw{animation:wpop .4s cubic-bezier(.3,1.4,.5,1)}
+@keyframes wpop{0%{transform:scale(.88);opacity:0}100%{transform:none;opacity:1}}
+.smc.mgw{animation:none}
+.mgc.ok{animation:okp .45s}@keyframes okp{40%{transform:scale(1.08)}}
+@media (prefers-reduced-motion:reduce){.days span.on,.twb.nw,.mgw,.mgc.ok,.wal.bumpw{animation:none}}
 </style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1199,14 +1213,19 @@ function shell(){return `<div class="top" id="hd">${hdr()}</div><main id="mn">${
  <button data-t="perfil" onclick="go('perfil')">${ic('user')}Perfil</button>
 </nav>`}
 function navSync(){document.querySelectorAll('nav [data-t]').forEach(b=>{const on=b.dataset.t===NK();b.classList.toggle('on',on);on?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')})}
+let CNT=null;
+function cntAnim(){const e=document.querySelector('.cnt');if(!e)return;const n=+e.dataset.n;if(CNT===null||CNT===n){CNT=n;return}
+ const from=CNT;CNT=n;if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const w=e.closest('.wal');if(w){w.classList.remove('bumpw');void w.offsetWidth;w.classList.add('bumpw')}
+ const t0=performance.now(),d=Math.min(900,300+Math.abs(n-from)*12);e.textContent=from;
+ (function f(t){const k=Math.min(1,(t-t0)/d),v=Math.round(from+(n-from)*(1-Math.pow(1-k,3)));e.textContent=v;if(k<1)requestAnimationFrame(f)})(t0)}
 function render(){try{socUpd()}catch(e){}
  checkUnl();save();
- if(S.scr==='main'&&$('#mn')){$('#mn').innerHTML=VIEW[S.tab]();$('#hd').innerHTML=hdr();navSync();p3mount();psFill();return}
+ if(S.scr==='main'&&$('#mn')){$('#mn').innerHTML=VIEW[S.tab]();$('#hd').innerHTML=hdr();navSync();p3mount();psFill();cntAnim();return}
  $('#scr').innerHTML=({boot,welcome,deleted,under13,legal:legalScr,group:groupScr,pet:petScr,main:shell})[S.scr]();
  if(S.scr==='welcome')bindCr();
  if(S.scr==='main'){navSync();enterAnim($('#mn'));p3mount()}
  if(S.scr==='pet')p3mount()
- psFill();
+ psFill();cntAnim();
  const key=S.scr+':'+S.gstep;if(key!==render.k){render.k=key;if(S.scr==='group'||S.scr==='pet')enterAnim($('.ob'))}
 }
 function go(t){if(t==='mundo')spaceTo(null);S.tab=t;render();if(t==='tienda')guideTip('shop');if(t==='mundo')guideAuto('mundo');if(t==='cap')guideAuto('cap');const mn=$('#mn');if(mn){mn.scrollTop=0;enterAnim(mn)}if(t==='mundo')setTimeout(()=>petIdle(true),4000)}
@@ -1412,7 +1431,7 @@ const twLv=()=>{let n=1;try{n=Math.min(4,Math.max(1,+localStorage.getItem('capsu
 const twTower=(c,mini)=>`<span class="twb${mini?' m':''}" style="--c:${c}"><i></i><u></u></span>`;
 function twDraw(){const a=$('.app');let o=$('#mgo');if(!o){o=document.createElement('div');o.id='mgo';o.className='mgo two';a.appendChild(o)}
  const t=TW,win=t.st==='win';
- const peg=(arr,i,mini)=>`<button class="twp${!mini&&t.sel===i?' sel':''}" ${mini||win?'disabled':''} ${mini?'':`onclick="twTap(${i})" aria-label="Torre ${i+1}"`}><span class="twst">${arr.map((c,j)=>twTower(c,mini)).join('')}</span><span class="twbase"></span></button>`;
+ const peg=(arr,i,mini)=>`<button class="twp${!mini&&t.sel===i?' sel':''}" ${mini||win?'disabled':''} ${mini?'':`onclick="twTap(${i})" aria-label="Torre ${i+1}"`}><span class="twst">${arr.map((c,j)=>twTower(c,mini).replace('class="twb',!mini&&t.last===i&&j===arr.length-1?'class="twb nw':'class="twb')).join('')}</span><span class="twbase"></span></button>`;
  o.innerHTML=`<div class="mgh"><button class="x" onclick="mgClose()" aria-label="Cerrar">${ic('x',20)}</button><div class="tx"><h2>Torres · nivel ${t.lv} de 4</h2><span class="mu">Movimientos: ${t.moves}</span></div></div>
  <div class="twz"><p class="twl">Torres objetivo</p><div class="twr tg">${t.tgt.map((a,i)=>peg(a,i,1)).join('')}</div>
  <p class="twl">Tus torres · toca una torre y luego otra</p><div class="twr">${t.cur.map((a,i)=>peg(a,i,0)).join('')}</div></div>
@@ -1421,7 +1440,7 @@ function twTap(i){const t=TW;if(!t||t.st!=='play')return;
  if(t.sel<0){if(t.cur[i].length){t.sel=i;twDraw()}return}
  if(t.sel===i){t.sel=-1;twDraw();return}
  if(t.cur[i].length>=t.cap){toast('Esa torre está llena');t.sel=-1;twDraw();return}
- t.cur[i].push(t.cur[t.sel].pop());t.sel=-1;t.moves++;
+ t.cur[i].push(t.cur[t.sel].pop());t.sel=-1;t.last=i;t.moves++;
  if(t.cur.every((a,k)=>a.join()===t.tgt[k].join())){t.st='win';twWin()}twDraw()}
 function twWin(){burst(36);const lv=TW.lv;let d='';try{if(lv<4&&twLv()<=lv)localStorage.setItem('capsula_twl',String(lv+1));if(lv===4)localStorage.setItem('capsula_twl','1');d=localStorage.getItem('capsula_tw')}catch(e){}
  if(d!==today()){try{localStorage.setItem('capsula_tw',today())}catch(e){}setTimeout(()=>rw(2+lv,2+lv),500)}}
@@ -1464,7 +1483,7 @@ function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=gr
  return `<section class="card hero">
   <div class="room${sl?' night':''}${S.pt.clean<35?' dirty':''}${S.rm&&ownedRoom(S.rm)?' rm-'+S.rm:''}${exAway()?' exa exp-'+S.pt.ex.k:''}" id="room">${exAway()?exScene():''}<div class="fl ${sl?'sleep':''}${exAway()?' away':''}" onclick="petClick()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div><button class="hang" onclick="wardOpen()" aria-label="Armario">${ic('hanger',22)}</button><div class="dirt" aria-hidden="true"><i></i><i></i><i></i><i></i><b>🪰</b><b>🪰</b><span class="stk"><u></u><u></u><u></u></span></div><button class="dchip" id="dirtc" ${S.pt.clean<35&&!S.tool?'':'hidden'} onclick="toolSet(\'bath\')">Necesito un baño</button></div>
   ${pswHTML()}<h2>${esc(S.pet.name)}</h2>
-  <button class="wal" onclick="shopOpen()" aria-label="Tus Lumis">${LI} ${S.lm||0} Lumis</button>
+  <button class="wal" onclick="shopOpen()" aria-label="Tus Lumis">${LI} <span class="cnt" data-n="${S.lm||0}">${S.lm||0}</span> Lumis</button>
   <div class="mu">${STG[stg()]} · nivel ${lvl+1} · crece poco a poco</div>
   <div id="bubw" class="bw" aria-live="polite">${bubHTML()}</div>
   <div class="stw" id="stw">${statsHTML()}</div>
@@ -1964,7 +1983,7 @@ async function ownerGo(uid){const g=S.group,m=S.members[uid]||{};if(!g)return;bu
 function setSeen(v){S.showSeen=!!v;save();toast(v?'Ahora se ve cuando estás activo':'Ya no se ve cuando estás activo')}
 function perfil(){
  return `<div class="spch"><h2>Perfil</h2></div>
- <div class="card"><div class="pfc">${pfAv()}<span class="tx"><b>${esc(S.me.name)}</b><span class="mu" style="overflow-wrap:anywhere">${esc(S.user?S.user.email:'')}</span></span></div>
+ <div class="card"><div class="pfc">${pfAv()}<span class="tx"><b>${esc(S.me.name)}</b><span class="mu" style="overflow-wrap:anywhere">${esc((S.user&&S.user.email)||'')}</span></span></div>
  ${nameForm()}</div>
  <div class="card"><label class="lb" id="thl">Apariencia</label>
  <div class="th" role="radiogroup" aria-labelledby="thl">${THEMES.map(t=>`<button class="thb ${S.theme===t.id?'on':''}" role="radio" aria-checked="${S.theme===t.id}" onclick="setTheme('${t.id}')"><span class="sw" style="background:${t.bg}"><i style="background:${t.pr}"></i></span>${t.n}</button>`).join('')}</div>
@@ -2121,7 +2140,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=98;
+const BUILD=99;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
