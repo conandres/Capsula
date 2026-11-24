@@ -124,6 +124,7 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
 .cloud .bub::before{left:12px;top:auto;bottom:-14px;margin-left:0;width:11px;height:11px;border:0;background:#fffffff2;box-shadow:0 2px 6px #0002}
 .cloud .bub::after{left:2px;top:auto;bottom:-26px;margin-left:0;width:7px;height:7px;border:0;background:#fffffff2;box-shadow:0 2px 6px #0002}
 .qw{margin-top:26px;pointer-events:auto}.qw:empty{display:none}.qw .qr{flex-direction:column;align-items:flex-end;gap:6px}.qw .qr button{padding:7px 12px;font-size:13px;box-shadow:0 3px 10px #0002}
+.wrim{width:100%;max-width:260px;aspect-ratio:9/16;border-radius:18px;margin:10px auto 14px;display:block;box-shadow:0 8px 24px #0003}.wrt{display:inline-flex;background:var(--tint-2);border-radius:14px;padding:4px;gap:4px}.wrt button{border:0;background:none;padding:8px 18px;border-radius:11px;font:inherit;font-weight:700;color:var(--pd);cursor:pointer}.wrt button.on{background:#fff;box-shadow:0 2px 8px #0002}
 </style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1355,6 +1356,7 @@ function mundo(){
  <div class="spch"><h2>Mi mundo</h2>${spaceTag()}</div>
  ${heroHTML()}
  ${socCard()}
+ ${wrapCard()}
  ${memCard()}
  ${S.chest===today()?`<section class="card c"><span class="mu">Cofre de hoy abierto. Vuelve mañana por otro</span></section>`:`<section class="card c hero"><div class="chest">${ic('gift',44,1.6)}</div><h3>¡${esc(S.pet.name)} te trajo un regalo!</h3><button class="btn" onclick="chest()">Abrir cofre</button></section>`}
  ${streakCard()}
@@ -1469,6 +1471,39 @@ function twTap(i){const t=TW;if(!t||t.st!=='play')return;
  if(t.cur.every((a,k)=>a.join()===t.tgt[k].join())){t.st='win';twWin()}twDraw()}
 function twWin(){burst(36);const lv=TW.lv;let d='';try{if(lv<4&&twLv()<=lv)localStorage.setItem('capsula_twl',String(lv+1));if(lv===4)localStorage.setItem('capsula_twl','1');d=localStorage.getItem('capsula_tw')}catch(e){}
  if(d!==today()){try{localStorage.setItem('capsula_tw',today())}catch(e){}setTimeout(()=>rw(2+lv,2+lv),500)}}
+/* ---------- Wrapped: tu semana o tu año en una imagen para compartir ---------- */
+let WR='sem';
+function wrapData(per){const cut=Date.now()-(per==='sem'?7:365)*864e5,mine=S.posts.filter(p=>p.a==='me'&&p.ts>cut&&TY[p.k]);
+ const by={},days=new Set(),wd=[0,0,0,0,0,0,0];mine.forEach(p=>{by[p.k]=(by[p.k]||0)+1;const d=new Date(p.ts);days.add(d.toDateString());wd[(d.getDay()+6)%7]++});
+ const top=Object.entries(by).sort((a,b)=>b[1]-a[1])[0],DN=['lunes','martes','miércoles','jueves','viernes','sábado','domingo'],bi=wd.indexOf(Math.max(...wd));
+ return {per,n:mine.length,top:top?TY[top[0]].l.toLowerCase()+(top[1]>1?'s':''):'',topN:top?top[1]:0,days:days.size,best:mine.length?DN[bi]:'',streak:S.streak||0,lvl:Math.floor((S.xp||0)/100)+1,pet:S.pet.name,kind:S.pet.kind,wear:S.wear||[],place:S.group?S.group.name:'Mi mundo',who:S.me.name||''}}
+const wrapCount=()=>S.posts.filter(p=>p.a==='me'&&TY[p.k]).length;
+function wrapSVG(d){const yr=d.per==='an',t=yr?'Tu año en Cápsula':'Tu semana en Cápsula',row=(y,big,txt)=>`<text x="48" y="${y}" font-family="sans-serif" font-size="64" font-weight="800" fill="#fff">${esc(String(big))}</text><text x="${48+String(big).length*38+22}" y="${y}" font-family="sans-serif" font-size="26" font-weight="600" fill="#fff" opacity=".92">${esc(txt)}</text>`;
+ const pic=snapImg(d.kind,d.wear)||'',pc=pic?pic.replace('x="150" y="206" width="300" height="270"','x="110" y="120" width="320" height="288"'):'';
+ return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 960" width="540" height="960"><defs><linearGradient id="wg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4c2fc4"/><stop offset=".6" stop-color="#7a4bd8"/><stop offset="1" stop-color="#d4478f"/></linearGradient></defs>
+ <rect width="540" height="960" fill="url(#wg)"/><circle cx="470" cy="70" r="150" fill="#fff" opacity=".07"/><circle cx="40" cy="560" r="190" fill="#fff" opacity=".06"/>
+ <text x="48" y="96" font-family="sans-serif" font-size="22" font-weight="700" fill="#fff" opacity=".8">${esc(d.place.toUpperCase())}</text>
+ <text x="48" y="150" font-family="sans-serif" font-size="38" font-weight="800" fill="#fff">${t}</text>
+ <svg x="0" y="150" width="540" height="420" viewBox="0 0 540 420"><ellipse cx="270" cy="372" rx="120" ry="16" fill="#000" opacity=".18"/>${pc?pc.replace('y="120"','y="70"'):''}</svg>
+ <text x="270" y="598" text-anchor="middle" font-family="sans-serif" font-size="26" font-weight="700" fill="#fff">${esc(d.pet)} · nivel ${d.lvl}</text>
+ ${row(690,d.n,d.n===1?'historia contada':'historias contadas')}
+ ${row(768,d.days,d.days===1?'día con recuerdos':'días con recuerdos')}
+ ${row(846,d.streak,d.streak===1?'día de racha':'días de racha')}
+ <text x="48" y="918" font-family="sans-serif" font-size="22" font-weight="700" fill="#fff" opacity=".85">${d.top?'Lo tuyo: '+esc(d.top)+(d.best?' · tu día fuerte, el '+d.best:''):'Cápsula · historias con tu gente'}</text></svg>`}
+const wrapURL=d=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(wrapSVG(d));
+function wrapOpen(per){if(per)WR=per;const d=wrapData(WR);
+ showSheet(`<div class="gd" style="text-align:center"><h2>Tu resumen</h2><div class="wrt" role="tablist"><button class="${WR==='sem'?'on':''}" role="tab" aria-selected="${WR==='sem'}" onclick="wrapOpen('sem')">Semana</button><button class="${WR==='an'?'on':''}" role="tab" aria-selected="${WR==='an'}" onclick="wrapOpen('an')">Año</button></div>
+ ${d.n?`<img id="wrimg" class="wrim" alt="Tu resumen de Cápsula" src="${wrapURL(d)}"><button class="btn w" onclick="wrapShare()">Compartir</button>`:`<p class="mu" style="margin:18px 0">Aún no hay historias ${WR==='sem'?'esta semana':'este año'}. Cuenta una y aparecerá aquí.</p>`}</div>`);
+ if(d.n)wrapFix(d,0)}
+function wrapFix(d,n){if(n>8)return;if(snapImg(d.kind,d.wear)){const im=$('#wrimg');if(im)im.src=wrapURL(d)}else setTimeout(()=>wrapFix(d,n+1),700)}
+async function wrapShare(){const d=wrapData(WR),txt='Mi '+(WR==='sem'?'semana':'año')+' en Cápsula. '+appText();
+ try{const img=new Image(),u=URL.createObjectURL(new Blob([wrapSVG(d)],{type:'image/svg+xml'}));await new Promise((ok,no)=>{img.onload=ok;img.onerror=no;img.src=u});
+  const c=document.createElement('canvas');c.width=1080;c.height=1920;c.getContext('2d').drawImage(img,0,0,1080,1920);URL.revokeObjectURL(u);
+  const blob=await new Promise(r=>c.toBlob(r,'image/png')),f=new File([blob],'mi-resumen-capsula.png',{type:'image/png'});
+  if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],text:txt});return}catch(e){if(e&&e.name==='AbortError')return}}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mi-resumen-capsula.png';document.body.appendChild(a);a.click();a.remove();toast('Imagen guardada. Súbela a tus historias')}
+ catch(e){if(navigator.share){try{await navigator.share({title:'Cápsula',text:txt});return}catch(e){}}copy(txt)}}
+const wrapCard=()=>wrapCount()?`<section class="card wrc"><div class="row" style="gap:12px;align-items:center"><div class="tx"><b>Tu resumen de la semana</b><span class="mu">Una imagen lista para compartir</span></div><button class="btn" onclick="wrapOpen('sem')">Ver</button></div></section>`:'';
 /* ---------- Recuerdo de hoy, racha de la cápsula y resumen semanal ---------- */
 function memCard(){const L=S.posts.filter(p=>TY[p.k]&&!isBlk(p.a)&&p.ts&&Date.now()-p.ts>25*864e5);if(!L.length)return'';
  let h=0;for(const c of dayKey())h=(h*31+c.charCodeAt(0))>>>0;const p=L[h%L.length],d=Math.floor((Date.now()-p.ts)/864e5),t=d>=60?'hace '+Math.round(d/30)+' meses':'hace '+d+' días';
@@ -2120,7 +2155,7 @@ const mgCard=()=>`<section class="card"><div class="mgcs"><h3>Juegos de memoria 
  <div class="mrow"><div class="tx"><b>Torres</b><span class="mu">Ordena los bloques como el objetivo</span></div><button class="btn" onclick="twStart()">Jugar</button></div>
 </div></section>`;
 function capHome(){
- return `${famCard()}${memCard()}${qLine(qaToday(),"go('triv')",S.qd===dayKey()?'Ya respondiste · ver respuestas':'Pregunta de hoy')}
+ return `${famCard()}${wrapCard()}${memCard()}${qLine(qaToday(),"go('triv')",S.qd===dayKey()?'Ya respondiste · ver respuestas':'Pregunta de hoy')}
  <div class="duo"><button class="tile2" onclick="chooser()">${ic('pen',26)}<b>Escribir aquí</b><span class="mu">Se guarda en ${esc(S.group.name)}</span></button><button class="tile2" onclick="S.sub='recuerdos';soft()">${ic('image',26)}<b>Recuerdos</b><span class="mu">${S.posts.length} ${S.posts.length===1?'historia':'historias'}</span></button></div>
  <div class="duo"><button class="tile2" onclick="S.sub='cartas';soft()">${ic('mail',26)}<b>Cartas</b><span class="mu">${S.posts.filter(p=>p.k==='carta').length} escritas</span></button><button class="tile2 off" disabled aria-disabled="true">${ic('chat',26)}<b>Conversaciones</b><span class="tag soon">Pronto</span></button></div>
  ${mgCard()}
@@ -2175,7 +2210,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=105;
+const BUILD=106;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
