@@ -110,6 +110,7 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
 .mgc.ok{animation:okp .45s}@keyframes okp{40%{transform:scale(1.08)}}
 @media (prefers-reduced-motion:reduce){.days span.on,.twb.nw,.mgw,.mgc.ok,.wal.bumpw{animation:none}}
 .hw2{padding:0 12px;font-size:14px}.brand{min-width:0}
+.memc .memi{width:52px;height:52px;border-radius:14px;object-fit:cover;flex:none}.memt{display:grid;place-items:center;background:var(--tint-2);color:var(--pd)}.memc .tx{min-width:0}.memc b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.famc{background:var(--soft)}.shl{color:var(--pd);vertical-align:-3px;margin-left:6px}
 </style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -904,7 +905,7 @@ try{const q=new URLSearchParams(location.search),c=q.get('codigo'),sf=v=>String(
  if(c||rf||de)history.replaceState(null,'',location.pathname)}catch(e){}
 
 /* Lo personal (mascota, corazones, racha...) viaja a la nube; la copia local sirve de respaldo sin internet */
-const personal=()=>({name:S.me.name,ln:S.me.ln||'',pet:S.pet,petSet:S.petSet,xp:S.xp,lm:S.lm||0,lmT:S.lmT||0,cap:S.cap||null,rm:S.rm||'',streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,favs:S.favs||[],best:S.best,total:S.total,types:[...S.types],pt:S.pt,others:S.others||[],solo:S.solo,theme:S.theme,showSeen:S.showSeen,birth:S.birth,legal:S.legal,blk:S.blk,refC:S.refC,invD:S.invD,soc:S.soc||0,qd:S.qd,qaN:S.qaN,fpR:S.fpR||{},fg:S.fg||0,wkG:S.wkG||'',accent:S.accent||'',active:S.group?S.group.id:null});
+const personal=()=>({name:S.me.name,ln:S.me.ln||'',pet:S.pet,petSet:S.petSet,xp:S.xp,lm:S.lm||0,lmT:S.lmT||0,cap:S.cap||null,rm:S.rm||'',streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,favs:S.favs||[],best:S.best,total:S.total,types:[...S.types],pt:S.pt,others:S.others||[],solo:S.solo,theme:S.theme,showSeen:S.showSeen,birth:S.birth,legal:S.legal,blk:S.blk,refC:S.refC,invD:S.invD,soc:S.soc||0,sh:S.sh||0,shW:S.shW||'',qd:S.qd,qaN:S.qaN,fpR:S.fpR||{},fg:S.fg||0,wkG:S.wkG||'',accent:S.accent||'',active:S.group?S.group.id:null});
 let remK='',remT=0;
 function save(){try{if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()){const k=(S.me.name||'')+'|'+((S.pet&&S.pet.name)||'');if(k!==remK){remK=k;clearTimeout(remT);remT=setTimeout(()=>{try{remApply()}catch(e){}},2500)}}}catch(e){}
  if(S.user){try{localStorage.setItem(KEY,JSON.stringify({...personal(),uid:S.user.uid,familyIds:S.families.map(f=>f.id)}))}catch(e){}}
@@ -913,14 +914,16 @@ function resetPersonal(){S.nameAt=0;S.nameP=0;Object.assign(S,{accent:'',ent:nul
 function applyPersonal(o){if(!o)return;
  if(THEMES.some(t=>t.id===o.theme))applyTheme(o.theme);
  if(typeof o.accent==='string')S.accent=o.accent;
- ['petSet','xp','lm','lmT','cap','rm','streak','last','chest','mis','petDone','inv','perfect','solo','best','total','showSeen','qd','qaN','fpR','fg','wkG','birth','legal','blk','refC','invD','soc'].forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
+ ['petSet','xp','lm','lmT','cap','rm','streak','last','chest','mis','petDone','inv','perfect','solo','best','total','showSeen','qd','qaN','fpR','fg','wkG','birth','legal','blk','refC','invD','soc','sh','shW'].forEach(k=>{if(o[k]!==undefined)S[k]=o[k]});
  {const NG=['conejo','gato','perro','oso'],taken=[];const own=p=>p&&p.kind!=='nube'&&taken.push(p.kind);own(o.pet);(o.others||[]).forEach(x=>x&&own(x.pet));
   const fix=p=>{if(p&&p.kind==='nube'){const k=NG.find(x=>!taken.includes(x))||'conejo';taken.push(k);if(!p.name||p.name==='Nubi')p.name=PETS[k].n;p.kind=k}};fix(o.pet);(o.others||[]).forEach(x=>x&&fix(x.pet))}
  if(o.pet&&PETS[o.pet.kind])S.pet={kind:o.pet.kind,name:String(o.pet.name||PETS[o.pet.kind].n).slice(0,14)};
  S.others=Array.isArray(o.others)?o.others.slice(0,2).filter(x=>x&&x.pet&&PETS[x.pet.kind]).map(x=>({pet:{kind:x.pet.kind,name:String(x.pet.name||PETS[x.pet.kind].n).slice(0,14)},pt:Object.assign(PT0(),x.pt||{}),wear:Array.isArray(x.wear)?x.wear.filter(w=>typeof w==='string'):[],xp:+x.xp||0})):[];
  if(o.soc===undefined)S.legacyStm=1;
  S.types=new Set(o.types||[]);S.wk=o.wk||null;S.unl=Array.isArray(o.unl)?o.unl.filter(x=>typeof x==='string'):[];S.wear=Array.isArray(o.wear)?o.wear.filter(x=>typeof x==='string').reduce((a,x)=>a.filter(y=>ACAT[y]!==ACAT[x]).concat(x),[]):[];S.favs=Array.isArray(o.favs)?o.favs.filter(x=>typeof x==='string').slice(-300):[];S.pt=Object.assign(PT0(),o.pt||{});S.pt.t=S.pt.t||Date.now();S.bub=null;
- const y=new Date(Date.now()-864e5).toDateString();S.posted=S.last===today();if(!S.posted&&S.last!==y)S.streak=0}
+ const y=new Date(Date.now()-864e5).toDateString(),y2=new Date(Date.now()-1728e5).toDateString();S.posted=S.last===today();
+ {const d=new Date(),m=new Date(d);m.setDate(d.getDate()-((d.getDay()+6)%7));const wk=m.toDateString();if(S.shW!==wk){S.shW=wk;S.sh=1}}
+ if(!S.posted&&S.last!==y){if(S.last===y2&&S.streak>0&&S.sh>0){S.sh=0;S.last=y;setTimeout(()=>toast('Tu escudo salvó tu racha de '+S.streak+' días'),1800)}else S.streak=0}}
 function legacy(){try{const o=JSON.parse(localStorage.getItem(LEGACY)||'null');if(o&&o.me&&o.me.name)return{pet:o.pet,petSet:o.petSet,xp:o.xp,streak:o.streak,last:o.last,chest:o.chest,mis:o.mis,petDone:o.petDone,inv:o.inv,perfect:o.perfect,types:o.types,pt:o.pt}}catch(e){}return null}
 async function logout(){try{if(window.google&&google.accounts)google.accounts.id.disableAutoSelect()}catch(e){}try{localStorage.removeItem(KEY);localStorage.removeItem('capsula_adm')}catch(e){}try{if(window.CLOUD&&CLOUD.signOut)await CLOUD.signOut()}catch(e){}try{const P=NP('FirebaseAuthentication');if(P)await P.signOut()}catch(e){}location.reload()}
 const BCOL=['#6B4CD6','#FF8FB8','#FFC15E','#5ED1B0','#7FB8FF'];function burst(n=28,em=['✦','●','✧','◆']){const a=$('.app');for(let i=0;i<n;i++){const e=document.createElement('span');e.className='cf';e.textContent=em[i%em.length];const dec=/^[✦●✧◆]$/.test(em[i%em.length]);e.style.cssText=`${dec?'color:'+BCOL[i%BCOL.length]+';':''}left:${50+(Math.random()-.5)*20}%;--dx:${(Math.random()-.5)*360}px;--dy:${-120-Math.random()*320}px;--r:${(Math.random()-.5)*720}deg;animation-delay:${Math.random()*.2}s`;a.appendChild(e);setTimeout(()=>e.remove(),1900)}}
@@ -989,7 +992,7 @@ function streakReward(){const n=S.streak,d=Math.min(2+n,12),b=STK_MS[n]||0;rw(0,
 function streakCard(){const n=S.streak,t=flameTier(n),nf=FLAME.find(f=>f[0]>n),nm=Object.keys(STK_MS).map(Number).find(k=>k>n);
  const sub=n?`Llama ${t[3].toLowerCase()}. ${nf?'En '+(nf[0]-n)+(nf[0]-n>1?' días':' día')+' cambia de color.':'Llegaste al color máximo.'}`:'Cuenta una historia y gana Lumis cada día.';
  const nx=nm?`Premio grande en ${nm-n} ${nm-n>1?'días':'día'}: +${STK_MS[nm]} Lumis`:'';
- return `<section class="card streak"><div class="row" style="gap:14px;align-items:center"><div class="flm ${n&&S.posted?'flick':''}">${flameSvg(n,58)}<b>${n}</b></div><div class="tx"><h3>${n?'Racha de '+n+(n>1?' días':' día'):'Empieza tu racha hoy'}</h3></div></div><div class="days">${strip()}</div></section>`}
+ return `<section class="card streak"><div class="row" style="gap:14px;align-items:center"><div class="flm ${n&&S.posted?'flick':''}">${flameSvg(n,58)}<b>${n}</b></div><div class="tx"><h3>${n?'Racha de '+n+(n>1?' días':' día'):'Empieza tu racha hoy'}${S.sh>0&&n?'<svg class="shl" viewBox="0 0 24 24" width="20" height="20" role="img" aria-label="Escudo de racha listo"><title>Escudo de racha listo</title><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.500-7-10V6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>':''}</h3></div></div><div class="days">${strip()}</div></section>`}
 function strip(){const t=new Date(),L='DLMXJVS',last=S.posted?6:5;
  return Array.from({length:7},(_,i)=>{const d=new Date(t);d.setDate(t.getDate()-6+i);const on=i>last-S.streak&&i<=last;return `<span class="${on?'on':''} ${i===6?'now':''}">${L[d.getDay()]}</span>`}).join('')}
 
@@ -1332,6 +1335,7 @@ function mundo(){
  <div class="spch"><h2>Mi mundo</h2>${spaceTag()}</div>
  ${heroHTML()}
  ${socCard()}
+ ${memCard()}
  ${S.chest===today()?`<section class="card c"><span class="mu">Cofre de hoy abierto. Vuelve mañana por otro</span></section>`:`<section class="card c hero"><div class="chest">${ic('gift',44,1.6)}</div><h3>¡${esc(S.pet.name)} te trajo un regalo!</h3><button class="btn" onclick="chest()">Abrir cofre</button></section>`}
  ${streakCard()}
  ${memCard()}
@@ -1401,7 +1405,7 @@ function smDraw(){const a=$('.app');let o=$('#mgo');if(!o){o=document.createElem
  o.innerHTML=`<div class="mgh"><button class="x" onclick="mgClose()" aria-label="Cerrar">${ic('x',20)}</button><div class="tx"><h2>Semáforo · velocidad ${s.lv} de 4</h2><span class="mu">${s.st==='play'?s.n+' de '+s.need+' verdes':'Toca solo el verde'}</span></div></div>
  <div class="smf" id="smf"><i class="smx"></i><b class="smy"></b>
  ${s.st==='ready'?`<div class="mgw smc"><h2>¿Listo?</h2><p class="mu">Van a aparecer botones. Toca los <b style="color:#1f9d55">verdes</b>. Si tocas uno <b style="color:#d6334a">rojo</b>, pierdes.</p><button class="btn w" onclick="smGo()">Empezar</button></div>`:''}
- ${s.st==='win'?`<div class="mgw smc"><h2>${s.lv<4?'¡Superaste esta velocidad!':'¡Reflejos de campeón!'}</h2><p class="mu">${s.need} verdes sin tocar ningún rojo</p>${s.lv<4?`<button class="btn w" onclick="smStart(${s.lv+1})">Más rápido</button>`:`<button class="btn w" onclick="smStart(1)">Jugar desde el inicio</button>`}<button class="btn s w" onclick="mgClose()">Salir</button></div>`:''}
+ ${s.st==='win'?`<div class="mgw smc"><h2>${s.lv<4?'¡Superaste esta velocidad!':'¡Reflejos de campeón!'}</h2><p class="mu">${s.need} verdes sin tocar ningún rojo</p>${s.lv<4?`<button class="btn w" onclick="smStart(${s.lv+1})">Más rápido</button>`:`<button class="btn w" onclick="smStart(1)">Jugar desde el inicio</button>`}<button class="btn s w" onclick="retar('sm','Superé la velocidad ${s.lv} del Semáforo.')">Retar a alguien</button><button class="btn s w" onclick="mgClose()">Salir</button></div>`:''}
  ${s.st==='lose'?`<div class="mgw smc"><h2>¡Era rojo!</h2><p class="mu">Llevabas ${s.n} de ${s.need}. Inténtalo otra vez</p><button class="btn w" onclick="smStart(${s.lv})">Reintentar</button><button class="btn s w" onclick="mgClose()">Salir</button></div>`:''}
  </div>`}
 function smGo(){SM.st='play';SM.n=0;smDraw();smNext(500)}
@@ -1436,7 +1440,7 @@ function twDraw(){const a=$('.app');let o=$('#mgo');if(!o){o=document.createElem
  o.innerHTML=`<div class="mgh"><button class="x" onclick="mgClose()" aria-label="Cerrar">${ic('x',20)}</button><div class="tx"><h2>Torres · nivel ${t.lv} de 4</h2><span class="mu">Movimientos: ${t.moves}</span></div></div>
  <div class="twz"><p class="twl">Torres objetivo</p><div class="twr tg">${t.tgt.map((a,i)=>peg(a,i,1)).join('')}</div>
  <p class="twl">Tus torres · toca una torre y luego otra</p><div class="twr">${t.cur.map((a,i)=>peg(a,i,0)).join('')}</div></div>
- ${win?`<div class="mgw"><h2>${t.lv<4?'¡Torres en orden!':'¡Maestro de las torres!'}</h2><p class="mu">Lo lograste en ${t.moves} movimientos</p>${t.lv<4?`<button class="btn w" onclick="twStart(${t.lv+1})">Siguiente nivel</button>`:`<button class="btn w" onclick="twStart(1)">Jugar desde el nivel 1</button>`}<button class="btn s w" onclick="mgClose()">Salir</button></div>`:`<button class="btn s w" onclick="twStart(${t.lv})">Reiniciar</button>`}`}
+ ${win?`<div class="mgw"><h2>${t.lv<4?'¡Torres en orden!':'¡Maestro de las torres!'}</h2><p class="mu">Lo lograste en ${t.moves} movimientos</p>${t.lv<4?`<button class="btn w" onclick="twStart(${t.lv+1})">Siguiente nivel</button>`:`<button class="btn w" onclick="twStart(1)">Jugar desde el nivel 1</button>`}<button class="btn s w" onclick="retar('tw','Ordené las torres del nivel ${t.lv} en ${t.moves} movimientos.')">Retar a alguien</button><button class="btn s w" onclick="mgClose()">Salir</button></div>`:`<button class="btn s w" onclick="twStart(${t.lv})">Reiniciar</button>`}`}
 function twTap(i){const t=TW;if(!t||t.st!=='play')return;
  if(t.sel<0){if(t.cur[i].length){t.sel=i;twDraw()}return}
  if(t.sel===i){t.sel=-1;twDraw();return}
@@ -1445,6 +1449,18 @@ function twTap(i){const t=TW;if(!t||t.st!=='play')return;
  if(t.cur.every((a,k)=>a.join()===t.tgt[k].join())){t.st='win';twWin()}twDraw()}
 function twWin(){burst(36);const lv=TW.lv;let d='';try{if(lv<4&&twLv()<=lv)localStorage.setItem('capsula_twl',String(lv+1));if(lv===4)localStorage.setItem('capsula_twl','1');d=localStorage.getItem('capsula_tw')}catch(e){}
  if(d!==today()){try{localStorage.setItem('capsula_tw',today())}catch(e){}setTimeout(()=>rw(2+lv,2+lv),500)}}
+/* ---------- Recuerdo de hoy, racha de la cápsula y resumen semanal ---------- */
+function memCard(){const L=S.posts.filter(p=>TY[p.k]&&!isBlk(p.a)&&p.ts&&Date.now()-p.ts>25*864e5);if(!L.length)return'';
+ let h=0;for(const c of dayKey())h=(h*31+c.charCodeAt(0))>>>0;const p=L[h%L.length],d=Math.floor((Date.now()-p.ts)/864e5),t=d>=60?'hace '+Math.round(d/30)+' meses':'hace '+d+' días';
+ const img=p.x&&p.x.src&&['foto','dibujo'].includes(p.k)&&fastSrc(p.x.src);
+ return `<section class="card memc"><div class="row" style="gap:12px;align-items:center">${img?`<img class="memi" src="${img}" alt="" loading="lazy">`:`<span class="memi memt">${ic(TY[p.k].i,26)}</span>`}<div class="tx"><span class="mu">Recuerdo de hoy · ${t}</span><b>${esc(p.t)}</b></div><button class="btn s" onclick="go('arc')">Ver</button></div></section>`}
+function famCard(){if(!S.group)return'';const P=S.posts.filter(p=>p.ts&&TY[p.k]);if(!P.length)return'';
+ const dk=t=>{const d=new Date(t);return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate()},ds=new Set(P.map(p=>dk(p.ts)));
+ let n=0,t=Date.now();if(!ds.has(dk(t)))t-=864e5;while(ds.has(dk(t))){n++;t-=864e5}
+ const w=Date.now()-7*864e5,cnt={};P.filter(p=>p.ts>w).forEach(p=>{const k=p.a==='me'?'Tú':who(p.a,p).split(' ')[0];cnt[k]=(cnt[k]||0)+1});
+ const tot=Object.values(cnt).reduce((a,b)=>a+b,0),top=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,4);
+ return `<section class="card famc"><div class="row sp"><b>${n?esc(S.group.name)+' lleva '+n+(n>1?' días seguidos':' día'):'Hoy aún no hay historias'}</b>${ic('users',20)}</div>${tot?`<p class="mu" style="margin-top:6px">Esta semana: ${tot} ${tot>1?'historias':'historia'} · ${top.map(e=>esc(e[0])+' '+e[1]).join(' · ')}</p>`:''}</section>`}
+function retar(g,txt){const t=txt+' ¿Me ganas? Juega en Cápsula: '+(S.group?inviteLink():baseUrl());if(navigator.share){navigator.share({title:'Cápsula',text:t}).catch(()=>{});return}copy(t)}
 const H=3600e3;
 const QS=[
  {k:'dia',mood:1,t:()=>'¿Cómo te fue hoy, '+S.me.name+'?',o:[['Genial','¡Qué alegría! Cuéntale tu día a alguien que quieres',4],['Bien','Me alegra. Los días tranquilos también cuentan',3],['Regular','Te entiendo. Mañana es otra oportunidad y yo estoy contigo 🫶',2],['Mal','Ven, te doy un abrazo gigante Cuando quieras, me cuentas qué pasó.',1]]},
@@ -1472,7 +1488,7 @@ function say(pool){const L=S.pt.said||(S.pt.said=[]);let c=pool.filter(x=>!L.inc
 const tod=()=>{const h=new Date().getHours();return h<6?'noche':h<12?'mañana':h<19?'tarde':'noche'};
 function greet(away){if(asleep())return{t:'Zzz… (tócame para despertarme)',o:null,q:null};const n=S.me.name,t0=tod(),p=S.pt;
  const P={mañana:['Buenos días, '+n+'','¡Arriba, '+n+'! Hoy huele a historia nueva','Buen día, '+n+' ¿desayunaste?'],tarde:['Buenas tardes, '+n+'','¡Hola, '+n+'! Te estaba esperando','¿Qué tal va tu tarde, '+n+'?'],noche:['Buenas noches, '+n+'','Qué bueno verte antes de dormir, '+n,'La noche es perfecta para recordar']}[t0];
- let t=say(P);if(away>6)t='¡Te extrañé! Pasaron '+Math.floor(away)+' horas. '+t;
+ let t=say(P);if(!S.posted&&S.streak>1&&!p.streakMsg)t+=' Tu racha de '+S.streak+' días te espera.';if(away>6)t='¡Te extrañé! Pasaron '+Math.floor(away)+' horas. '+t;
  const nd=p.food<30?'Tengo hambre':p.clean<30?'Necesito un baño':p.fun<30?'¿Jugamos un rato?':'';if(nd)t+=(/[.!?¿\p{Extended_Pictographic}]$/u.test(t)?' ':'. ')+nd;return{t,o:null,q:null}}
 const bubHTML=()=>exAway()?`<div class="bub">${Date.now()>=S.pt.ex.end?'¡Volví! Mira mi postal':'Estoy de aventura, ¡vuelvo pronto!'}</div>`:`<div class="bub">${esc(S.bub.t)}</div>${S.bub.o?`<div class="qr">${S.bub.o.map((o,i)=>`<button onclick="reply(${i})">${esc(o[0])}</button>`).join('')}</div>`:''}`;
 const statsHTML=()=>{const p=S.pt,st=(n,v,c)=>`<div class="st"><span>${n}</span><div class="bar sm ${c?'low':''}"><i style="width:${Math.round(v)}%"></i></div></div>`;
@@ -2086,7 +2102,7 @@ const mgCard=()=>`<section class="card"><div class="mgcs"><h3>Juegos de memoria 
  <div class="mrow"><div class="tx"><b>Torres</b><span class="mu">Ordena los bloques como el objetivo</span></div><button class="btn" onclick="twStart()">Jugar</button></div>
  <span class="mu">Lumis 1 vez al día en cada juego</span></div></section>`;
 function capHome(){
- return `${qLine(qaToday(),"go('triv')",S.qd===dayKey()?'Ya respondiste · ver respuestas':'Pregunta de hoy')}
+ return `${famCard()}${memCard()}${qLine(qaToday(),"go('triv')",S.qd===dayKey()?'Ya respondiste · ver respuestas':'Pregunta de hoy')}
  <div class="duo"><button class="tile2" onclick="chooser()">${ic('pen',26)}<b>Escribir aquí</b><span class="mu">Se guarda en ${esc(S.group.name)}</span></button><button class="tile2" onclick="S.sub='recuerdos';soft()">${ic('image',26)}<b>Recuerdos</b><span class="mu">${S.posts.length} ${S.posts.length===1?'historia':'historias'}</span></button></div>
  <div class="duo"><button class="tile2" onclick="S.sub='cartas';soft()">${ic('mail',26)}<b>Cartas</b><span class="mu">${S.posts.filter(p=>p.k==='carta').length} escritas</span></button><button class="tile2 off" disabled aria-disabled="true">${ic('chat',26)}<b>Conversaciones</b><span class="tag soon">Pronto</span></button></div>
  ${mgCard()}
@@ -2141,7 +2157,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=100;
+const BUILD=101;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
