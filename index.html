@@ -118,6 +118,12 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
 .twr:not(.twtg) .twst{min-height:150px}.twr:not(.twtg) .twb{height:30px;margin-top:6px}.twr:not(.twtg) .twb i{height:7px;top:-7px}
 .twl{margin:8px 0 2px}
 .shi{display:grid!important;place-items:center;color:var(--pd);background:var(--tint-2)}
+
+.cloud{position:absolute;top:10px;right:10px;max-width:58%;z-index:4;pointer-events:none}
+.cloud .bub{font-size:14px;padding:10px 14px;border-radius:22px;text-align:center;box-shadow:0 4px 14px #0002;border:0;background:#fffffff2;color:#2a2140}
+.cloud .bub::before{left:12px;top:auto;bottom:-14px;margin-left:0;width:11px;height:11px;border:0;background:#fffffff2;box-shadow:0 2px 6px #0002}
+.cloud .bub::after{left:2px;top:auto;bottom:-26px;margin-left:0;width:7px;height:7px;border:0;background:#fffffff2;box-shadow:0 2px 6px #0002}
+.qw{margin-top:10px}.qw:empty{display:none}
 </style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1501,18 +1507,19 @@ function greet(away){if(asleep())return{t:'Zzz… (tócame para despertarme)',o:
  const P={mañana:['Buenos días, '+n+'','¡Arriba, '+n+'! Hoy huele a historia nueva','Buen día, '+n+' ¿desayunaste?'],tarde:['Buenas tardes, '+n+'','¡Hola, '+n+'! Te estaba esperando','¿Qué tal va tu tarde, '+n+'?'],noche:['Buenas noches, '+n+'','Qué bueno verte antes de dormir, '+n,'La noche es perfecta para recordar']}[t0];
  let t=say(P);if(!S.posted&&S.streak>1&&!p.streakMsg)t+=' Tu racha de '+S.streak+' días te espera.';if(away>6)t='¡Te extrañé! Pasaron '+Math.floor(away)+' horas. '+t;
  const nd=p.food<30?'Tengo hambre':p.clean<30?'Necesito un baño':p.fun<30?'¿Jugamos un rato?':'';if(nd)t+=(/[.!?¿\p{Extended_Pictographic}]$/u.test(t)?' ':'. ')+nd;return{t,o:null,q:null}}
-const bubHTML=()=>exAway()?`<div class="bub">${Date.now()>=S.pt.ex.end?'¡Volví! Mira mi postal':'Estoy de aventura, ¡vuelvo pronto!'}</div>`:`<div class="bub">${esc(S.bub.t)}</div>${S.bub.o?`<div class="qr">${S.bub.o.map((o,i)=>`<button onclick="reply(${i})">${esc(o[0])}</button>`).join('')}</div>`:''}`;
+const bubHTML=()=>exAway()?`<div class="bub">${Date.now()>=S.pt.ex.end?'¡Volví! Mira mi postal':'Estoy de aventura, ¡vuelvo pronto!'}</div>`:`<div class="bub">${esc(S.bub.t)}</div>`;
+const qrHTML=()=>exAway()?'':`${S.bub.o?`<div class="qr">${S.bub.o.map((o,i)=>`<button onclick="reply(${i})">${esc(o[0])}</button>`).join('')}</div>`:''}`;
 const statsHTML=()=>{const p=S.pt,st=(n,v,c)=>`<div class="st"><span>${n}</span><div class="bar sm ${c?'low':''}"><i style="width:${Math.round(v)}%"></i></div></div>`;
  return `<div class="stw2">${st('Ánimo',p.love,p.love<30)}${st('Panza',p.food,p.food<30)}${st('Limpieza',p.clean,p.clean<30)}${st('Diversión',p.fun,p.fun<30)}${st('Energía',p.en,p.en<25)}${st('Nivel',S.xp%100)}</div>`};
-function petUI(){roomSync();const b=$('#bubw');if(b)b.innerHTML=bubHTML();const x=$('#stw');if(x)x.innerHTML=statsHTML()}
+function petUI(){roomSync();const b=$('#bubw');if(b)b.innerHTML=bubHTML();const q=$('#qrw');if(q)q.innerHTML=qrHTML();const x=$('#stw');if(x)x.innerHTML=statsHTML()}
 function bubSay(t,o,q){S.bub={t,o:o||null,q:q||null};S.bubT=Date.now();petUI()}
 function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=greet(away);
  const lvl=Math.floor(S.xp/100),sz=150,sl=asleep();
  return `<section class="card hero">
-  <div class="room${sl?' night':''}${S.pt.clean<35?' dirty':''}${S.rm&&ownedRoom(S.rm)?' rm-'+S.rm:''}${exAway()?' exa exp-'+S.pt.ex.k:''}" id="room">${exAway()?exScene():''}<div class="fl ${sl?'sleep':''}${exAway()?' away':''}" onclick="petClick()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div><button class="hang" onclick="wardOpen()" aria-label="Armario">${ic('hanger',22)}</button><div class="dirt" aria-hidden="true"><i></i><i></i><i></i><i></i><b>🪰</b><b>🪰</b><span class="stk"><u></u><u></u><u></u></span></div><button class="dchip" id="dirtc" ${S.pt.clean<35&&!S.tool?'':'hidden'} onclick="toolSet(\'bath\')">Necesito un baño</button></div>
+  <div class="room${sl?' night':''}${S.pt.clean<35?' dirty':''}${S.rm&&ownedRoom(S.rm)?' rm-'+S.rm:''}${exAway()?' exa exp-'+S.pt.ex.k:''}" id="room"><div id="bubw" class="cloud" aria-live="polite">${bubHTML()}</div>${exAway()?exScene():''}<div class="fl ${sl?'sleep':''}${exAway()?' away':''}" onclick="petClick()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div><button class="hang" onclick="wardOpen()" aria-label="Armario">${ic('hanger',22)}</button><div class="dirt" aria-hidden="true"><i></i><i></i><i></i><i></i><b>🪰</b><b>🪰</b><span class="stk"><u></u><u></u><u></u></span></div><button class="dchip" id="dirtc" ${S.pt.clean<35&&!S.tool?'':'hidden'} onclick="toolSet(\'bath\')">Necesito un baño</button></div>
   ${pswHTML()}<h2>${esc(S.pet.name)}</h2>
   <button class="wal" onclick="shopOpen()" aria-label="Tus Lumis">${LI} <span class="cnt" data-n="${S.lm||0}">${S.lm||0}</span> Lumis</button>
-  <div id="bubw" class="bw" aria-live="polite">${bubHTML()}</div>
+  <div id="qrw" class="bw qw">${qrHTML()}</div>
   <div class="stw" id="stw">${statsHTML()}</div>
   <div class="tray" id="tray">${trayHTML()}</div>
   <div class="mu">${XI} XP del nivel: ${S.xp%100} de 100</div></section>`}
@@ -2166,7 +2173,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=103;
+const BUILD=104;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
