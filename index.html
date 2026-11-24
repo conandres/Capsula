@@ -307,7 +307,7 @@ textarea.in{resize:vertical;line-height:1.45;min-height:132px;padding-top:12px}t
 .mic.rc{animation:pl 1.2s infinite}@keyframes pl{50%{transform:scale(1.1)}}
 .ts{position:absolute;top:14px;left:50%;transform:translate(-50%,-160px);opacity:0;pointer-events:none;background:var(--tx);color:#fff;padding:10px 18px;border-radius:99px;font-weight:500;transition:transform .35s,opacity .25s;z-index:30;max-width:92%;text-align:center}
 .ts.show{transform:translate(-50%,0)}
-.soc{display:flex;flex-direction:column;gap:12px;background:linear-gradient(135deg,var(--soft),var(--card))}.soc h3{margin:0 0 4px}.soc p{margin:0}.socic{flex:none;width:46px;height:46px;border-radius:16px;background:var(--color-primary);color:var(--color-on-primary);display:flex;align-items:center;justify-content:center}.flm{position:relative;flex:none;width:58px;height:58px;display:flex;align-items:center;justify-content:center}.flm b{position:absolute;left:0;right:0;bottom:11px;text-align:center;font:800 16px var(--f);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4)}.flbig{display:flex;justify-content:center;margin:6px 0 4px}.flbig svg{animation:flick 1.4s ease-in-out infinite;transform-origin:50% 90%}.streak h3{margin:0}.streak p{margin:0}.cvs{display:flex;align-items:center;justify-content:center;font:800 26px var(--f);color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.18)}.cf{position:absolute;bottom:38%;font-size:22px;pointer-events:none;z-index:50;animation:cf 1.5s ease-out forwards}
+.pets .pbig{display:flex;justify-content:center;margin:2px 0 6px}.pets .prow{display:flex;gap:8px;justify-content:center;margin:4px 0 10px}.pets .pk{flex:1;min-width:0;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px}.pets .pk b{font-size:13px}.soc{display:flex;flex-direction:column;gap:12px;background:linear-gradient(135deg,var(--soft),var(--card))}.soc h3{margin:0 0 4px}.soc p{margin:0}.socic{flex:none;width:46px;height:46px;border-radius:16px;background:var(--color-primary);color:var(--color-on-primary);display:flex;align-items:center;justify-content:center}.flm{position:relative;flex:none;width:58px;height:58px;display:flex;align-items:center;justify-content:center}.flm b{position:absolute;left:0;right:0;bottom:11px;text-align:center;font:800 16px var(--f);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4)}.flbig{display:flex;justify-content:center;margin:6px 0 4px}.flbig svg{animation:flick 1.4s ease-in-out infinite;transform-origin:50% 90%}.streak h3{margin:0}.streak p{margin:0}.cvs{display:flex;align-items:center;justify-content:center;font:800 26px var(--f);color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.18)}.cf{position:absolute;bottom:38%;font-size:22px;pointer-events:none;z-index:50;animation:cf 1.5s ease-out forwards}
 @keyframes cf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--r));opacity:0}}
 .fh{position:absolute;left:50%;top:32%;font-weight:600;font-size:28px;color:var(--color-accent-pink);z-index:50;pointer-events:none;animation:fh 1.2s ease-out forwards}
 @keyframes fh{0%{transform:translate(-50%,0) scale(.6);opacity:0}20%{opacity:1;transform:translate(-50%,-10px) scale(1.2)}100%{transform:translate(-50%,-90px) scale(1);opacity:0}}
@@ -1159,14 +1159,16 @@ async function jn(){const b=$('#jnb'),c=$('#gc').value.trim().toUpperCase();if(!
 function soloGo(){S.solo=true;S.group=null;if(window.CLOUD&&CLOUD.ready)CLOUD.switchFamily(null);nextScr()}
 function nextScr(){S.scr=S.petSet?'main':'pet';S.tab='home';render()}
 
-function petScr(){return `<div class="ob"><h1>Elige tu mascota</h1><p class="mu">Crecerá con cada historia que cuentes.</p>
- <div class="pg">${Object.entries(PETS).filter(([k])=>k!=='nube').map(([k,v])=>`<button class="pk ${S.pet.kind===k?'sel':''}" onclick="selPet('${k}')" aria-pressed="${S.pet.kind===k}">${pet(k,78)}<b>${v.d}</b></button>`).join('')}</div>
+function petScr(){const k=S.pet.kind;return `<div class="ob pets"><h1>Conoce a tu mascota</h1><p class="mu">Elige con quién empiezas. ${esc(PETS[k].d)} crecerá contigo con cada historia.</p>
+ <div class="pbig">${pet3('pet3dh',250)}</div>
+ <div class="prow">${Object.entries(PETS).filter(([q])=>q!=='nube').map(([q,v])=>`<button class="pk ${k===q?'sel':''}" onclick="selPet('${q}')" aria-pressed="${k===q}" aria-label="${esc(v.d)}">${pet(q,56)}<b>${v.d}</b></button>`).join('')}</div>
  <label class="lb" for="pn">¿Cómo se llama?</label>
  <input id="pn" class="in" maxlength="14" value="${esc(S.pet.name)}" oninput="S.pet.name=this.value;S.pe=1">
+ <p class="mu c">Te regalamos 150 Lumis para empezar.</p>
  <button class="btn w" onclick="startGame()">Empezar</button></div>`}
-function selPet(k){S.pet.kind=k;if(!S.pe)S.pet.name=PETS[k].n;render()}
-function startGame(){S.pet.name=S.pet.name.trim()||PETS[S.pet.kind].n;S.petSet=true;S.scr='main';S.tab='home';render();if((S.total||0)>0||S.posts.length){toast('¡'+S.pet.name+' ya está contigo!');return}petHello()}
-function petHello(){const n=esc(S.pet.name);nubiSheet({k:'Tu guía',ic:'',t:'¡Hola! Soy Nubi',x:`Yo te voy a ir explicando todo. Aquí guardas lo que vive tu familia y <b>${n}</b> crece con cada historia que cuentas.<br><br>Para empezar, cuéntame algo: una foto, una carta, un dibujo o tu voz. Todo es privado: solo lo ven las personas que tú invites.`,fly:1,extra:`<button class="btn w" onclick="cl();dest()">Contar mi primera historia</button><button class="btn s w" onclick="cl();toast('Tus primeros pasos están en Inicio')">Mirar la app primero</button>`})}
+function selPet(k){S.pet.kind=k;if(!S.pe)S.pet.name=PETS[k].n;render();setTimeout(()=>p3play('cheer'),450)}
+function startGame(){S.pet.name=S.pet.name.trim()||PETS[S.pet.kind].n;S.petSet=true;S.fpR=S.fpR||{};if(!S.fpR.gift&&!(S.total||0)&&!S.posts.length){S.fpR.gift=1;S.lm=(S.lm||0)+150;S.lmT=Date.now();try{save()}catch(e){}}S.scr='main';S.tab='home';render();if((S.total||0)>0||S.posts.length){toast('¡'+S.pet.name+' ya está contigo!');return}petHello()}
+function petHello(){const n=esc(S.pet.name);nubiSheet({k:'Tu guía',ic:'',t:'¡Hola! Soy Nubi',x:`Yo te voy a ir explicando todo. <b>${n}</b> ya llegó con 150 Lumis de regalo y tiene hambre.<br><br>Dale de comer para empezar. Después puedes contar tu primera historia: una foto, una carta, un dibujo o tu voz. Todo es privado y solo lo ven las personas que tú invites.`,fly:1,extra:`<button class="btn w" onclick="cl();go('mundo');setTimeout(()=>toolSet('food'),700)">Darle de comer a ${n}</button><button class="btn s w" onclick="cl();dest()">Contar mi primera historia</button><button class="lnk" onclick="cl()">Mirar la app primero</button>`})}
 
 /* ---------- main shell ---------- */
 const spaceId=()=>S.group?S.group.id:null;
@@ -1191,6 +1193,7 @@ function render(){try{socUpd()}catch(e){}
  $('#scr').innerHTML=({boot,welcome,deleted,under13,legal:legalScr,group:groupScr,pet:petScr,main:shell})[S.scr]();
  if(S.scr==='welcome')bindCr();
  if(S.scr==='main'){navSync();enterAnim($('#mn'));p3mount()}
+ if(S.scr==='pet')p3mount()
  psFill();
  const key=S.scr+':'+S.gstep;if(key!==render.k){render.k=key;if(S.scr==='group'||S.scr==='pet')enterAnim($('.ob'))}
 }
@@ -1266,15 +1269,17 @@ function famReact(){try{if(!S.user||!S.petSet||exAway()||asleep())return;let see
  if(!L.length)return;const p=L[0],nm=String(who(p.a,p)).split(' ')[0];bubSay('¡'+nm+' '+(VERB[p.k]||'compartió algo')+'!');hopPet()}catch(e){}}
 function fpCard(){let off=0,was=0;try{off=localStorage.getItem('capsula_fp')==='1';was=localStorage.getItem('capsula_fpd')==='1'}catch(e){}
  const mem=Object.keys(S.members||{}).length,nf=S.families.length;
- const L=[['c','Crea tu cápsula','El espacio privado de tu familia, tu pareja o tus amigos.',nf>0,"go('caps')",'Crear',20],
+ const L=[['f','Dale de comer a '+esc(S.pet.name),'Tiene hambre desde que llegó. Tarda diez segundos.',!!(S.pt&&S.pt.fedOnce),"go('mundo');setTimeout(()=>toolSet('food'),700)",'Dar de comer',15],
+  ['h','Cuenta la primera historia','Una foto, carta, dibujo o nota de voz. Tarda un minuto.',S.total>0||S.posts.some(p=>p.a==='me'),'dest()','Empezar',10],
+  ['c','Crea tu cápsula','El espacio privado de tu familia, tu pareja o tus amigos.',nf>0,"go('caps')",'Crear',20],
   ['i','Invita a alguien','Con un enlace o código. Ganas 15 Lumis cuando entra.',!!S.inv||mem>1,'guideInvite()','Invitar',0],
-  ['h','Cuenta la primera historia','Una foto, carta, dibujo o nota de voz. Tarda un minuto.',S.total>0||S.posts.some(p=>p.a==='me'),'dest()','Empezar',10]];
+  ];
  const d=L.filter(x=>x[3]).length;
  S.fpR=S.fpR||{};if(L.some(x=>x[3]&&x[6]&&!S.fpR[x[0]])&&S.user)setTimeout(fpClaim,350,L);
  if(d===L.length){if(!was){try{localStorage.setItem('capsula_fpd','1')}catch(e){}setTimeout(()=>{toast('¡Tu cápsula está lista!');burst(36);hopPet();bubSay('¡Lo logramos! Ahora a llenarla de recuerdos')},400)}return''}
  if(off)return'';
  const cur=L.findIndex(x=>!x[3]);
- return `<section class="card" id="fp"><div class="row sp"><h3>Tus 3 primeros pasos</h3><button class="lnk" onclick="fpOff()">Ocultar</button></div><span class="mu">${d} de ${L.length} · Así queda Cápsula lista para tu familia.</span><div class="bar" style="margin:8px 0 4px"><i style="width:${d/L.length*100}%"></i></div>${L.map((x,k)=>`<button class="opc ${k===cur?'fpc':''}" ${x[3]?'disabled':''} onclick="${x[4]}"><span class="ti">${ic(x[3]?'check':k===cur?'pen':'star',22)}</span><span class="tx"><b style="${x[3]?'text-decoration:line-through;opacity:.6':''}">${x[1]}</b><span class="mu">${x[2]}${x[6]&&!x[3]?' · +'+x[6]+' Lumis':''}</span></span>${k===cur?`<span class="fpb">${x[5]}</span>`:''}</button>`).join('')}</section>`}
+ return `<section class="card" id="fp"><div class="row sp"><h3>Tus ${L.length} primeros pasos</h3><button class="lnk" onclick="fpOff()">Ocultar</button></div><span class="mu">${d} de ${L.length} · Así queda Cápsula lista para tu familia.</span><div class="bar" style="margin:8px 0 4px"><i style="width:${d/L.length*100}%"></i></div>${L.map((x,k)=>`<button class="opc ${k===cur?'fpc':''}" ${x[3]?'disabled':''} onclick="${x[4]}"><span class="ti">${ic(x[3]?'check':k===cur?'pen':'star',22)}</span><span class="tx"><b style="${x[3]?'text-decoration:line-through;opacity:.6':''}">${x[1]}</b><span class="mu">${x[2]}${x[6]&&!x[3]?' · +'+x[6]+' Lumis':''}</span></span>${k===cur?`<span class="fpb">${x[5]}</span>`:''}</button>`).join('')}</section>`}
 let fpBusy=false;
 function fpClaim(L){if(fpBusy||!S.user)return;fpBusy=true;let g=0;S.fpR=S.fpR||{};L.forEach(x=>{if(x[3]&&x[6]&&!S.fpR[x[0]]){S.fpR[x[0]]=1;g+=x[6]}});
  if(g){S.lm=(S.lm||0)+g;S.lmT=Date.now();save();toast('+'+g+' Lumis por tu paso');burst(24);p3play('cheer')}fpBusy=false}
@@ -1549,7 +1554,7 @@ function petTap(){ptTick();const p=S.pt,now=Date.now();
 const crave=()=>FOODS[hs(today()+S.pet.kind+S.pet.name)%FOODS.length];
 const FOODS=[{k:'galleta',e:'🍪',n:'Galleta',f:9,l:2,c:-2,u:0,y:3},{k:'manzana',e:'🍎',n:'Manzana',f:7,l:3,c:0,u:5,y:1},{k:'pastel',e:'🍰',n:'Pastel',f:16,l:5,c:-6,u:-2,y:7}];
 function eat(k){const f=FOODS.find(x=>x.k===k);if(!f)return;cl();ptTick();const p=S.pt,now=Date.now(),need=p.food<60;p3play('eat');
- p.food=Math.min(100,p.food+f.f);p.love=Math.min(100,p.love+f.l);p.clean=Math.max(0,p.clean+f.c);p.en=Math.min(100,p.en+f.u);p.fun=Math.min(100,(p.fun??70)+(f.y||0));burst(8,[f.e,'💗']);
+ p.food=Math.min(100,p.food+f.f);p.love=Math.min(100,p.love+f.l);p.clean=Math.max(0,p.clean+f.c);p.en=Math.min(100,p.en+f.u);p.fun=Math.min(100,(p.fun??70)+(f.y||0));p.fedOnce=1;burst(8,[f.e,'💗']);
  if(f.k===crave().k&&p.crv!==today()){p.crv=today();p.love=Math.min(100,p.love+8);p.fun=Math.min(100,p.fun+10);S.bub={t:say(['¡Justo lo que quería hoy! Eres adivino','¡Mi antojo del día! Me conoces mejor que nadie']),o:null,q:null};S.bubT=now;burst(18);hopPet();p3play('cheer');rw(2,2);return}
  if(need&&now-p.lf>3*H){p.lf=now;S.bub={t:say(['¡Ñam ñam! Estaba riquísimo '+f.e,'¡Delicioso! Eres el mejor cocinero '+f.e,'Mmm… '+f.n.toLowerCase()+', mi favorita del día '+f.e]),o:null,q:null};S.bubT=now;rw(3,2)}else{bubSay(say(['¡Ñam ñam! Gracias '+f.e,'Qué rico '+f.e+' ¡repito mañana!']));hopPet();petUI()}}
 function playOk(){ptTick();const p=S.pt;
@@ -2046,7 +2051,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=95;
+const BUILD=96;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
@@ -2230,7 +2235,7 @@ window.APP={
   APP.goAfter()},
  goAfter(){setTimeout(refSync,2500);setTimeout(updChk,5000);setTimeout(remInit,1500);const pc=S.joinCode;
   if(pc&&!S.families.some(f=>f.code===pc)){S.scr='group';S.gstep='join'}
-  else{S.joinCode='';S.scr=S.petSet?'main':((S.group||S.solo||S.families.length)?'pet':'group');S.gstep='pick'}
+  else{S.joinCode='';S.scr=S.petSet?'main':'pet';S.gstep='pick'}
   S.tab='home';render()}
 };
 render();setInterval(petIdle,20000);setTimeout(()=>petIdle(true),5000);
