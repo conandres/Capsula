@@ -131,6 +131,7 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
 .cloud .qr button{background:#fff!important;color:#4a2b9c!important;border:0!important;font-weight:700;box-shadow:0 3px 10px #0003!important}
 .cloud .bub{background:#fff!important;color:#2a2140!important}
 .room.pkb .qw{display:none}
+.room .fl{transition:translate .35s cubic-bezier(.3,1.2,.5,1)}.room.qa .fl{translate:-52px 0}.room.pkb.qa .fl{translate:0 0}
 </style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1657,7 +1658,7 @@ function bathOk(){ptTick();const p=S.pt;
  if(asleep()){bubSay('Zzz… ahora no, estoy durmiendo');return false}
  if(p.clean>=90){p3play('shake');bubSay(say(['¡Ya estoy limpio y brillante!','Hoy ya me bañé, mira cómo huelo','Más tarde, ahora estoy impecable']));return false}
  return true}
-function roomSync(){const r=$('#room');if(!r)return;const sl=asleep();r.classList.toggle('night',sl);r.classList.toggle('dirty',S.pt.clean<35);const dc=$('#dirtc');if(dc)dc.hidden=!(S.pt.clean<35&&!S.tool);
+function roomSync(){const r=$('#room');if(!r)return;const sl=asleep();r.classList.toggle('night',sl);r.classList.toggle('dirty',S.pt.clean<35);r.classList.toggle('qa',!!(S.bub&&S.bub.o)&&!exAway());const dc=$('#dirtc');if(dc)dc.hidden=!(S.pt.clean<35&&!S.tool);
  if(sl&&!P3.zt){P3.zt=setInterval(()=>{if(!asleep()){clearInterval(P3.zt);P3.zt=0;trayUpd();return}const st=$('#slt');if(st&&S.pt.rest>Date.now())st.textContent=S.pet.name+' está durmiendo · despierta en unos '+sleepMin()+' min';try{P3.v&&P3.v.spawn&&P3.v.spawn('zzz')}catch(e){}},2600)}
  if(!sl&&P3.zt){clearInterval(P3.zt);P3.zt=0}}
 setInterval(()=>{if(!exAway()||!$('#tray'))return;const e=S.pt.ex;if(Date.now()>=e.end&&!e.rdy){e.rdy=1;save();{const r=$('#exr');if(r)r.textContent='¡Ya volvió! Trae una postal'}bubSay('¡Volví de mi expedición!');trayUpd();try{remApply()}catch(x){}}else{const l=$('#exl');if(l){const x=EXPS.find(a=>a.k===e.k);const r=$('#exr');if(r)r.textContent='Vuelve en '+fmtWait(exLeft());l.textContent=S.pet.name+' está de expedición en '+x.n+' '+x.e+' · vuelve en '+fmtWait(exLeft())}}},20000);
@@ -2221,7 +2222,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=107;
+const BUILD=108;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
