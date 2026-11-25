@@ -70,7 +70,15 @@ jobs:
           keytool -printcert -jarfile tienda/Capsula.apk | tee firma.txt
           grep -q "05:1D:86:8F:29:71" firma.txt || { echo "::error::El APK no quedó firmado con la llave de tienda"; exit 1; }
 
+      - name: Guardar copia como artefacto (privado)
+        uses: actions/upload-artifact@v4
+        with:
+          name: capsula-apk
+          path: tienda/Capsula.apk
+          retention-days: 7
+
       - name: Publicar (borrador privado, siempre el mismo)
+        continue-on-error: true
         uses: softprops/action-gh-release@v2
         with:
           tag_name: capsula-firmada
