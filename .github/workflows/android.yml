@@ -77,6 +77,15 @@ jobs:
           path: tienda/Capsula.apk
           retention-days: 7
 
+      - name: Limpiar borradores duplicados
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for id in $(gh api "repos/${{ github.repository }}/releases?per_page=100" --jq '.[] | select(.draft and .tag_name=="capsula-firmada") | .id'); do
+            gh api -X DELETE "repos/${{ github.repository }}/releases/$id" || true
+          done
+
       - name: Publicar (borrador privado, siempre el mismo)
         continue-on-error: true
         uses: softprops/action-gh-release@v2
