@@ -121,7 +121,7 @@ function start() {
   addEventListener('pagehide', () => flush(false));
 
   /* ---------- listeners de la familia activa ---------- */
-  function teardown() { subs.forEach(u => { try { u(); } catch (e) {} }); subs = []; qaStop(); }
+  function teardown() { subs.forEach(u => { try { u(); } catch (e) {} }); subs = []; qaStop(); try { CLOUD.fr && CLOUD.fr.stop(); } catch (e) {} }
 
   function norm(d) {
     const x = d.data({ serverTimestamps: 'estimate' });
@@ -372,12 +372,85 @@ function start() {
       if (!snap.docs.length) break;
       const b = writeBatch(db); snap.docs.forEach(d => b.delete(d.ref)); await b.commit();
     }
+    await CLOUD.fr.wipe(uid);
     for (const c of ['presence', 'referrals']) { try { await deleteDoc(doc(db, c, uid)); } catch (e) {} }
     await deleteDoc(userRef());
     step('Cerrando tu cuenta…');
     await deleteUser(user);
     try { Object.keys(localStorage).filter(k => /^capsula/i.test(k)).forEach(k => localStorage.removeItem(k)); } catch (e) {}
     try { await terminate(db); await clearIndexedDbPersistence(db); } catch (e) {}
+  };
+
+  /* ---------- amigos y chat 1 a 1 ---------- */
+  const profC = new Map();
+  let frU = null, chU = null;
+  const fcOf = raw => { const m = String(raw || '').toUpperCase().match(/[A-Z0-9]{8}/g); return m ? m[m.length - 1] : ''; };
+  CLOUD.fr = {
+    pair: (a, b) => [a, b].sort().join('_'),
+    ensure: async (name, pet) => {
+      if (!me) return '';
+      const ref = doc(db, 'profiles', me.uid), s = await getDoc(ref);
+      name = String(name || 'Amigo').trim().slice(0, 30) || 'Amigo'; pet = String(pet || '').slice(0, 12);
+      if (s.exists()) { const d = s.data(); if (d.name !== name || d.pet !== pet) await updateDoc(ref, { name, pet }); profC.set(me.uid, { name, pet }); return d.fc; }
+      for (let i = 0; i < 5; i++) {
+        const fc = genCode();
+        if ((await getDoc(doc(db, 'friendCodes', fc))).exists()) continue;
+        const b = writeBatch(db); b.set(ref, { name, pet, fc }); b.set(doc(db, 'friendCodes', fc), { uid: me.uid }); await b.commit();
+        profC.set(me.uid, { name, pet }); return fc;
+      }
+      throw new Error('code');
+    },
+    profile: async uid => {
+      if (profC.has(uid)) return profC.get(uid);
+      try { const s = await getDoc(doc(db, 'profiles', uid)); const p = s.exists() ? { name: s.data().name || 'Amigo', pet: s.data().pet || '' } : { name: 'Amigo', pet: '' }; profC.set(uid, p); return p; }
+      catch (e) { return { name: 'Amigo', pet: '' }; }
+    },
+    cached: uid => profC.get(uid) || null,
+    find: async raw => {
+      const code = fcOf(raw); if (!code || !me) return null;
+      const c = await getDoc(doc(db, 'friendCodes', code)); if (!c.exists()) return null;
+      const uid = c.data().uid; if (uid === me.uid) return { self: true };
+      return { uid, ...(await CLOUD.fr.profile(uid)) };
+    },
+    invite: uid => setDoc(doc(db, 'friends', CLOUD.fr.pair(me.uid, uid)), { u: [me.uid, uid].sort(), from: me.uid, st: 'pending', ts: serverTimestamp() }),
+    accept: id => updateDoc(doc(db, 'friends', id), { st: 'ok' }),
+    remove: id => deleteDoc(doc(db, 'friends', id)),
+    block: id => updateDoc(doc(db, 'friends', id), { st: 'blk', by: me.uid }),
+    listen: cb => {
+      if (frU) frU(); if (!me) return;
+      frU = onSnapshot(query(collection(db, 'friends'), where('u', 'array-contains', me.uid)), snap => {
+        cb(snap.docs.map(d => { const x = d.data(); return { id: d.id, o: (x.u || []).find(u => u !== me.uid) || '', st: x.st, from: x.from, by: x.by || '', lm: x.lm || '', lb: x.lb || '', la: x.la && x.la.toMillis ? x.la.toMillis() : 0, ts: x.ts && x.ts.toMillis ? x.ts.toMillis() : Date.now() }; }));
+      }, () => {});
+    },
+    open: (id, cb) => {
+      if (chU) chU();
+      chU = onSnapshot(query(collection(db, 'friends', id, 'msgs'), orderBy('ts', 'desc'), limit(120)), snap => {
+        cb(snap.docs.map(d => { const x = d.data(); return { id: d.id, f: x.f, t: x.t, ts: x.ts && x.ts.toMillis ? x.ts.toMillis() : Date.now() }; }).reverse());
+      }, () => cb(null));
+    },
+    close: () => { if (chU) { chU(); chU = null; } },
+    send: async (id, text) => {
+      const t = String(text || '').trim().slice(0, 500); if (!t || !me) return;
+      const b = writeBatch(db);
+      b.set(doc(collection(db, 'friends', id, 'msgs')), { f: me.uid, t, ts: serverTimestamp() });
+      b.update(doc(db, 'friends', id), { lm: t.slice(0, 80), la: serverTimestamp(), lb: me.uid });
+      await b.commit();
+    },
+    del: (id, mid) => deleteDoc(doc(db, 'friends', id, 'msgs', mid)),
+    stop: () => { if (frU) { frU(); frU = null; } if (chU) { chU(); chU = null; } },
+    wipe: async uid => {
+      try {
+        const s = await getDocs(query(collection(db, 'friends'), where('u', 'array-contains', uid)));
+        for (const d of s.docs) {
+          try {
+            const m = await getDocs(query(collection(db, 'friends', d.id, 'msgs'), where('f', '==', uid)));
+            for (const x of m.docs) await deleteDoc(x.ref);
+          } catch (e) {}
+          try { await deleteDoc(d.ref); } catch (e) {}
+        }
+      } catch (e) {}
+      try { const p = await getDoc(doc(db, 'profiles', uid)); if (p.exists()) { try { await deleteDoc(doc(db, 'friendCodes', p.data().fc)); } catch (e) {} await deleteDoc(p.ref); } } catch (e) {}
+    }
   };
 
   /* ---------- invitar a la app (referidos) y panel del administrador ---------- */

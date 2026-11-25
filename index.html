@@ -136,6 +136,26 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
 .cloud{align-items:flex-start!important;transition:none}
 .cloud .bub{box-shadow:0 4px 14px #0003}.cloud .bub::before{left:calc(var(--tx,24px) - 6px)!important;box-shadow:0 2px 6px #0004!important}.cloud .bub::after{left:calc(var(--tx,24px) - 14px)!important}
 .cloud .qr{position:absolute;top:100%;margin-top:30px!important;left:0;width:max-content}
+
+.hbn{position:relative;width:38px;height:38px;border-radius:50%;border:0;background:var(--tint-2);color:var(--pd);display:grid;place-items:center;cursor:pointer;flex:none}
+.bdg{position:absolute;top:-3px;right:-3px;min-width:18px;height:18px;border-radius:9px;background:#e0364f;color:#fff;font:700 11px/18px sans-serif;text-align:center;padding:0 4px;font-style:normal;border:2px solid var(--top-bg,#fff);box-sizing:content-box}
+.brand .bn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.brand .bn small{display:block;overflow:hidden;text-overflow:ellipsis}
+.fav{display:grid;place-items:center;border-radius:50%;color:#fff;font-weight:700;flex:none}
+.fcd{letter-spacing:.12em;color:var(--pd);user-select:all}
+.frr{display:flex;align-items:center;gap:10px;margin-top:12px;width:100%;text-align:left}.frr .tx{flex:1;min-width:0;display:flex;flex-direction:column}.frr .tx b,.frr .tx .mu{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+button.frl{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;margin-top:12px}.frl:active{opacity:.7}
+.frl .un{color:var(--tx);font-weight:700}.ft{display:flex;flex-direction:column;align-items:flex-end;gap:4px;font-size:12px;color:var(--mu,#777);flex:none}.udot{width:10px;height:10px;border-radius:50%;background:#6B4CD6;display:block}
+.chat{position:absolute;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;animation:chin .28s cubic-bezier(.2,.9,.3,1)}.chat.out{animation:chout .2s ease-in forwards}
+@keyframes chin{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}@keyframes chout{to{transform:translateX(40px);opacity:0}}
+.ch{display:flex;align-items:center;gap:10px;padding:max(10px,env(safe-area-inset-top,0px)) 12px 10px;background:var(--top-bg,var(--bg));border-bottom:1px solid var(--line,#0001)}.ch .tx{flex:1;min-width:0;display:flex;flex-direction:column}.ch .tx b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cm{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:3px;overscroll-behavior:contain}
+.cday{align-self:center;font-size:12px;color:var(--mu,#777);background:var(--tint-2);border-radius:99px;padding:3px 12px;margin:10px 0 6px;text-transform:capitalize}
+.mb{max-width:78%;padding:8px 12px 6px;border-radius:18px;line-height:1.35;word-break:break-word;position:relative;margin-top:6px}.mb.g{margin-top:0}
+.mb span{white-space:pre-wrap}.mb time{display:block;font-size:11px;opacity:.65;text-align:right;margin-top:2px}
+.mb.me{align-self:flex-end;background:#6B4CD6;color:#fff;border-bottom-right-radius:6px;cursor:pointer}.mb.oth{align-self:flex-start;background:var(--card);border:1px solid var(--line,#0001);color:var(--tx);border-bottom-left-radius:6px}
+.mb.new{animation:mbin .28s cubic-bezier(.2,1.3,.4,1)}@keyframes mbin{from{transform:translateY(10px) scale(.94);opacity:0}to{transform:none;opacity:1}}
+.cin{display:flex;gap:8px;padding:10px 12px max(12px,env(safe-area-inset-bottom,0px));border-top:1px solid var(--line,#0001);background:var(--top-bg,var(--bg))}.cin .in{flex:1;min-width:0;border-radius:22px}.cin .btn{width:48px;padding:0;display:grid;place-items:center;border-radius:50%}
+@media (prefers-reduced-motion:reduce){.chat,.chat.out,.mb.new{animation:none}}
 </style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -337,7 +357,7 @@ textarea.in{resize:vertical;line-height:1.45;min-height:132px;padding-top:12px}t
 .lb{font-weight:500;font-size:13px;color:var(--mu);margin-bottom:-4px}
 .err{color:var(--color-danger-text);font-size:13px}.err:empty{display:none}
 .q{background:var(--soft);border-radius:16px;padding:10px 14px;font-weight:500}
-.sh{position:absolute;inset:0;background:var(--overlay);display:none;align-items:flex-end;z-index:20}.sh.open{display:flex}
+.sh{position:absolute;inset:0;background:var(--overlay);display:none;align-items:flex-end;z-index:60}.sh.open{display:flex}
 .pn{background:var(--card);width:100%;max-height:92%;overflow-y:auto;border-radius:28px 28px 0 0;padding:20px max(16px,env(safe-area-inset-right,0px)) max(22px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));position:relative;display:flex;flex-direction:column;gap:10px}
 .pn h2{padding-right:44px}
 .x{position:absolute;right:12px;top:12px;border:0;background:var(--soft);color:var(--pd);width:40px;height:40px;border-radius:50%;display:grid;place-items:center;cursor:pointer}
@@ -358,7 +378,7 @@ textarea.in{resize:vertical;line-height:1.45;min-height:132px;padding-top:12px}t
 .tm{font-size:30px;font-weight:600;text-align:center}
 .mic{width:84px;height:84px;border-radius:50%;border:0;background:var(--p);color:var(--color-on-primary);cursor:pointer;display:inline-grid;place-items:center}
 .mic.rc{animation:pl 1.2s infinite}@keyframes pl{50%{transform:scale(1.1)}}
-.ts{position:absolute;top:14px;left:50%;transform:translate(-50%,-160px);opacity:0;pointer-events:none;background:var(--tx);color:#fff;padding:10px 18px;border-radius:99px;font-weight:500;transition:transform .35s,opacity .25s;z-index:30;max-width:92%;text-align:center}
+.ts{position:absolute;top:14px;left:50%;transform:translate(-50%,-160px);opacity:0;pointer-events:none;background:var(--tx);color:#fff;padding:10px 18px;border-radius:99px;font-weight:500;transition:transform .35s,opacity .25s;z-index:70;max-width:92%;text-align:center}
 .ts.show{transform:translate(-50%,0)}
 .pets .pbig{display:flex;justify-content:center;margin:2px 0 6px}.pets .prow{display:flex;gap:8px;justify-content:center;margin:4px 0 10px}.pets .pk{flex:1;min-width:0;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px}.pets .pk b{font-size:13px}.soc{display:flex;flex-direction:column;gap:12px;background:linear-gradient(135deg,var(--soft),var(--card))}.soc h3{margin:0 0 4px}.soc p{margin:0}.socic{flex:none;width:46px;height:46px;border-radius:16px;background:var(--color-primary);color:var(--color-on-primary);display:flex;align-items:center;justify-content:center}.flm{position:relative;flex:none;width:58px;height:58px;display:flex;align-items:center;justify-content:center}.flm b{position:absolute;left:0;right:0;bottom:11px;text-align:center;font:800 16px var(--f);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.4)}.flbig{display:flex;justify-content:center;margin:6px 0 4px}.flbig svg{animation:flick 1.4s ease-in-out infinite;transform-origin:50% 90%}.streak h3{margin:0}.streak p{margin:0}.cvs{display:flex;align-items:center;justify-content:center;font:800 26px var(--f);color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.18)}.cf{position:absolute;bottom:38%;font-size:22px;pointer-events:none;z-index:50;animation:cf 1.5s ease-out forwards}
 @keyframes cf{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--r));opacity:0}}
@@ -689,6 +709,7 @@ const I={
  play:'<polygon points="5 3 19 12 5 21 5 3"/>',
  stop:'<rect x="6" y="6" width="12" height="12" rx="2"/>',
  plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+ send:'<path d="M4 12l16-8-6 16-3-7z"/>',dots:'<circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>',
  back:'<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>',
  ball:'<circle cx="12" cy="12" r="9"/><path d="M12 7.5l4 2.9-1.5 4.7h-5L8 10.4z"/><path d="M12 3v4.5M16 10.4l4.3-1.4M14.5 15.1l2.6 3.6M9.5 15.1l-2.6 3.6M8 10.4L3.7 9"/>',
  tub:'<path d="M3 12h18v1.5a5.5 5.5 0 0 1-5.5 5.5h-7A5.5 5.5 0 0 1 3 13.5z"/><path d="M6 12V6.5a2.2 2.2 0 0 1 4.2-.9"/><path d="M7 19l-1 2M17 19l1 2"/>',
@@ -781,13 +802,13 @@ const pswHTML=()=>{const L=[{kind:S.pet.kind,name:S.pet.name,on:1,st:stg(),w:S.w
 function wear(id){if(!ownedId(id))return;wearPut(id);const w=document.querySelector('#sh .ward');render();if(w)wardOpen()}
 const guideIc=x=>!x?'':x.startsWith('img:')?`<img src="img/${x.slice(4)}-lg.png" alt="" style="width:34px;height:34px;object-fit:contain">`:/^[a-z]+$/.test(x)?ic(x,26,1.8):`<span style="font-size:26px;line-height:1">${x}</span>`;
 function nubiSheet(o){showSheet(`<div class="gd nbx ${o.c||'m'}">${o.dots||''}<span class="ngp ${o.fly?'nfly':'nhov'}">${pet('nube',96,[],3,true)}<i class="nsp s1">${ic('sparkle',16,1.8)}</i><i class="nsp s2">${ic('sparkle',14,1.8)}</i></span><div class="nbub"><span class="gk">${o.k||''}</span><div class="nbt">${o.ic?`<span class="nbi">${guideIc(o.ic)}</span>`:''}<h2>${o.t}</h2></div><p class="mu">${o.x}</p></div>${o.extra||''}</div>`)}
-const NTIPS={food:['apple','Hora de comer','¡Mira! Arrastra la comida de abajo hasta la boca de tu mascota. Si ya está llena, te lo dirá. ¡No pasa nada si te equivocas!'],
- bath:['tub','Hora del baño','Primero arrastra a tu mascota hacia la tina y suéltala para darle un chapuzón. Luego frótala con el dedo: la esponja hace burbujas. Cuando la barra se llene, queda limpia.'],
- play:['ball','¡Penales!','Tira el balón con un tirón rápido hacia el arco: entre más fuerte, más alto va. Tu mascota intentará atajarlo. Son 5 tiros; si metes 2 o más, ganas Lumis.'],
- sleep:['moon','A dormir','Al apagar la luz tu mascota descansa y recupera energía. Puedes encender la luz cuando quieras, o despierta sola.'],
- exp:['compass','Expediciones','Mándala de viaje: mientras está fuera no puedes cuidarla, pero vuelve con una postal, una pregunta y premios. Entre más dure, mejor el premio.'],
- ward:['shirt','El armario','Aquí eliges la ropa de tu mascota, una prenda por categoría. Las nuevas se compran en la Tienda con Lumis.'],
- shop:['bag','La Tienda','Aquí gastas tus Lumis: fondos del cuarto, ropa y mascotas nuevas. Se ganan poco a poco cuidando a tu mascota y contando historias.']};
+const NTIPS={food:['apple','Comida','Arrastra la comida hasta su boca.'],
+ bath:['tub','Baño','Llévala a la tina y suéltala. Luego frótala con el dedo hasta llenar la barra.'],
+ play:['ball','Penales','Tira el balón hacia arriba con un tirón rápido. 5 tiros; con 2 goles ganas Lumis.'],
+ sleep:['moon','Dormir','Con la luz apagada recupera energía. Enciéndela cuando quieras.'],
+ exp:['compass','Expediciones','Mientras viaja no puedes cuidarla. Vuelve con postal y premio; más tiempo, mejor premio.'],
+ ward:['shirt','Armario','Una prenda por categoría. Las nuevas se compran en la Tienda.'],
+ shop:['bag','Tienda','Gasta tus Lumis en fondos, ropa y mascotas.']};
 function guideTip(k,force){const t=NTIPS[k];if(!t)return;let seen=false;try{seen=localStorage.getItem('capsula_tg_'+k)==='1';localStorage.setItem('capsula_tg_'+k,'1')}catch(e){}
  if(seen&&!force)return;
  setTimeout(()=>nubiSheet({k:'Nubi te explica',ic:t[0],t:t[1],x:t[2],fly:1,extra:'<button class="btn w" onclick="cl()">¡Entendido!</button>'}),force?0:350)}
@@ -931,10 +952,11 @@ const S={birth:'',legal:null,blk:[],refC:0,invD:[],adm:(()=>{try{return localSto
  others:[],user:null,families:[],members:{},solo:false,cloudErr:'',bootSlow:0,joinCode:'',
  xp:0,lm:0,lmT:0,cap:null,rm:'',streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],favs:[],best:0,total:0,prompt:null,posts:[],plim:25};
 let T={i:0,s:0,a:null},C={};const LIVE=new Set();
-try{const q=new URLSearchParams(location.search),c=q.get('codigo'),sf=v=>String(v||'').replace(/[^A-Za-z0-9_-]/g,'').slice(0,40),rf=sf(q.get('ref')),de=sf(q.get('de'));
+try{const q=new URLSearchParams(location.search),c=q.get('codigo'),sf=v=>String(v||'').replace(/[^A-Za-z0-9_-]/g,'').slice(0,40),rf=sf(q.get('ref')),de=sf(q.get('de')),am=String(q.get('amigo')||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);
  if(rf)localStorage.setItem('capsula_ref',rf);if(de)localStorage.setItem('capsula_de',de);
  if(c)S.joinCode=c.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);
- if(c||rf||de)history.replaceState(null,'',location.pathname)}catch(e){}
+ if(am)S.fqLink=am;
+ if(c||rf||de||am)history.replaceState(null,'',location.pathname)}catch(e){}
 
 /* Lo personal (mascota, corazones, racha...) viaja a la nube; la copia local sirve de respaldo sin internet */
 const personal=()=>({name:S.me.name,ln:S.me.ln||'',pet:S.pet,petSet:S.petSet,xp:S.xp,lm:S.lm||0,lmT:S.lmT||0,cap:S.cap||null,rm:S.rm||'',streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,favs:S.favs||[],best:S.best,total:S.total,types:[...S.types],pt:S.pt,others:S.others||[],solo:S.solo,theme:S.theme,showSeen:S.showSeen,birth:S.birth,legal:S.legal,blk:S.blk,refC:S.refC,invD:S.invD,soc:S.soc||0,sh:S.sh||0,shW:S.shW||'',qd:S.qd,qaN:S.qaN,fpR:S.fpR||{},fg:S.fg||0,wkG:S.wkG||'',accent:S.accent||'',active:S.group?S.group.id:null});
@@ -1230,16 +1252,16 @@ function petScr(){const k=S.pet.kind;return `<div class="ob pets"><h1>Conoce a t
  <button class="btn w" onclick="startGame()">Empezar</button></div>`}
 function selPet(k){S.pet.kind=k;if(!S.pe)S.pet.name=PETS[k].n;render();setTimeout(()=>p3play('cheer'),450)}
 function startGame(){S.pet.name=S.pet.name.trim()||PETS[S.pet.kind].n;S.petSet=true;S.fpR=S.fpR||{};if(!S.fpR.gift&&!(S.total||0)&&!S.posts.length){S.fpR.gift=1;S.lm=(S.lm||0)+150;S.lmT=Date.now();try{save()}catch(e){}}S.scr='main';S.tab='home';render();if((S.total||0)>0||S.posts.length){toast('¡'+S.pet.name+' ya está contigo!');return}petHello()}
-function petHello(){const n=esc(S.pet.name);nubiSheet({k:'Tu guía',ic:'',t:'¡Hola! Soy Nubi',x:`Yo te voy a ir explicando todo. <b>${n}</b> ya llegó con 150 Lumis de regalo y tiene hambre.<br><br>Dale de comer para empezar. Después puedes contar tu primera historia: una foto, una carta, un dibujo o tu voz. Todo es privado y solo lo ven las personas que tú invites.`,fly:1,extra:`<button class="btn w" onclick="cl();go('mundo');setTimeout(()=>toolSet('food'),700)">Darle de comer a ${n}</button><button class="btn s w" onclick="cl();dest()">Contar mi primera historia</button><button class="lnk" onclick="cl()">Mirar la app primero</button>`})}
+function petHello(){const n=esc(S.pet.name);nubiSheet({k:'Tu guía',ic:'',t:'¡Hola! Soy Nubi',x:`<b>${n}</b> llegó con 150 Lumis y tiene hambre. Dale de comer para empezar. Lo que cuentes es privado: solo lo ven quienes tú invites.`,fly:1,extra:`<button class="btn w" onclick="cl();go('mundo');setTimeout(()=>toolSet('food'),700)">Darle de comer a ${n}</button><button class="btn s w" onclick="cl();dest()">Contar mi primera historia</button><button class="lnk" onclick="cl()">Mirar la app primero</button>`})}
 
 /* ---------- main shell ---------- */
 const spaceId=()=>S.group?S.group.id:null;
 function spaceTo(id){id=id||null;if(spaceId()===id)return;if(window.CLOUD&&CLOUD.ready&&CLOUD.switchFamily)CLOUD.switchFamily(id);else S.group=id?(S.families.find(f=>f.id===id)||null):null}
-const NK=()=>({home:'home',mundo:'mundo',caps:'caps',cap:'caps',act:'perfil',tienda:'tienda',perfil:'perfil'})[S.tab]||(S.group?'caps':'mundo');
+const NK=()=>({home:'home',mundo:'mundo',caps:'caps',cap:'caps',act:'perfil',tienda:'tienda',perfil:'perfil',amigos:'none'})[S.tab]||(S.group?'caps':'mundo');
 const nMem=()=>Math.max(1,Object.keys(S.members).length);
 const spaceTag=()=>S.group?`<span class="tag spc shr">${ic('users',14)}Compartido con ${nMem()} ${nMem()===1?'persona':'personas'}</span>`:`<span class="tag spc priv">${ic('lock',14)}Solo tú</span>`;
-const hsub=()=>({home:'Hola, '+esc(S.me.name),mundo:'Mi mundo · solo tú',caps:'Mis cápsulas',cap:S.group?esc(S.group.name):'Mis cápsulas',act:'Actividad',perfil:'Perfil'})[S.tab]||(S.group?esc(S.group.name):'Mi mundo · solo tú');
-const hdr=()=>`<div class="brand"><img class="bi" src="icons/icon-192.png" width="38" height="38" alt="" decoding="async"><span class="bn">Cápsula<small>${hsub()}</small></span></div><div class="row" style="gap:8px;flex:none"><button class="wal hw2" onclick="go('tienda')" aria-label="Tus Lumis">${LI} <span class="cnt" data-n="${S.lm||0}">${S.lm||0}</span></button><button class="pf${syncOff()||SYNC.pend>0?' unsaved':''}" onclick="go('perfil')" aria-label="Mi perfil">${pfIn()}</button></div>`;
+const hsub=()=>({home:'Hola, '+esc(S.me.name),mundo:'Mi mundo · solo tú',caps:'Mis cápsulas',cap:S.group?esc(S.group.name):'Mis cápsulas',act:'Actividad',perfil:'Perfil',amigos:'Amigos'})[S.tab]||(S.group?esc(S.group.name):'Mi mundo · solo tú');
+const hdr=()=>`<div class="brand"><img class="bi" src="icons/icon-192.png" width="38" height="38" alt="" decoding="async"><span class="bn">Cápsula<small>${hsub()}</small></span></div><div class="row" style="gap:8px;flex:none">${frOk()?frBtn():''}<button class="wal hw2" onclick="go('tienda')" aria-label="Tus Lumis">${LI} <span class="cnt" data-n="${S.lm||0}">${S.lm||0}</span></button><button class="pf${syncOff()||SYNC.pend>0?' unsaved':''}" onclick="go('perfil')" aria-label="Mi perfil">${pfIn()}</button></div>`;
 function shell(){return `<div class="top" id="hd">${hdr()}</div><main id="mn">${VIEW[S.tab]()}</main>
 <nav aria-label="Principal">
  <button data-t="home" onclick="go('home')">${ic('home')}Inicio</button>
@@ -1896,8 +1918,8 @@ function reportOpen(pid,uid){const nm=(S.members[uid]&&S.members[uid].name)||'es
  <p class="err" id="rse" role="alert" style="display:none"></p>
  <button class="btn w" id="rsb" disabled onclick="reportSend('${pid}','${esc(uid)}')">Enviar reporte</button><button class="btn s w" onclick="cl()">Cancelar</button>`)}
 async function reportSend(pid,uid){const v=document.querySelector('input[name=rs]:checked');if(!v)return;const b=$('#rsb');b.disabled=true;
- try{await CLOUD.report({fid:S.group&&S.group.id,pid,tu:uid,r:v.value,n:$('#rsn2').value.trim()});
-  showSheet(`<h2>Gracias por avisar</h2><p class="mu">Revisaremos el reporte. Mientras tanto puedes dejar de ver a esa persona.</p><button class="btn w" onclick="blockSet('${esc(uid)}',true);cl()">Bloquear a esta persona</button><button class="btn s w" onclick="cl()">Ahora no</button><p class="mu">Si hay peligro inmediato, llama al 123. La línea 141 atiende a niños, niñas y adolescentes.</p>`)}
+ try{const dm=!!S.rdm;S.rdm=0;await CLOUD.report({fid:dm?'dm':S.group&&S.group.id,pid,tu:uid,r:v.value,n:$('#rsn2').value.trim()});
+  showSheet(`<h2>Gracias por avisar</h2><p class="mu">Revisaremos el reporte. Mientras tanto puedes dejar de ver a esa persona.</p><button class="btn w" onclick="${dm?`frBlockUid('${esc(uid)}');chatClose();`:''}blockSet('${esc(uid)}',true);cl()">Bloquear a esta persona</button><button class="btn s w" onclick="cl()">Ahora no</button><p class="mu">Si hay peligro inmediato, llama al 123. La línea 141 atiende a niños, niñas y adolescentes.</p>`)}
  catch(e){b.disabled=false;const q=$('#rse');q.textContent='No se pudo enviar. Revisa tu conexión e intenta de nuevo.';q.style.display='block'}}
 function blockSet(uid,on){S.blk=S.blk||[];const i=S.blk.indexOf(uid);if(on&&i<0)S.blk.push(uid);if(!on&&i>=0)S.blk.splice(i,1);save();toast(on?'Persona bloqueada. Ya no verás lo que publique.':'Persona desbloqueada');soft()}
 function blkList(){const L=S.blk||[];showSheet(`<h2>Personas bloqueadas</h2>${L.length?L.map(u=>`<div class="row sp"><span class="tx"><b>${esc((S.members[u]&&S.members[u].name)||'Persona')}</b></span><button class="btn s" onclick="blockSet('${esc(u)}',false);blkList()">Desbloquear</button></div>`).join(''):'<p class="mu">No has bloqueado a nadie.</p>'}<button class="btn s w" onclick="cl()">Cerrar</button>`)}
@@ -2062,7 +2084,7 @@ function memberCard(id){
  ${pt?`<p class="pres ${on?'on':''}">${pt}</p>`:''}
  <div class="mst"><div><b>${np}</b><span class="mu">${np===1?'aporte':'aportes'} aquí</span></div></div>
  ${m.joinedAt?`<p class="mu">En la cápsula desde ${new Date(m.joinedAt).toLocaleDateString('es',{day:'numeric',month:'long',year:'numeric'})}</p>`:''}
- ${mine?'<button class="btn s w" onclick="cl();go(\'perfil\')">Editar mi perfil</button>':(S.group?`<button class="btn s w" onclick="blockSet('${esc(uid)}',${!isBlk(uid)});cl()">${isBlk(uid)?'Desbloquear':'Bloquear'}</button><button class="btn s w" onclick="reportOpen('','${esc(uid)}')">Reportar a esta persona</button>${S.user&&S.group.ownerUid===S.user.uid&&!isBlk(uid)?`<button class="btn s w" onclick="ownerAsk('${esc(uid)}')">Hacerle dueño de la cápsula</button>`:''}${S.user&&S.group.ownerUid===S.user.uid?`<button class="btn s w danger" onclick="kickAsk('${esc(uid)}')">Quitar de la cápsula</button>`:''}`:'')}
+ ${mine?'<button class="btn s w" onclick="cl();go(\'perfil\')">Editar mi perfil</button>':(S.group?`${frOk()&&!isBlk(uid)?(()=>{const f=S.fr.find(x=>x.o===uid);return f&&f.st==='ok'?`<button class="btn w" onclick="frFromMember('${esc(uid)}')">Escribir</button>`:f&&f.st==='pending'?`<button class="btn s w" disabled>${f.from===myUid()?'Invitación enviada':'Te envió una invitación'}</button>`:`<button class="btn w" onclick="frFromMember('${esc(uid)}')">Agregar como amigo</button>`})():''}<button class="btn s w" onclick="blockSet('${esc(uid)}',${!isBlk(uid)});cl()">${isBlk(uid)?'Desbloquear':'Bloquear'}</button><button class="btn s w" onclick="reportOpen('','${esc(uid)}')">Reportar a esta persona</button>${S.user&&S.group.ownerUid===S.user.uid&&!isBlk(uid)?`<button class="btn s w" onclick="ownerAsk('${esc(uid)}')">Hacerle dueño de la cápsula</button>`:''}${S.user&&S.group.ownerUid===S.user.uid?`<button class="btn s w danger" onclick="kickAsk('${esc(uid)}')">Quitar de la cápsula</button>`:''}`:'')}
  <button class="btn w" onclick="cl()">Cerrar</button></div>`)}
 function kickAsk(uid){const m=S.members[uid]||{},n=esc(m.name||'esta persona');if(!S.group||!S.user||S.group.ownerUid!==S.user.uid||uid===S.user.uid)return;
  showSheet(`<h2>¿Quitar a ${n}?</h2><p class="mu">${n} dejará de ver ${esc(S.group.name)}. Sus aportes se quedan en la cápsula.</p><p class="mu">Para que no pueda volver con el código que ya tiene, <b>renueva el código</b> después.</p><button class="btn w" onclick="kickGo('${esc(uid)}')">Sí, quitarla</button><button class="btn s w" onclick="cl()">Cancelar</button>`)}
@@ -2204,24 +2226,23 @@ function act(){
 /* ---------- mini guías (una para el juego, otra para las cápsulas; se ven la primera vez y se reabren desde Perfil) ---------- */
 const GUIDES={
  mundo:{c:'m',k:'Tu mundo',s:[
-  ['crown','Esta es tu mascota','¡Hola! Soy Nubi y te acompaño. Aquí vive tu mascota: es tu espacio, solo tuyo. Nadie más la ve ni entra a jugar con ella.'],
-  ['heart','Cuídala cada día','Acarícala con el dedo, arrástrale la comida a la boca, dale un chapuzón en la tina, apaga la luz para que duerma o juega a los penales. Si sus barras bajan, te lo pide con cariño: aquí no hay castigos.'],
-  ['ball','Penales','Toca Jugar y verás un arco detrás de tu mascota. Tira el balón con un tirón rápido hacia arriba; ella elige un lado para atajar y a veces adivina. Son 5 tiros por tanda y con 2 goles o más ganas Lumis.'],
-  ['tub','Baño con chapuzón','Toca Bañar, arrastra a tu mascota hasta la tina y suéltala: ¡chapuzón! Luego frótala con el dedo hasta llenar la barra.'],
-  ['img:lumis','Lumis: la moneda','Los ganas despacio: contando historias, cuidando a tu mascota, con el cofre diario, la pregunta del día, el juego de Parejas, las expediciones y cuando alguien entra con tu invitación. Hay un tope por día para que valgan algo. Se gastan en la Tienda.'],
-  ['compass','Expediciones','Manda a tu mascota a la Playa (1 h), el Bosque (4 h) o la Montaña (8 h). Mientras está fuera no puedes cuidarla. Al volver trae una postal que puedes mandarle a tu familia, y una pregunta con premio.'],
-  ['paw','Varias mascotas','Puedes tener hasta 3 mascotas: la segunda cuesta 400 Lumis y la tercera 800. Cada una tiene su ánimo, nivel y armario. Yo no cuento: soy la guía.'],
-  ['img:xp','XP: así crece','La XP se gana con las mismas acciones y no se gasta. Cada 100 XP subes un nivel y tu mascota evoluciona: Bebé, Pequeño (nivel 4), Joven (nivel 11) y Adulto (nivel 26). Crecer es lento a propósito.'],
-  ['shirt','Ropa y accesorios','Algunos accesorios se desbloquean solos con logros. Otros, como camisetas, sudaderas, jeans y falda, se compran con Lumis. Los pones en el armario (el gancho del cuarto), una prenda por categoría.'],
-  ['heart','Tu mascota te cuenta','Cuando alguien de tu cápsula comparte algo, tu mascota te lo dice en su nube de pensamiento.'],
-  ['gift','Cofre, racha y misiones','Abre el cofre una vez al día, mantén tu racha contando algo cada día y cumple las misiones de la semana para ganar más Lumis.',['Contar una historia','dest()']]]},
+  ['crown','Tu mascota','Es solo tuya. Nadie más la ve.'],
+  ['heart','Cuídala','Acaricia, da de comer, baña, apaga la luz o juega. Si bajan sus barras, te avisa. No hay castigos.'],
+  ['img:lumis','Lumis','Se ganan cuidándola, contando historias, con el cofre diario y jugando. Hay tope diario. Se gastan en la Tienda.'],
+  ['compass','Expediciones','Playa 1 h, Bosque 4 h, Montaña 8 h. Vuelve con postal y premio.'],
+  ['paw','Más mascotas','Hasta 3. La 2.ª cuesta 400 Lumis y la 3.ª 800.'],
+  ['img:xp','Nivel','Cada 100 XP subes de nivel y ella evoluciona.'],
+  ['gift','Cofre y racha','Abre el cofre cada día y cuenta algo para mantener tu racha.',['Contar una historia','dest()']]]},
  cap:{c:'c',k:'Cápsulas',s:[
-  ['lock','Un espacio privado con los tuyos','Una cápsula junta a tu familia, tu pareja o tus amigos. Solo entra quien tenga el código. ¡Yo te enseño cómo funciona!'],
-  ['users','Invita con un código','En la pestaña Personas están el código y el enlace para invitar. Ganas Lumis cuando alguien entra.',['Ir a Personas',"guideInvite()"]],
-  ['mail','Cuenten historias juntos','Fotos, cartas, notas de voz, dibujos y recetas. Reacciona a lo que cuentan los demás y marca con ★ tus favoritas.'],
-  ['bulb','Pregunta del día','Cada cápsula tiene su pregunta del día. Respóndela y se revela lo que contestaron los demás.'],
-  ['flame','Meta de la semana','Entre todos cuenten 10 historias antes del lunes: ganan 30 Lumis y, la primera vez, un gorro para tu mascota (a la 3.ª semana, una bufanda).'],
-  ['book','Armen su libro','Con 12 historias se arma un libro para leer. Al final (o con el botón Compartir) lo mandas como imágenes por WhatsApp para invitar a más gente.']]}};
+  ['lock','Cápsulas','Un espacio privado para tu familia, pareja o amigos. Máximo 3, una de cada tipo.'],
+  ['users','Invitar','Comparte el código o el enlace desde Personas. Ganas Lumis cuando alguien entra.',['Ir a Personas',"guideInvite()"]],
+  ['mail','Historias','Sube fotos, cartas, audios, dibujos y recetas. Reacciona y marca tus favoritas con ★.'],
+  ['bulb','Pregunta del día','Responde y verás lo que contestaron los demás.'],
+  ['flame','Meta semanal','10 historias entre todos antes del lunes dan 30 Lumis.'],
+  ['book','Libro','Con 12 historias se arma un libro para compartir.']]},
+ amig:{c:'c',k:'Amigos',s:[
+  ['users','Amigos','Agrégalos con su código o con un enlace. Cuando aceptan, ya pueden escribirse.'],
+  ['mail','Chat','Toca a un amigo para abrir el chat. Desde ahí puedes reportar o bloquear.']]}};
 const gSeen=k=>{try{return localStorage.getItem('capsula_g_'+k)==='1'}catch(e){return false}};
 function guideInvite(){cl();
  if(S.families.length){const f=S.group&&S.families.some(x=>x.id===S.group.id)?S.group:S.families[0];openCap(f.id);S.sub='personas';render();return}
@@ -2231,12 +2252,12 @@ function guideOpen(k,i){const g=GUIDES[k];if(!g)return;i=i||0;try{localStorage.s
  nubiSheet({c:g.c,fly:i===0,k:g.k+' · '+(i+1)+' de '+g.s.length,ic:st[0],t:st[1],x:st[2],dots:`<div class="obs gs" aria-hidden="true">${g.s.map((_,j)=>`<i class="${j<=i?'on':''}"></i>`).join('')}</div>`,
   extra:(st[3]?`<button class="btn s w" onclick="cl();${st[3][1]}">${st[3][0]}</button>`:'')+`<div class="row" style="gap:8px;width:100%">${i?`<button class="btn s" style="flex:1" onclick="guideOpen('${k}',${i-1})">Atrás</button>`:`<button class="btn s" style="flex:1" onclick="cl()">Saltar</button>`}<button class="btn" style="flex:2" onclick="${last?'cl()':`guideOpen('${k}',${i+1})`}">${last?'Entendido':'Siguiente'}</button></div>`})}
 function guideAuto(k){if(S.scr!=='main'||gSeen(k)||!legalOk())return;setTimeout(()=>{if(S.scr!=='main'||gSeen(k)||$('#sh.open')||$('.lvup'))return;if(k==='mundo'&&S.tab!=='mundo')return;if(k==='cap'&&S.tab!=='cap')return;guideOpen(k,0)},900)}
-const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa cómo funciona cada parte.</span><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn s" onclick="guideOpen('mundo',0)">Guía de Mi mundo</button><button class="btn s" onclick="guideOpen('cap',0)">Guía de las cápsulas</button></div></div>`;
+const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa cómo funciona cada parte.</span><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn s" onclick="guideOpen('mundo',0)">Guía de Mi mundo</button><button class="btn s" onclick="guideOpen('cap',0)">Guía de las cápsulas</button><button class="btn s" onclick="guideOpen('amig',0)">Guía de amigos</button></div></div>`;
 /* ---------- favoritas (solo las ves tú) ---------- */
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=113;
+const BUILD=114;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
@@ -2244,12 +2265,94 @@ function updX(){S.upd=0;try{sessionStorage.setItem('capsula_updx','1')}catch(e){
 const petShopHTML=()=>{const have=petOwned(),n=have.length,price=PET_PRICE[n];
  return `<section class="card"><h3>Mascotas</h3><span class="mu">Puedes tener hasta 3. ${n<3?'La próxima cuesta '+LI+' '+price+'.':'Ya tienes las 3 que caben.'}</span><div class="pg" style="margin-top:10px">${Object.entries(PETS).filter(([k])=>k!=='nube').map(([k,v])=>{const own=have.includes(k);return `<button class="pk" ${own||n>=3?'disabled':''} onclick="S.adk='${k}';petAdoptOpen()" aria-label="${v.d}">${pet(k,76,[],0)}<b>${v.d}</b><small>${own?'Ya la tienes ✓':n>=3?'Sin espacio':LI+' '+price}</small></button>`}).join('')}</div></section>`};
 function tienda(){return `<div class="spch"><h2>Tienda</h2></div>${petShopHTML()}${shopHTML()}${closetHTML()}`}
-const VIEW={home,mundo,caps,cap,act,tienda,perfil,arc,triv};
+/* ---------- Amigos y chat 1 a 1 ---------- */
+S.fr=[];S.fc='';S.chat=null;S.fq='';S.fseen={};
+const myUid=()=>S.user&&S.user.uid;
+const fseenKey=()=>'capsula_fseen_'+(myUid()||'');
+try{S.fseen=JSON.parse(localStorage.getItem('capsula_fseen_x')||'{}')}catch(e){}
+const frOk=()=>!!(S.user&&window.CLOUD&&CLOUD.fr);
+const frName=o=>{const p=frOk()&&CLOUD.fr.cached(o);return p?p.name:'Amigo'};
+const frHue=s=>{let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))%360;return h};
+const frAv=(o,sz=44)=>`<span class="fav" style="width:${sz}px;height:${sz}px;background:hsl(${frHue(o)} 52% 58%);font-size:${Math.round(sz*.42)}px">${esc((frName(o).trim().charAt(0)||'?').toUpperCase())}</span>`;
+const frReq=()=>S.fr.filter(f=>f.st==='pending'&&f.from!==myUid()).length;
+const frUnread=f=>f.st==='ok'&&f.lb&&f.lb!==myUid()&&f.la>(S.fseen[f.id]||0);
+const frBadge=()=>frReq()+S.fr.filter(frUnread).length;
+const frBtn=()=>{const n=frBadge();return `<button class="hbn" onclick="go('amigos')" aria-label="Amigos y chats${n?', '+n+' novedades':''}">${ic('chat',22)}${n?`<i class="bdg">${n>9?'9+':n}</i>`:''}</button>`};
+function frInit(){if(!frOk())return;try{S.fseen=JSON.parse(localStorage.getItem(fseenKey())||'{}')}catch(e){}
+ CLOUD.fr.ensure(APP.fullName(),S.pet.kind).then(fc=>{S.fc=fc;if(S.tab==='amigos')frPaint()}).catch(()=>{});
+ CLOUD.fr.listen(l=>{S.fr=l;l.forEach(f=>{if(!CLOUD.fr.cached(f.o))CLOUD.fr.profile(f.o).then(()=>frPaint())});frPaint()})}
+function frPaint(){if(S.scr!=='main')return;if(S.tab==='amigos'){const q=$('#fq');S.fq=q?q.value:S.fq;soft();const q2=$('#fq');if(q2&&q){q2.value=S.fq}}else{const h=$('#hd');if(h)h.innerHTML=hdr()}
+ if(S.chat){const f=S.fr.find(x=>x.id===S.chat.id);if(!f||f.st!=='ok'){chatClose();toast('Este chat ya no está disponible')}else chatPaint()}}
+function frSeen(f){if(!f)return;S.fseen[f.id]=Math.max(f.la||0,Date.now());try{localStorage.setItem(fseenKey(),JSON.stringify(S.fseen))}catch(e){}}
+const frAgo=t=>{if(!t)return'';const d=new Date(t),n=new Date();if(d.toDateString()===n.toDateString())return d.toLocaleTimeString('es',{hour:'numeric',minute:'2-digit'});const y=new Date(n-864e5);if(d.toDateString()===y.toDateString())return'Ayer';return d.toLocaleDateString('es',{day:'numeric',month:'short'})};
+function amigos(){
+ if(!frOk())return `<h1 class="pt">Amigos</h1><section class="card"><p class="mu">Inicia sesión para agregar amigos y chatear con ellos.</p></section>`;
+ const me=myUid(),req=S.fr.filter(f=>f.st==='pending'&&f.from!==me),snt=S.fr.filter(f=>f.st==='pending'&&f.from===me),ok=S.fr.filter(f=>f.st==='ok').sort((a,b)=>(b.la||b.ts)-(a.la||a.ts)),blk=S.fr.filter(f=>f.st==='blk'&&f.by===me);
+ return `<h1 class="pt">Amigos</h1>
+ <section class="card"><b>Agregar a alguien</b>
+  <p class="mu" style="margin:4px 0 10px">Pega su código o su enlace. Tu código es <b class="fcd">${S.fc||'…'}</b></p>
+  <div class="row" style="gap:8px"><input id="fq" class="in" style="flex:1;min-width:0" placeholder="Código de amigo" value="${esc(S.fq)}" autocapitalize="characters" autocomplete="off" onkeydown="if(event.key==='Enter')frFind()"><button class="btn" onclick="frFind()">Buscar</button></div>
+  <div id="fres"></div>
+  ${S.fc?`<button class="btn s w" style="margin-top:10px" onclick="frShare()">${ic('send',18)} Compartir mi enlace</button>`:''}
+ </section>
+ ${req.length?`<section class="card"><b>Invitaciones</b>${req.map(f=>`<div class="frr">${frAv(f.o)}<span class="tx"><b>${esc(frName(f.o))}</b><span class="mu">quiere ser tu amigo</span></span><button class="btn" onclick="frAccept('${f.id}')">Aceptar</button><button class="btn s" onclick="frDecline('${f.id}')" aria-label="Rechazar">${ic('x',18)}</button></div>`).join('')}</section>`:''}
+ <section class="card"><b>Tus amigos${ok.length?' · '+ok.length:''}</b>
+  ${ok.length?ok.map(f=>`<button class="frr frl" onclick="chatOpen('${f.id}')">${frAv(f.o)}<span class="tx"><b>${esc(frName(f.o))}</b><span class="mu ${frUnread(f)?'un':''}">${f.lm?(f.lb===me?'Tú: ':'')+esc(f.lm):'Dile hola'}</span></span><span class="ft">${frAgo(f.la)}${frUnread(f)?'<i class="udot"></i>':''}</span></button>`).join(''):`<p class="mu" style="margin-top:6px">Aún no tienes amigos agregados. Comparte tu enlace o pega el código de alguien arriba.</p>`}
+ </section>
+ ${snt.length?`<section class="card"><b>Enviadas</b>${snt.map(f=>`<div class="frr">${frAv(f.o)}<span class="tx"><b>${esc(frName(f.o))}</b><span class="mu">Esperando respuesta</span></span><button class="btn s" onclick="frDecline('${f.id}')">Cancelar</button></div>`).join('')}</section>`:''}
+ ${blk.length?`<section class="card"><b>Bloqueados</b>${blk.map(f=>`<div class="frr">${frAv(f.o)}<span class="tx"><b>${esc(frName(f.o))}</b></span><button class="btn s" onclick="frDecline('${f.id}')">Desbloquear</button></div>`).join('')}</section>`:''}`}
+async function frFind(){const v=($('#fq')||{}).value||S.fq,r=$('#fres');if(!r||!frOk())return;S.fq=v;if(!/[A-Za-z0-9]{8}/.test(v)){r.innerHTML='<p class="mu" style="margin-top:8px">Escribe el código de 8 letras o pega el enlace.</p>';return}
+ r.innerHTML='<p class="mu" style="margin-top:8px">Buscando…</p>';
+ try{const p=await CLOUD.fr.find(v);if(!$('#fres'))return;const r2=$('#fres');
+  if(!p){r2.innerHTML='<p class="mu" style="margin-top:8px">No encontramos ese código. Revísalo e intenta otra vez.</p>';return}
+  if(p.self){r2.innerHTML='<p class="mu" style="margin-top:8px">Ese es tu propio código.</p>';return}
+  const ex=S.fr.find(f=>f.o===p.uid);
+  r2.innerHTML=`<div class="frr" style="margin-top:10px">${frAv(p.uid)}<span class="tx"><b>${esc(p.name)}</b></span>${ex?(ex.st==='ok'?`<button class="btn" onclick="chatOpen('${ex.id}')">Escribir</button>`:ex.st==='pending'?`<span class="mu">${ex.from===myUid()?'Invitación enviada':'Te envió una invitación'}</span>`:''):`<button class="btn" onclick="frAddUid('${esc(p.uid)}')">Agregar</button>`}</div>`}
+ catch(e){const r2=$('#fres');if(r2)r2.innerHTML='<p class="mu" style="margin-top:8px">No se pudo buscar. Revisa tu conexión.</p>'}}
+async function frAddUid(uid){if(!frOk()||uid===myUid())return;const ex=S.fr.find(f=>f.o===uid);
+ if(ex){if(ex.st==='ok'){chatOpen(ex.id);return}if(ex.st==='pending'&&ex.from!==myUid()){frAccept(ex.id);return}toast(ex.st==='pending'?'Ya le enviaste una invitación':'No se puede agregar a esta persona');return}
+ try{await CLOUD.fr.invite(uid);toast('Invitación enviada. Te avisa cuando la acepte, al abrir la app');cl();S.fq='';if(S.tab==='amigos')soft()}catch(e){toast('No se pudo enviar. Intenta de nuevo')}}
+async function frAccept(id){try{await CLOUD.fr.accept(id);toast('¡Ya son amigos!');burst(18)}catch(e){toast('No se pudo aceptar')}}
+async function frDecline(id){try{await CLOUD.fr.remove(id)}catch(e){toast('No se pudo completar')}}
+const frLink=()=>baseUrl()+'?amigo='+S.fc;
+async function frShare(){const t='Agrégame en Cápsula para chatear: '+frLink()+' (mi código: '+S.fc+')';if(navigator.share){try{await navigator.share({title:'Cápsula',text:t});return}catch(e){if(e&&e.name==='AbortError')return}}copy(t)}
+function frFromMember(uid){cl();if(!frOk())return;const ex=S.fr.find(f=>f.o===uid);if(ex&&ex.st==='ok'){chatOpen(ex.id);return}frAddUid(uid)}
+/* ---- conversación ---- */
+let chLast=0;
+function chatOpen(id){const f=S.fr.find(x=>x.id===id);if(!f||f.st!=='ok'||!frOk())return;cl();S.chat={id,o:f.o,msgs:null};frSeen(f);chLast=0;
+ let o=$('#chat');if(o)o.remove();o=document.createElement('div');o.id='chat';o.className='chat';o.setAttribute('role','dialog');o.setAttribute('aria-label','Chat con '+frName(f.o));
+ o.innerHTML=`<header class="ch"><button class="x" onclick="chatClose()" aria-label="Volver">${ic('back',20)}</button>${frAv(f.o,40)}<span class="tx"><b>${esc(frName(f.o))}</b><span class="mu">Amigo</span></span><button class="x" onclick="chatMenu()" aria-label="Más opciones">${ic('dots',20)}</button></header>
+ <div class="cm" id="cm" role="log" aria-live="polite"><p class="mu c">Cargando…</p></div>
+ <form class="cin" onsubmit="chatSend(event)"><input id="ci" class="in" maxlength="500" placeholder="Escribe un mensaje" autocomplete="off" enterkeyhint="send" aria-label="Mensaje"><button class="btn" aria-label="Enviar">${ic('send',20)}</button></form>`;
+ $('.app').appendChild(o);CLOUD.fr.open(id,l=>{if(!S.chat||S.chat.id!==id)return;S.chat.msgs=l;chatPaint()});setTimeout(()=>{const i=$('#ci');if(i)i.focus()},350)}
+function chatClose(){const o=$('#chat');if(o){o.classList.add('out');setTimeout(()=>o.remove(),200)}S.chat=null;try{CLOUD.fr.close()}catch(e){}if(S.tab==='amigos')soft();else{const h=$('#hd');if(h)h.innerHTML=hdr()}}
+function chatPaint(){const c=S.chat,m=$('#cm');if(!c||!m)return;const f=S.fr.find(x=>x.id===c.id);if(f)frSeen(f);
+ if(c.msgs===null)return;
+ if(!c.msgs.length){m.innerHTML='<p class="mu c" style="margin:auto">Todavía no hay mensajes. Escribe el primero.</p>';return}
+ const near=m.scrollHeight-m.scrollTop-m.clientHeight<120||!chLast,me=myUid();let day='',h='';
+ c.msgs.forEach((x,i)=>{const d=new Date(x.ts),dk=d.toDateString();if(dk!==day){day=dk;const n=new Date(),y=new Date(n-864e5);h+=`<div class="cday">${dk===n.toDateString()?'Hoy':dk===y.toDateString()?'Ayer':d.toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long'})}</div>`}
+  const mine=x.f===me,pv=c.msgs[i-1],grp=pv&&pv.f===x.f&&x.ts-pv.ts<120000;
+  h+=`<div class="mb ${mine?'me':'oth'}${grp?' g':''}${i>=chLast&&chLast?' new':''}"${mine?` onclick="chatDel('${x.id}')"`:''}><span>${esc(x.t)}</span><time>${d.toLocaleTimeString('es',{hour:'numeric',minute:'2-digit'})}</time></div>`});
+ m.innerHTML=h;chLast=c.msgs.length;if(near)m.scrollTop=m.scrollHeight}
+let chT=0;
+function chatSend(e){e.preventDefault();const i=$('#ci'),t=(i.value||'').trim();if(!t||!S.chat)return;if(Date.now()-chT<600)return;chT=Date.now();i.value='';
+ CLOUD.fr.send(S.chat.id,t).catch(()=>{toast('No se pudo enviar. Revisa tu conexión');i.value=t});i.focus()}
+function chatDel(mid){if(!S.chat)return;showSheet(`<h2>¿Eliminar este mensaje?</h2><p class="mu">Se borra para los dos.</p><button class="btn w danger" onclick="chatDelGo('${mid}')">Eliminar</button><button class="btn s w" onclick="cl()">Cancelar</button>`)}
+async function chatDelGo(mid){cl();try{await CLOUD.fr.del(S.chat.id,mid)}catch(e){toast('No se pudo eliminar')}}
+function chatMenu(){const c=S.chat;if(!c)return;const n=esc(frName(c.o));showSheet(`<h2>${n}</h2><button class="btn s w" onclick="chatReport()">Reportar</button><button class="btn s w" onclick="chatBlockAsk()">Bloquear</button><button class="btn s w danger" onclick="chatRemoveAsk()">Eliminar de mis amigos</button><button class="btn w" onclick="cl()">Cerrar</button>`)}
+function chatReport(){const c=S.chat;if(!c)return;S.rdm=1;reportOpen('',c.o)}
+function chatBlockAsk(){const c=S.chat;if(!c)return;showSheet(`<h2>¿Bloquear a ${esc(frName(c.o))}?</h2><p class="mu">No podrán escribirse. Puedes desbloquear desde la lista de amigos.</p><button class="btn w danger" onclick="chatBlockGo()">Bloquear</button><button class="btn s w" onclick="cl()">Cancelar</button>`)}
+async function chatBlockGo(){const c=S.chat;if(!c)return;const id=c.id;cl();try{await CLOUD.fr.block(id);chatClose();toast('Persona bloqueada')}catch(e){toast('No se pudo bloquear')}}
+function chatRemoveAsk(){const c=S.chat;if(!c)return;showSheet(`<h2>¿Eliminar a ${esc(frName(c.o))}?</h2><p class="mu">Dejarán de ser amigos y se cierra el chat.</p><button class="btn w danger" onclick="chatRemoveGo()">Eliminar</button><button class="btn s w" onclick="cl()">Cancelar</button>`)}
+async function chatRemoveGo(){const c=S.chat;if(!c)return;const id=c.id;cl();try{await CLOUD.fr.remove(id);chatClose();toast('Amigo eliminado')}catch(e){toast('No se pudo eliminar')}}
+function frBlockUid(uid){const f=S.fr.find(x=>x.o===uid&&x.st!=='blk');if(f)CLOUD.fr.block(f.id).catch(()=>{})}
+
+const VIEW={home,mundo,caps,cap,act,tienda,perfil,arc,triv,amigos};
 
 /* ---------- publish ---------- */
 function busySheet(t,d){showSheet(`<div class="bz" role="status" aria-live="polite"><i class="sp"></i><h2>${t}</h2><p class="mu">${d}</p></div>`);const x=$('#sh .x');if(x)x.style.display='none'}
 function showSheet(h){const s=$('#sh');s.innerHTML=`<div class="pn" role="dialog" aria-modal="true"><button class="x" onclick="cl()" aria-label="Cerrar">${ic('x',18)}</button>${h}</div>`;s.classList.add('open');try{psFill()}catch(e){}}
-function cl(){clearInterval(C.tm);if(C.rec&&C.rec.state!=='inactive'){C.discard=true;try{C.rec.stop()}catch(e){}}if(C.stream)C.stream.getTracks().forEach(t=>t.stop());S.profileOpen=false;$('#sh').classList.remove('open')}
+function cl(){S.rdm=0;clearInterval(C.tm);if(C.rec&&C.rec.state!=='inactive'){C.discard=true;try{C.rec.stop()}catch(e){}}if(C.stream)C.stream.getTracks().forEach(t=>t.stop());S.profileOpen=false;$('#sh').classList.remove('open')}
 $('#sh').addEventListener('click',e=>{if(e.target.id==='sh'&&!$('.bz'))cl()});
 const toDef=()=>S.group?({familia:'Toda la familia',pareja:'Mi pareja',amigos:'Mis amigos'})[gtype()]:'Mi yo del futuro';
 function chooser(p){S.prompt=p||null;
@@ -2369,7 +2472,18 @@ function memHtml(sp){const dt=ms=>new Date(ms).toLocaleDateString('es',{day:'num
   return `<article><h3>${esc(p.t||kName[p.k]||'')}</h3><p class="m">${kName[p.k]||''} · ${dt(p.ts)} · ${esc(p.by||p.an||'')}</p>${b}</article>`};
  return `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mis recuerdos de Cápsula</title><style>body{font:16px/1.5 system-ui,sans-serif;max-width:680px;margin:0 auto;padding:24px 16px;color:#1D1D1F;background:#F5F5F7}h1{font-size:28px}h2{margin-top:40px}article{background:#fff;border-radius:16px;padding:16px;margin:14px 0}img{max-width:100%;border-radius:12px}audio{width:100%}.m{color:#68686D;font-size:14px;margin:2px 0 8px}.ng{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px}.ngp{display:flex;justify-content:center;min-height:104px}.ng .ps{display:inline-block}
 .room.pkb .fl{margin-top:62px!important}.tub{height:44%!important}
-</style></head><body><h1>Mis recuerdos de Cápsula</h1><p class="m">Descargado el ${dt(Date.now())}</p>${sp.map(g=>`<h2>${esc(g.name)} (${g.posts.length})</h2>${g.posts.length?g.posts.map(one).join(''):'<p class="m">Todavía no hay historias aquí.</p>'}`).join('')}</body></html>`}
+</style>
+@keyframes vIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(.92);opacity:0}60%{transform:scale(1.03)}100%{transform:scale(1);opacity:1}}
+main>.card,main>section,.vw>.card{animation:vIn .35s cubic-bezier(.2,.8,.2,1) both}
+main>.card:nth-child(2),.vw>.card:nth-child(2){animation-delay:.05s}
+main>.card:nth-child(3),.vw>.card:nth-child(3){animation-delay:.1s}
+main>.card:nth-child(4),.vw>.card:nth-child(4){animation-delay:.15s}
+.btn,.wal,.tb button{transition:transform .12s ease,filter .12s}
+.btn:active,.wal:active{transform:scale(.95)}
+.mb{animation:pop .22s ease-out both}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</head><body><h1>Mis recuerdos de Cápsula</h1><p class="m">Descargado el ${dt(Date.now())}</p>${sp.map(g=>`<h2>${esc(g.name)} (${g.posts.length})</h2>${g.posts.length?g.posts.map(one).join(''):'<p class="m">Todavía no hay historias aquí.</p>'}`).join('')}</body></html>`}
 async function exportMem(){if(!window.CLOUD||!CLOUD.exportAll||!CLOUD.ready){toast('Espera un momento y vuelve a intentar');return}
  toast('Preparando tus recuerdos…');
  try{const sp=await CLOUD.exportAll();const n=sp.reduce((a,g)=>a+g.posts.length,0);
@@ -2400,7 +2514,7 @@ window.APP={
   return{data:d,changed:ch}},
  noConfig(){S.cloudErr='Falta configurar Firebase: abre config.js y pega tus datos (mira el README).';S.scr='welcome';render()},
  cloudError(m){S.cloudErr=m;render()},
- signedOut(){resetPersonal();S.user=null;S.cloudErr='';S.scr=S.u13?'under13':'welcome';cl();render()},
+ signedOut(){S.fr=[];S.fc='';S.chat=null;{const c=$('#chat');if(c)c.remove()}resetPersonal();S.user=null;S.cloudErr='';S.scr=S.u13?'under13':'welcome';cl();render()},
  applyUser(d,u){resetPersonal();try{Object.keys(localStorage).filter(k=>/^capsula_ai/.test(k)).forEach(k=>localStorage.removeItem(k))}catch(e){}S.user=u;S.me.name=String(d.name||u.name||'Amigo').slice(0,24);S.me.ln=String(d.ln||'').slice(0,24);S.nameAt=d.nameAt&&d.nameAt.toMillis?d.nameAt.toMillis():Number(d.nameAt)||0;S.nameP=0;S.me.email=u.email;S.me.pic=u.photo;applyPersonal(d)},
  families(l){S.families=l},
  typeTaken:(t,fid)=>S.families.some(f=>f.id!==fid&&capType(f)===(GT[t]?t:'familia')),plusOn:()=>plusLive(),limits:()=>LIM.free,ent(e){S.ent=e;try{applyAccent()}catch(x){}plusSync();soft()},
@@ -2418,7 +2532,7 @@ window.APP={
   if(t&&Date.now()-t<864e5){S.u13=true;try{if(window.CLOUD&&CLOUD.deleteAccount)CLOUD.deleteAccount(null).catch(()=>{})}catch(e){}S.scr='under13';render();return}}
   if(!legalOk()){S.scr='legal';S.lerr='';render();return}
   APP.goAfter()},
- goAfter(){setTimeout(refSync,2500);setTimeout(updChk,5000);setTimeout(remInit,1500);const pc=S.joinCode;
+ goAfter(){setTimeout(frInit,1200);setTimeout(()=>{if(S.fqLink&&S.scr==='main'){S.fq=S.fqLink;S.fqLink='';go('amigos');setTimeout(frFind,700)}},2600);setTimeout(refSync,2500);setTimeout(updChk,5000);setTimeout(remInit,1500);const pc=S.joinCode;
   if(pc&&!S.families.some(f=>f.code===pc)){S.scr='group';S.gstep='join'}
   else{S.joinCode='';S.scr=S.petSet?'main':'pet';S.gstep='pick'}
   S.tab='home';render()}

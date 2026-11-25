@@ -261,5 +261,77 @@ service cloud.firestore {
           || canClean(fid));
       }
     }
+
+    // ---------- Amigos y chat 1 a 1 ----------
+    // Perfil público mínimo (nombre, mascota y código de amigo). Solo se lee uno por uno: no se puede listar a las personas.
+    match /profiles/{uid} {
+      allow get: if signedIn();
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['name', 'pet', 'fc'])
+        && str(request.resource.data.name, 30) && request.resource.data.name.size() >= 1
+        && str(request.resource.data.get('pet', ''), 12)
+        && request.resource.data.fc is string && request.resource.data.fc.matches('[A-Z0-9]{8}');
+      allow update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['name', 'pet', 'fc'])
+        && str(request.resource.data.name, 30) && request.resource.data.name.size() >= 1
+        && str(request.resource.data.get('pet', ''), 12)
+        && request.resource.data.fc == resource.data.fc;
+      allow delete: if signedIn() && request.auth.uid == uid;
+    }
+    // Código de amigo -> persona. Se consulta uno por uno.
+    match /friendCodes/{code} {
+      allow get: if signedIn();
+      allow create: if signedIn() && code.matches('[A-Z0-9]{8}')
+        && request.resource.data.keys().hasOnly(['uid'])
+        && request.resource.data.uid == request.auth.uid
+        && getAfter(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.fc == code;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+    // Amistad entre dos personas. El id es los dos uid ordenados unidos por "_".
+    // st: pending (invitación enviada), ok (amigos), blk (bloqueada por "by").
+    match /friends/{pair} {
+      allow read: if signedIn() && request.auth.uid in resource.data.u;
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['u', 'from', 'st', 'ts'])
+        && request.resource.data.u is list && request.resource.data.u.size() == 2
+        && request.resource.data.u[0] < request.resource.data.u[1]
+        && pair == request.resource.data.u[0] + '_' + request.resource.data.u[1]
+        && request.auth.uid in request.resource.data.u
+        && request.resource.data.from == request.auth.uid
+        && request.resource.data.st == 'pending'
+        && request.resource.data.ts == request.time;
+      allow update: if signedIn() && request.auth.uid in resource.data.u && (
+        // aceptar una invitación que me enviaron
+        (resource.data.st == 'pending' && resource.data.from != request.auth.uid
+          && request.resource.data.st == 'ok'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['st']))
+        // dejar el último mensaje a la vista
+        || (resource.data.st == 'ok'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lm', 'la', 'lb'])
+          && request.resource.data.lb == request.auth.uid
+          && request.resource.data.la == request.time
+          && str(request.resource.data.lm, 80))
+        // bloquear
+        || (resource.data.st != 'blk'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['st', 'by'])
+          && request.resource.data.st == 'blk'
+          && request.resource.data.by == request.auth.uid)
+      );
+      // Cualquiera de los dos puede cancelar, rechazar o eliminar; solo quien bloqueó puede quitar el bloqueo.
+      allow delete: if signedIn() && request.auth.uid in resource.data.u
+        && (resource.data.st != 'blk' || resource.data.by == request.auth.uid);
+
+      match /msgs/{mid} {
+        allow read: if signedIn() && request.auth.uid in get(/databases/$(database)/documents/friends/$(pair)).data.u;
+        allow create: if signedIn()
+          && request.auth.uid in get(/databases/$(database)/documents/friends/$(pair)).data.u
+          && get(/databases/$(database)/documents/friends/$(pair)).data.st == 'ok'
+          && request.resource.data.keys().hasOnly(['f', 't', 'ts'])
+          && request.resource.data.f == request.auth.uid
+          && request.resource.data.t is string && request.resource.data.t.size() >= 1 && request.resource.data.t.size() <= 500
+          && request.resource.data.ts == request.time;
+        allow delete: if signedIn() && resource.data.f == request.auth.uid;
+      }
+    }
   }
 }
