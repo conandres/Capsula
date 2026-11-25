@@ -41,3 +41,7 @@ Cápsula convierte los recuerdos en un hábito diario y compartido. Cada persona
 <div align="center">Sebastian Barba</div>
 
 <div align="center">Hecho con 💜 en Bogotá, Colombia</div>
+
+## Derechos
+
+Cápsula es software propietario. Todos los derechos reservados (ver LICENSE). Los datos de conexión de Firebase de `config.js` no son secretos; la seguridad la dan las reglas de `firestore.rules`.

@@ -2,3 +2,20 @@ node_modules/
 www/
 android/
 ios/
+
+# Secretos y llaves: nunca al repositorio
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+*.key
+.env
+.env.*
+service-account*.json
+*-adminsdk-*.json
+google-services.json
+GoogleService-Info.plist
+local.properties
+*.apk
+*.aab
