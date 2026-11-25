@@ -43,9 +43,9 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
 .bbl{animation-duration:1.7s!important}
 .pkm{position:absolute;left:0;right:0;top:44%;text-align:center;font-weight:900;font-size:34px;text-shadow:0 3px 0 rgba(0,0,0,.35);z-index:8;pointer-events:none;animation:pkpop 1.1s ease-out forwards}
 @keyframes pkpop{0%{transform:scale(.4);opacity:0}25%{transform:scale(1.15);opacity:1}100%{transform:translateY(-40px) scale(1);opacity:0}}
-.room.pkb .fl{transform:translateY(var(--dy,0px)) scale(.85)!important}
+.room.pkb .fl{transform:translate(var(--px,0px),var(--dy,0px)) scale(.85)!important}
 .room.pkb.tubin .fl{animation:tubbob 2.6s ease-in-out infinite!important}
-@keyframes tubbob{50%{transform:translateY(calc(var(--dy,0px) - 5px)) scale(.85) rotate(1deg)}}
+@keyframes tubbob{50%{transform:translate(var(--px,0px),calc(var(--dy,0px) - 5px)) scale(.85) rotate(1deg)}}
 .spl{position:absolute;font-size:22px;z-index:7;pointer-events:none;animation:splf .9s ease-out forwards}
 @keyframes splf{0%{transform:translate(0,0) scale(.5);opacity:1}60%{opacity:1}100%{transform:translate(var(--dx),calc(var(--dy) + 120px)) scale(1);opacity:0}}
 .rip{position:absolute;width:20px;height:8px;margin:-4px 0 0 -10px;border:3px solid rgba(255,255,255,.85);border-radius:50%;z-index:7;pointer-events:none;animation:ripo 1s ease-out forwards}
@@ -125,6 +125,12 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
 .cloud .bub::after{left:2px;top:auto;bottom:-26px;margin-left:0;width:7px;height:7px;border:0;background:#fffffff2;box-shadow:0 2px 6px #0002}
 .qw{margin-top:26px;pointer-events:auto}.qw:empty{display:none}.qw .qr{flex-direction:column;align-items:flex-end;gap:6px}.qw .qr button{padding:7px 12px;font-size:13px;box-shadow:0 3px 10px #0002}
 .wrim{width:100%;max-width:260px;aspect-ratio:9/16;border-radius:18px;margin:10px auto 14px;display:block;box-shadow:0 8px 24px #0003}.wrt{display:inline-flex;background:var(--tint-2);border-radius:14px;padding:4px;gap:4px}.wrt button{border:0;background:none;padding:8px 18px;border-radius:11px;font:inherit;font-weight:700;color:var(--pd);cursor:pointer}.wrt button.on{background:#fff;box-shadow:0 2px 8px #0002}
+
+.tub.hot{box-shadow:0 0 0 6px rgba(255,255,255,.75),0 8px 0 rgba(0,0,0,.14),inset 0 8px 18px rgba(255,255,255,.5)!important;transform:scale(1.03)}
+.fl.held{cursor:grabbing;filter:drop-shadow(0 14px 10px rgba(0,0,0,.25));z-index:6}
+.cloud .qr button{background:#fff!important;color:#4a2b9c!important;border:0!important;font-weight:700;box-shadow:0 3px 10px #0003!important}
+.cloud .bub{background:#fff!important;color:#2a2140!important}
+.room.pkb .qw{display:none}
 </style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -567,7 +573,7 @@ nav button.on::after{display:none!important}
 @keyframes fly{from{transform:rotate(0) translateX(60px) rotate(0)}to{transform:rotate(360deg) translateX(60px) rotate(-360deg)}}
 .stk{position:absolute;left:50%;top:26%;display:flex;gap:10px;transform:translateX(-50%)}.stk u{width:6px;height:34px;border-radius:6px;background:linear-gradient(#8bbf4e00,#8bbf4ebb);animation:stk 1.8s ease-in-out infinite;transform-origin:50% 100%}.stk u:nth-child(2){animation-delay:.4s;height:42px}.stk u:nth-child(3){animation-delay:.8s}
 @keyframes stk{0%,100%{transform:translateY(6px) scaleY(.7) skewX(-8deg);opacity:.4}50%{transform:translateY(-6px) scaleY(1) skewX(8deg);opacity:.9}}
-.dchip{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:4;border:0;border-radius:99px;padding:8px 14px;font:inherit;font-weight:700;font-size:14px;background:#fff;color:var(--pd);box-shadow:0 4px 14px rgba(0,0,0,.14);cursor:pointer;white-space:nowrap}.dchip[hidden]{display:none}.dchip::before,.dchip::after{content:'';position:absolute;left:50%;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.12)}.dchip::before{bottom:-9px;margin-left:-4px;width:9px;height:9px}.dchip::after{bottom:-16px;margin-left:0;width:5px;height:5px}
+.dchip{position:absolute;left:12px;bottom:12px;top:auto;z-index:4;border:0;border-radius:99px;padding:8px 14px;font:inherit;font-weight:700;font-size:14px;background:#fff;color:var(--pd);box-shadow:0 4px 14px rgba(0,0,0,.14);cursor:pointer;white-space:nowrap}.dchip[hidden]{display:none}.dchip::before,.dchip::after{content:'';position:absolute;left:50%;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.12)}.dchip::before{bottom:-9px;margin-left:-4px;width:9px;height:9px}.dchip::after{bottom:-16px;margin-left:0;width:5px;height:5px}
 @media (prefers-reduced-motion:reduce){.dirt b,.stk u{animation:none}}
 .ti2{width:40px;height:40px;object-fit:contain;display:block;pointer-events:none}.btn.mic .ti2{display:inline-block;width:30px;height:30px;vertical-align:middle;margin-right:6px}.tools .tl{min-height:76px;justify-content:center}
 .ci{width:1.25em;height:1.25em;vertical-align:-.3em;object-fit:contain;display:inline-block}.fh .ci{width:1.4em;height:1.4em}#ts .ci{width:1.5em;height:1.5em;vertical-align:-.45em}.pr{color:var(--pd);display:inline-flex;align-items:center;gap:6px;font-size:18px}.pr .ci{width:28px;height:28px}
@@ -1641,7 +1647,7 @@ function toolSet(k){if(exAway()){S.tool=null;return}S.tool=k||null;SC.acc=0;
  if(k==='food'&&!feedOk()){S.tool=null;return}if(k==='food')guideTip('food');
  if(k==='bath'&&!bathOk()){S.tool=null;return}if(k==='bath')guideTip('bath');
  try{if(P3.v)P3.v.strokeExpr=k==='bath'?'wink':'happy'}catch(e){}
- trayUpd()}
+ roomSync();trayUpd()}
 function wake(){ptTick();const p=S.pt;if(p.rest>Date.now()){p.rest=0;p.love=Math.min(100,p.love+3);bubSay('¡Buenos días! Gracias por encender la luz.')}p.wk=Date.now()+4*3600000;p3sync();petUI();trayUpd();hopPet()}
 function feedOk(){ptTick();const p=S.pt;
  if(asleep()){bubSay('Zzz… tengo sueño, ahora no');return false}
@@ -1674,9 +1680,14 @@ function tubSplash(){const r=$('#room'),fl=r&&r.querySelector('.fl'),tb=$('#tub'
   tb.classList.add('wob');setTimeout(()=>tb.classList.remove('wob'),700);
   p3play('boing');burst(10,['💦','🫧']);bubSay(say(['¡Chapuzón! Uy, qué fresquita está','¡Splash! ¡Ahora frótame, porfa!','¡Brrr, qué rico!']));try{navigator.vibrate&&navigator.vibrate(30)}catch(e){}
   trayUpd()},230)}
-document.addEventListener('pointerdown',e=>{if(S.tool!=='bath'||S.tubIn)return;const r=$('#room');if(!r||!r.contains(e.target)||e.target.closest('button'))return;const fl=r.querySelector('.fl');if(!fl)return;e.preventDefault();e.stopPropagation();
- const sy=e.clientY;let dy=-84;const mv=ev=>{dy=Math.max(-84,Math.min(30,-84+(ev.clientY-sy)));fl.style.transition='none';fl.style.setProperty('--dy',dy+'px')};
- const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);removeEventListener('pointercancel',up);if(dy>-40)tubSplash();else{fl.style.transition='transform .35s cubic-bezier(.2,1.4,.4,1)';fl.style.setProperty('--dy','-84px');if(dy>-83)toast('Más abajo, hasta la tina')}};
+document.addEventListener('pointerdown',e=>{if(S.tool!=='bath'||S.tubIn)return;const r=$('#room');if(!r||!r.contains(e.target)||e.target.closest('button'))return;const fl=r.querySelector('.fl');if(!fl)return;
+ const f0=fl.getBoundingClientRect(),m=18;if(e.clientX<f0.left-m||e.clientX>f0.right+m||e.clientY<f0.top-m||e.clientY>f0.bottom+m){toast('Toca a tu mascota y llévala a la tina');return}
+ e.preventDefault();e.stopPropagation();const sx=e.clientX,sy=e.clientY,tb=$('#tub');let dy=-84,px=0;fl.classList.add('held');try{P3.v&&P3.v.setExpression('surprised')}catch(_){}
+ const over=ev=>{if(!tb)return false;const t=tb.getBoundingClientRect();return ev.clientX>t.left-10&&ev.clientX<t.right+10&&ev.clientY>t.top-10&&ev.clientY<t.bottom+10};
+ const mv=ev=>{dy=Math.max(-100,Math.min(140,-84+(ev.clientY-sy)));px=Math.max(-160,Math.min(160,ev.clientX-sx));fl.style.transition='none';fl.style.setProperty('--dy',dy+'px');fl.style.setProperty('--px',px+'px');if(tb)tb.classList.toggle('hot',over(ev))};
+ const up=ev=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up);removeEventListener('pointercancel',up);fl.classList.remove('held');if(tb)tb.classList.remove('hot');try{P3.v&&P3.v.setExpression(p3expr())}catch(_){}
+  if(ev.type!=='pointercancel'&&over(ev)){fl.style.setProperty('--px','0px');tubSplash()}
+  else{fl.style.transition='transform .4s cubic-bezier(.2,1.4,.4,1)';fl.style.setProperty('--dy','-84px');fl.style.setProperty('--px','0px');if(Math.hypot(px,dy+84)>12)toast('Llévala hasta la tina')}};
  addEventListener('pointermove',mv);addEventListener('pointerup',up);addEventListener('pointercancel',up)},true);
 function bbl(x,y){const b=document.createElement('span');b.className='bbl';const z=14+Math.random()*22;b.style.cssText=`left:${x-z/2+(Math.random()*30-15)}px;top:${y-z/2}px;width:${z}px;height:${z}px`;document.body.appendChild(b);setTimeout(()=>b.remove(),1700)}
 function onStroke(d){SC.drag=1;if(asleep())return;const now=Date.now();
@@ -2210,7 +2221,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=106;
+const BUILD=107;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
