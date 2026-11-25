@@ -147,7 +147,7 @@ button.frl{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:
 .frl .un{color:var(--tx);font-weight:700}.ft{display:flex;flex-direction:column;align-items:flex-end;gap:4px;font-size:12px;color:var(--mu,#777);flex:none}.udot{width:10px;height:10px;border-radius:50%;background:#6B4CD6;display:block}
 .chat{position:absolute;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;animation:chin .28s cubic-bezier(.2,.9,.3,1)}.chat.out{animation:chout .2s ease-in forwards}
 @keyframes chin{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}@keyframes chout{to{transform:translateX(40px);opacity:0}}
-.ch{display:flex;align-items:center;gap:10px;padding:max(10px,env(safe-area-inset-top,0px)) 12px 10px;background:var(--top-bg,var(--bg));border-bottom:1px solid var(--line,#0001)}.ch .tx{flex:1;min-width:0;display:flex;flex-direction:column}.ch .tx b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ch{display:flex;align-items:center;gap:10px;padding:max(10px,env(safe-area-inset-top,0px)) 12px 10px;background:var(--top-bg,var(--bg));border-bottom:1px solid var(--line,#0001)}.ch .tx{flex:1;min-width:0;display:flex;flex-direction:column}.chx{border:0;background:var(--soft);color:var(--pd);width:40px;height:40px;border-radius:50%;display:grid;place-items:center;cursor:pointer;flex:none}.ch .tx b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cm{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:3px;overscroll-behavior:contain}
 .cday{align-self:center;font-size:12px;color:var(--mu,#777);background:var(--tint-2);border-radius:99px;padding:3px 12px;margin:10px 0 6px;text-transform:capitalize}
 .mb{max-width:78%;padding:8px 12px 6px;border-radius:18px;line-height:1.35;word-break:break-word;position:relative;margin-top:6px}.mb.g{margin-top:0}
@@ -1525,15 +1525,20 @@ function wrapSVG(d){const yr=d.per==='an',t=yr?'Tu año en Cápsula':'Tu semana 
  <text x="48" y="918" font-family="sans-serif" font-size="22" font-weight="700" fill="#fff" opacity=".85">${d.top?'Lo tuyo: '+esc(d.top)+(d.best?' · tu día fuerte, el '+d.best:''):'Cápsula · historias con tu gente'}</text></svg>`}
 const wrapURL=d=>'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(wrapSVG(d));
 function wrapOpen(per){if(per)WR=per;const d=wrapData(WR);
- showSheet(`<div class="gd" style="text-align:center"><h2>Tu resumen</h2><div class="wrt" role="tablist"><button class="${WR==='sem'?'on':''}" role="tab" aria-selected="${WR==='sem'}" onclick="wrapOpen('sem')">Semana</button><button class="${WR==='an'?'on':''}" role="tab" aria-selected="${WR==='an'}" onclick="wrapOpen('an')">Año</button></div>
+ showSheet(`<div class="gd" style="text-align:center"><h2>Tu resumen</h2>
  ${d.n?`<img id="wrimg" class="wrim" alt="Tu resumen de Cápsula" src="${wrapURL(d)}"><button class="btn w" onclick="wrapShare()">Compartir</button>`:`<p class="mu" style="margin:18px 0">Aún no hay historias ${WR==='sem'?'esta semana':'este año'}. Cuenta una y aparecerá aquí.</p>`}</div>`);
  if(d.n)wrapFix(d,0)}
 function wrapFix(d,n){if(n>8)return;if(snapImg(d.kind,d.wear)){const im=$('#wrimg');if(im)im.src=wrapURL(d)}else setTimeout(()=>wrapFix(d,n+1),700)}
+async function nShare(files,txt){const Sh=NP('Share'),Fs=NP('Filesystem');if(!NATIVE||!Sh||!Fs)return false;
+ try{const uris=[];for(const f of files){const b64=await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(String(r.result).split(',')[1]);r.onerror=no;r.readAsDataURL(f)});
+  const w=await Fs.writeFile({path:f.name,data:b64,directory:'CACHE'});uris.push(w.uri)}
+  await Sh.share({text:txt,files:uris,dialogTitle:'Compartir'});return true}
+ catch(e){return !!(e&&/cancel/i.test(String(e.message||e)))}}
 async function wrapShare(){const d=wrapData(WR),txt='Mi '+(WR==='sem'?'semana':'año')+' en Cápsula. '+appText();
  try{const img=new Image(),u=URL.createObjectURL(new Blob([wrapSVG(d)],{type:'image/svg+xml'}));await new Promise((ok,no)=>{img.onload=ok;img.onerror=no;img.src=u});
   const c=document.createElement('canvas');c.width=1080;c.height=1920;c.getContext('2d').drawImage(img,0,0,1080,1920);URL.revokeObjectURL(u);
   const blob=await new Promise(r=>c.toBlob(r,'image/png')),f=new File([blob],'mi-resumen-capsula.png',{type:'image/png'});
-  if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],text:txt});return}catch(e){if(e&&e.name==='AbortError')return}}
+  if(await nShare([f],txt))return;if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],text:txt});return}catch(e){if(e&&e.name==='AbortError')return}}
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mi-resumen-capsula.png';document.body.appendChild(a);a.click();a.remove();toast('Imagen guardada. Súbela a tus historias')}
  catch(e){if(navigator.share){try{await navigator.share({title:'Cápsula',text:txt});return}catch(e){}}copy(txt)}}
 const wrapCard=()=>wrapCount()?`<section class="card wrc"><div class="row" style="gap:12px;align-items:center"><div class="tx"><b>Tu resumen de la semana</b><span class="mu">Una imagen lista para compartir</span></div><button class="btn" onclick="wrapOpen('sem')">Ver</button></div></section>`:'';
@@ -1645,7 +1650,7 @@ async function exShare(){const L=EXLAST;if(!L)return;const txt='Mi mascota '+L.n
   await new Promise((ok,no)=>{img.onload=ok;img.onerror=no;img.src=u});
   const c=document.createElement('canvas');c.width=900;c.height=1200;c.getContext('2d').drawImage(img,0,0,900,1200);URL.revokeObjectURL(u);
   const blob=await new Promise(r=>c.toBlob(r,'image/png')),f=new File([blob],'postal-capsula.png',{type:'image/png'});
-  if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],text:txt});return}catch(e){if(e&&e.name==='AbortError')return}}
+  if(await nShare([f],txt))return;if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],text:txt});return}catch(e){if(e&&e.name==='AbortError')return}}
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='postal-capsula.png';document.body.appendChild(a);a.click();a.remove();toast('Postal guardada. Mándala por WhatsApp')}
  catch(e){}
  if(navigator.share){try{await navigator.share({title:'Cápsula',text:txt});return}catch(e){if(e&&e.name==='AbortError')return}}copy(txt)}
@@ -1955,7 +1960,7 @@ async function bookShare(){const L=bookPosts();if(L.length<12){toast('Aún falta
   foot(g);pages.push(cv)}
  try{const files=[];for(let i=0;i<pages.length;i++){const b=await new Promise(r=>pages[i].toBlob(r,'image/jpeg',.88));files.push(new File([b],'libro-capsula-'+(i+1)+'.jpg',{type:'image/jpeg'}))}
   const txt='Mira el libro de recuerdos que armamos en Cápsula Únete: '+link;
-  if(navigator.canShare&&navigator.canShare({files})){try{await navigator.share({files,text:txt});return}catch(e){if(e&&e.name==='AbortError')return}}
+  if(await nShare(files,txt))return;if(navigator.canShare&&navigator.canShare({files})){try{await navigator.share({files,text:txt});return}catch(e){if(e&&e.name==='AbortError')return}}
   files.slice(0,1).forEach(f=>{const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();a.remove()});toast('Portada guardada. Compártela por WhatsApp')}
  catch(e){toast('No se pudo preparar el libro. Inténtalo de nuevo.')}}
 function bookGo(d){S.bk=Math.max(0,Math.min((S.bkL||[]).length+1,S.bk+d));bookPage()}
@@ -2205,7 +2210,7 @@ const mgCard=()=>`<section class="card"><div class="mgcs"><h3>Juegos de memoria 
 function capHome(){
  return `${famCard()}${wrapCard()}${memCard()}${qLine(qaToday(),"go('triv')",S.qd===dayKey()?'Ya respondiste · ver respuestas':'Pregunta de hoy')}
  <div class="duo"><button class="tile2" onclick="chooser()">${ic('pen',26)}<b>Escribir aquí</b><span class="mu">Se guarda en ${esc(S.group.name)}</span></button><button class="tile2" onclick="S.sub='recuerdos';soft()">${ic('image',26)}<b>Recuerdos</b><span class="mu">${S.posts.length} ${S.posts.length===1?'historia':'historias'}</span></button></div>
- <div class="duo"><button class="tile2" onclick="S.sub='cartas';soft()">${ic('mail',26)}<b>Cartas</b><span class="mu">${S.posts.filter(p=>p.k==='carta').length} escritas</span></button><button class="tile2 off" disabled aria-disabled="true">${ic('chat',26)}<b>Conversaciones</b><span class="tag soon">Pronto</span></button></div>
+ <div class="duo"><button class="tile2" style="grid-column:1/-1" onclick="S.sub='cartas';soft()">${ic('mail',26)}<b>Cartas</b><span class="mu">${S.posts.filter(p=>p.k==='carta').length} escritas</span></button></div>
  ${mgCard()}
  ${bookCard(S.posts.length)}
  <section class="card"><div class="row sp"><span class="tx"><b>Invita a alguien</b><span class="mu">Ganas 15 Lumis por cada persona que se una</span></span><button class="btn" onclick="shareInvite()">Invitar</button></div></section>
@@ -2257,7 +2262,17 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=114;
+/* ---- botón atrás del celular: cierra lo de encima y no la app ---- */
+function backTop(){
+ if($('#sh.open')){cl();return true}
+ if(S.chat){chatClose();return true}
+ if($('#mgo')){mgClose();return true}
+ if(S.scr&&S.scr!=='main'&&S.scr!=='login'&&S.scr!=='legal'){S.scr='main';render();return true}
+ if(S.tab&&S.tab!=='home'){go('home');return true}
+ return false}
+try{history.replaceState({c:0},'');history.pushState({c:1},'');
+ window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
+const BUILD=115;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
@@ -2321,7 +2336,7 @@ function frFromMember(uid){cl();if(!frOk())return;const ex=S.fr.find(f=>f.o===ui
 let chLast=0;
 function chatOpen(id){const f=S.fr.find(x=>x.id===id);if(!f||f.st!=='ok'||!frOk())return;cl();S.chat={id,o:f.o,msgs:null};frSeen(f);chLast=0;
  let o=$('#chat');if(o)o.remove();o=document.createElement('div');o.id='chat';o.className='chat';o.setAttribute('role','dialog');o.setAttribute('aria-label','Chat con '+frName(f.o));
- o.innerHTML=`<header class="ch"><button class="x" onclick="chatClose()" aria-label="Volver">${ic('back',20)}</button>${frAv(f.o,40)}<span class="tx"><b>${esc(frName(f.o))}</b><span class="mu">Amigo</span></span><button class="x" onclick="chatMenu()" aria-label="Más opciones">${ic('dots',20)}</button></header>
+ o.innerHTML=`<header class="ch"><button class="chx" onclick="chatClose()" aria-label="Volver">${ic('back',20)}</button>${frAv(f.o,40)}<span class="tx"><b>${esc(frName(f.o))}</b><span class="mu">Amigo</span></span><button class="chx" onclick="chatMenu()" aria-label="Más opciones">${ic('dots',20)}</button></header>
  <div class="cm" id="cm" role="log" aria-live="polite"><p class="mu c">Cargando…</p></div>
  <form class="cin" onsubmit="chatSend(event)"><input id="ci" class="in" maxlength="500" placeholder="Escribe un mensaje" autocomplete="off" enterkeyhint="send" aria-label="Mensaje"><button class="btn" aria-label="Enviar">${ic('send',20)}</button></form>`;
  $('.app').appendChild(o);CLOUD.fr.open(id,l=>{if(!S.chat||S.chat.id!==id)return;S.chat.msgs=l;chatPaint()});setTimeout(()=>{const i=$('#ci');if(i)i.focus()},350)}
