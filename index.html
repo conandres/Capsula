@@ -132,6 +132,10 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
 .cloud .bub{background:#fff!important;color:#2a2140!important}
 .room.pkb .qw{display:none}
 .room .fl{transition:translate .35s cubic-bezier(.3,1.2,.5,1)}.room.qa .fl{translate:-52px 0}.room.pkb.qa .fl{translate:0 0}
+
+.cloud{align-items:flex-start!important;transition:none}
+.cloud .bub{box-shadow:0 4px 14px #0003}.cloud .bub::before{left:calc(var(--tx,24px) - 6px)!important;box-shadow:0 2px 6px #0004!important}.cloud .bub::after{left:calc(var(--tx,24px) - 14px)!important}
+.cloud .qr{position:absolute;top:100%;margin-top:30px!important;left:0;width:max-content}
 </style><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#F6F3FF"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Cápsula"><link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"></head><body>
 <title>Cápsula</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -1556,7 +1560,17 @@ const bubHTML=()=>exAway()?`<div class="bub">${Date.now()>=S.pt.ex.end?'¡Volví
 const qrHTML=()=>exAway()?'':`${S.bub.o?`<div class="qr">${S.bub.o.map((o,i)=>`<button onclick="reply(${i})">${esc(o[0])}</button>`).join('')}</div>`:''}`;
 const statsHTML=()=>{const p=S.pt,st=(n,v,c)=>`<div class="st"><span>${n}</span><div class="bar sm ${c?'low':''}"><i style="width:${Math.round(v)}%"></i></div></div>`;
  return `<div class="stw2">${st('Ánimo',p.love,p.love<30)}${st('Panza',p.food,p.food<30)}${st('Limpieza',p.clean,p.clean<30)}${st('Diversión',p.fun,p.fun<30)}${st('Energía',p.en,p.en<25)}${st('Nivel',S.xp%100)}</div>`};
-function petUI(){roomSync();const b=$('#bubw');if(b)b.innerHTML=bubHTML();const q=$('#qrw');if(q)q.innerHTML=qrHTML();const x=$('#stw');if(x)x.innerHTML=statsHTML()}
+let CTK=0;
+function cloudTrack(){const r=$('#room'),c=r&&r.querySelector('.cloud'),fl=r&&r.querySelector('.fl');if(!c||!fl){CTK=0;return}
+ const R=r.getBoundingClientRect(),F=fl.getBoundingClientRect();
+ if(F.width&&R.width){const hx=F.left+F.width/2-R.left,ht=F.top-R.top+F.height*.27,cw=c.offsetWidth,ch=c.firstElementChild?c.firstElementChild.offsetHeight:c.offsetHeight;
+  const fit=ht-ch-6>=6,left=Math.max(8,Math.min(R.width-cw-8,fit?hx-cw*.25:hx+52)),top=fit?Math.min(R.height*.55,ht-ch-6):6,tx=fit?Math.max(16,Math.min(cw-16,hx-left)):16;
+  c.style.visibility=fit?'':'hidden';
+  const q=c.querySelector('.qr');if(q&&q.offsetWidth)q.style.left=Math.max(0,R.width-8-left-q.offsetWidth)+'px';
+  if(Math.abs((+c.dataset.l||0)-left)>.5||Math.abs((+c.dataset.t||0)-top)>.5||Math.abs((+c.dataset.x||0)-tx)>.5){c.dataset.l=left;c.dataset.t=top;c.dataset.x=tx;c.style.left=left+'px';c.style.top=top+'px';c.style.right='auto';c.style.setProperty('--tx',tx+'px')}}
+ CTK=requestAnimationFrame(cloudTrack)}
+function cloudStart(){if(!CTK)CTK=requestAnimationFrame(cloudTrack)}
+function petUI(){roomSync();cloudStart();const b=$('#bubw');if(b)b.innerHTML=bubHTML();const q=$('#qrw');if(q)q.innerHTML=qrHTML();const x=$('#stw');if(x)x.innerHTML=statsHTML()}
 function bubSay(t,o,q){S.bub={t,o:o||null,q:q||null};S.bubT=Date.now();petUI()}
 function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=greet(away);
  const lvl=Math.floor(S.xp/100),sz=150,sl=asleep();
@@ -1658,7 +1672,7 @@ function bathOk(){ptTick();const p=S.pt;
  if(asleep()){bubSay('Zzz… ahora no, estoy durmiendo');return false}
  if(p.clean>=90){p3play('shake');bubSay(say(['¡Ya estoy limpio y brillante!','Hoy ya me bañé, mira cómo huelo','Más tarde, ahora estoy impecable']));return false}
  return true}
-function roomSync(){const r=$('#room');if(!r)return;const sl=asleep();r.classList.toggle('night',sl);r.classList.toggle('dirty',S.pt.clean<35);r.classList.toggle('qa',!!(S.bub&&S.bub.o)&&!exAway());const dc=$('#dirtc');if(dc)dc.hidden=!(S.pt.clean<35&&!S.tool);
+function roomSync(){const r=$('#room');if(!r)return;cloudStart();const sl=asleep();r.classList.toggle('night',sl);r.classList.toggle('dirty',S.pt.clean<35);r.classList.toggle('qa',!!(S.bub&&S.bub.o)&&!exAway());const dc=$('#dirtc');if(dc)dc.hidden=!(S.pt.clean<35&&!S.tool);
  if(sl&&!P3.zt){P3.zt=setInterval(()=>{if(!asleep()){clearInterval(P3.zt);P3.zt=0;trayUpd();return}const st=$('#slt');if(st&&S.pt.rest>Date.now())st.textContent=S.pet.name+' está durmiendo · despierta en unos '+sleepMin()+' min';try{P3.v&&P3.v.spawn&&P3.v.spawn('zzz')}catch(e){}},2600)}
  if(!sl&&P3.zt){clearInterval(P3.zt);P3.zt=0}}
 setInterval(()=>{if(!exAway()||!$('#tray'))return;const e=S.pt.ex;if(Date.now()>=e.end&&!e.rdy){e.rdy=1;save();{const r=$('#exr');if(r)r.textContent='¡Ya volvió! Trae una postal'}bubSay('¡Volví de mi expedición!');trayUpd();try{remApply()}catch(x){}}else{const l=$('#exl');if(l){const x=EXPS.find(a=>a.k===e.k);const r=$('#exr');if(r)r.textContent='Vuelve en '+fmtWait(exLeft());l.textContent=S.pet.name+' está de expedición en '+x.n+' '+x.e+' · vuelve en '+fmtWait(exLeft())}}},20000);
@@ -2222,7 +2236,7 @@ const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa có
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
 /* ---------- aviso de versión nueva (solo en la app instalada) ---------- */
-const BUILD=108;
+const BUILD=113;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
