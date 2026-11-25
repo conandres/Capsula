@@ -10,7 +10,7 @@
 ![PWA](https://img.shields.io/badge/PWA-instalable-6A4CD6?style=flat-square)
 ![Android](https://img.shields.io/badge/Android-Capacitor-3DDC84?style=flat-square&logo=android&logoColor=white)
 ![Firebase](https://img.shields.io/badge/Firebase-Spark%20(gratis)-FFCA28?style=flat-square&logo=firebase&logoColor=black)
-![Edad](https://img.shields.io/badge/edad-13%2B-B5336E?style=flat-square)
+![Edad](https://img.shields.io/badge/edad-14%2B-B5336E?style=flat-square)
 
 </div>
 
