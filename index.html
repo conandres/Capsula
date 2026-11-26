@@ -830,7 +830,7 @@ const SHP=120,SHMAX=2;
 function shieldBuy(){cl();if((S.sh||0)>=SHMAX||(S.lm||0)<SHP)return;S.lm-=SHP;S.sh=(S.sh||0)+1;burst(22);toast('¡Escudo listo! Cuida tu racha');shopSave()}
 function shieldAsk(){const n=S.sh||0;if(n>=SHMAX){toast('Ya tienes el máximo de escudos');return}if((S.lm||0)<SHP){toast('Te faltan '+(SHP-(S.lm||0))+' Lumis');return}
  showSheet(`<div class="gd"><h2 style="text-align:center">Escudo de racha</h2><p class="mu c">Si un día no cuentas nada, el escudo protege tu racha. Cuesta ${LI} ${SHP}.</p><button class="btn w" onclick="shieldBuy()">Comprar</button><button class="btn s w" onclick="cl()">Ahora no</button></div>`)}
-function shopOpen(){S.tab='tienda';render();setTimeout(()=>{const e=$('#shop');if(e)e.scrollIntoView({behavior:'smooth',block:'center'})},60)}
+function shopOpen(){cl();if(S.tab!=='mundo')go('mundo');setTimeout(()=>{const e=$('#tiendaSec');if(e)e.scrollIntoView({behavior:'smooth',block:'start'})},120)}
 const shopHTML=()=>{return `<section class="card" id="shop"><div class="row sp"><h3>Tienda</h3><b class="pr">${LI} ${S.lm||0}</b></div>
 
  <b>Fondos del cuarto</b><div class="shr">${ROOMS.map(r=>{const o=ownedRoom(r.id),on=(S.rm||'')===r.id;return `<button class="${on?'on':''}" onclick="shopAsk('room','${r.id}')"><i style="background:${r.bg}"></i>${r.n}<small>${on?'Puesto':o?'Toca para usar':LI+' '+r.p}</small></button>`}).join('')}</div>
@@ -1258,7 +1258,7 @@ const NK=()=>({home:'home',mundo:'mundo',caps:'caps',cap:'caps',act:'perfil',tie
 const nMem=()=>Math.max(1,Object.keys(S.members).length);
 const spaceTag=()=>S.group?`<span class="tag spc shr">${ic('users',14)}Compartido con ${nMem()} ${nMem()===1?'persona':'personas'}</span>`:`<span class="tag spc priv">${ic('lock',14)}Solo tú</span>`;
 const hsub=()=>({home:'Hola, '+esc(S.me.name),mundo:'Mi mascota',arc:'Mi diario · solo tú',caps:'Mis cápsulas',cap:S.group?esc(S.group.name):'Mis cápsulas',act:'Actividad',perfil:'Perfil',amigos:'Amigos'})[S.tab]||(S.group?esc(S.group.name):'Mi mundo · solo tú');
-const hdr=()=>`<div class="brand"><img class="bi" src="icons/icon-192.png" width="38" height="38" alt="" decoding="async"><span class="bn">Cápsula<small>${hsub()}</small></span></div><div class="row" style="gap:8px;flex:none">${frOk()?frBtn():''}<button class="wal hw2" onclick="go('tienda')" aria-label="Tus Lumis">${LI} <span class="cnt" data-n="${S.lm||0}">${S.lm||0}</span></button><button class="pf${syncOff()||SYNC.pend>0?' unsaved':''}" onclick="go('perfil')" aria-label="Mi perfil">${pfIn()}</button></div>`;
+const hdr=()=>`<div class="brand"><img class="bi" src="icons/icon-192.png" width="38" height="38" alt="" decoding="async"><span class="bn">Cápsula<small>${hsub()}</small></span></div><div class="row" style="gap:8px;flex:none">${frOk()?frBtn():''}<button class="wal hw2" onclick="shopOpen()" aria-label="Tus Lumis">${LI} <span class="cnt" data-n="${S.lm||0}">${S.lm||0}</span></button><button class="pf${syncOff()||SYNC.pend>0?' unsaved':''}" onclick="go('perfil')" aria-label="Mi perfil">${pfIn()}</button></div>`;
 function shell(){return `<div class="top" id="hd">${hdr()}</div><main id="mn">${VIEW[S.tab]()}</main>
 <nav aria-label="Principal">
  <button data-t="home" onclick="go('home')">${ic('home')}Inicio</button>
@@ -1390,7 +1390,7 @@ function mundo(){
  ${S.chest===today()?`<section class="card c"><span class="mu">Cofre de hoy abierto. Vuelve mañana por otro</span></section>`:`<section class="card c hero"><div class="chest">${ic('gift',44,1.6)}</div><h3>¡${esc(S.pet.name)} te trajo un regalo!</h3><button class="btn" onclick="chest()">Abrir cofre</button></section>`}
  ${streakCard()}
  ${mgCard()}
- <button class="card row act" onclick="go('tienda')" style="flex-direction:row;align-items:center;gap:12px;text-align:left;width:100%">${ic('bag',26)}<span class="tx"><b>Tienda</b><span class="mu">Ropa, fondos y mascotas nuevas</span></span></button>
+ <div class="spch" id="tiendaSec"><h2>Tienda</h2></div>${petShopHTML()}${shopHTML()}${closetHTML()}
  ${missionsHTML()}
  ${moodCard()}${badgesHTML()}
  ${inviteApp()}`}
@@ -2266,7 +2266,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=121;
+const BUILD=123;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
@@ -2482,6 +2482,7 @@ function memHtml(sp){const dt=ms=>new Date(ms).toLocaleDateString('es',{day:'num
  return `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mis recuerdos de Cápsula</title><style>body{font:16px/1.5 system-ui,sans-serif;max-width:680px;margin:0 auto;padding:24px 16px;color:#1D1D1F;background:#F5F5F7}h1{font-size:28px}h2{margin-top:40px}article{background:#fff;border-radius:16px;padding:16px;margin:14px 0}img{max-width:100%;border-radius:12px}audio{width:100%}.m{color:#68686D;font-size:14px;margin:2px 0 8px}.ng{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px}.ngp{display:flex;justify-content:center;min-height:104px}.ng .ps{display:inline-block}
 .room.pkb .fl{margin-top:62px!important}.tub{height:44%!important}
 </style>
+#tiendaSec{scroll-margin-top:90px}
 @keyframes vIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes pop{0%{transform:scale(.92);opacity:0}60%{transform:scale(1.03)}100%{transform:scale(1);opacity:1}}
 main>.card,main>section,.vw>.card{animation:vIn .35s cubic-bezier(.2,.8,.2,1) both}
