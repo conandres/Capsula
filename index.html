@@ -1275,7 +1275,7 @@ function cntAnim(){const es=[...document.querySelectorAll('.cnt')];if(!es.length
  (function f(t){const k=Math.min(1,(t-t0)/d),v=Math.round(from+(n-from)*(1-Math.pow(1-k,3)));es.forEach(x=>x.textContent=v);if(k<1)requestAnimationFrame(f)})(t0)}
 function render(){try{socUpd()}catch(e){}
  checkUnl();save();
- if(S.scr==='main'&&$('#mn')){$('#mn').innerHTML=VIEW[S.tab]();$('#hd').innerHTML=hdr();navSync();p3mount();psFill();cntAnim();return}
+ if(S.scr==='main'&&$('#mn')){$('#mn').innerHTML=VIEW[S.tab]();$('#hd').innerHTML=hdr();navSync();p3mount();psFill();cntAnim();if(S.tab==='mundo'&&S.tool)try{trayUpd()}catch(e){}return}
  $('#scr').innerHTML=({boot,welcome,deleted,under13,legal:legalScr,group:groupScr,pet:petScr,main:shell})[S.scr]();
  if(S.scr==='welcome')bindCr();
  if(S.scr==='main'){navSync();enterAnim($('#mn'));p3mount()}
@@ -1743,7 +1743,7 @@ function dgStart(e,b){e.preventDefault();if(Date.now()<RLD){toast('Un momento, s
  const mouth=ev=>{const r=P3.host&&P3.host.getBoundingClientRect();if(!r||!r.width)return false;const x=(ev.clientX-r.left)/r.width,y=(ev.clientY-r.top)/r.height;return x>.28&&x<.72&&y>.28&&y<.78};
  const mv=ev=>{moved=Math.max(moved,Math.hypot(ev.clientX-sx,ev.clientY-sy));pos(ev);const o=mouth(ev);if(o!==over){over=o;el.classList.toggle('near',o);try{P3.v&&P3.v.setExpression(o?'surprised':p3expr())}catch(_){}}};
  const end=ev=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',end);removeEventListener('pointercancel',end);delete el.dataset.live;try{P3.v&&P3.v.setExpression(p3expr())}catch(_){}
-  if(ev.type==='pointercancel'){el.remove();return}if(moved<10||mouth(ev)){el.style.transition='transform .22s ease-in,opacity .22s';el.style.opacity='0';el.style.transform=el.style.transform+' scale(.2)';setTimeout(()=>el.remove(),240);if(feedOk()){eat(k);reload(1700)}else{p3play('shake');reload(1200)}}else{flyBack(el,b);toast('Llévala hasta la boca')}};
+  if(ev.type==='pointercancel'){el.remove();return}if(moved<10||mouth(ev)){el.style.transition='transform .22s ease-in,opacity .22s';el.style.opacity='0';el.style.transform=el.style.transform+' scale(.2)';setTimeout(()=>el.remove(),240);if(feedOk()){eat(k);reload(1000)}else{p3play('shake');reload(1200)}}else{flyBack(el,b);toast('Llévala hasta la boca')}};
  addEventListener('pointermove',mv);addEventListener('pointerup',end);addEventListener('pointercancel',end)}
 document.addEventListener('pointerdown',e=>{const t=e.target&&e.target.closest?e.target:null;if(!t)return;const b=t.closest('.dg');if(b){if(b.dataset.k==='ball'){ballStart(e);return}dgStart(e,b);return}},{passive:false});
 function petTap(){ptTick();const p=S.pt,now=Date.now();
@@ -1755,7 +1755,7 @@ function petTap(){ptTick();const p=S.pt,now=Date.now();
  else if(!need){bubSay(say(['Ya estoy rebosante de cariño ¡pero no pares!','Mmm, qué rico. Hoy me siento muy querido.','¡Más mimos no caben en mi corazón, pero igual me gustan!']));hopPet()}
  else{bubSay('Mmm, qué rico Mi próximo premio de mimos llega en '+fmtWait(wait));hopPet()}}
 const crave=()=>FOODS[hs(today()+S.pet.kind+S.pet.name)%FOODS.length];
-const FOODS=[{k:'galleta',e:'🍪',n:'Galleta',f:9,l:2,c:-2,u:0,y:3},{k:'manzana',e:'🍎',n:'Manzana',f:7,l:3,c:0,u:5,y:1},{k:'pastel',e:'🍰',n:'Pastel',f:16,l:5,c:-6,u:-2,y:7}];
+const FOODS=[{k:'galleta',e:'🍪',n:'Galleta',f:20,l:2,c:-2,u:0,y:3},{k:'manzana',e:'🍎',n:'Manzana',f:15,l:3,c:0,u:5,y:1},{k:'pastel',e:'🍰',n:'Pastel',f:32,l:5,c:-6,u:-2,y:7}];
 function eat(k){const f=FOODS.find(x=>x.k===k);if(!f)return;cl();ptTick();const p=S.pt,now=Date.now(),need=p.food<60;p3play('eat');
  p.food=Math.min(100,p.food+f.f);p.love=Math.min(100,p.love+f.l);p.clean=Math.max(0,p.clean+f.c);p.en=Math.min(100,p.en+f.u);p.fun=Math.min(100,(p.fun??70)+(f.y||0));p.fedOnce=1;burst(8,[f.e,'💗']);
  if(f.k===crave().k&&p.crv!==today()){p.crv=today();p.love=Math.min(100,p.love+8);p.fun=Math.min(100,p.fun+10);S.bub={t:say(['¡Justo lo que quería hoy! Eres adivino','¡Mi antojo del día! Me conoces mejor que nadie']),o:null,q:null};S.bubT=now;burst(18);hopPet();p3play('cheer');rw(2,2);return}
@@ -2266,7 +2266,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=123;
+const BUILD=124;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
