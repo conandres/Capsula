@@ -1221,6 +1221,7 @@ async function lgGo(){const nm=$('#lgn').value.trim().slice(0,24),m=$('#lgm').va
  const minor=a<18;if(minor&&!$('#lggc').checked)return;
  S.me.name=nm;S.birth=y+'-'+m;S.legal={v:LEGAL_V,t:Date.now(),minor:minor,guard:minor};S.lerr='';save();
  try{if(window.CLOUD){CLOUD.ping();const rf=localStorage.getItem('capsula_ref');if(rf){localStorage.removeItem('capsula_ref');CLOUD.refer(rf)}}}catch(e){}
+ try{if(window.CLOUD&&CLOUD.flush)CLOUD.flush(true)}catch(e){}
  APP.goAfter()}
 const under13=()=>`<div class="wl" style="justify-content:center;text-align:center;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));"><h1>Todavía no puedes usar Cápsula</h1><p class="mu">Cápsula es para personas de 14 años o más. No guardamos tus datos: tu cuenta quedó eliminada. ¡Te esperamos cuando cumplas 14!</p><button class="btn w" onclick="location.reload()">Entendido</button></div>`;
 
@@ -2300,7 +2301,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=130;
+const BUILD=131;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
@@ -2544,6 +2545,7 @@ window.APP={
   ['xp','best','total','qaN'].forEach(k=>{const a=+c[k]||0,b=+l[k]||0;if(b>a){d[k]=b;ch=true}});
   if((+l.lmT||0)>(+c.lmT||0)){d.lm=l.lm;d.lmT=l.lmT;d.cap=l.cap;ch=true}
   if(l.rm&&!c.rm){d.rm=l.rm;ch=true}
+  if(l.legal&&(+l.legal.v||0)>(+(c.legal||{}).v||0)){d.legal=l.legal;ch=true;if(l.birth)d.birth=l.birth}
   const un=(a,b)=>{const u=[...new Set([...(Array.isArray(a)?a:[]),...(Array.isArray(b)?b:[])])];return u};
   ['types','unl'].forEach(k=>{const u=un(c[k],l[k]);if(u.length>(Array.isArray(c[k])?c[k].length:0)){d[k]=u;ch=true}});
   const tc=Date.parse(c.last)||0,tl=Date.parse(l.last)||0;

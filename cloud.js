@@ -36,7 +36,7 @@ function start() {
   CLOUD.configured = true;
 
   let me = null, famIds = [], families = [], active = null, subs = [];
-  let lastP = '', lastM = '', lastE = '', lastPing = 0, timer = null, gen = 0, ready = false, plim = 25;
+  let cloudLm = 0, cloudXp = 0, fails = 0, lastP = '', lastM = '', lastE = '', lastPing = 0, timer = null, gen = 0, ready = false, plim = 25;
 
   const userRef = () => doc(db, 'users', me.uid);
   const base = () => (active ? ['families', active] : ['users', me.uid]);
@@ -58,13 +58,18 @@ function start() {
   function flush(force) {
     if (!me || !ready) return;
     clearTimeout(timer); timer = null;
-    const p = A.personal(), ph = pHash(p), mh = mHash(p);
+    const p = A.personal();
+    /* Las reglas solo aceptan que Lumis/XP suban un poco por escritura. Si el celular está más adelantado, se sube por tandas hasta alcanzar, sin perder nada. */
+    let more = false;
+    if ((+p.lm || 0) > cloudLm + 900) { p.lm = cloudLm + 900; more = true; }
+    if ((+p.xp || 0) > cloudXp + 4500) { p.xp = cloudXp + 4500; more = true; }
+    const ph = pHash(p), mh = mHash(p);
     if (force || ph !== lastP) {
       lastP = ph;
       const np = A.nameP && A.nameP();
       track(setDoc(userRef(), { ...p, email: me.email, photo: me.photo, updatedAt: serverTimestamp(), ...(np ? { nameAt: serverTimestamp() } : {}) }, { merge: true })
-        .then(() => { if (np && A.nameP) A.nameP(false); })
-        .catch(e => { lastP = ''; console.warn('No se guardó el progreso', e); }));
+        .then(() => { cloudLm = +p.lm || 0; cloudXp = +p.xp || 0; fails = 0; if (np && A.nameP) A.nameP(false); if (more) { clearTimeout(timer); timer = setTimeout(() => flush(false), 1200); } })
+        .catch(e => { lastP = ''; console.warn('No se guardó el progreso', e); if (fails++ < 6) { clearTimeout(timer); timer = setTimeout(() => flush(false), 8000 * fails); } }));
     }
     const eh = [p.streak, (p.wear || []).join(','), p.total || 0, p.showSeen !== false].join('|');
     if (force || eh !== lastE) { lastE = eh; pushExtra(false); }
@@ -116,6 +121,7 @@ function start() {
   CLOUD.qaAnswer = (day, tx) => track(setDoc(doc(db, 'families', active, 'qa', day, 'answers', me.uid),
     { tx, name: A.personal().name, createdAt: serverTimestamp() }));
 
+  CLOUD.flush = f => flush(!!f);
   CLOUD.dirty = () => { if (!ready) return; clearTimeout(timer); timer = setTimeout(() => flush(false), 2500); notify(); };
   document.addEventListener('visibilitychange', () => { if (document.hidden) flush(false); });
   addEventListener('pagehide', () => flush(false));
@@ -178,7 +184,7 @@ function start() {
     if (!u) { teardown(); me = null; ready = false; CLOUD.ready = false; A.signedOut(); return; }
     me = { uid: u.uid, email: u.email || '', name: (u.displayName || '').split(' ')[0], photo: u.photoURL || '' };
     let data = null, isNew = false;
-    try { const s = await getDoc(userRef()); data = s.exists() ? s.data() : null; }
+    try { const s = await getDoc(userRef()); data = s.exists() ? s.data() : null; if (data) { cloudLm = +data.lm || 0; cloudXp = +data.xp || 0; } }
     catch (e) {
       data = A.localCache(me.uid);
       if (!data) { A.cloudError('No pudimos cargar tu cuenta. Revisa tu conexión e intenta de nuevo.'); return; }
