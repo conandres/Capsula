@@ -137,7 +137,8 @@ function start() {
       a: x.authorUid === me.uid ? 'me' : x.authorUid, an: x.authorName || '',
       ts: x.createdAt && x.createdAt.toMillis ? x.createdAt.toMillis() : Date.now(),
       r: rx.map(a => a.filter(u => u !== me.uid).length),
-      m: rx.map(a => (a.includes(me.uid) ? 1 : 0))
+      m: rx.map(a => (a.includes(me.uid) ? 1 : 0)),
+      pw: !!(d.metadata && d.metadata.hasPendingWrites)
     };
   }
 
@@ -157,7 +158,7 @@ function start() {
       subs.push(onSnapshot(doc(db, 'families', fid), s => { if (s.exists()) A.group(pick(fid, s.data())); }, e => { if (e && e.code === 'permission-denied') dropFam(fid); else warn(e); }));
     } else A.members({});
     const q = query(collection(db, ...base(), 'posts'), orderBy('createdAt', 'desc'), limit(plim));
-    subs.push(onSnapshot(q, s => A.posts(s.docs.filter(d => SAFE_ID.test(d.id)).map(norm), plim), warn));
+    subs.push(onSnapshot(q, { includeMetadataChanges: true }, s => A.posts(s.docs.filter(d => SAFE_ID.test(d.id)).map(norm), plim), warn));
   }
 
   async function loadFamilies() {

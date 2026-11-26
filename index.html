@@ -493,7 +493,7 @@ html[data-theme="negro"] .btn:not(.s):not(:disabled){box-shadow:none}
 .pf{position:relative;width:38px;height:38px;border-radius:50%;border:0;padding:0;background:var(--tint-2);color:var(--tx);font-weight:600;font-size:16px;display:grid;place-items:center;overflow:hidden;cursor:pointer;flex:none}
 .pf img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .pf{position:relative}.pf.unsaved::after{content:'';position:absolute;right:1px;bottom:1px;width:11px;height:11px;border-radius:50%;background:#F5A623;border:2px solid var(--top-bg,#fff)}
-.sy{display:flex;align-items:center;gap:8px}.sy i{width:9px;height:9px;border-radius:50%;background:#34C759;flex:none}.sy.w i{background:#F5A623}
+.pw{opacity:.7}#offb{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);z-index:60;background:#F5A623;color:#2a1a00;font:600 12px system-ui,sans-serif;text-align:center;padding:5px 10px}.sy{display:flex;align-items:center;gap:8px}.sy i{width:9px;height:9px;border-radius:50%;background:#34C759;flex:none}.sy.w i{background:#F5A623}
 .pfc{display:flex;align-items:center;gap:14px;min-width:0}
 .pfc .pf{width:64px;height:64px;font-size:26px;cursor:default}
 .pfc .tx b{font-size:18px}
@@ -987,7 +987,10 @@ try{const q=new URLSearchParams(location.search),c=q.get('codigo'),sf=v=>String(
 /* Lo personal (mascota, corazones, racha...) viaja a la nube; la copia local sirve de respaldo sin internet */
 const personal=()=>({name:S.me.name,ln:S.me.ln||'',pet:S.pet,petSet:S.petSet,xp:S.xp,lm:S.lm||0,lmT:S.lmT||0,cap:S.cap||null,rm:S.rm||'',streak:S.streak,last:S.last,chest:S.chest,mis:S.mis,petDone:S.petDone,inv:S.inv,perfect:S.perfect,wk:S.wk,unl:S.unl,wear:S.wear,favs:S.favs||[],best:S.best,total:S.total,types:[...S.types],pt:S.pt,others:S.others||[],solo:S.solo,theme:S.theme,showSeen:S.showSeen,birth:S.birth,legal:S.legal,blk:S.blk,refC:S.refC,invD:S.invD,soc:S.soc||0,sh:S.sh||0,shW:S.shW||'',qd:S.qd,qaN:S.qaN,fpR:S.fpR||{},fg:S.fg||0,wkG:S.wkG||'',accent:S.accent||'',active:S.group?S.group.id:null});
 let remK='',remT=0;
-function save(){try{if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()){const k=(S.me.name||'')+'|'+((S.pet&&S.pet.name)||'');if(k!==remK){remK=k;clearTimeout(remT);remT=setTimeout(()=>{try{remApply()}catch(e){}},2500)}}}catch(e){}
+let wgK='';
+function wgPush(){try{const P=NATIVE&&NP('Preferences');if(!P||!S.user)return;const d=S.last?new Date(S.last):null;const iso=d&&!isNaN(d)?d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'):'';
+ const v=JSON.stringify({s:S.streak||0,n:(S.pet&&S.pet.name)||'',k:(S.pet&&S.pet.kind)||'conejo',d:iso});if(v===wgK)return;wgK=v;P.set({key:'capsula_widget',value:v})}catch(e){}}
+function save(){try{wgPush()}catch(e){}try{if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()){const k=(S.me.name||'')+'|'+((S.pet&&S.pet.name)||'');if(k!==remK){remK=k;clearTimeout(remT);remT=setTimeout(()=>{try{remApply()}catch(e){}},2500)}}}catch(e){}
  if(S.user){try{localStorage.setItem(KEY,JSON.stringify({...personal(),uid:S.user.uid,familyIds:S.families.map(f=>f.id)}))}catch(e){}}
  if(window.CLOUD&&CLOUD.ready)CLOUD.dirty()}
 function resetPersonal(){S.nameAt=0;S.nameP=0;Object.assign(S,{accent:'',ent:null,birth:'',legal:null,blk:[],refC:0,invD:[],xp:0,lm:0,lmT:0,cap:null,rm:'',streak:0,posted:false,last:'',chest:'',mis:0,petDone:0,inv:0,perfect:false,types:new Set(),wk:null,unl:[],wear:[],favs:[],best:0,total:0,others:[],pt:PT0(),pet:{kind:'conejo',name:'Coco'},pe:0,petSet:false,solo:false,showSeen:true,qd:'',qaN:0,qa:null,group:null,bub:null,posts:[],members:{},families:[]});T={i:0,s:0,a:null}}
@@ -1005,7 +1008,7 @@ function applyPersonal(o){if(!o)return;
  {const d=new Date(),m=new Date(d);m.setDate(d.getDate()-((d.getDay()+6)%7));const wk=m.toDateString();if(S.shW!==wk){S.shW=wk;S.sh=Math.max(S.sh||0,1)}}
  if(!S.posted&&S.last!==y){if(S.last===y2&&S.streak>0&&S.sh>0){S.sh--;S.last=y;setTimeout(()=>toast('Tu escudo salvó tu racha de '+S.streak+' días'),1800)}else S.streak=0}}
 function legacy(){try{const o=JSON.parse(localStorage.getItem(LEGACY)||'null');if(o&&o.me&&o.me.name)return{pet:o.pet,petSet:o.petSet,xp:o.xp,streak:o.streak,last:o.last,chest:o.chest,mis:o.mis,petDone:o.petDone,inv:o.inv,perfect:o.perfect,types:o.types,pt:o.pt}}catch(e){}return null}
-async function logout(){try{if(window.google&&google.accounts)google.accounts.id.disableAutoSelect()}catch(e){}try{localStorage.removeItem(KEY);localStorage.removeItem('capsula_adm')}catch(e){}try{if(window.CLOUD&&CLOUD.signOut)await CLOUD.signOut()}catch(e){}try{const P=NP('FirebaseAuthentication');if(P)await P.signOut()}catch(e){}location.reload()}
+async function logout(){try{const P=NP('Preferences');if(P)P.remove({key:'capsula_widget'})}catch(e){}try{if(window.google&&google.accounts)google.accounts.id.disableAutoSelect()}catch(e){}try{localStorage.removeItem(KEY);localStorage.removeItem('capsula_adm')}catch(e){}try{if(window.CLOUD&&CLOUD.signOut)await CLOUD.signOut()}catch(e){}try{const P=NP('FirebaseAuthentication');if(P)await P.signOut()}catch(e){}location.reload()}
 const BCOL=['#6B4CD6','#FF8FB8','#FFC15E','#5ED1B0','#7FB8FF'];function burst(n=28,em=['✦','●','✧','◆']){const a=$('.app');for(let i=0;i<n;i++){const e=document.createElement('span');e.className='cf';e.textContent=em[i%em.length];const dec=/^[✦●✧◆]$/.test(em[i%em.length]);e.style.cssText=`${dec?'color:'+BCOL[i%BCOL.length]+';':''}left:${50+(Math.random()-.5)*20}%;--dx:${(Math.random()-.5)*360}px;--dy:${-120-Math.random()*320}px;--r:${(Math.random()-.5)*720}deg;animation-delay:${Math.random()*.2}s`;a.appendChild(e);setTimeout(()=>e.remove(),1900)}}
 /* ---------- mascota 3D (Mi mundo). Si falla, queda la 2D ---------- */
 const P3={st:'idle',v:null,host:null,t:0,slow:false};
@@ -1042,7 +1045,7 @@ function p3mount(){const ph=$('#pet3dx')||$('#pet3d')||$('#pet3dh');if(!ph||P3.s
  }).catch(()=>{P3.st='fail'});
 }
 function hopPet(){const f=$('.hero .fl');if(f){f.classList.remove('hop');void f.offsetWidth;f.classList.add('hop')}}
-function levelUp(l){p3play('levelup');setTimeout(()=>{burst(44,['✦','●','✧','◆','🎉'])},250);buzz([40,60,40,60,90]);const o=document.createElement('div');o.className='lvup';o.innerHTML=`<div class="lvc"><div class="lvp">${pet3('pet3dx',200)}</div><h1>¡${esc(S.pet.name)} subió de nivel!</h1><p><img class="ci" style="width:1.8em;height:1.8em" src="img/xp.png" alt="XP"> <b>Nivel ${l+1}</b> · ${STG[stgL(l)]}</p><p class="mu">${stgL(l)>stgL(l-1)?(stgL(l)>Math.max(socCap(),stm(S.pt,S.xp))?'Ya podría crecer, pero necesita a tu familia: crea o llena una cápsula.':'¡Evolucionó! Ahora es '+STG[stgL(l)].toLowerCase()+'.'):l===1?'Estrenó una estrellita':l===2?'Estrenó un moño':l>=3?'¡Ahora lleva corona!':''}</p><button class="btn" onclick="this.closest('.lvup').remove();p3mount()">¡Qué orgullo!</button></div>`;$('.app').appendChild(o);p3mount();burst(44)}
+function levelUp(l){p3play('levelup');setTimeout(()=>{burst(44,['✦','●','✧','◆','🎉'])},250);buzz('big');setTimeout(()=>buzz('ok'),380);const o=document.createElement('div');o.className='lvup';o.innerHTML=`<div class="lvc"><div class="lvp">${pet3('pet3dx',200)}</div><h1>¡${esc(S.pet.name)} subió de nivel!</h1><p><img class="ci" style="width:1.8em;height:1.8em" src="img/xp.png" alt="XP"> <b>Nivel ${l+1}</b> · ${STG[stgL(l)]}</p><p class="mu">${stgL(l)>stgL(l-1)?(stgL(l)>Math.max(socCap(),stm(S.pt,S.xp))?'Ya podría crecer, pero necesita a tu familia: crea o llena una cápsula.':'¡Evolucionó! Ahora es '+STG[stgL(l)].toLowerCase()+'.'):l===1?'Estrenó una estrellita':l===2?'Estrenó un moño':l>=3?'¡Ahora lleva corona!':''}</p><button class="btn" onclick="this.closest('.lvup').remove();p3mount()">¡Qué orgullo!</button></div>`;$('.app').appendChild(o);p3mount();burst(44)}
 
 /* ---------- helpers ---------- */
 function toast(m){const t=$('#ts');t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),2000)}
@@ -1311,7 +1314,7 @@ function render(){try{socUpd()}catch(e){}
  psFill();cntAnim();
  const key=S.scr+':'+S.gstep;if(key!==render.k){render.k=key;if(S.scr==='group'||S.scr==='pet')enterAnim($('.ob'))}
 }
-function go(t){if(t==='mundo')spaceTo(null);S.tab=t;render();if(t==='tienda')guideTip('shop');if(t==='mundo')guideAuto('mundo');if(t==='cap')guideAuto('cap');const mn=$('#mn');if(mn){mn.scrollTop=0;enterAnim(mn)}if(t==='mundo')setTimeout(()=>petIdle(true),4000)}
+function go(t){buzz('tap');if(t==='mundo')spaceTo(null);S.tab=t;render();if(t==='tienda')guideTip('shop');if(t==='mundo')guideAuto('mundo');if(t==='cap')guideAuto('cap');const mn=$('#mn');if(mn){mn.scrollTop=0;enterAnim(mn)}if(t==='mundo')setTimeout(()=>petIdle(true),4000)}
 const openCap=id=>{spaceTo(id);S.sub='inicio';S.af='';go('cap')};
 const goArc=()=>{spaceTo(null);S.af='';go('arc')};
 const goTriv=()=>{spaceTo(null);go('triv')};
@@ -1992,15 +1995,28 @@ async function bookShare(){const L=bookPosts();if(L.length<12){toast('Aún falta
  catch(e){toast('No se pudo preparar el libro. Inténtalo de nuevo.')}}
 function bookGo(d){S.bk=Math.max(0,Math.min((S.bkL||[]).length+1,S.bk+d));bookPage()}
 function bookCard(n){const ok=n>=12;return `<section class="card"><div class="row sp"><span class="tx"><b>${esc(libName())}</b><span class="mu">${ok?'¡Listo para leer!':Math.min(n,12)+' de 12 historias · con 12 se arma'}</span></span>${ok?'<span class="row" style="gap:6px"><button class="btn s" onclick="bookShare()" aria-label="Compartir el libro">Compartir</button><button class="btn" onclick="bookOpen()">Abrir</button></span>':''}</div>${ok?'':`<div class="bar"><i style="width:${Math.min(100,n/12*100)}%"></i></div>`}</section>`}
+const lockOn=()=>{try{return localStorage.getItem('capsula_lock')==='1'}catch(e){return false}};
+let dUn=false,dBusy=false,hideAt=0;
+const lockScr=()=>`<section class="card c">${pi('diario',72)}<h3>Mi diario está bloqueado</h3><p class="mu">Solo tú puedes abrirlo.</p><button class="btn w" onclick="dUnlock()">Desbloquear</button></section>`;
+async function dUnlock(){if(dBusy)return;const B=NP('NativeBiometric');if(!B){dUn=true;render();return}dBusy=true;
+ try{await B.verifyIdentity({reason:'Abrir Mi diario',title:'Mi diario',subtitle:'Confirma que eres tú',useFallback:true,maxAttempts:3});dUn=true;buzz('ok');dBusy=false;render()}catch(e){dBusy=false;toast('No se pudo desbloquear')}}
+async function lockSet(on){const B=NP('NativeBiometric');if(!B){render();return}
+ try{const a=await B.isAvailable({useFallback:true});if(!a||!a.isAvailable){toast('Primero activa un bloqueo de pantalla en tu celular (huella, rostro o PIN).');render();return}
+  await B.verifyIdentity({reason:on?'Activar el bloqueo':'Quitar el bloqueo',title:'Mi diario',subtitle:'Confirma que eres tú',useFallback:true});
+  try{if(on)localStorage.setItem('capsula_lock','1');else localStorage.removeItem('capsula_lock')}catch(e){}dUn=true;toast(on?'Mi diario ahora está protegido':'Bloqueo quitado');buzz('ok')}
+ catch(e){toast('No se cambió el bloqueo')}render()}
+const lockCard=()=>!NATIVE||!NP('NativeBiometric')?'':`<div class="card"><h3>Bloqueo de Mi diario</h3><label class="chk"><input type="checkbox" ${lockOn()?'checked':''} onchange="lockSet(this.checked)"> Pedir huella, rostro o PIN para abrir Mi diario</label><p class="mu">Usa el bloqueo que ya tienes en tu celular.</p></div>`;
+document.addEventListener('visibilitychange',()=>{if(document.hidden){hideAt=Date.now();return}if(hideAt&&Date.now()-hideAt>30000&&lockOn()){dUn=false;if(S.scr==='main'&&S.tab==='arc'&&!S.group)render()}});
 function arcList(kind){
  const all=S.posts.filter(p=>TY[p.k]&&!isBlk(p.a)),L=kind==='fav'?all.filter(p=>isFav(p.id)):kind?all.filter(p=>p.k===kind):all;
  if(!all.length)return `<div class="card c">${S.group?ic('book',48):pet3('pet3dx',150)}<h3>Aún no hay historias</h3><p class="mu">${S.group?'Cuenta la primera y quedará aquí para todos.':'Cuenta la primera y '+esc(S.pet.name)+' te lo agradecerá.'}</p><button class="btn" onclick="chooser()">Contar la primera</button></div>`;
  if(!L.length)return `<div class="card c"><p class="mu">${kind==='fav'?'Aún no tienes favoritas. Toca ☆ en una historia para guardarla aquí.':'Aún no hay '+(TY[kind]||{l:'historias'}).l.toLowerCase()+' aquí.'}</p>${kind==='carta'?'<button class="btn" onclick="compose(\'carta\')">Escribir una carta</button>':''}</div>`;
- return L.map(p=>`<article class="card"><div class="row">${pAv(p.a,40)}<div class="tx"><b>${esc(who(p.a,p))}</b><span class="mu">${rel(p.ts)}${p.by?' · contada por '+esc(p.by):''}</span></div><span class="tag">${ic(TY[p.k].i,14)}${TY[p.k].l}</span><button class="fv${isFav(p.id)?' on':''}" aria-pressed="${isFav(p.id)}" aria-label="${isFav(p.id)?'Quitar de favoritas':'Marcar como favorita'}" onclick="favSet('${p.id}')">${isFav(p.id)?'★':'☆'}</button></div>
+ return L.map(p=>`<article class="card"><div class="row">${pAv(p.a,40)}<div class="tx"><b>${esc(who(p.a,p))}</b><span class="mu">${rel(p.ts)}${p.by?' · contada por '+esc(p.by):''}${p.pw?' · ⏳ por subir':''}</span></div><span class="tag">${ic(TY[p.k].i,14)}${TY[p.k].l}</span><button class="fv${isFav(p.id)?' on':''}" aria-pressed="${isFav(p.id)}" aria-label="${isFav(p.id)?'Quitar de favoritas':'Marcar como favorita'}" onclick="favSet('${p.id}')">${isFav(p.id)?'★':'☆'}</button></div>
   <h3>${esc(p.t)}</h3>${postBody(p)}
   ${S.group?`<div class="rx">${['💗','😂','🥹'].map((e,j)=>`<button class="${p.m[j]?'on':''}" aria-pressed="${!!p.m[j]}" onclick="react('${p.id}',${j})">${e} ${p.r[j]+p.m[j]}</button>`).join('')}</div>`:''}${postActs(p)}</article>`).join('')+(S.posts.length>=S.plim?`<button class="btn s w" onclick="CLOUD.more()">Ver más historias</button>`:'')}
 function arc(){
  if(S.group){S.tab='cap';S.sub='recuerdos';return cap()}
+ if(lockOn()&&NATIVE&&!dUn){if(!lockScr.t||Date.now()-lockScr.t>2500){lockScr.t=Date.now();setTimeout(dUnlock,350)}return lockScr()}
  const n=S.posts.length;
  return `<div class="spch"><h2>Mi diario</h2>${spaceTag()}</div>
  <section class="card"><h3>¿Cómo quieres contar hoy?</h3><div class="qp">${Object.entries(TY).map(([k,v])=>`<button onclick="compose('${k}')">${ic(v.i,18)}${v.l}</button>`).join('')}</div></section>
@@ -2155,6 +2171,7 @@ function perfil(){
  <button class="btn s w" onclick="delAsk()" style="color:#B3261E">Eliminar mi cuenta y mis datos</button></div>
  ${plusCard()}
  <div class="card"><div class="row sp"><h3>Actividad</h3><button class="lnk" onclick="go('act')">Ver todo</button></div>${recentHTML(3)||''}</div>
+ ${lockCard()}
  ${remCard()}
  ${guideCard()}
  ${admCard()}
@@ -2301,7 +2318,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=131;
+const BUILD=132;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
@@ -2384,7 +2401,9 @@ function chatSend(e){e.preventDefault();const i=$('#ci'),t=(i.value||'').trim();
  const c=S.chat,id=c.id,tid='tmp'+Date.now();buzz(14);const bt=$('.cin .btn');if(bt){bt.classList.remove('fly');void bt.offsetWidth;bt.classList.add('fly')}
  if(c.msgs){c.msgs=c.msgs.concat([{id:tid,f:myUid(),t,ts:Date.now(),tmp:1}]);chatPaint();const m=$('#cm');if(m)m.scrollTop=m.scrollHeight}
  CLOUD.fr.send(id,t).catch(()=>{toast('No se pudo enviar. Revisa tu conexión');i.value=t;if(S.chat&&S.chat.id===id&&S.chat.msgs){S.chat.msgs=S.chat.msgs.filter(x=>x.id!==tid);chLast=S.chat.msgs.length;chatPaint()}});i.focus()}
-const buzz=n=>{try{navigator.vibrate&&navigator.vibrate(n)}catch(e){}};
+const buzz=n=>{try{const H=NATIVE&&NP('Haptics');
+ if(H){if(n==='ok')H.notification({type:'SUCCESS'});else if(n==='warn')H.notification({type:'WARNING'});else if(n==='big')H.impact({style:'HEAVY'});else if(Array.isArray(n))H.notification({type:'SUCCESS'});else H.impact({style:(+n||0)>20?'MEDIUM':'LIGHT'});return}
+ navigator.vibrate&&navigator.vibrate(n==='ok'?[20,40,60]:n==='warn'?[60,40,60]:n==='big'?[40,60,40]:n==='tap'?12:n)}catch(e){}};
 function coinFly(n){if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const to=document.querySelector('.hw2');if(!to||!to.animate)return;const r=to.getBoundingClientRect(),tx=r.left+r.width*.3,ty=r.top+r.height/2-13,W=innerWidth,H=innerHeight,k=Math.min(7,Math.max(3,Math.round(n/4)));
  for(let j=0;j<k;j++){const e=document.createElement('img');e.src='img/lumis.png';e.className='cfly';e.alt='';const sx=W*(.3+Math.random()*.4),sy=H*(.5+Math.random()*.15);e.style.left=sx+'px';e.style.top=sy+'px';document.body.appendChild(e);
   const a=e.animate([{transform:'translate(0,0) scale(.4)',opacity:0},{transform:`translate(${(Math.random()-.5)*60}px,-50px) scale(1.15)`,opacity:1,offset:.3},{transform:`translate(${tx-sx}px,${ty-sy}px) scale(.6)`,opacity:.9}],{duration:750+j*70,delay:j*70,easing:'cubic-bezier(.5,0,.7,.4)',fill:'both'});
@@ -2419,7 +2438,7 @@ function compose(k){
  const ttl=ph=>`<label class="lb" for="ttl">Título</label><input id="ttl" class="in" maxlength="60" placeholder="${ph}" oninput="chk()">`;
  const B={
   voz:`<div id="vb">${voz()}</div>`,
-  foto:`<label class="drop" for="ph-f"><span class="ti">${ic('camera',24)}</span><b>Elegir una foto</b><span class="mu">De tu galería o de la cámara</span></label><input id="ph-f" type="file" accept="image/*" hidden onchange="pick(this,'img')"><img id="pv" class="pv" alt="Vista previa de tu foto" hidden>${ttl('Ponle un nombre al recuerdo')}<label class="lb" for="cap">¿Qué pasó ahí?</label><textarea id="cap" class="in tall" rows="6" maxlength="600" placeholder="Cuenta quiénes salen, dónde fue y qué recuerdas de ese día…" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,360)+'px'"></textarea>${go}`,
+  foto:`${NATIVE&&NP('Camera')?`<button class="btn w" onclick="camShot()" style="margin-bottom:8px">${ic('camera',20)} Tomar foto ahora</button>`:''}<label class="drop" for="ph-f"><span class="ti">${ic('camera',24)}</span><b>${NATIVE&&NP('Camera')?'O elige una de tu galería':'Elegir una foto'}</b><span class="mu">${NATIVE&&NP('Camera')?'Fotos que ya tienes':'De tu galería o de la cámara'}</span></label><input id="ph-f" type="file" accept="image/*" hidden onchange="pick(this,'img')"><img id="pv" class="pv" alt="Vista previa de tu foto" hidden>${ttl('Ponle un nombre al recuerdo')}<label class="lb" for="cap">¿Qué pasó ahí?</label><textarea id="cap" class="in tall" rows="6" maxlength="600" placeholder="Cuenta quiénes salen, dónde fue y qué recuerdas de ese día…" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,360)+'px'"></textarea>${go}`,
   carta:`<label class="lb" for="to">Para</label><input id="to" class="in" maxlength="40" placeholder="${toDef()}"><label class="lb" for="tx">Tu carta</label><textarea id="tx" class="in paper" rows="7" maxlength="800" placeholder="Querido(a)…" oninput="chk()"></textarea><p id="cth" class="mu" style="display:none">Escribe al menos 10 letras para poder guardarla.</p>${go}`,
   dibujo:`<canvas id="cv" class="cv" width="600" height="440" aria-label="Lienzo para dibujar"></canvas><div class="tools"><div class="row" style="gap:8px">${[['#ff8dbb','Rosa'],['#c43d7a','Fucsia'],['#ffb1d0','Rosa pastel'],['#7ccfae','Verde'],['#7fb8f5','Azul'],['#4a2336','Ciruela'],['#ffffff','Borrador']].map((c,i)=>`<button class="swb ${i?'':'on'}" style="background:${c[0]}" data-c="${c[0]}" onclick="setCol(this)" aria-label="${c[1]}"></button>`).join('')}</div><div class="row" style="gap:8px">${[4,8,16].map((s,i)=>`<button class="szb ${i===1?'on':''}" onclick="setSz(this,${s})" aria-label="Grosor ${s}"><i style="width:${s+2}px;height:${s+2}px"></i></button>`).join('')}<button class="btn s" onclick="clr()">Borrar todo</button></div></div>${ttl('Ponle un nombre a tu dibujo')}${go}`,
   video:`<label class="drop" for="vd-f"><span class="ti">${ic('video',24)}</span><b>Elegir o grabar un video</b><span class="mu">Hasta 60 segundos</span></label><input id="vd-f" type="file" accept="video/*" hidden onchange="pick(this,'vid')"><video id="pv" class="pv" controls playsinline hidden></video><p class="err" id="err"></p>${ttl('Ponle un nombre a tu video')}<label class="lb" for="cap">¿Qué cuenta el video?</label><textarea id="cap" class="in" rows="4" maxlength="600" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,360)+'px'"></textarea>${go}`,
@@ -2433,9 +2452,11 @@ function chk(){const g=$('#go');if(!g)return;const v=id=>{const e=$('#'+id);retu
 function pick(i,t){const f=i.files&&i.files[0];if(!f)return;C.url=URL.createObjectURL(f);LIVE.add(C.url);const e=$('#pv');e.hidden=false;e.src=C.url;
  if(t==='vid'){C.ok=false;$('#err').textContent='';e.onloadedmetadata=()=>{C.ok=e.duration<=61;$('#err').textContent=C.ok?'':'El video dura más de 60 segundos. Elige uno más corto.';chk()};e.onerror=()=>{C.ok=false;$('#err').textContent='No se pudo abrir ese video. Prueba con otro archivo.';chk()}}
  else{C.ok=true;shrink(f)}chk()}
-function shrink(f){const im=new Image();im.onload=()=>{/* Calidad alta: empieza grande y solo baja lo necesario para caber en el límite de la historia (880.000 caracteres). */
+function shrink(f){shrinkU(URL.createObjectURL(f),1)}
+function shrinkU(src,rv){const im=new Image();im.onload=()=>{/* Calidad alta: empieza grande y solo baja lo necesario para caber en el límite de la historia (880.000 caracteres). */
  let u='';const W=Math.max(im.width,im.height);for(const [m,q] of [[2000,.9],[1800,.86],[1600,.82],[1400,.78],[1200,.74],[1000,.7],[800,.66],[640,.6]]){const k=Math.min(1,m/W),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);const x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(im,0,0,c.width,c.height);u=c.toDataURL('image/jpeg',q);if(u.length<=880000)break}
- C.url=u;const e=$('#pv');if(e)e.src=C.url;URL.revokeObjectURL(im.src)};im.src=URL.createObjectURL(f)}
+ C.url=u;const e=$('#pv');if(e)e.src=C.url;if(rv)URL.revokeObjectURL(src)};im.src=src}
+async function camShot(){const P=NP('Camera');if(!P)return;try{const r=await P.getPhoto({quality:90,source:'CAMERA',resultType:'dataUrl',correctOrientation:true,width:2000,saveToGallery:false});if(!r||!r.dataUrl)return;C.ok=true;C.url=r.dataUrl;const e=$('#pv');if(e){e.hidden=false;e.src=r.dataUrl}shrinkU(r.dataUrl,0);chk();buzz('tap')}catch(e){}}
 
 /* voz real: MediaRecorder comprimido (24 kbps), se guarda dentro de la nota */
 const MIMES=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/ogg;codecs=opus'],MAXV=120;
@@ -2488,12 +2509,27 @@ function doPub(k,ok){
  if(k==='receta'){p.t=g('ttl');p.x={by:g('by'),ing:g('ing').split('\n').map(s=>s.trim()).filter(Boolean).slice(0,60),stp:g('stp')}}
  {const by=g('by2');if(by)p.by=by}
  if(JSON.stringify(p.x).length>850000){toast('Ese archivo pesa demasiado. Prueba con uno más liviano.');return}
- draftClear(k);
+ draftClear(k);buzz('ok');
+ if(syncOff())setTimeout(()=>toast('Guardado en tu celular. Se sube solo cuando tengas internet.'),900);
  CLOUD.publish(p).then(()=>{track('post',k);soft()}).catch(()=>toast('Tu historia no se guardó. Revisa tu conexión e inténtalo otra vez.'));
  S.types.add(k);S.total=(S.total||0)+1;
  if(!S.posted){S.posted=true;S.streak++;S.best=Math.max(S.best||0,S.streak);S.last=today();setTimeout(()=>{toast('¡Racha de '+S.streak+(S.streak>1?' días':' día')+'!');burst(26);streakReward()},1100)}
  S.prompt=null;cl();if(S.group){S.tab='cap';S.sub='recuerdos'}else S.tab='arc';S.bub={t:say(PREACT[k]||PREACT.foto),o:null,q:null};S.bubT=Date.now();{const sh=S.group&&Object.keys(S.members).length>1,m=sh?1.5:S.group?1:.5;rw(Math.max(1,Math.round(TY[k].xp*m)),Math.max(1,Math.round(TY[k].c*m)))}
 }
+
+/* ---------- recibir fotos y textos desde otras apps ---------- */
+window.shareIn=function(){try{const N=window.CapsulaNative;if(!N||S.scr!=='main'||!S.petSet||S.shr)return;const r=N.takeShare();if(!r)return;S.shr=JSON.parse(r);shareAsk()}catch(e){}};
+setInterval(()=>{try{window.shareIn()}catch(e){}},2500);
+function shareAsk(){const o=S.shr;if(!o)return;const img=o.t==='img';
+ showSheet(`<h2>Guardar lo que compartiste</h2>${img?`<img class="pv" src="${o.d}" alt="Foto compartida" style="max-height:200px;object-fit:cover">`:`<p class="q">${esc(String(o.x||'').slice(0,160))}</p>`}<p class="mu">¿Dónde lo guardas?</p>
+ <button class="opc" onclick="shareTo(null)"><span class="ti">${ic('world',24)}</span><span class="tx"><b>Mi diario</b><span class="mu">Solo tú lo ves</span></span></button>
+ ${S.families.map(f=>`<button class="opc" onclick="shareTo('${esc(f.id)}')"><span class="ti">${ic('caps',24)}</span><span class="tx"><b>${esc(f.name)}</b><span class="mu">Compartido</span></span></button>`).join('')}
+ <button class="lnk" onclick="S.shr=null;cl()">Cancelar</button>`)}
+function shareTo(id){const o=S.shr;S.shr=null;if(!o)return;cl();spaceTo(id);
+ if(o.t==='img'){compose('foto');C.ok=true;C.url=o.d;const e=$('#pv');if(e){e.hidden=false;e.src=o.d}shrinkU(o.d,0);const c=$('#cap');if(c&&o.x)c.value=String(o.x).slice(0,600);chk()}
+ else{compose('carta');const t=$('#tx');if(t){t.value=String(o.x||'').slice(0,800)}chk()}}
+function offBar(){const w=syncOff(),b=$('#offb');if(w&&!b){const d=document.createElement('div');d.id='offb';d.setAttribute('role','status');d.textContent='Sin conexión · lo que escribas se guarda en tu celular y se sube solo';document.body.appendChild(d)}else if(!w&&b)b.remove()}
+addEventListener('online',offBar);addEventListener('offline',offBar);setTimeout(offBar,1500);
 
 /* ---------- estado de guardado ---------- */
 let SYNC={pend:0};
