@@ -6,10 +6,10 @@
     android:background="@drawable/widget_bg_azul"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="12dp">
+    android:padding="8dp">
 
     <FrameLayout
-        android:layout_width="96dp"
+        android:layout_width="124dp"
         android:layout_height="match_parent">
 
         <ImageView
