@@ -130,7 +130,7 @@ nav .on svg,nav button.on svg{animation:navpop .42s cubic-bezier(.2,1.6,.4,1)}
 .fl.held{cursor:grabbing;filter:drop-shadow(0 14px 10px rgba(0,0,0,.25));z-index:6}
 .cloud .qr button{background:#fff!important;color:#4a2b9c!important;border:0!important;font-weight:700;box-shadow:0 3px 10px #0003!important}
 .cloud .bub{background:#fff!important;color:#2a2140!important}
-.room.pkb .qw{display:none}
+.room.pkb .qw{display:none}.room.pkb .cloud{display:none}
 .room .fl{transition:translate .35s cubic-bezier(.3,1.2,.5,1)}.room.qa .fl{translate:-52px 0}.room.pkb.qa .fl{translate:0 0}
 
 .cloud{align-items:flex-start!important;transition:none}
@@ -1363,8 +1363,8 @@ function home(){
  ${fpCard()}
  ${rc?`<div class="row sp"><h3>Lo nuevo</h3><button class="lnk" onclick="go('act')">Ver todo</button></div>${rc}`:''}
  ${dqCard()}
- <div class="duo"><button class="tile2" onclick="go('mundo')">${ic('world',26)}<b>Mi mascota</b><span class="mu">Cuídala, juega y compra ropa</span></button><button class="tile2" onclick="goArc()">${ic('book',26)}<b>Mi diario</b><span class="mu">Solo tú: tus historias</span></button></div>
- <div class="duo"><button class="tile2" style="grid-column:1/-1" onclick="go('caps')">${ic('caps',26)}<b>Mis cápsulas</b><span class="mu">${n?'Compartes historias en '+n+(n>1?' espacios':' espacio'):'Comparte historias con tu familia o amigos'}</span></button></div>
+ <div class="duo"><button class="tile2" onclick="go('mundo')">${pi('mascota',40)}<b>Mi mascota</b><span class="mu">Cuídala, juega y compra ropa</span></button><button class="tile2" onclick="goArc()">${pi('diario',40)}<b>Mi diario</b><span class="mu">Solo tú: tus historias</span></button></div>
+ <div class="duo"><button class="tile2" style="grid-column:1/-1" onclick="go('caps')">${pi('capsulas',40)}<b>Mis cápsulas</b><span class="mu">${n?'Compartes historias en '+n+(n>1?' espacios':' espacio'):'Comparte historias con tu familia o amigos'}</span></button></div>
 
  ${goalCard()}`}
 const qLine=(q,oc,tag)=>`<button class="qline" onclick="${oc}"><span>${ic('bulb',18,1.8)}</span><span class="qt"><i>${tag||'Pregunta del día'}</i>${esc(q)}</span>${ic('back',16).replace('class="ic"','class="ic" style="transform:rotate(180deg);opacity:.5"')}</button>`;
@@ -1748,7 +1748,7 @@ function tubSplash(){const r=$('#room'),fl=r&&r.querySelector('.fl'),tb=$('#tub'
   for(let i=0;i<14;i++){const d=document.createElement('span');d.className='spl';d.textContent=['💦','🫧','💧'][i%3];d.style.cssText=`left:${cx}px;top:${cy}px;--dx:${(Math.random()-.5)*230}px;--dy:${-60-Math.random()*110}px;animation-delay:${Math.random()*.08}s`;r.appendChild(d);setTimeout(()=>d.remove(),1100)}
   const rp=document.createElement('i');rp.className='rip';rp.style.cssText=`left:${cx}px;top:${cy+14}px`;r.appendChild(rp);setTimeout(()=>rp.remove(),1000);
   tb.classList.add('wob');setTimeout(()=>tb.classList.remove('wob'),700);
-  p3play('boing');burst(10,['💦','🫧']);bubSay(say(['¡Chapuzón! Uy, qué fresquita está','¡Splash! ¡Ahora frótame, porfa!','¡Brrr, qué rico!']));try{navigator.vibrate&&navigator.vibrate(30)}catch(e){}
+  p3play('boing');burst(10,['💦','🫧']);toast(say(['¡Chapuzón! Ahora frótala con el dedo','¡Splash! Frótala para dejarla limpia','¡Qué rico! Frótala con el dedo']));try{navigator.vibrate&&navigator.vibrate(30)}catch(e){}
   trayUpd()},230)}
 document.addEventListener('pointerdown',e=>{if(S.tool!=='bath'||S.tubIn)return;const r=$('#room');if(!r||!r.contains(e.target)||e.target.closest('button'))return;const fl=r.querySelector('.fl');if(!fl)return;
  const f0=fl.getBoundingClientRect(),m=18;if(e.clientX<f0.left-m||e.clientX>f0.right+m||e.clientY<f0.top-m||e.clientY>f0.bottom+m){toast('Toca a tu mascota y llévala a la tina');return}
@@ -2004,7 +2004,7 @@ function arc(){
  return `<div class="spch"><h2>Mi diario</h2>${spaceTag()}</div>
  <section class="card"><h3>¿Cómo quieres contar hoy?</h3><div class="qp">${Object.entries(TY).map(([k,v])=>`<button onclick="compose('${k}')">${ic(v.i,18)}${v.l}</button>`).join('')}</div></section>
  ${qLine(wqNow(),'chooser(wqNow())','Pregunta de la semana')}
- <div class="duo"><button class="tile2" style="grid-column:1/-1" onclick="go('triv')">${ic('star',26)}<b>Pregunta del día</b><span class="mu">Una para ti</span></button></div>
+ <div class="duo"><button class="tile2" style="grid-column:1/-1" onclick="go('triv')">${pi('pregunta',40)}<b>Pregunta del día</b><span class="mu">Una para ti</span></button></div>
  ${wrapCard()}${memCard()}${bookCard(n)}${afChips()}${arcList(S.af)}`}
 function delPost(id){if(!confirm('¿Eliminar esta historia'+(S.group?' para todo el grupo':'')+'?'))return;CLOUD.deletePost(id).then(()=>toast('Historia eliminada')).catch(()=>toast('No se eliminó. Revisa tu conexión e inténtalo otra vez.'))}
 function react(id,j){const p=S.posts.find(q=>q.id===id);if(p&&window.CLOUD&&CLOUD.ready)CLOUD.react(id,j,!p.m[j]).catch(()=>toast('No se guardó tu reacción. Revisa tu conexión e inténtalo otra vez.'))}
@@ -2238,8 +2238,8 @@ const mgCard=()=>`<section class="card"><div class="mgcs"><h3>Juegos de memoria 
 </div></section>`;
 function capHome(){
  return `${famCard()}${wrapCard()}${memCard()}${qLine(qaToday(),"go('triv')",S.qd===dayKey()?'Ya respondiste · ver respuestas':'Pregunta de hoy')}
- <div class="duo"><button class="tile2" onclick="chooser()">${ic('pen',26)}<b>Escribir aquí</b><span class="mu">Se guarda en ${esc(S.group.name)}</span></button><button class="tile2" onclick="S.sub='recuerdos';soft()">${ic('image',26)}<b>Recuerdos</b><span class="mu">${S.posts.length} ${S.posts.length===1?'historia':'historias'}</span></button></div>
- <div class="duo"><button class="tile2" style="grid-column:1/-1" onclick="S.sub='cartas';soft()">${ic('mail',26)}<b>Cartas</b><span class="mu">${S.posts.filter(p=>p.k==='carta').length} escritas</span></button></div>
+ <div class="duo"><button class="tile2" onclick="chooser()">${pi('primera',40)}<b>Escribir aquí</b><span class="mu">Se guarda en ${esc(S.group.name)}</span></button><button class="tile2" onclick="S.sub='recuerdos';soft()">${pi('libro',40)}<b>Recuerdos</b><span class="mu">${S.posts.length} ${S.posts.length===1?'historia':'historias'}</span></button></div>
+ <div class="duo"><button class="tile2" style="grid-column:1/-1" onclick="S.sub='cartas';soft()">${pi('capsulas',40)}<b>Cartas</b><span class="mu">${S.posts.filter(p=>p.k==='carta').length} escritas</span></button></div>
  ${bookCard(S.posts.length)}
  <section class="card"><div class="row sp"><span class="tx"><b>Invita a alguien</b><span class="mu">Ganas 15 Lumis por cada persona que se una</span></span><button class="btn" onclick="shareInvite()">Invitar</button></div></section>
  ${recentHTML(3)?`<h3>Actividad reciente</h3>${recentHTML(3)}`:''}`}
@@ -2300,7 +2300,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=129;
+const BUILD=130;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
