@@ -70,3 +70,9 @@ if 'android.intent.action.SEND' not in x:
 if 'USE_BIOMETRIC' not in x:
     x = x.replace('<application', '<uses-permission android:name="android.permission.USE_BIOMETRIC"/>\n    <application', 1)
 open(m, 'w').write(x)
+
+# Solo vertical (la app está pensada para celular en vertical)
+x = open(m).read()
+if 'android:screenOrientation' not in x:
+    x = x.replace('<activity', '<activity android:screenOrientation="portrait"', 1)
+open(m, 'w').write(x)

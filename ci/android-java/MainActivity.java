@@ -25,6 +25,13 @@ public class MainActivity extends BridgeActivity {
     try {
       getBridge().getWebView().addJavascriptInterface(new Js(), "CapsulaNative");
     } catch (Exception e) {}
+    try {
+      android.webkit.WebSettings ws = getBridge().getWebView().getSettings();
+      ws.setSupportZoom(false);
+      ws.setBuiltInZoomControls(false);
+      ws.setDisplayZoomControls(false);
+      ws.setTextZoom(Math.min(ws.getTextZoom(), 115));
+    } catch (Exception e) {}
     readIntent(getIntent());
   }
 
