@@ -989,7 +989,18 @@ const personal=()=>({name:S.me.name,ln:S.me.ln||'',pet:S.pet,petSet:S.petSet,xp:
 let remK='',remT=0;
 let wgK='';
 function wgPush(){try{const P=NATIVE&&NP('Preferences');if(!P||!S.user)return;const d=S.last?new Date(S.last):null;const iso=d&&!isNaN(d)?d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'):'';
- const v=JSON.stringify({s:S.streak||0,n:(S.pet&&S.pet.name)||'',k:(S.pet&&S.pet.kind)||'conejo',d:iso});if(v===wgK)return;wgK=v;P.set({key:'capsula_widget',value:v})}catch(e){}}
+ const q=S.pt||{},r=x=>Math.round(+x||0);
+ const v=JSON.stringify({s:S.streak||0,n:(S.pet&&S.pet.name)||'',k:(S.pet&&S.pet.kind)||'conejo',d:iso,th:S.theme||'azul',p:{f:r(q.food),c:r(q.clean),u:r(q.fun),e:r(q.en),l:r(q.love),t:Math.round((q.t||Date.now())/60000)*60000,r:q.rest||0}});
+ try{wgImg()}catch(e){}
+ if(v===wgK)return;wgK=v;P.set({key:'capsula_widget',value:v})}catch(e){}}
+/* Foto 3D de tu mascota para el widget (cambia de cara según cómo se sienta) */
+let wgImgK='';
+function wgImg(){const P=NATIVE&&NP('Preferences');if(!P||!S.user||!S.petSet||!S.pet)return;if(!SN.v){snInit();return}
+ const q=S.pt||{},ex=asleep()||(q.en!=null&&q.en<20)?'sleepy':(q.food<40||(q.clean??80)<30||(q.fun??70)<30)?'sad':'happy';
+ const a=S.wear.filter(ownedId),key=S.pet.kind+'|'+a.join(',')+'|'+stg()+'|'+ex;if(key===wgImgK)return;
+ const v=SN.v;try{if(v.running||v.visible){v.visible=false;v.sync()}v.setPet(P3K[S.pet.kind]||'capsule');v.setStage(stg());v.setAccessories(a);v.setExpression(ex);v.renderOnce();
+  const u=v.canvas.toDataURL('image/png');if(u&&u.length>1000){wgImgK=key;P.set({key:'capsula_widget_img',value:u.split(',')[1]})}}catch(e){}
+ try{v.setExpression('happy')}catch(e){}}
 function save(){try{wgPush()}catch(e){}try{if(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform()){const k=(S.me.name||'')+'|'+((S.pet&&S.pet.name)||'');if(k!==remK){remK=k;clearTimeout(remT);remT=setTimeout(()=>{try{remApply()}catch(e){}},2500)}}}catch(e){}
  if(S.user){try{localStorage.setItem(KEY,JSON.stringify({...personal(),uid:S.user.uid,familyIds:S.families.map(f=>f.id)}))}catch(e){}}
  if(window.CLOUD&&CLOUD.ready)CLOUD.dirty()}
@@ -1018,7 +1029,7 @@ const SN={v:null,c:{},ld:false,err:false};
 const snKey=(k,a,st)=>k+'|'+a.join(',')+'|'+st;
 function snInit(){if(SN.v||SN.ld||SN.err)return;SN.ld=true;
  import('./lab3d/capsula-pets.js').then(m=>{const h=document.createElement('div');h.setAttribute('aria-hidden','true');h.style.cssText='position:fixed;left:-9999px;top:0;width:240px;height:216px;visibility:hidden;pointer-events:none';document.body.appendChild(h);
-  SN.v=new m.CapsulaPetViewer(h,{pet:'capsule',maxPixelRatio:1});SN.v.setExpression('happy');SN.v.camera.position.z=3.9;SN.v.camera.updateProjectionMatrix();psFill()}).catch(()=>{SN.err=true;document.body.classList.add('no3d')})}
+  SN.v=new m.CapsulaPetViewer(h,{pet:'capsule',maxPixelRatio:1});SN.v.setExpression('happy');SN.v.camera.position.z=3.9;SN.v.camera.updateProjectionMatrix();psFill();try{wgImg()}catch(e){}}).catch(()=>{SN.err=true;document.body.classList.add('no3d')})}
 function snGet(k,a,st){const key=snKey(k,a,st);if(SN.c[key])return SN.c[key];const v=SN.v;if(!v)return '';
  try{if(v.running||v.visible){v.visible=false;v.sync()}v.setPet(P3K[k]||'capsule');v.setStage(st);v.setAccessories(a);v.setExpression('happy');v.renderOnce();const u=v.canvas.toDataURL('image/png');if(u&&u.length>1000){SN.c[key]=u;return u}}catch(e){}return ''}
 function psFill(){document.querySelectorAll('.ps:not([data-d])').forEach(e=>{const u=snGet(e.dataset.k,e.dataset.a?e.dataset.a.split(','):[],+e.dataset.s);if(u){e.dataset.d=1;e.insertAdjacentHTML('afterbegin','<img alt="" src="'+u+'">')}})}
@@ -2318,7 +2329,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=132;
+const BUILD=133;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
