@@ -676,6 +676,15 @@ nav button.on::after{display:none!important}
 nav button .ic{width:25px;height:25px}
 .pn{border-radius:30px 30px 0 0;padding-top:28px}
 .pn::before{content:'';position:absolute;top:9px;left:50%;transform:translateX(-50%);width:38px;height:5px;border-radius:5px;background:var(--line-mid)}
+.room.pkb .fl{margin-top:62px!important}.tub{height:44%!important}
+#tiendaSec{scroll-margin-top:90px}
+.mtabs{position:sticky;top:0;z-index:6;display:flex;gap:6px;padding:6px 0 8px;background:var(--color-bg)}.mtabs button{flex:1;border:0;border-radius:14px;padding:11px 4px;font:inherit;font-size:14px;font-weight:800;color:var(--color-text);background:color-mix(in srgb,var(--c) 18%,transparent);cursor:pointer;transition:transform .12s,background .2s}.mtabs button.on{background:var(--c);color:#fff;box-shadow:0 4px 12px color-mix(in srgb,var(--c) 45%,transparent)}.mtabs button:active{transform:scale(.95)}
+@keyframes vIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes pop{0%{transform:scale(.92);opacity:0}60%{transform:scale(1.03)}100%{transform:scale(1);opacity:1}}
+.btn,.wal,.tb button{transition:transform .12s ease,filter .12s}
+.btn:active,.wal:active{transform:scale(.95)}
+.mb{animation:pop .22s ease-out both}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
 <div class="app">
@@ -830,7 +839,7 @@ const SHP=120,SHMAX=2;
 function shieldBuy(){cl();if((S.sh||0)>=SHMAX||(S.lm||0)<SHP)return;S.lm-=SHP;S.sh=(S.sh||0)+1;burst(22);toast('¡Escudo listo! Cuida tu racha');shopSave()}
 function shieldAsk(){const n=S.sh||0;if(n>=SHMAX){toast('Ya tienes el máximo de escudos');return}if((S.lm||0)<SHP){toast('Te faltan '+(SHP-(S.lm||0))+' Lumis');return}
  showSheet(`<div class="gd"><h2 style="text-align:center">Escudo de racha</h2><p class="mu c">Si un día no cuentas nada, el escudo protege tu racha. Cuesta ${LI} ${SHP}.</p><button class="btn w" onclick="shieldBuy()">Comprar</button><button class="btn s w" onclick="cl()">Ahora no</button></div>`)}
-function shopOpen(){cl();S.ms='tienda';if(S.tab!=='mundo')go('mundo');else msSet('tienda');setTimeout(()=>{const e=$('#tiendaSec');if(e)e.scrollIntoView({behavior:'smooth',block:'start'})},150)}
+function shopOpen(){cl();S.ms='tienda';S.tool=null;if(S.tab!=='mundo')go('mundo');else render();const m=$('#mn');if(m)m.scrollTop=0}
 const shopHTML=()=>{return `<section class="card" id="shop"><div class="row sp"><h3>Tienda</h3><b class="pr">${LI} ${S.lm||0}</b></div>
 
  <b>Fondos del cuarto</b><div class="shr">${ROOMS.map(r=>{const o=ownedRoom(r.id),on=(S.rm||'')===r.id;return `<button class="${on?'on':''}" onclick="shopAsk('room','${r.id}')"><i style="background:${r.bg}"></i>${r.n}<small>${on?'Puesto':o?'Toca para usar':LI+' '+r.p}</small></button>`}).join('')}</div>
@@ -1385,9 +1394,10 @@ function mundo(){
  setTimeout(famReact,900);
  return `
  <div class="spch"><h2>Mi mascota</h2>${spaceTag()}</div>
- ${heroHTML()}
- <div class="tabs2 mt2" id="tiendaSec" role="tablist">${MT.map(([k,l])=>`<button role="tab" aria-selected="${(S.ms||'cuidar')===k}" class="${(S.ms||'cuidar')===k?'on':''}" onclick="msSet('${k}')">${l}</button>`).join('')}</div>
+ <div class="mtabs" id="tiendaSec" role="tablist">${MT.map(([k,l])=>`<button role="tab" aria-selected="${(S.ms||'cuidar')===k}" class="${(S.ms||'cuidar')===k?'on':''}" style="--c:${MC[k]}" onclick="msSet('${k}')">${l}</button>`).join('')}</div>
+ ${(S.ms||'cuidar')==='cuidar'?heroHTML():''}
  <div id="mbody">${mBody()}</div>`}
+const MC={cuidar:'#C0266F',juegos:'#5B3FD0',tienda:'#B45309',armario:'#0F7B55'};
 const MT=[['cuidar','Cuidar'],['juegos','Juegos'],['tienda','Tienda'],['armario','Armario']];
 function mBody(){const ms=S.ms||'cuidar';
  if(ms==='juegos')return `${mgCard()}${badgesHTML()}`;
@@ -1399,7 +1409,7 @@ function mBody(){const ms=S.ms||'cuidar';
  ${missionsHTML()}
  ${moodCard()}
  ${inviteApp()}`}
-function msSet(k){S.ms=k;const b=$('#mbody');if(!b)return;b.innerHTML=mBody();document.querySelectorAll('#tiendaSec button').forEach(x=>{const on=x.getAttribute('onclick')==="msSet('"+k+"')";x.classList.toggle('on',on);x.setAttribute('aria-selected',on)});psFill();cntAnim();if(k==='tienda')guideTip('shop');const t=$('#tiendaSec');if(t&&t.getBoundingClientRect().top<0)t.scrollIntoView({behavior:'smooth',block:'start'})}
+function msSet(k){if(S.ms===k)return;S.tool=null;S.ms=k;render();const m=$('#mn');if(m)m.scrollTop=0;if(k==='tienda')guideTip('shop')}
 const PREACT={
  voz:['¡Qué linda voz! Me quedo escuchándola','Tu voz me da calma','Me encanta oírte contar eso'],
  foto:['¡Qué foto! La guardo en mi álbum','Mira qué recuerdo tan bonito','Quedó guardada para siempre'],
@@ -2271,7 +2281,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=126;
+const BUILD=128;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
@@ -2485,21 +2495,7 @@ function memHtml(sp){const dt=ms=>new Date(ms).toLocaleDateString('es',{day:'num
   else if(p.k==='receta')b=`${x.by?`<p class="m">Enseñada por ${esc(x.by)}</p>`:''}<h4>Ingredientes</h4><ul>${(x.ing||[]).map(i=>`<li>${esc(i)}</li>`).join('')}</ul><h4>Preparación</h4><p style="white-space:pre-wrap">${esc(x.stp||'')}</p>`;
   return `<article><h3>${esc(p.t||kName[p.k]||'')}</h3><p class="m">${kName[p.k]||''} · ${dt(p.ts)} · ${esc(p.by||p.an||'')}</p>${b}</article>`};
  return `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mis recuerdos de Cápsula</title><style>body{font:16px/1.5 system-ui,sans-serif;max-width:680px;margin:0 auto;padding:24px 16px;color:#1D1D1F;background:#F5F5F7}h1{font-size:28px}h2{margin-top:40px}article{background:#fff;border-radius:16px;padding:16px;margin:14px 0}img{max-width:100%;border-radius:12px}audio{width:100%}.m{color:#68686D;font-size:14px;margin:2px 0 8px}.ng{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px}.ngp{display:flex;justify-content:center;min-height:104px}.ng .ps{display:inline-block}
-.room.pkb .fl{margin-top:62px!important}.tub{height:44%!important}
-</style>
-#tiendaSec{scroll-margin-top:90px}
-.mt2{margin:14px 0 10px}
-@keyframes vIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-@keyframes pop{0%{transform:scale(.92);opacity:0}60%{transform:scale(1.03)}100%{transform:scale(1);opacity:1}}
-main>.card,main>section,.vw>.card{animation:vIn .35s cubic-bezier(.2,.8,.2,1) both}
-main>.card:nth-child(2),.vw>.card:nth-child(2){animation-delay:.05s}
-main>.card:nth-child(3),.vw>.card:nth-child(3){animation-delay:.1s}
-main>.card:nth-child(4),.vw>.card:nth-child(4){animation-delay:.15s}
-.btn,.wal,.tb button{transition:transform .12s ease,filter .12s}
-.btn:active,.wal:active{transform:scale(.95)}
-.mb{animation:pop .22s ease-out both}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-</head><body><h1>Mis recuerdos de Cápsula</h1><p class="m">Descargado el ${dt(Date.now())}</p>${sp.map(g=>`<h2>${esc(g.name)} (${g.posts.length})</h2>${g.posts.length?g.posts.map(one).join(''):'<p class="m">Todavía no hay historias aquí.</p>'}`).join('')}</body></html>`}
+</style></head><body><h1>Mis recuerdos de Cápsula</h1><p class="m">Descargado el ${dt(Date.now())}</p>${sp.map(g=>`<h2>${esc(g.name)} (${g.posts.length})</h2>${g.posts.length?g.posts.map(one).join(''):'<p class="m">Todavía no hay historias aquí.</p>'}`).join('')}</body></html>`}
 async function exportMem(){if(!window.CLOUD||!CLOUD.exportAll||!CLOUD.ready){toast('Espera un momento y vuelve a intentar');return}
  toast('Preparando tus recuerdos…');
  try{const sp=await CLOUD.exportAll();const n=sp.reduce((a,g)=>a+g.posts.length,0);
