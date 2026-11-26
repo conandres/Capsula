@@ -1652,7 +1652,7 @@ function bubSay(t,o,q){S.bub={t,o:o||null,q:q||null};S.bubT=Date.now();petUI()}
 function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=greet(away);
  const lvl=Math.floor(S.xp/100),sz=150,sl=asleep();
  return `<section class="card hero">
-  <div class="room${sl?' night':''}${S.pt.clean<35?' dirty':''}${S.rm&&ownedRoom(S.rm)?' rm-'+S.rm:''}${exAway()?' exa exp-'+S.pt.ex.k:''}" id="room"><div class="cloud"><div id="bubw" aria-live="polite">${bubHTML()}</div><div id="qrw" class="qw">${qrHTML()}</div></div>${exAway()?exScene():''}<div class="fl ${sl?'sleep':''}${exAway()?' away':''}" onclick="petClick()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div><button class="hang" onclick="wardOpen()" aria-label="Armario">${ic('hanger',22)}</button><div class="dirt" aria-hidden="true"><i></i><i></i><i></i><i></i><b>🪰</b><b>🪰</b><span class="stk"><u></u><u></u><u></u></span></div></div>
+  <div class="room${sl?' night':''}${S.pt.clean<35?' dirty':''}${S.rm&&ownedRoom(S.rm)?' rm-'+S.rm:''}${exOut()?' exa exp-'+S.pt.ex.k:''}" id="room"><div class="cloud"><div id="bubw" aria-live="polite">${bubHTML()}</div><div id="qrw" class="qw">${qrHTML()}</div></div>${exOut()?exScene():''}<div class="fl ${sl?'sleep':''}${exOut()?' away':''}" onclick="petClick()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div><button class="hang" onclick="wardOpen()" aria-label="Armario">${ic('hanger',22)}</button><div class="dirt" aria-hidden="true"><i></i><i></i><i></i><i></i><b>🪰</b><b>🪰</b><span class="stk"><u></u><u></u><u></u></span></div></div>
   ${pswHTML()}
   <div class="stw" id="stw">${statsHTML()}</div>
   <div class="tray" id="tray">${trayHTML()}</div>
@@ -1668,6 +1668,7 @@ montana:'<circle cx="62" cy="48" r="22" fill="#fff3c4"/><path d="M0 150l70-84l50
 const exArt=k=>`<svg class="exa-svg" viewBox="0 0 300 200" role="img" aria-label="Paisaje" preserveAspectRatio="xMidYMid slice">${EXART[k]}</svg>`;
 const exScene=()=>{const e=S.pt.ex,x=EXPS.find(a=>a.k===e.k),back=Date.now()>=e.end;return `<div class="exs" aria-live="polite">${exArt(e.k)}<b>${esc(S.pet.name)} está en ${x.n}</b><span id="exr">${back?'¡Ya volvió! Trae una postal':'Vuelve en '+fmtWait(exLeft())}</span></div>`};
 const exAway=()=>{const e=S.pt.ex;return !!(e&&!e.done)};
+const exBack=()=>exAway()&&Date.now()>=S.pt.ex.end,exOut=()=>exAway()&&!exBack();
 const exLeft=()=>{const e=S.pt.ex;return e?Math.max(0,e.end-Date.now()):0};
 function exOpen(){guideTip('exp');ptTick();const p=S.pt;
  if(asleep()){bubSay('Zzz… ahora no, estoy durmiendo');return}
@@ -1709,16 +1710,18 @@ const postalBox=L=>{if(!snapImg(L.kind,L.wear)&&!SN.err)setTimeout(()=>postRefre
 function exDone(L,g){showSheet(`<h2>¡Postal guardada!</h2><p class="mu">${g?'Ganaste '+g+' Lumis y tu respuesta quedó en tu diario.':'Tu respuesta quedó en tu diario.'}</p>${postalBox(L)}<button class="btn w" onclick="exShare()">Enviar a mi familia</button><button class="btn s w" onclick="cl()" style="margin-top:8px">Cerrar</button>`)}
 function exPost(){const e=S.pt.ex;if(!e||e.done||Date.now()<e.end)return;const x=EXPS.find(a=>a.k===e.k);
  if(!e.q){e.q=EXQ[Math.floor(Math.random()*EXQ.length)];e.pc=EXPOST[e.k][Math.floor(Math.random()*EXPOST[e.k].length)];save()}
+ if(!e.paid){e.paid=1;const cp=capEnsure(),left=Math.max(0,CAP_E-(cp.e||0)),g=Math.min(x.c,left);cp.e=(cp.e||0)+g;e.g=g;save();if(g)rw(Math.min(x.x,g),g,{free:true})}
  showSheet(`<h2>Postal de ${x.n}</h2>${(EXLAST={k:e.k,pc:e.pc,name:S.pet.name,kind:S.pet.kind,wear:S.wear.slice()},postalBox(EXLAST))}<button class="btn s w" onclick="exShare()" style="margin-bottom:8px">Enviar esta postal a alguien</button>
+ <p class="mu">${e.g?'Tu premio: +'+e.g+' Lumis, ya son tuyos.':'Hoy ya cobraste el máximo de expediciones.'} Responder es opcional.</p>
  <p><b>${esc(S.pet.name)} te pregunta:</b> ${esc(e.q)}</p>
  <textarea id="exa" class="in paper" rows="4" maxlength="300" placeholder="Escribe tu respuesta…" oninput="$('#exb').disabled=!this.value.trim()"></textarea>
- <button class="btn w" id="exb" disabled onclick="exAns()">Responder y guardar (+${x.c} Lumis)</button>
- <button class="btn s w" onclick="exSkip()" style="margin-top:8px">Ahora no</button>`)}
+ <button class="btn w" id="exb" disabled onclick="exAns()">Guardar mi respuesta en el diario</button>
+ <button class="btn s w" onclick="exSkip()" style="margin-top:8px">Omitir</button>`)}
 async function exAns(){const e=S.pt.ex,el=$('#exa'),t=(el?el.value:'').trim().slice(0,300);if(!e||e.done||!t)return;
  if(!window.CLOUD||!CLOUD.ready){toast('Sin conexión con tu cuenta. Intenta de nuevo en un momento.');return}
  const x=EXPS.find(a=>a.k===e.k),q=e.q;
  try{await CLOUD.publish({k:'carta',t:('Postal: '+q).slice(0,120),x:{to:'Mi diario',tx:t},by:''})}catch(err){toast('Tu respuesta no se guardó. Revisa tu conexión.');return}
- const lastP=EXLAST||{k:e.k,pc:e.pc,name:S.pet.name,kind:S.pet.kind,wear:S.wear.slice()};S.pt.ex=null;S.pt.exn=(S.pt.exn||0)+1;S.pt.fun=Math.min(100,S.pt.fun+20);S.pt.love=Math.min(100,S.pt.love+6);track('exp');cl();burst(20);let gg=0;{const cp=capEnsure(),left=Math.max(0,CAP_E-(cp.e||0)),g=Math.min(x.c,left);cp.e=(cp.e||0)+g;gg=g;if(g)rw(Math.min(x.x,g),g,{free:true});else toast('Hoy ya cobraste el máximo de expediciones; tu respuesta quedó en el diario')}save();render();setTimeout(()=>exDone(lastP,gg),450)}
+ const lastP=EXLAST||{k:e.k,pc:e.pc,name:S.pet.name,kind:S.pet.kind,wear:S.wear.slice()};S.pt.ex=null;S.pt.exn=(S.pt.exn||0)+1;S.pt.fun=Math.min(100,S.pt.fun+20);S.pt.love=Math.min(100,S.pt.love+6);track('exp');cl();burst(20);const gg=0;save();render();setTimeout(()=>exDone(lastP,gg),450)}
 function exSkip(){const e=S.pt.ex;if(e){S.pt.ex=null;S.pt.exn=(S.pt.exn||0)+1;S.pt.fun=Math.min(100,S.pt.fun+10)}cl();bubSay('¡Qué paseo! Te guardo la postal en mi corazón');save();try{remApply()}catch(e){}render()}
 /* ---------- cuidado interactivo: acariciar, arrastrar comida, frotar para bañar, apagar la luz, hablar ---------- */
 const SC={acc:0,pet:0,last:0,drag:0,bt:0,hint:0};
@@ -1751,7 +1754,7 @@ function bathOk(){ptTick();const p=S.pt;
 function roomSync(){const r=$('#room');if(!r)return;cloudStart();const sl=asleep();r.classList.toggle('night',sl);r.classList.toggle('dirty',S.pt.clean<35);r.classList.toggle('qa',!!(S.bub&&S.bub.o)&&!exAway());const dc=$('#dirtc');if(dc)dc.hidden=!(S.pt.clean<35&&!S.tool);
  if(sl&&!P3.zt){P3.zt=setInterval(()=>{if(!asleep()){clearInterval(P3.zt);P3.zt=0;trayUpd();return}const st=$('#slt');if(st&&S.pt.rest>Date.now())st.textContent=S.pet.name+' está durmiendo · despierta en unos '+sleepMin()+' min';try{P3.v&&P3.v.spawn&&P3.v.spawn('zzz')}catch(e){}},2600)}
  if(!sl&&P3.zt){clearInterval(P3.zt);P3.zt=0}}
-setInterval(()=>{if(!exAway()||!$('#tray'))return;const e=S.pt.ex;if(Date.now()>=e.end&&!e.rdy){e.rdy=1;save();{const r=$('#exr');if(r)r.textContent='¡Ya volvió! Trae una postal'}bubSay('¡Volví de mi expedición!');trayUpd();try{remApply()}catch(x){}}else{const l=$('#exl');if(l){const x=EXPS.find(a=>a.k===e.k);const r=$('#exr');if(r)r.textContent='Vuelve en '+fmtWait(exLeft());l.textContent=S.pet.name+' está de expedición en '+x.n+' '+x.e+' · vuelve en '+fmtWait(exLeft())}}},20000);
+setInterval(()=>{if(!exAway()||!$('#tray'))return;const e=S.pt.ex;if(Date.now()>=e.end&&!e.rdy){e.rdy=1;save();bubSay('¡Volví! Mira mi postal');render();setTimeout(()=>{try{hopPet();p3play('cheer')}catch(x){}},400);buzz('ok');try{remApply()}catch(x){}}else{const l=$('#exl');if(l){const x=EXPS.find(a=>a.k===e.k);const r=$('#exr');if(r)r.textContent='Vuelve en '+fmtWait(exLeft());l.textContent=S.pet.name+' está de expedición en '+x.n+' '+x.e+' · vuelve en '+fmtWait(exLeft())}}},20000);
 function petClick(){if(SC.drag){SC.drag=0;return}petTap()}
 function spg(x,y){let e=$('#spg');if(!e){e=document.createElement('span');e.id='spg';e.textContent='🧽';e.style.cssText='position:fixed;left:0;top:0;font-size:38px;pointer-events:none;z-index:60;transition:opacity .25s';document.body.appendChild(e)}e.style.opacity='1';e.style.transform=`translate(${x-19}px,${y-30}px) rotate(${Math.sin(Date.now()/90)*18}deg)`;clearTimeout(spg.t);spg.t=setTimeout(()=>{e.style.opacity='0';setTimeout(()=>e.remove(),300)},350)}
 function spray(n){const r=$('#room'),fl=r&&r.querySelector('.fl');if(!r||!fl)return;const rr=r.getBoundingClientRect(),fr=fl.getBoundingClientRect(),cx=fr.left-rr.left+fr.width/2,cy=fr.top-rr.top+fr.height*.45;
@@ -2335,7 +2338,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=135;
+const BUILD=136;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
