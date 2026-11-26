@@ -81,6 +81,7 @@ public class CapsulaWidget extends AppWidgetProvider {
     String last = "";
     String theme = "azul";
     boolean has = false;
+    String qa = "", qtxt = "", qtag = "";
     double food = 75, clean = 80, fun = 70, en = 90, love = 80;
     long t = System.currentTimeMillis(), rest = 0;
     Bitmap bmp = null;
@@ -94,6 +95,19 @@ public class CapsulaWidget extends AppWidgetProvider {
         kind = o.optString("k", "conejo");
         last = o.optString("d", "");
         theme = o.optString("th", "azul");
+        qa = o.optString("qa", "");
+        org.json.JSONArray qs = o.optJSONArray("qs");
+        if (qs != null) {
+          SimpleDateFormat f0 = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+          String td = f0.format(Calendar.getInstance().getTime());
+          for (int i = 0; i < qs.length(); i++) {
+            JSONObject e = qs.optJSONObject(i);
+            if (e != null && td.equals(e.optString("d"))) {
+              qtxt = e.optString("q", "");
+              qtag = e.optString("g", "");
+            }
+          }
+        }
         JSONObject p = o.optJSONObject("p");
         if (p != null) {
           food = p.optDouble("f", 75);
@@ -164,6 +178,20 @@ public class CapsulaWidget extends AppWidgetProvider {
       sub = "Cuenta tu primera historia con " + pn;
     }
 
+    boolean qDone = qa.equals(today);
+    String qLbl;
+    String qBody;
+    if (qtxt.length() == 0) {
+      qLbl = pn + " quiere saber";
+      qBody = "Abre Cápsula para ver la pregunta de hoy";
+    } else if (qDone) {
+      qLbl = "Pregunta de hoy" + (qtag.length() > 0 ? " · " + qtag : "");
+      qBody = "¡Ya respondiste! Toca para ver las respuestas";
+    } else {
+      qLbl = pn + " pregunta" + (qtag.length() > 0 ? " · " + qtag : "");
+      qBody = qtxt;
+    }
+
     int bg = R.drawable.widget_bg_azul;
     if ("rosa".equals(theme)) bg = R.drawable.widget_bg_rosa;
     else if ("negro".equals(theme)) bg = R.drawable.widget_bg_negro;
@@ -180,6 +208,8 @@ public class CapsulaWidget extends AppWidgetProvider {
     }
     rv.setTextViewText(R.id.wg_name, pn);
     rv.setTextViewText(R.id.wg_say, say);
+    rv.setTextViewText(R.id.wg_qlbl, qLbl);
+    rv.setTextViewText(R.id.wg_qtxt, qBody);
     rv.setTextViewText(R.id.wg_title, title);
     rv.setTextViewText(R.id.wg_sub, sub);
     rv.setTextColor(R.id.wg_sub, subColor);
@@ -188,6 +218,10 @@ public class CapsulaWidget extends AppWidgetProvider {
     if (li != null) {
       PendingIntent pi = PendingIntent.getActivity(c, 0, li, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
       rv.setOnClickPendingIntent(R.id.wg_root, pi);
+      Intent qi = new Intent(li);
+      qi.putExtra("go", "q");
+      PendingIntent qp = PendingIntent.getActivity(c, 1, qi, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+      rv.setOnClickPendingIntent(R.id.wg_qpanel, qp);
     }
     return rv;
   }

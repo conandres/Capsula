@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 public class MainActivity extends BridgeActivity {
   private String pending = null;
+  private String go = null;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -52,6 +53,13 @@ public class MainActivity extends BridgeActivity {
 
   public class Js {
     @JavascriptInterface
+    public String takeGo() {
+      String g = go;
+      go = null;
+      return g == null ? "" : g;
+    }
+
+    @JavascriptInterface
     public String takeShare() {
       String p = pending;
       pending = null;
@@ -62,6 +70,10 @@ public class MainActivity extends BridgeActivity {
   @SuppressWarnings("deprecation")
   private void readIntent(Intent i) {
     try {
+      if (i != null && i.getStringExtra("go") != null) {
+        go = i.getStringExtra("go");
+        i.removeExtra("go");
+      }
       if (i == null || !Intent.ACTION_SEND.equals(i.getAction())) return;
       String type = i.getType() == null ? "" : i.getType();
       String text = i.getStringExtra(Intent.EXTRA_TEXT);
