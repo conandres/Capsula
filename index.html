@@ -830,7 +830,7 @@ const SHP=120,SHMAX=2;
 function shieldBuy(){cl();if((S.sh||0)>=SHMAX||(S.lm||0)<SHP)return;S.lm-=SHP;S.sh=(S.sh||0)+1;burst(22);toast('¡Escudo listo! Cuida tu racha');shopSave()}
 function shieldAsk(){const n=S.sh||0;if(n>=SHMAX){toast('Ya tienes el máximo de escudos');return}if((S.lm||0)<SHP){toast('Te faltan '+(SHP-(S.lm||0))+' Lumis');return}
  showSheet(`<div class="gd"><h2 style="text-align:center">Escudo de racha</h2><p class="mu c">Si un día no cuentas nada, el escudo protege tu racha. Cuesta ${LI} ${SHP}.</p><button class="btn w" onclick="shieldBuy()">Comprar</button><button class="btn s w" onclick="cl()">Ahora no</button></div>`)}
-function shopOpen(){cl();if(S.tab!=='mundo')go('mundo');setTimeout(()=>{const e=$('#tiendaSec');if(e)e.scrollIntoView({behavior:'smooth',block:'start'})},120)}
+function shopOpen(){cl();S.ms='tienda';if(S.tab!=='mundo')go('mundo');else msSet('tienda');setTimeout(()=>{const e=$('#tiendaSec');if(e)e.scrollIntoView({behavior:'smooth',block:'start'})},150)}
 const shopHTML=()=>{return `<section class="card" id="shop"><div class="row sp"><h3>Tienda</h3><b class="pr">${LI} ${S.lm||0}</b></div>
 
  <b>Fondos del cuarto</b><div class="shr">${ROOMS.map(r=>{const o=ownedRoom(r.id),on=(S.rm||'')===r.id;return `<button class="${on?'on':''}" onclick="shopAsk('room','${r.id}')"><i style="background:${r.bg}"></i>${r.n}<small>${on?'Puesto':o?'Toca para usar':LI+' '+r.p}</small></button>`}).join('')}</div>
@@ -1386,14 +1386,20 @@ function mundo(){
  return `
  <div class="spch"><h2>Mi mascota</h2>${spaceTag()}</div>
  ${heroHTML()}
- ${socCard()}
+ <div class="tabs2 mt2" id="tiendaSec" role="tablist">${MT.map(([k,l])=>`<button role="tab" aria-selected="${(S.ms||'cuidar')===k}" class="${(S.ms||'cuidar')===k?'on':''}" onclick="msSet('${k}')">${l}</button>`).join('')}</div>
+ <div id="mbody">${mBody()}</div>`}
+const MT=[['cuidar','Cuidar'],['juegos','Juegos'],['tienda','Tienda'],['armario','Armario']];
+function mBody(){const ms=S.ms||'cuidar';
+ if(ms==='juegos')return `${mgCard()}${badgesHTML()}`;
+ if(ms==='tienda')return `${petShopHTML()}${shopHTML()}`;
+ if(ms==='armario')return closetHTML();
+ return `${socCard()}
  ${S.chest===today()?`<section class="card c"><span class="mu">Cofre de hoy abierto. Vuelve mañana por otro</span></section>`:`<section class="card c hero"><div class="chest">${ic('gift',44,1.6)}</div><h3>¡${esc(S.pet.name)} te trajo un regalo!</h3><button class="btn" onclick="chest()">Abrir cofre</button></section>`}
  ${streakCard()}
- ${mgCard()}
- <div class="spch" id="tiendaSec"><h2>Tienda</h2></div>${petShopHTML()}${shopHTML()}${closetHTML()}
  ${missionsHTML()}
- ${moodCard()}${badgesHTML()}
+ ${moodCard()}
  ${inviteApp()}`}
+function msSet(k){S.ms=k;const b=$('#mbody');if(!b)return;b.innerHTML=mBody();document.querySelectorAll('#tiendaSec button').forEach(x=>{const on=x.getAttribute('onclick')==="msSet('"+k+"')";x.classList.toggle('on',on);x.setAttribute('aria-selected',on)});psFill();cntAnim();if(k==='tienda')guideTip('shop');const t=$('#tiendaSec');if(t&&t.getBoundingClientRect().top<0)t.scrollIntoView({behavior:'smooth',block:'start'})}
 const PREACT={
  voz:['¡Qué linda voz! Me quedo escuchándola','Tu voz me da calma','Me encanta oírte contar eso'],
  foto:['¡Qué foto! La guardo en mi álbum','Mira qué recuerdo tan bonito','Quedó guardada para siempre'],
@@ -1597,8 +1603,7 @@ function heroHTML(){const away=(Date.now()-S.pt.t)/H;ptTick();if(!S.bub)S.bub=gr
  const lvl=Math.floor(S.xp/100),sz=150,sl=asleep();
  return `<section class="card hero">
   <div class="room${sl?' night':''}${S.pt.clean<35?' dirty':''}${S.rm&&ownedRoom(S.rm)?' rm-'+S.rm:''}${exAway()?' exa exp-'+S.pt.ex.k:''}" id="room"><div class="cloud"><div id="bubw" aria-live="polite">${bubHTML()}</div><div id="qrw" class="qw">${qrHTML()}</div></div>${exAway()?exScene():''}<div class="fl ${sl?'sleep':''}${exAway()?' away':''}" onclick="petClick()" onkeydown="if(event.key==='Enter')petTap()" role="button" tabindex="0" aria-label="Acariciar a ${esc(S.pet.name)}"><span id="pet3d" class="p3${P3.st==='fail'||P3.slow?' fb':''}"><span class="f2">${pet2d(S.pet.kind,sz,S.wear,stg())}</span></span>${sl?'<span class="zz">Zzz</span>':''}</div><button class="hang" onclick="wardOpen()" aria-label="Armario">${ic('hanger',22)}</button><div class="dirt" aria-hidden="true"><i></i><i></i><i></i><i></i><b>🪰</b><b>🪰</b><span class="stk"><u></u><u></u><u></u></span></div></div>
-  ${pswHTML()}<h2>${esc(S.pet.name)}</h2>
-  <button class="wal" onclick="shopOpen()" aria-label="Tus Lumis">${LI} <span class="cnt" data-n="${S.lm||0}">${S.lm||0}</span> Lumis</button>
+  ${pswHTML()}
   <div class="stw" id="stw">${statsHTML()}</div>
   <div class="tray" id="tray">${trayHTML()}</div>
   <div class="mu">${XI} XP del nivel: ${S.xp%100} de 100</div></section>`}
@@ -2266,7 +2271,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=124;
+const BUILD=126;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
@@ -2483,6 +2488,7 @@ function memHtml(sp){const dt=ms=>new Date(ms).toLocaleDateString('es',{day:'num
 .room.pkb .fl{margin-top:62px!important}.tub{height:44%!important}
 </style>
 #tiendaSec{scroll-margin-top:90px}
+.mt2{margin:14px 0 10px}
 @keyframes vIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes pop{0%{transform:scale(.92);opacity:0}60%{transform:scale(1.03)}100%{transform:scale(1);opacity:1}}
 main>.card,main>section,.vw>.card{animation:vIn .35s cubic-bezier(.2,.8,.2,1) both}
