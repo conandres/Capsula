@@ -1,12 +1,12 @@
 /* Service worker de Cápsula: funciona sin internet.
    Los archivos se piden primero a la red, así que las actualizaciones llegan solas. */
-const VERSION='capsula-v128';
+const VERSION='capsula-v129';
 const SHELL = ['legal/terminos.html','legal/privacidad.html','legal/eliminar-cuenta.html',
   './', './index.html', './manifest.json', './config.js', './cloud.js',
   './icons/icon-192.png', './icons/icon-512.png',
   './icons/maskable-192.png', './icons/maskable-512.png',
   './icons/apple-touch-icon.png', './icons/favicon-32.png',
-  './img/t-comer.png', './img/t-banar.png', './img/t-dormir.png', './img/t-jugar.png', './img/lumis.png', './img/xp.png', './img/lumis-lg.png', './img/xp-lg.png'
+  './img/t-comer.png', './img/ui/armario.png', './img/ui/bosque.png', './img/ui/capsulas.png', './img/ui/chat.png', './img/ui/cofre.png', './img/ui/cuidar.png', './img/ui/diario.png', './img/ui/escudo.png', './img/ui/inicio.png', './img/ui/invitador.png', './img/ui/juegos.png', './img/ui/libro.png', './img/ui/mascota.png', './img/ui/montana.png', './img/ui/multi.png', './img/ui/parejas.png', './img/ui/perfil.png', './img/ui/playa.png', './img/ui/pregunta.png', './img/ui/primera.png', './img/ui/racha3.png', './img/ui/semaforo.png', './img/ui/tienda.png', './img/ui/torres.png', './img/t-banar.png', './img/t-dormir.png', './img/t-jugar.png', './img/lumis.png', './img/xp.png', './img/lumis-lg.png', './img/xp-lg.png'
 ];
 
 /* Mascota 3D: se guarda para que también cargue sin internet (si falla, no se detiene la instalación). */

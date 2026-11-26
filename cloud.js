@@ -443,7 +443,7 @@ function start() {
         const s = await getDocs(query(collection(db, 'friends'), where('u', 'array-contains', uid)));
         for (const d of s.docs) {
           try {
-            const m = await getDocs(query(collection(db, 'friends', d.id, 'msgs'), where('f', '==', uid)));
+            const m = await getDocs(collection(db, 'friends', d.id, 'msgs'));
             for (const x of m.docs) await deleteDoc(x.ref);
           } catch (e) {}
           try { await deleteDoc(d.ref); } catch (e) {}

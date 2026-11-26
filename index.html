@@ -683,8 +683,25 @@ nav button .ic{width:25px;height:25px}
 @keyframes pop{0%{transform:scale(.92);opacity:0}60%{transform:scale(1.03)}100%{transform:scale(1);opacity:1}}
 .btn,.wal,.tb button{transition:transform .12s ease,filter .12s}
 .btn:active,.wal:active{transform:scale(.95)}
-.mb{animation:pop .22s ease-out both}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.mb.new.me{animation:sndIn .42s cubic-bezier(.2,1.3,.4,1) both;transform-origin:100% 100%}
+.mb.new.oth{animation:rcvIn .36s cubic-bezier(.2,1.2,.4,1) both;transform-origin:0 100%}
+@keyframes sndIn{0%{opacity:0;transform:translate(26px,44px) scale(.6)}65%{opacity:1;transform:translate(0,-4px) scale(1.05)}100%{transform:none}}
+@keyframes rcvIn{0%{opacity:0;transform:translate(-18px,18px) scale(.7)}70%{opacity:1;transform:translateY(-3px) scale(1.03)}100%{transform:none}}
+.cin .btn.fly svg,.cin .btn.fly img{animation:plane .5s ease-in-out}
+@keyframes plane{0%{transform:none}40%{transform:translate(22px,-22px) scale(.5) rotate(-20deg);opacity:0}41%{transform:translate(-22px,22px) scale(.5);opacity:0}100%{transform:none;opacity:1}}
+.cfly{position:fixed;z-index:80;width:26px;height:26px;pointer-events:none;will-change:transform,opacity}
+.wal.bump,.hw2.bump{animation:bump .4s cubic-bezier(.2,1.6,.4,1)}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.cfly{display:none}}
+.pi{object-fit:contain;display:block;flex:none;-webkit-user-drag:none;user-select:none}
+nav button .pi{transition:transform .2s,filter .2s,opacity .2s;filter:saturate(.55);opacity:.8}
+nav button.on .pi{transform:translateY(-2px) scale(1.12);filter:none;opacity:1}
+.mtabs button{display:flex;align-items:center;justify-content:center;gap:5px;flex-direction:column;font-size:13px}
+.mtabs .pi{filter:drop-shadow(0 2px 3px rgba(0,0,0,.25))}
+.mgcs .mrow .tx{flex:1}.mrow .pi{margin-right:0}
+.bd .pi{margin:0 auto 4px}.bd .lk .pi{filter:grayscale(1);opacity:.4}
+.hbn .pi{width:28px;height:28px}
+.shi .pi{margin:0 auto}
 </style>
 
 <div class="app">
@@ -843,7 +860,7 @@ function shopOpen(){cl();S.ms='tienda';S.tool=null;if(S.tab!=='mundo')go('mundo'
 const shopHTML=()=>{return `<section class="card" id="shop"><div class="row sp"><h3>Tienda</h3><b class="pr">${LI} ${S.lm||0}</b></div>
 
  <b>Fondos del cuarto</b><div class="shr">${ROOMS.map(r=>{const o=ownedRoom(r.id),on=(S.rm||'')===r.id;return `<button class="${on?'on':''}" onclick="shopAsk('room','${r.id}')"><i style="background:${r.bg}"></i>${r.n}<small>${on?'Puesto':o?'Toca para usar':LI+' '+r.p}</small></button>`}).join('')}</div>
- <b style="display:block;margin-top:14px">Protección</b><div class="shr"><button onclick="shieldAsk()"><i class="shi"><svg viewBox="0 0 24 24" width="34" height="34" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></i>Escudo de racha<small>${(S.sh||0)>=SHMAX?'Máximo':LI+' '+SHP+' · tienes '+(S.sh||0)}</small></button></div>
+ <b style="display:block;margin-top:14px">Protección</b><div class="shr"><button onclick="shieldAsk()"><i class="shi">${pi('escudo',38)}</i>Escudo de racha<small>${(S.sh||0)>=SHMAX?'Máximo':LI+' '+SHP+' · tienes '+(S.sh||0)}</small></button></div>
 </section>`};
 const closetHTML=()=>`<section class="card"><h3>Armario de ${esc(S.pet.name)}</h3><span class="mu">Desbloquea accesorios; una prenda por categoría</span>${closetGrid()}</section>`;
 const TEE='<path d="M21 10 L6 20 L13 33 L21 28 V56 H43 V28 L51 33 L58 20 L43 10 Q32 18 21 10Z"';
@@ -1025,7 +1042,7 @@ function p3mount(){const ph=$('#pet3dx')||$('#pet3d')||$('#pet3dh');if(!ph||P3.s
  }).catch(()=>{P3.st='fail'});
 }
 function hopPet(){const f=$('.hero .fl');if(f){f.classList.remove('hop');void f.offsetWidth;f.classList.add('hop')}}
-function levelUp(l){p3play('levelup');const o=document.createElement('div');o.className='lvup';o.innerHTML=`<div class="lvc"><div class="lvp">${pet3('pet3dx',200)}</div><h1>¡${esc(S.pet.name)} subió de nivel!</h1><p><img class="ci" style="width:1.8em;height:1.8em" src="img/xp.png" alt="XP"> <b>Nivel ${l+1}</b> · ${STG[stgL(l)]}</p><p class="mu">${stgL(l)>stgL(l-1)?(stgL(l)>Math.max(socCap(),stm(S.pt,S.xp))?'Ya podría crecer, pero necesita a tu familia: crea o llena una cápsula.':'¡Evolucionó! Ahora es '+STG[stgL(l)].toLowerCase()+'.'):l===1?'Estrenó una estrellita':l===2?'Estrenó un moño':l>=3?'¡Ahora lleva corona!':''}</p><button class="btn" onclick="this.closest('.lvup').remove();p3mount()">¡Qué orgullo!</button></div>`;$('.app').appendChild(o);p3mount();burst(44)}
+function levelUp(l){p3play('levelup');setTimeout(()=>{burst(44,['✦','●','✧','◆','🎉'])},250);buzz([40,60,40,60,90]);const o=document.createElement('div');o.className='lvup';o.innerHTML=`<div class="lvc"><div class="lvp">${pet3('pet3dx',200)}</div><h1>¡${esc(S.pet.name)} subió de nivel!</h1><p><img class="ci" style="width:1.8em;height:1.8em" src="img/xp.png" alt="XP"> <b>Nivel ${l+1}</b> · ${STG[stgL(l)]}</p><p class="mu">${stgL(l)>stgL(l-1)?(stgL(l)>Math.max(socCap(),stm(S.pt,S.xp))?'Ya podría crecer, pero necesita a tu familia: crea o llena una cápsula.':'¡Evolucionó! Ahora es '+STG[stgL(l)].toLowerCase()+'.'):l===1?'Estrenó una estrellita':l===2?'Estrenó un moño':l>=3?'¡Ahora lleva corona!':''}</p><button class="btn" onclick="this.closest('.lvup').remove();p3mount()">¡Qué orgullo!</button></div>`;$('.app').appendChild(o);p3mount();burst(44)}
 
 /* ---------- helpers ---------- */
 function toast(m){const t=$('#ts');t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),2000)}
@@ -1039,7 +1056,7 @@ function rw(x,c,o){const cp=capEnsure();let gx=x||0,gc=c||0;
  if(!(o&&o.free)){gx=Math.max(0,Math.min(gx,CAP_X-cp.x));gc=Math.max(0,Math.min(gc,CAP_C-cp.c));cp.x+=gx;cp.c+=gc}
  if(!gx&&!gc){if((x||c)&&S._capMsg!==today()){S._capMsg=today();toast('Hoy '+S.pet.name+' ya recibió todo lo que podía Mañana sigue.')}return}
  const a=Math.floor(S.xp/100);S.xp+=gx;if(gc){S.lm=(S.lm||0)+gc;S.lmT=Date.now()}const b=Math.floor(S.xp/100);
- toastH((gc?'+'+gc+' '+LI+' Lumis':'')+(gc&&gx?' · ':'')+(gx?'+'+gx+' '+XI+' XP':''));render();floatI(gc?'+'+gc+' '+LI:'+'+gx+' '+XI);hopPet();
+ toastH((gc?'+'+gc+' '+LI+' Lumis':'')+(gc&&gx?' · ':'')+(gx?'+'+gx+' '+XI+' XP':''));render();floatI(gc?'+'+gc+' '+LI:'+'+gx+' '+XI);hopPet();if(gc){coinFly(gc);buzz(18)}
  if(b>a)setTimeout(()=>levelUp(b),500)}
 function copy(t){try{navigator.clipboard.writeText(t).then(()=>toast('Copiado')).catch(()=>toast('Copia este texto: '+t))}catch(e){toast('Copia este texto: '+t)}}
 function pAv(id,s=40){const mine=id==='me'||(S.user&&id===S.user.uid),m=mine?{name:S.me.name,photo:S.me.pic}:(S.members[id]||{});const ini=esc(((m.name||'?').trim().charAt(0)||'?').toUpperCase());return `<span class="pav" style="width:${s}px;height:${s}px;font-size:${Math.round(s*.4)}px">${ini}${m.photo&&/^https:\/\/[a-z0-9-]+\.googleusercontent\.com\//i.test(m.photo)?`<img src="${esc(m.photo)}" alt="" referrerpolicy="no-referrer" onerror="this.remove()">`:''}</span>`}
@@ -1270,12 +1287,13 @@ const hsub=()=>({home:'Hola, '+esc(S.me.name),mundo:'Mi mascota',arc:'Mi diario 
 const hdr=()=>`<div class="brand"><img class="bi" src="icons/icon-192.png" width="38" height="38" alt="" decoding="async"><span class="bn">Cápsula<small>${hsub()}</small></span></div><div class="row" style="gap:8px;flex:none">${frOk()?frBtn():''}<button class="wal hw2" onclick="shopOpen()" aria-label="Tus Lumis">${LI} <span class="cnt" data-n="${S.lm||0}">${S.lm||0}</span></button><button class="pf${syncOff()||SYNC.pend>0?' unsaved':''}" onclick="go('perfil')" aria-label="Mi perfil">${pfIn()}</button></div>`;
 function shell(){return `<div class="top" id="hd">${hdr()}</div><main id="mn">${VIEW[S.tab]()}</main>
 <nav aria-label="Principal">
- <button data-t="home" onclick="go('home')">${ic('home')}Inicio</button>
- <button data-t="mundo" onclick="go('mundo')">${ic('world')}Mi mascota</button>
- <button data-t="arc" onclick="goArc()">${ic('book')}Mi diario</button>
- <button data-t="caps" onclick="go('caps')">${ic('caps')}Cápsulas</button>
- <button data-t="perfil" onclick="go('perfil')">${ic('user')}Perfil</button>
+ <button data-t="home" onclick="go('home')">${pi('inicio',30)}Inicio</button>
+ <button data-t="mundo" onclick="go('mundo')">${pi('mascota',30)}Mi mascota</button>
+ <button data-t="arc" onclick="goArc()">${pi('diario',30)}Mi diario</button>
+ <button data-t="caps" onclick="go('caps')">${pi('capsulas',30)}Cápsulas</button>
+ <button data-t="perfil" onclick="go('perfil')">${pi('perfil',30)}Perfil</button>
 </nav>`}
+const pi=(n,z=28)=>`<img class="pi" src="img/ui/${n}.png" width="${z}" height="${z}" alt="" draggable="false">`;
 function navSync(){document.querySelectorAll('nav [data-t]').forEach(b=>{const on=b.dataset.t===NK();b.classList.toggle('on',on);on?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')})}
 let CNT=null;
 function cntAnim(){const es=[...document.querySelectorAll('.cnt')];if(!es.length)return;const e=es[0],n=+e.dataset.n;if(CNT===null||CNT===n){CNT=n;return}
@@ -1384,8 +1402,8 @@ function fpOff(){try{localStorage.setItem('capsula_fp','1')}catch(e){}render()}
 function dest(){showSheet(`<h2>¿Dónde lo guardas?</h2><p class="mu">Elige el lugar antes de escribir.</p>
  <button class="opc" onclick="cl();spaceTo(null);chooser()"><span class="ti">${ic('world',24)}</span><span class="tx"><b>Mi mundo</b><span class="mu">Solo tú lo ves</span></span></button>
  ${S.families.map(f=>`<button class="opc" onclick="cl();spaceTo('${esc(f.id)}');chooser()"><span class="ti">${ic('caps',24)}</span><span class="tx"><b>${esc(f.name)}</b><span class="mu">Compartido · ${GT[GT[f.type]?f.type:'familia'].n}</span></span></button>`).join('')}`)}
-function badgesHTML(){const B=[['pen','Primera historia',S.total>0||S.posts.some(p=>p.a==='me')],['flame','Racha de 3',S.streak>=3],['brush','Multiformato',S.types.size>=3],['star','Pregunta del día',(S.qaN||0)>=1||!!S.perfect],['users','Invitador',!!S.inv],['book','Libro listo',S.posts.length>=12]];
- return `<div class="card"><h3>Insignias</h3><div class="bd">${B.map(b=>`<div class="${b[2]?'':'lk'}">${ic(b[0],28)}${b[1]}</div>`).join('')}</div></div>`}
+function badgesHTML(){const B=[['primera','Primera historia',S.total>0||S.posts.some(p=>p.a==='me')],['racha3','Racha de 3',S.streak>=3],['multi','Multiformato',S.types.size>=3],['pregunta','Pregunta del día',(S.qaN||0)>=1||!!S.perfect],['invitador','Invitador',!!S.inv],['libro','Libro listo',S.posts.length>=12]];
+ return `<div class="card"><h3>Insignias</h3><div class="bd">${B.map(b=>`<div class="${b[2]?'':'lk'}">${pi(b[0],40)}${b[1]}</div>`).join('')}</div></div>`}
 function socCard(){const n=esc(S.pet.name),f0=S.families[0];
  if(!S.families.length)return `<section class="card soc"><div class="row" style="gap:12px;align-items:flex-start"><span class="socic">${ic('caps',26,1.8)}</span><div class="tx"><h3>${n} quiere conocer a tu gente</h3><p class="mu">Tu familia, tus amigos o tu pareja. Crea una cápsula y deja que ${n} los conozca.</p></div></div><button class="btn w" onclick="S.gname='';S.scr='group';S.gstep='create';render()">Crear mi cápsula</button><button class="btn s w" style="margin-top:8px" onclick="S.scr='group';S.gstep='join';render()">Unirme con un código</button></section>`;
  if((S.soc||0)<2)return `<section class="card soc"><div class="row" style="gap:12px;align-items:flex-start"><span class="socic">${ic('users',26,1.8)}</span><div class="tx"><h3>${n} quiere conocer a tu familia, amigos o pareja</h3><p class="mu">Invita a alguien a ${esc(f0.name)}. Ganas Lumis cuando entre.</p></div></div><button class="btn w" onclick="openCap('${esc(f0.id)}');S.sub='personas';render()">Invitar a alguien</button></section>`;
@@ -1394,9 +1412,10 @@ function mundo(){
  setTimeout(famReact,900);
  return `
  <div class="spch"><h2>Mi mascota</h2>${spaceTag()}</div>
- <div class="mtabs" id="tiendaSec" role="tablist">${MT.map(([k,l])=>`<button role="tab" aria-selected="${(S.ms||'cuidar')===k}" class="${(S.ms||'cuidar')===k?'on':''}" style="--c:${MC[k]}" onclick="msSet('${k}')">${l}</button>`).join('')}</div>
+ <div class="mtabs" id="tiendaSec" role="tablist">${MT.map(([k,l])=>`<button role="tab" aria-selected="${(S.ms||'cuidar')===k}" class="${(S.ms||'cuidar')===k?'on':''}" style="--c:${MC[k]}" onclick="msSet('${k}')">${pi(MI[k],22)}${l}</button>`).join('')}</div>
  ${(S.ms||'cuidar')==='cuidar'?heroHTML():''}
  <div id="mbody">${mBody()}</div>`}
+const MI={cuidar:'cuidar',juegos:'juegos',tienda:'tienda',armario:'armario'};
 const MC={cuidar:'#C0266F',juegos:'#5B3FD0',tienda:'#B45309',armario:'#0F7B55'};
 const MT=[['cuidar','Cuidar'],['juegos','Juegos'],['tienda','Tienda'],['armario','Armario']];
 function mBody(){const ms=S.ms||'cuidar';
@@ -1404,7 +1423,7 @@ function mBody(){const ms=S.ms||'cuidar';
  if(ms==='tienda')return `${petShopHTML()}${shopHTML()}`;
  if(ms==='armario')return closetHTML();
  return `${socCard()}
- ${S.chest===today()?`<section class="card c"><span class="mu">Cofre de hoy abierto. Vuelve mañana por otro</span></section>`:`<section class="card c hero"><div class="chest">${ic('gift',44,1.6)}</div><h3>¡${esc(S.pet.name)} te trajo un regalo!</h3><button class="btn" onclick="chest()">Abrir cofre</button></section>`}
+ ${S.chest===today()?`<section class="card c"><span class="mu">Cofre de hoy abierto. Vuelve mañana por otro</span></section>`:`<section class="card c hero"><div class="chest">${pi('cofre',64)}</div><h3>¡${esc(S.pet.name)} te trajo un regalo!</h3><button class="btn" onclick="chest()">Abrir cofre</button></section>`}
  ${streakCard()}
  ${missionsHTML()}
  ${moodCard()}
@@ -1483,7 +1502,7 @@ function smShow(tk){const f=$('#smf');if(!f)return;const red=Math.random()<.35,w
   else{SM.n++;if(SM.n>=SM.need){SM.st='win';smWin();smDraw()}else{const p=$('.smo .mu');if(p)p.textContent=SM.n+' de '+SM.need+' verdes';smNext(180+Math.random()*320)}}};
  f.appendChild(b);SM.b=b;
  setTimeout(()=>{if(!SM||SM.tk!==tk||SM.st!=='play'||SM.b!==b)return;b.remove();SM.b=null;smNext(160+Math.random()*300)},SM.ms*(.85+Math.random()*.3))}
-function smWin(){burst(36);const lv=SM.lv;let d='';try{if(lv<4&&smLv()<=lv)localStorage.setItem('capsula_sml',String(lv+1));if(lv===4)localStorage.setItem('capsula_sml','1');d=localStorage.getItem('capsula_sm')}catch(e){}
+function smWin(){burst(36);buzz([30,50,30,50,80]);const lv=SM.lv;let d='';try{if(lv<4&&smLv()<=lv)localStorage.setItem('capsula_sml',String(lv+1));if(lv===4)localStorage.setItem('capsula_sml','1');d=localStorage.getItem('capsula_sm')}catch(e){}
  if(d!==today()){try{localStorage.setItem('capsula_sm',today())}catch(e){}setTimeout(()=>rw(2+lv,2+lv),500)}}
 /* Torres: ordena los bloques de colores para que tus torres queden como las torres objetivo. */
 const TWL=[[3,3],[4,3],[5,3],[6,3]],TWC=['#F2B705','#C23FB5','#17B6C9','#E8662B','#6B4CD6','#3BAA5C'];
@@ -1512,7 +1531,7 @@ function twTap(i){const t=TW;if(!t||t.st!=='play')return;
  if(t.cur[i].length>=t.cap){toast('Esa torre está llena');t.sel=-1;twDraw();return}
  t.cur[i].push(t.cur[t.sel].pop());t.sel=-1;t.last=i;t.moves++;
  if(t.cur.every((a,k)=>a.join()===t.tgt[k].join())){t.st='win';twWin()}twDraw()}
-function twWin(){burst(36);const lv=TW.lv;let d='';try{if(lv<4&&twLv()<=lv)localStorage.setItem('capsula_twl',String(lv+1));if(lv===4)localStorage.setItem('capsula_twl','1');d=localStorage.getItem('capsula_tw')}catch(e){}
+function twWin(){burst(36);buzz([30,50,30,50,80]);const lv=TW.lv;let d='';try{if(lv<4&&twLv()<=lv)localStorage.setItem('capsula_twl',String(lv+1));if(lv===4)localStorage.setItem('capsula_twl','1');d=localStorage.getItem('capsula_tw')}catch(e){}
  if(d!==today()){try{localStorage.setItem('capsula_tw',today())}catch(e){}setTimeout(()=>rw(2+lv,2+lv),500)}}
 /* ---------- Wrapped: tu semana o tu año en una imagen para compartir ---------- */
 let WR='sem';
@@ -1634,7 +1653,7 @@ function exOpen(){guideTip('exp');ptTick();const p=S.pt;
  const ok=p.en>=40&&p.food>=35;
  showSheet(`<h2>Expedición</h2><p class="mu">${esc(S.pet.name)} sale de aventura y vuelve con una postal y una pregunta. Mientras esté fuera no podrás cuidarla, y cuanto más dure, mejor la recompensa. Expediciones hechas: <b>${p.exn||0}</b>.</p>
  ${ok?'':`<p class="mu"><b>${esc(S.pet.name)} necesita comer y descansar un poco antes de salir.</b></p>`}
- ${EXPS.map(x=>`<button class="btn w" ${ok?'':'disabled'} onclick="exGo('${x.k}')" style="margin-bottom:8px">${ic(x.e,18)} ${x.n} · ${x.h} h · hasta +${x.c} Lumis</button>`).join('')}`)}
+ ${EXPS.map(x=>`<button class="btn w" ${ok?'':'disabled'} onclick="exGo('${x.k}')" style="margin-bottom:8px">${pi(x.k,24)} ${x.n} · ${x.h} h · hasta +${x.c} Lumis</button>`).join('')}`)}
 function exGo(k){const x=EXPS.find(a=>a.k===k);if(!x||exAway())return;ptTick();const p=S.pt;if(p.en<40||p.food<35)return;
  p.ex={k,t0:Date.now(),end:Date.now()+x.h*H,done:0};p.en=Math.max(0,p.en-12);p.food=Math.max(0,p.food-10);S.tool=null;cl();
  toast(S.pet.name+' salió a '+x.n+' '+x.e);save();try{remApply()}catch(e){}render()}
@@ -1771,7 +1790,7 @@ function petTap(){ptTick();const p=S.pt,now=Date.now();
  else{bubSay('Mmm, qué rico Mi próximo premio de mimos llega en '+fmtWait(wait));hopPet()}}
 const crave=()=>FOODS[hs(today()+S.pet.kind+S.pet.name)%FOODS.length];
 const FOODS=[{k:'galleta',e:'🍪',n:'Galleta',f:20,l:2,c:-2,u:0,y:3},{k:'manzana',e:'🍎',n:'Manzana',f:15,l:3,c:0,u:5,y:1},{k:'pastel',e:'🍰',n:'Pastel',f:32,l:5,c:-6,u:-2,y:7}];
-function eat(k){const f=FOODS.find(x=>x.k===k);if(!f)return;cl();ptTick();const p=S.pt,now=Date.now(),need=p.food<60;p3play('eat');
+function eat(k){const f=FOODS.find(x=>x.k===k);if(!f)return;cl();ptTick();const p=S.pt,now=Date.now(),need=p.food<60;p3play('eat');buzz(20);
  p.food=Math.min(100,p.food+f.f);p.love=Math.min(100,p.love+f.l);p.clean=Math.max(0,p.clean+f.c);p.en=Math.min(100,p.en+f.u);p.fun=Math.min(100,(p.fun??70)+(f.y||0));p.fedOnce=1;burst(8,[f.e,'💗']);
  if(f.k===crave().k&&p.crv!==today()){p.crv=today();p.love=Math.min(100,p.love+8);p.fun=Math.min(100,p.fun+10);S.bub={t:say(['¡Justo lo que quería hoy! Eres adivino','¡Mi antojo del día! Me conoces mejor que nadie']),o:null,q:null};S.bubT=now;burst(18);hopPet();p3play('cheer');rw(2,2);return}
  if(need&&now-p.lf>3*H){p.lf=now;S.bub={t:say(['¡Ñam ñam! Estaba riquísimo '+f.e,'¡Delicioso! Eres el mejor cocinero '+f.e,'Mmm… '+f.n.toLowerCase()+', mi favorita del día '+f.e]),o:null,q:null};S.bubT=now;rw(3,2)}else{bubSay(say(['¡Ñam ñam! Gracias '+f.e,'Qué rico '+f.e+' ¡repito mañana!']));hopPet();petUI()}}
@@ -2213,9 +2232,9 @@ function caps(){
  <button class="btn s w" onclick="S.scr='group';S.gstep='join';render()">Unirme con código o enlace</button>`}
 `}
 const mgCard=()=>`<section class="card"><div class="mgcs"><h3>Juegos de memoria y reflejos</h3>
- <div class="mrow"><div class="tx"><b>Parejas de recuerdos</b><span class="mu">5 niveles${S.posts.some(p=>['foto','dibujo'].includes(p.k))?' con '+(S.group?'las fotos de esta cápsula':'tus fotos'):''}</span></div><button class="btn" onclick="mgStart()">Jugar</button></div>
- <div class="mrow"><div class="tx"><b>Semáforo</b><span class="mu">Toca solo el verde · 4 velocidades</span></div><button class="btn" onclick="smStart()">Jugar</button></div>
- <div class="mrow"><div class="tx"><b>Torres</b><span class="mu">Ordena los bloques como el objetivo</span></div><button class="btn" onclick="twStart()">Jugar</button></div>
+ <div class="mrow">${pi('parejas',44)}<div class="tx"><b>Parejas de recuerdos</b><span class="mu">5 niveles${S.posts.some(p=>['foto','dibujo'].includes(p.k))?' con '+(S.group?'las fotos de esta cápsula':'tus fotos'):''}</span></div><button class="btn" onclick="mgStart()">Jugar</button></div>
+ <div class="mrow">${pi('semaforo',44)}<div class="tx"><b>Semáforo</b><span class="mu">Toca solo el verde · 4 velocidades</span></div><button class="btn" onclick="smStart()">Jugar</button></div>
+ <div class="mrow">${pi('torres',44)}<div class="tx"><b>Torres</b><span class="mu">Ordena los bloques como el objetivo</span></div><button class="btn" onclick="twStart()">Jugar</button></div>
 </div></section>`;
 function capHome(){
  return `${famCard()}${wrapCard()}${memCard()}${qLine(qaToday(),"go('triv')",S.qd===dayKey()?'Ya respondiste · ver respuestas':'Pregunta de hoy')}
@@ -2281,7 +2300,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=128;
+const BUILD=129;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
@@ -2301,7 +2320,7 @@ const frAv=(o,sz=44)=>`<span class="fav" style="width:${sz}px;height:${sz}px;bac
 const frReq=()=>S.fr.filter(f=>f.st==='pending'&&f.from!==myUid()).length;
 const frUnread=f=>f.st==='ok'&&f.lb&&f.lb!==myUid()&&f.la>(S.fseen[f.id]||0);
 const frBadge=()=>frReq()+S.fr.filter(frUnread).length;
-const frBtn=()=>{const n=frBadge();return `<button class="hbn" onclick="go('amigos')" aria-label="Amigos y chats${n?', '+n+' novedades':''}">${ic('chat',22)}${n?`<i class="bdg">${n>9?'9+':n}</i>`:''}</button>`};
+const frBtn=()=>{const n=frBadge();return `<button class="hbn" onclick="go('amigos')" aria-label="Amigos y chats${n?', '+n+' novedades':''}">${pi('chat',28)}${n?`<i class="bdg">${n>9?'9+':n}</i>`:''}</button>`};
 function frInit(){if(!frOk())return;try{S.fseen=JSON.parse(localStorage.getItem(fseenKey())||'{}')}catch(e){}
  CLOUD.fr.ensure(APP.fullName(),S.pet.kind).then(fc=>{S.fc=fc;if(S.tab==='amigos')frPaint()}).catch(()=>{});
  CLOUD.fr.listen(l=>{S.fr=l;l.forEach(f=>{if(!CLOUD.fr.cached(f.o))CLOUD.fr.profile(f.o).then(()=>frPaint())});frPaint()})}
@@ -2349,18 +2368,26 @@ function chatOpen(id){const f=S.fr.find(x=>x.id===id);if(!f||f.st!=='ok'||!frOk(
  <div class="cm" id="cm" role="log" aria-live="polite"><p class="mu c">Cargando…</p></div>
  <form class="cin" onsubmit="chatSend(event)"><input id="ci" class="in" maxlength="500" placeholder="Escribe un mensaje" autocomplete="off" enterkeyhint="send" aria-label="Mensaje"><button class="btn" aria-label="Enviar">${ic('send',20)}</button></form>`;
  $('.app').appendChild(o);CLOUD.fr.open(id,l=>{if(!S.chat||S.chat.id!==id)return;S.chat.msgs=l;chatPaint()});setTimeout(()=>{const i=$('#ci');if(i)i.focus()},350)}
-function chatClose(){const o=$('#chat');if(o){o.classList.add('out');setTimeout(()=>o.remove(),200)}S.chat=null;try{CLOUD.fr.close()}catch(e){}if(S.tab==='amigos')soft();else{const h=$('#hd');if(h)h.innerHTML=hdr()}}
+function chatClose(){chSig='';const o=$('#chat');if(o){o.classList.add('out');setTimeout(()=>o.remove(),200)}S.chat=null;try{CLOUD.fr.close()}catch(e){}if(S.tab==='amigos')soft();else{const h=$('#hd');if(h)h.innerHTML=hdr()}}
 function chatPaint(){const c=S.chat,m=$('#cm');if(!c||!m)return;const f=S.fr.find(x=>x.id===c.id);if(f)frSeen(f);
  if(c.msgs===null)return;
  if(!c.msgs.length){m.innerHTML='<p class="mu c" style="margin:auto">Todavía no hay mensajes. Escribe el primero.</p>';return}
+ const sig=c.msgs.map(x=>x.f+'|'+x.t).join('\n');if(sig===chSig){const els=m.querySelectorAll('.mb');c.msgs.forEach((x,i)=>{const el=els[i];if(el&&x.f===myUid()&&!x.tmp)el.setAttribute('onclick',"chatDel('"+x.id+"')")});chLast=c.msgs.length;return}chSig=sig;
  const near=m.scrollHeight-m.scrollTop-m.clientHeight<120||!chLast,me=myUid();let day='',h='';
  c.msgs.forEach((x,i)=>{const d=new Date(x.ts),dk=d.toDateString();if(dk!==day){day=dk;const n=new Date(),y=new Date(n-864e5);h+=`<div class="cday">${dk===n.toDateString()?'Hoy':dk===y.toDateString()?'Ayer':d.toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long'})}</div>`}
   const mine=x.f===me,pv=c.msgs[i-1],grp=pv&&pv.f===x.f&&x.ts-pv.ts<120000;
-  h+=`<div class="mb ${mine?'me':'oth'}${grp?' g':''}${i>=chLast&&chLast?' new':''}"${mine?` onclick="chatDel('${x.id}')"`:''}><span>${esc(x.t)}</span><time>${d.toLocaleTimeString('es',{hour:'numeric',minute:'2-digit'})}</time></div>`});
+  h+=`<div class="mb ${mine?'me':'oth'}${grp?' g':''}${i>=chLast&&chLast?' new':''}"${mine&&!x.tmp?` onclick="chatDel('${x.id}')"`:''}><span>${esc(x.t)}</span><time>${d.toLocaleTimeString('es',{hour:'numeric',minute:'2-digit'})}</time></div>`});
  m.innerHTML=h;chLast=c.msgs.length;if(near)m.scrollTop=m.scrollHeight}
-let chT=0;
+let chT=0,chSig='';
 function chatSend(e){e.preventDefault();const i=$('#ci'),t=(i.value||'').trim();if(!t||!S.chat)return;if(Date.now()-chT<600)return;chT=Date.now();i.value='';
- CLOUD.fr.send(S.chat.id,t).catch(()=>{toast('No se pudo enviar. Revisa tu conexión');i.value=t});i.focus()}
+ const c=S.chat,id=c.id,tid='tmp'+Date.now();buzz(14);const bt=$('.cin .btn');if(bt){bt.classList.remove('fly');void bt.offsetWidth;bt.classList.add('fly')}
+ if(c.msgs){c.msgs=c.msgs.concat([{id:tid,f:myUid(),t,ts:Date.now(),tmp:1}]);chatPaint();const m=$('#cm');if(m)m.scrollTop=m.scrollHeight}
+ CLOUD.fr.send(id,t).catch(()=>{toast('No se pudo enviar. Revisa tu conexión');i.value=t;if(S.chat&&S.chat.id===id&&S.chat.msgs){S.chat.msgs=S.chat.msgs.filter(x=>x.id!==tid);chLast=S.chat.msgs.length;chatPaint()}});i.focus()}
+const buzz=n=>{try{navigator.vibrate&&navigator.vibrate(n)}catch(e){}};
+function coinFly(n){if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;const to=document.querySelector('.hw2');if(!to||!to.animate)return;const r=to.getBoundingClientRect(),tx=r.left+r.width*.3,ty=r.top+r.height/2-13,W=innerWidth,H=innerHeight,k=Math.min(7,Math.max(3,Math.round(n/4)));
+ for(let j=0;j<k;j++){const e=document.createElement('img');e.src='img/lumis.png';e.className='cfly';e.alt='';const sx=W*(.3+Math.random()*.4),sy=H*(.5+Math.random()*.15);e.style.left=sx+'px';e.style.top=sy+'px';document.body.appendChild(e);
+  const a=e.animate([{transform:'translate(0,0) scale(.4)',opacity:0},{transform:`translate(${(Math.random()-.5)*60}px,-50px) scale(1.15)`,opacity:1,offset:.3},{transform:`translate(${tx-sx}px,${ty-sy}px) scale(.6)`,opacity:.9}],{duration:750+j*70,delay:j*70,easing:'cubic-bezier(.5,0,.7,.4)',fill:'both'});
+  a.onfinish=()=>{e.remove();to.classList.remove('bump');void to.offsetWidth;to.classList.add('bump')}}}
 function chatDel(mid){if(!S.chat)return;showSheet(`<h2>¿Eliminar este mensaje?</h2><p class="mu">Se borra para los dos.</p><button class="btn w danger" onclick="chatDelGo('${mid}')">Eliminar</button><button class="btn s w" onclick="cl()">Cancelar</button>`)}
 async function chatDelGo(mid){cl();try{await CLOUD.fr.del(S.chat.id,mid)}catch(e){toast('No se pudo eliminar')}}
 function chatMenu(){const c=S.chat;if(!c)return;const n=esc(frName(c.o));showSheet(`<h2>${n}</h2><button class="btn s w" onclick="chatReport()">Reportar</button><button class="btn s w" onclick="chatBlockAsk()">Bloquear</button><button class="btn s w danger" onclick="chatRemoveAsk()">Eliminar de mis amigos</button>`)}
