@@ -1260,7 +1260,6 @@ function groupScr(){
  if(S.gstep==='created')b=`<h1>¡Listo, ${esc(S.group.name)}!</h1><p class="mu">Comparte el enlace o el código con quien quieras que se una.</p>
   <div class="code">${esc(S.group.code)}</div>
   <button class="btn w" onclick="shareInvite()">Compartir invitación</button>
-  <button class="btn s w" onclick="copyLink()">Copiar enlace</button>
   <button class="btn s w" onclick="showQr()">Mostrar código QR</button>
   <button class="btn s w" onclick="const id=S.group.id,fl=S.invFlow;S.invFlow=0;nextScr();openCap(id);if(fl){S.sub='personas';render()}">Continuar</button>`;
  if(S.gstep==='join')b=`${back}<h1>Únete a una cápsula</h1><label class="lb" for="gc">Código de la cápsula</label>
@@ -2118,6 +2117,7 @@ function rewardInv(m){if(!S.user||!legalOk())return;const me=S.user.uid;let n=0;
  if(n){S.invD=S.invD.slice(-200);S.inv=1;save();setTimeout(()=>{rw(n*10,n*15,{free:true});setTimeout(()=>toast(n>1?n+' personas se unieron a tu cápsula +'+n*15+' Lumis':'Alguien se unió con tu invitación +15 Lumis'),900)},300)}}
 function inviteText(){return 'Te invito a "'+S.group.name+'" en Cápsula Toca este enlace para entrar (o usa el código '+S.group.code+'): '+inviteLink()}
 async function shareInvite(){S.inv=1;save();
+ const Sh=NATIVE&&NP('Share');if(Sh){try{await Sh.share({title:'Cápsula',text:inviteText(),dialogTitle:'Invitar con'});return}catch(e){if(e&&/cancel/i.test(String(e.message||e)))return}}
  if(navigator.share){try{await navigator.share({title:'Cápsula',text:inviteText()});return}catch(e){if(e&&e.name==='AbortError')return}}
  copy(inviteText());soft()}
 function copyLink(){S.inv=1;save();copy(inviteLink());soft()}
@@ -2248,7 +2248,6 @@ function personas(){
   ${L.map(r=>{const pt=presTxt(r.m),own=(r.id==='me'?me:r.id)===S.group.ownerUid;return `<button class="row sp mrow" onclick="memberCard('${esc(r.id)}')" aria-label="Ver perfil de ${esc(r.n)}"><div class="row"><span class="avw">${pAv(r.id,40)}${isOn(r.m)?'<i class="odot"></i>':''}</span><span class="mt"><b>${esc(r.n)}</b><span class="mu">${own?'Administra la cápsula':'Miembro'}${pt?' · '+pt:''}</span></span></div></button>`}).join('')}</div>
  <div class="card"><span class="mu">Código de la cápsula</span><div class="code">${esc(S.group.code)}</div>
   <button class="btn w" onclick="shareInvite()">Compartir invitación</button>
-  <button class="btn s w" onclick="copyLink()">Copiar enlace</button>
   <button class="btn s w" onclick="showQr()">Invitar en persona (QR)</button>
   ${S.group.ownerUid===me?'<button class="btn s w" onclick="renewAsk()">Renovar código</button>':''}
   <p class="mu">Ganas 15 Lumis por cada persona que se una con tu invitación.</p></div>
@@ -2338,7 +2337,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=137;
+const BUILD=138;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
