@@ -1928,12 +1928,13 @@ const qaToday=(solo,g0,off)=>{const g=g0||S.group,t=!solo&&g?g.type:'',B=solo||!
 function qaForm(solo){return `<textarea id="qat" class="in paper" rows="4" maxlength="300" placeholder="Escribe tu respuesta…" oninput="S.qtx=this.value;$('#qab').disabled=!this.value.trim()">${esc(S.qtx||'')}</textarea>
  <button class="btn w" id="qab" onclick="qaSend()" ${S.qtx&&S.qtx.trim()?'':'disabled'}>${solo?'Guardar en mi diario':'Responder'}</button>
  <p class="mu c">${solo?'Tu respuesta se guarda en tu Archivo.':'Cuando respondas, verás lo que contestaron los demás.'}</p>`}
+function qlMine(day){try{const a=S.ql&&S.ql.day===day?S.ql:JSON.parse(localStorage.getItem('capsula_ql')||'null');return a&&a.day===day?a.t:''}catch(e){return''}}
 function triv(){
  const day=dayKey(),q=qaToday(!S.group),g=S.group;
  if(g&&window.CLOUD&&CLOUD.qaOpen)CLOUD.qaOpen(day);
  const st=S.qa&&S.qa.day===day?S.qa:{mine:null,all:null},done=S.qd===day;
  const head=`<button class="bk" onclick="go('${g?'cap':'arc'}')">${ic('back',18)} ${g?esc(g.name):'Mi diario'}</button><div class="spch"><h2>Pregunta del día</h2>${spaceTag()}</div><div class="card c">${g?ic('star',44):pet3('pet3dx',130)}<span class="mu">Hoy para ${g?fm():'ti'}</span><h2 style="margin:6px 0 0">${esc(q)}</h2></div>`;
- if(!g)return head+`<div class="card">${done?'<p class="mu c">Ya la respondiste hoy. Tu respuesta quedó en tu Archivo. Vuelve mañana por otra.</p>':qaForm(true)}</div>`;
+ if(!g)return head+`<div class="card">${done?`<p class="mu c">Guardado en tu diario ✓</p>${qlMine(day)?`<div class="paperbox">${esc(qlMine(day))}</div>`:''}<p class="mu c">Vuelve mañana por otra pregunta.</p>`:qaForm(true)}</div>`;
  if(!st.mine&&!done)return head+`<div class="card">${qaForm(false)}</div>`;
  if(!st.all)return head+`<div class="card"><p class="mu c">${st.mine?'Cargando las respuestas…':'Guardando tu respuesta…'}</p></div>`;
  const me=S.user.uid,l=st.all.slice().sort((a,b)=>(a.uid===me?-1:b.uid===me?1:0)),tot=Object.keys(S.members).length||1;l.splice(0,l.length,...l.filter(a=>!isBlk(a.uid)));
@@ -1941,7 +1942,7 @@ function triv(){
 async function qaSend(){const el=$('#qat'),t=(el?el.value:'').trim().slice(0,300);if(!t)return;
  if(!window.CLOUD||!CLOUD.ready){toast('Sin conexión con tu cuenta. Intenta de nuevo en un momento.');return}
  const day=dayKey(),q=qaToday(!S.group),prev=S.qd,fail=()=>{S.qd=prev;S.qtx=t;toast('Tu respuesta no se guardó. Revisa tu conexión e inténtalo otra vez.');soft()};
- S.qd=day;S.qtx='';S.qaN=(S.qaN||0)+1;track('qa');burst(18);
+ S.qd=day;S.qtx='';S.qaN=(S.qaN||0)+1;track('qa');burst(18);S.ql={day,q,t};try{localStorage.setItem('capsula_ql',JSON.stringify(S.ql))}catch(e){}toast(S.group?'Respuesta enviada':'Guardado en tu diario');
  try{(S.group?CLOUD.qaAnswer(day,t):CLOUD.publish({k:'carta',t:q.slice(0,120),x:{to:'Mi diario',tx:t},by:''})).catch(fail)}catch(e){fail();return}
  rw(3,3)}
 
@@ -2188,10 +2189,10 @@ function perfil(){
  <div class="card"><h3 class="h3i">${pi('candado',28)}Privacidad</h3><label class="chk"><input type="checkbox" ${S.showSeen!==false?'checked':''} onchange="setSeen(this.checked)"> Mostrar cuando estoy activo</label>
  <p class="mu">Si lo apagas, los demás no verán "en línea" ni tu última vez.</p></div>
  <div class="card"><h3 class="h3i">${pi('mascota',28)}Mi mascota</h3><div class="pfp">${pet(S.pet.kind,52)}<input id="pfm" class="in" aria-label="Nombre de tu mascota" maxlength="14" value="${esc(S.pet.name)}" onchange="setPetName(this.value)"></div><p class="mu">Vive en Mi mundo. No aparece dentro de las cápsulas.</p></div>
- <div class="card"><h3 class="h3i">${pi('cofre',28)}Mis datos</h3><p id="sy" class="sy mu${syncOff()||SYNC.pend>0?' w':''}"><i></i><span>${syncTxt()}</span></p>
+ <div class="card"><h3 class="h3i">${pi('libro',28)}Mis datos</h3><p id="sy" class="sy mu${syncOff()||SYNC.pend>0?' w':''}"><i></i><span>${syncTxt()}</span></p>
  <button class="btn s w" onclick="exportMem()">Descargar mis recuerdos</button>
  <p class="mu">Un archivo con todas tus historias (fotos, voz, cartas y recetas) para guardarlo donde quieras.</p></div>
- <div class="card"><h3 class="h3i">${pi('escudo',28)}Cuenta y privacidad</h3>
+ <div class="card"><h3 class="h3i">${pi('ajustes',28)}Cuenta y privacidad</h3>
  <p class="mu"><a href="${LEGAL_URL}terminos.html" target="_blank" rel="noopener">Términos y condiciones</a> · <a href="${LEGAL_URL}privacidad.html" target="_blank" rel="noopener">Privacidad y datos</a> · <a href="${LEGAL_URL}eliminar-cuenta.html" target="_blank" rel="noopener">Eliminar cuenta</a></p>
  ${ADS.real()&&adult()?'<button class="btn s w" onclick="ADS.privacy()">Opciones de privacidad de anuncios</button>':''}
  ${(S.blk||[]).length?`<button class="btn s w" onclick="blkList()">Personas bloqueadas (${S.blk.length})</button>`:''}
@@ -2344,7 +2345,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=141;
+const BUILD=142;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
