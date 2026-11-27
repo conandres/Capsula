@@ -330,6 +330,11 @@ service cloud.firestore {
           && request.resource.data.f == request.auth.uid
           && request.resource.data.t is string && request.resource.data.t.size() >= 1 && request.resource.data.t.size() <= 500
           && request.resource.data.ts == request.time;
+        // Reacciones: cualquiera de los dos puede cambiar solo el campo r (emoji por persona).
+        allow update: if signedIn()
+          && request.auth.uid in get(/databases/$(database)/documents/friends/$(pair)).data.u
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['r'])
+          && (!('r' in request.resource.data) || (request.resource.data.r is map && request.resource.data.r.size() <= 2));
         // Cualquiera de los dos puede borrar mensajes de su chat (así, al eliminar una cuenta se borra todo el chat y no queda nada guardado).
         allow delete: if signedIn() && request.auth.uid in get(/databases/$(database)/documents/friends/$(pair)).data.u;
       }

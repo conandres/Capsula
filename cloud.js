@@ -6,7 +6,7 @@ import { getAuth, onAuthStateChanged, signInWithCredential, GoogleAuthProvider, 
   from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager,
   doc, collection, getDoc, getDocs, setDoc, updateDoc, addDoc, deleteDoc, writeBatch, onSnapshot, query, where, orderBy, limit,
-  serverTimestamp, arrayUnion, arrayRemove, getCountFromServer, terminate, clearIndexedDbPersistence }
+  serverTimestamp, arrayUnion, arrayRemove, getCountFromServer, terminate, clearIndexedDbPersistence, deleteField }
   from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
 const A = window.APP;
@@ -432,7 +432,7 @@ function start() {
     open: (id, cb) => {
       if (chU) chU();
       chU = onSnapshot(query(collection(db, 'friends', id, 'msgs'), orderBy('ts', 'desc'), limit(120)), snap => {
-        cb(snap.docs.map(d => { const x = d.data(); return { id: d.id, f: x.f, t: x.t, ts: x.ts && x.ts.toMillis ? x.ts.toMillis() : Date.now() }; }).reverse());
+        cb(snap.docs.map(d => { const x = d.data(); return { id: d.id, f: x.f, t: x.t, r: x.r || {}, ts: x.ts && x.ts.toMillis ? x.ts.toMillis() : Date.now() }; }).reverse());
       }, () => cb(null));
     },
     close: () => { if (chU) { chU(); chU = null; } },
@@ -444,6 +444,7 @@ function start() {
       await b.commit();
     },
     del: (id, mid) => deleteDoc(doc(db, 'friends', id, 'msgs', mid)),
+    react: (id, mid, e) => updateDoc(doc(db, 'friends', id, 'msgs', mid), { ['r.' + me.uid]: e ? String(e).slice(0, 8) : deleteField() }),
     stop: () => { if (frU) { frU(); frU = null; } if (chU) { chU(); chU = null; } },
     wipe: async uid => {
       try {
