@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sc_escribir">Escribir hoy</string>
+    <string name="sc_escribir_l">Escribir en mi diario</string>
+    <string name="sc_mascota">Mi mascota</string>
+    <string name="sc_mascota_l">Ver a mi mascota</string>
+    <string name="sc_chat">Chat</string>
+    <string name="sc_chat_l">Chatear con mis amigos</string>
+</resources>

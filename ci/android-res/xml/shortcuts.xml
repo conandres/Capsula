@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut android:shortcutId="escribir" android:enabled="true" android:shortcutShortLabel="@string/sc_escribir" android:shortcutLongLabel="@string/sc_escribir_l">
+        <intent android:action="android.intent.action.MAIN" android:targetPackage="io.github.conandres.twa" android:targetClass="io.github.conandres.twa.MainActivity">
+            <extra android:name="go" android:value="escribir" />
+        </intent>
+    </shortcut>
+    <shortcut android:shortcutId="mascota" android:enabled="true" android:shortcutShortLabel="@string/sc_mascota" android:shortcutLongLabel="@string/sc_mascota_l">
+        <intent android:action="android.intent.action.MAIN" android:targetPackage="io.github.conandres.twa" android:targetClass="io.github.conandres.twa.MainActivity">
+            <extra android:name="go" android:value="mascota" />
+        </intent>
+    </shortcut>
+    <shortcut android:shortcutId="chat" android:enabled="true" android:shortcutShortLabel="@string/sc_chat" android:shortcutLongLabel="@string/sc_chat_l">
+        <intent android:action="android.intent.action.MAIN" android:targetPackage="io.github.conandres.twa" android:targetClass="io.github.conandres.twa.MainActivity">
+            <extra android:name="go" android:value="chat" />
+        </intent>
+    </shortcut>
+</shortcuts>

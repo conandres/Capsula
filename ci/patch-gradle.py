@@ -66,6 +66,7 @@ if 'android.intent.action.SEND' not in x:
            '            <category android:name="android.intent.category.DEFAULT"/>\n            <data android:mimeType="image/*"/>\n        </intent-filter>\n'
            '        <intent-filter>\n            <action android:name="android.intent.action.SEND"/>\n'
            '            <category android:name="android.intent.category.DEFAULT"/>\n            <data android:mimeType="text/plain"/>\n        </intent-filter>\n')
+    flt += '        <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts"/>\n'
     x = x.replace('</activity>', flt + '    </activity>', 1)
 if 'USE_BIOMETRIC' not in x:
     x = x.replace('<application', '<uses-permission android:name="android.permission.USE_BIOMETRIC"/>\n    <application', 1)
