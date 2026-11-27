@@ -153,6 +153,7 @@ button.frl{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:
 .mb{max-width:78%;padding:8px 12px 6px;border-radius:18px;line-height:1.35;word-break:break-word;position:relative;margin-top:6px}.mb.g{margin-top:0}
 .mb span{white-space:pre-wrap}.mb time{display:block;font-size:11px;opacity:.65;text-align:right;margin-top:2px}
 .mb.me{align-self:flex-end;background:#6B4CD6;color:#fff;border-bottom-right-radius:6px;cursor:pointer}.mb.oth{align-self:flex-start;background:var(--card);border:1px solid var(--line,#0001);color:var(--tx);border-bottom-left-radius:6px}
+.h3i{display:flex;align-items:center;gap:10px}.h3i .pi{flex:none}.btn .pi{vertical-align:-6px;margin-right:8px}.btn.w .pi{display:inline-block}
 .mb.hasrx{margin-bottom:14px}.mb .rxs{position:absolute;bottom:-13px;display:flex;gap:3px;font-style:normal}.mb.me .rxs{right:8px}.mb.oth .rxs{left:8px}
 .mb .rxs b{font-weight:600;font-size:12px;line-height:1;background:var(--card,#fff);color:var(--tx);border:1px solid var(--line,#0002);border-radius:99px;padding:3px 6px;box-shadow:0 1px 3px #0002;animation:rxpop .3s cubic-bezier(.2,1.5,.4,1)}.mb .rxs b.on{border-color:#6B4CD6;background:#EFEAFF}
 @keyframes rxpop{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
@@ -1120,7 +1121,7 @@ function welcome(){
    `<span class="bk2">${ic('book',52)}</span><div class="sg">${Array.from({length:12},(_,i)=>`<i style="--i:${i}"></i>`).join('')}</div><div class="mq">Con 12 historias se arma vuestro libro</div>`,
    'Todo lo que cuenten se junta en un libro para guardar y compartir con quien más quieras.'],
   ['Tu gente, tu espacio','Privado de verdad',
-   `<span class="ti lkb">${ic('lock',40)}</span><div class="row5">${['A','B','C'].map((c,i)=>`<span class="pav" style="width:46px;height:46px;font-size:19px;--i:${i}">${c}</span>`).join('')}</div><div class="mq">Solo entra quien tú invitas</div>`,
+   `<span class="ti lkb">${pi('candado',44)}</span><div class="row5">${['A','B','C'].map((c,i)=>`<span class="pav" style="width:46px;height:46px;font-size:19px;--i:${i}">${c}</span>`).join('')}</div><div class="mq">Solo entra quien tú invitas</div>`,
    'Tus cápsulas son privadas: solo las ven las personas que invitas con un código. Puedes borrar tu cuenta cuando quieras.']
  ];
  CR.n=cards.length;
@@ -1195,7 +1196,7 @@ async function remApply(){const P=NP('LocalNotifications');if(!P)return false;co
 async function remSet(on,h){const c=remGet();if(on!==null)c.on=!!on;if(h!==null)c.h=+h;try{localStorage.setItem('capsula_rem',JSON.stringify(c))}catch(e){}
  const ok=await remApply();toast(c.on?(ok?'Recordatorio diario activado':'No diste permiso para avisos'):'Recordatorio apagado');render()}
 function remPet(v){const c=remGet();c.pet=!!v;try{localStorage.setItem('capsula_rem',JSON.stringify(c))}catch(e){}remApply().catch(()=>{});toast(v?'Avisos de la mascota activados':'Avisos de la mascota apagados')}
-const remCard=()=>{if(!NATIVE)return'';const c=remGet();return `<div class="card"><h3>Recordatorio diario</h3><label class="chk"><input type="checkbox" ${c.on?'checked':''} onchange="remSet(this.checked,null)"> Avisarme cada día</label>
+const remCard=()=>{if(!NATIVE)return'';const c=remGet();return `<div class="card"><h3 class="h3i">${pi('notificaciones',28)}Recordatorio diario</h3><label class="chk"><input type="checkbox" ${c.on?'checked':''} onchange="remSet(this.checked,null)"> Avisarme cada día</label>
  <label class="lb" for="remh">Hora del aviso</label><select id="remh" class="in" onchange="remSet(null,this.value)">${Array.from({length:17},(_,i)=>i+6).map(h=>`<option value="${h}" ${c.h===h?'selected':''}>${h>12?h-12:h}:00 ${h>=12?'p. m.':'a. m.'}</option>`).join('')}</select>
  <label class="chk"><input type="checkbox" ${c.pet!==false?'checked':''} onchange="remPet(this.checked)"> Avisos de la mascota y de la pregunta del día</label></div>`};
 function gsheet(){
@@ -1254,7 +1255,7 @@ const under13=()=>`<div class="wl" style="justify-content:center;text-align:cent
 function groupScr(){
  const back=`<button class="bk" onclick="S.gstep='pick';render()">${ic('back',18)} Atrás</button>`;let b='';
  if(S.gstep==='pick')b=`${S.petSet?`<button class="bk" onclick="nextScr()">${ic('back',18)} Volver</button>`:''}<h1>Hola, ${esc(S.me.name)}. ¿Con quién compartes?</h1><p class="mu">Una cápsula es un espacio privado para compartir. Máximo 3, una de cada tipo.</p>
-  <button class="opc" onclick="S.gstep='create';render()"><span class="ti">${ic('users',24)}</span><span class="tx"><b>Crear una cápsula</b><span class="mu">Familia, pareja o amigos. Tú invitas con un enlace o QR.</span></span></button>
+  <button class="opc" onclick="S.gstep='create';render()"><span class="ti">${pi('amigos',32)}</span><span class="tx"><b>Crear una cápsula</b><span class="mu">Familia, pareja o amigos. Tú invitas con un enlace o QR.</span></span></button>
   <button class="opc" onclick="S.gstep='join';render()"><span class="ti">${ic('heart',24)}</span><span class="tx"><b>Unirme a una cápsula</b><span class="mu">Si alguien ya creó una, usa su código.</span></span></button>
   ${S.petSet||S.families.length?'':`<button class="lnk" onclick="soloGo()">Empezar solo con mi mascota</button>`}`;
  if(S.gstep==='create')b=`${back}<h1>Crea tu cápsula</h1><label class="lb" id="gtl">¿Con quién juegas?</label>
@@ -1265,8 +1266,8 @@ function groupScr(){
   <button class="btn w" id="mkb" onclick="mk()">Crear cápsula</button>`;
  if(S.gstep==='created')b=`<h1>¡Listo, ${esc(S.group.name)}!</h1><p class="mu">Comparte el enlace o el código con quien quieras que se una.</p>
   <div class="code">${esc(S.group.code)}</div>
-  <button class="btn w" onclick="shareInvite()">Compartir invitación</button>
-  <button class="btn s w" onclick="showQr()">Mostrar código QR</button>
+  <button class="btn w" onclick="shareInvite()">${pi('compartir',24)}Compartir invitación</button>
+  <button class="btn s w" onclick="showQr()">${pi('qr',24)}Mostrar código QR</button>
   <button class="btn s w" onclick="const id=S.group.id,fl=S.invFlow;S.invFlow=0;nextScr();openCap(id);if(fl){S.sub='personas';render()}">Continuar</button>`;
  if(S.gstep==='join')b=`${back}<h1>Únete a una cápsula</h1><label class="lb" for="gc">Código de la cápsula</label>
   <input id="gc" class="in" maxlength="8" placeholder="K7M2QX9P" value="${esc(S.joinCode)}" autocapitalize="characters" autocomplete="off" onkeydown="if(event.key==='Enter')jn()">
@@ -1432,7 +1433,7 @@ function badgesHTML(){const B=[['primera','Primera historia',S.total>0||S.posts.
  return `<div class="card"><h3>Insignias</h3><div class="bd">${B.map(b=>`<div class="${b[2]?'':'lk'}">${pi(b[0],40)}${b[1]}</div>`).join('')}</div></div>`}
 function socCard(){const n=esc(S.pet.name),f0=S.families[0];
  if(!S.families.length)return `<section class="card soc"><div class="row" style="gap:12px;align-items:flex-start"><span class="socic">${ic('caps',26,1.8)}</span><div class="tx"><h3>${n} quiere conocer a tu gente</h3><p class="mu">Tu familia, tus amigos o tu pareja. Crea una cápsula y deja que ${n} los conozca.</p></div></div><button class="btn w" onclick="S.gname='';S.scr='group';S.gstep='create';render()">Crear mi cápsula</button><button class="btn s w" style="margin-top:8px" onclick="S.scr='group';S.gstep='join';render()">Unirme con un código</button></section>`;
- if((S.soc||0)<2)return `<section class="card soc"><div class="row" style="gap:12px;align-items:flex-start"><span class="socic">${ic('users',26,1.8)}</span><div class="tx"><h3>${n} quiere conocer a tu familia, amigos o pareja</h3><p class="mu">Invita a alguien a ${esc(f0.name)}. Ganas Lumis cuando entre.</p></div></div><button class="btn w" onclick="openCap('${esc(f0.id)}');S.sub='personas';render()">Invitar a alguien</button></section>`;
+ if((S.soc||0)<2)return `<section class="card soc"><div class="row" style="gap:12px;align-items:flex-start"><span class="socic">${pi('amigos',34)}</span><div class="tx"><h3>${n} quiere conocer a tu familia, amigos o pareja</h3><p class="mu">Invita a alguien a ${esc(f0.name)}. Ganas Lumis cuando entre.</p></div></div><button class="btn w" onclick="openCap('${esc(f0.id)}');S.sub='personas';render()">Invitar a alguien</button></section>`;
  return `<section class="card soc"><div class="row" style="gap:12px;align-items:center"><span class="socic">${ic('caps',26,1.8)}</span><div class="tx"><h3>${esc(f0.name)}</h3><p class="mu">Lo que cuentas ahí vale más: +50% de Lumis y XP.</p></div><button class="btn" onclick="openCap('${esc(f0.id)}');chooser()">Contar</button></div></section>`}
 function mundo(){
  setTimeout(famReact,900);
@@ -1936,7 +1937,7 @@ function triv(){
  if(!st.mine&&!done)return head+`<div class="card">${qaForm(false)}</div>`;
  if(!st.all)return head+`<div class="card"><p class="mu c">${st.mine?'Cargando las respuestas…':'Guardando tu respuesta…'}</p></div>`;
  const me=S.user.uid,l=st.all.slice().sort((a,b)=>(a.uid===me?-1:b.uid===me?1:0)),tot=Object.keys(S.members).length||1;l.splice(0,l.length,...l.filter(a=>!isBlk(a.uid)));
- return head+`<section class="card"><h3>Respuestas de hoy</h3><span class="mu">${st.all.length} de ${tot} ${tot===1?'persona':'personas'}</span>${l.map(a=>`<div class="qans"><b>${a.uid===me?'Tú':esc(a.name||'Alguien')}</b><p>${esc(a.tx)}</p></div>`).join('')}</section>${st.all.length<2?`<div class="card c"><p class="mu">Aún nadie más ha respondido. ¡Invítalos!</p><button class="btn s w" onclick="shareInvite()">Compartir invitación</button></div>`:''}`}
+ return head+`<section class="card"><h3>Respuestas de hoy</h3><span class="mu">${st.all.length} de ${tot} ${tot===1?'persona':'personas'}</span>${l.map(a=>`<div class="qans"><b>${a.uid===me?'Tú':esc(a.name||'Alguien')}</b><p>${esc(a.tx)}</p></div>`).join('')}</section>${st.all.length<2?`<div class="card c"><p class="mu">Aún nadie más ha respondido. ¡Invítalos!</p><button class="btn s w" onclick="shareInvite()">${pi('compartir',24)}Compartir invitación</button></div>`:''}`}
 async function qaSend(){const el=$('#qat'),t=(el?el.value:'').trim().slice(0,300);if(!t)return;
  if(!window.CLOUD||!CLOUD.ready){toast('Sin conexión con tu cuenta. Intenta de nuevo en un momento.');return}
  const day=dayKey(),q=qaToday(!S.group),prev=S.qd,fail=()=>{S.qd=prev;S.qtx=t;toast('Tu respuesta no se guardó. Revisa tu conexión e inténtalo otra vez.');soft()};
@@ -2030,7 +2031,7 @@ async function lockSet(on){const B=NP('NativeBiometric');if(!B){render();return}
   await B.verifyIdentity({reason:on?'Activar el bloqueo':'Quitar el bloqueo',title:'Mi diario',subtitle:'Confirma que eres tú',useFallback:true});
   try{if(on)localStorage.setItem('capsula_lock','1');else localStorage.removeItem('capsula_lock')}catch(e){}dUn=true;toast(on?'Mi diario ahora está protegido':'Bloqueo quitado');buzz('ok')}
  catch(e){toast('No se cambió el bloqueo')}render()}
-const lockCard=()=>!NATIVE||!NP('NativeBiometric')?'':`<div class="card"><h3>Bloqueo de Mi diario</h3><label class="chk"><input type="checkbox" ${lockOn()?'checked':''} onchange="lockSet(this.checked)"> Pedir huella, rostro o PIN para abrir Mi diario</label><p class="mu">Usa el bloqueo que ya tienes en tu celular.</p></div>`;
+const lockCard=()=>!NATIVE||!NP('NativeBiometric')?'':`<div class="card"><h3 class="h3i">${pi('huella',28)}Bloqueo de Mi diario</h3><label class="chk"><input type="checkbox" ${lockOn()?'checked':''} onchange="lockSet(this.checked)"> Pedir huella, rostro o PIN para abrir Mi diario</label><p class="mu">Usa el bloqueo que ya tienes en tu celular.</p></div>`;
 document.addEventListener('visibilitychange',()=>{if(document.hidden){hideAt=Date.now();return}if(hideAt&&Date.now()-hideAt>30000&&lockOn()){dUn=false;if(S.scr==='main'&&S.tab==='arc'&&!S.group)render()}});
 function arcList(kind){
  const all=S.posts.filter(p=>TY[p.k]&&!isBlk(p.a)),L=kind==='fav'?all.filter(p=>isFav(p.id)):kind?all.filter(p=>p.k===kind):all;
@@ -2182,26 +2183,26 @@ function perfil(){
  return `<div class="spch"><h2>Perfil</h2></div>
  <div class="card"><div class="pfc">${pfAv()}<span class="tx"><b>${esc(S.me.name)}</b><span class="mu" style="overflow-wrap:anywhere">${esc((S.user&&S.user.email)||'')}</span></span></div>
  ${nameForm()}</div>
- <div class="card"><label class="lb" id="thl">Apariencia</label>
+ <div class="card"><label class="lb h3i" id="thl">${pi('tema',28)}Apariencia</label>
  <div class="th" role="radiogroup" aria-labelledby="thl">${THEMES.map(t=>`<button class="thb ${S.theme===t.id?'on':''}" role="radio" aria-checked="${S.theme===t.id}" onclick="setTheme('${t.id}')"><span class="sw" style="background:${t.bg}"><i style="background:${t.pr}"></i></span>${t.n}</button>`).join('')}</div></div>
- <div class="card"><h3>Privacidad</h3><label class="chk"><input type="checkbox" ${S.showSeen!==false?'checked':''} onchange="setSeen(this.checked)"> Mostrar cuando estoy activo</label>
+ <div class="card"><h3 class="h3i">${pi('candado',28)}Privacidad</h3><label class="chk"><input type="checkbox" ${S.showSeen!==false?'checked':''} onchange="setSeen(this.checked)"> Mostrar cuando estoy activo</label>
  <p class="mu">Si lo apagas, los demás no verán "en línea" ni tu última vez.</p></div>
- <div class="card"><h3>Mi mascota</h3><div class="pfp">${pet(S.pet.kind,52)}<input id="pfm" class="in" aria-label="Nombre de tu mascota" maxlength="14" value="${esc(S.pet.name)}" onchange="setPetName(this.value)"></div><p class="mu">Vive en Mi mundo. No aparece dentro de las cápsulas.</p></div>
- <div class="card"><h3>Mis datos</h3><p id="sy" class="sy mu${syncOff()||SYNC.pend>0?' w':''}"><i></i><span>${syncTxt()}</span></p>
+ <div class="card"><h3 class="h3i">${pi('mascota',28)}Mi mascota</h3><div class="pfp">${pet(S.pet.kind,52)}<input id="pfm" class="in" aria-label="Nombre de tu mascota" maxlength="14" value="${esc(S.pet.name)}" onchange="setPetName(this.value)"></div><p class="mu">Vive en Mi mundo. No aparece dentro de las cápsulas.</p></div>
+ <div class="card"><h3 class="h3i">${pi('cofre',28)}Mis datos</h3><p id="sy" class="sy mu${syncOff()||SYNC.pend>0?' w':''}"><i></i><span>${syncTxt()}</span></p>
  <button class="btn s w" onclick="exportMem()">Descargar mis recuerdos</button>
  <p class="mu">Un archivo con todas tus historias (fotos, voz, cartas y recetas) para guardarlo donde quieras.</p></div>
- <div class="card"><h3>Cuenta y privacidad</h3>
+ <div class="card"><h3 class="h3i">${pi('escudo',28)}Cuenta y privacidad</h3>
  <p class="mu"><a href="${LEGAL_URL}terminos.html" target="_blank" rel="noopener">Términos y condiciones</a> · <a href="${LEGAL_URL}privacidad.html" target="_blank" rel="noopener">Privacidad y datos</a> · <a href="${LEGAL_URL}eliminar-cuenta.html" target="_blank" rel="noopener">Eliminar cuenta</a></p>
  ${ADS.real()&&adult()?'<button class="btn s w" onclick="ADS.privacy()">Opciones de privacidad de anuncios</button>':''}
  ${(S.blk||[]).length?`<button class="btn s w" onclick="blkList()">Personas bloqueadas (${S.blk.length})</button>`:''}
- <button class="btn s w" onclick="delAsk()" style="color:#B3261E">Eliminar mi cuenta y mis datos</button></div>
+ <button class="btn s w" onclick="delAsk()" style="color:#B3261E">${pi('borrar',22)}Eliminar mi cuenta y mis datos</button></div>
  ${plusCard()}
  <div class="card"><div class="row sp"><h3>Actividad</h3><button class="lnk" onclick="go('act')">Ver todo</button></div>${recentHTML(3)||''}</div>
  ${lockCard()}
  ${remCard()}
  ${guideCard()}
  ${admCard()}
- <button class="btn s w" onclick="logout()">Cerrar sesión</button>
+ <button class="btn s w" onclick="logout()">${pi('salir',22)}Cerrar sesión</button>
  <p class="mu c" onclick="admTap()" style="user-select:none;padding:8px">Cápsula · versión 21</p>`}
 let admN=0;
 const admCard=()=>S.adm?admPlus()+admCard0():'';
@@ -2219,7 +2220,7 @@ async function admLoad(){const e=$('#adm');if(!e)return;admRep();admBuy();
  catch(x){e.textContent='No se pudo leer. Revisa que publicaste las reglas nuevas y que entraste con la cuenta de administrador.'}}
 setInterval(()=>{if(S.scr==='main'&&S.tab==='perfil'&&S.adm)admLoad()},30000);
 let RA=null;
-function delAsk(){RA=null;showSheet(`<h2>Eliminar mi cuenta</h2><p class="mu">Se borrarán para siempre: tu perfil, tu mascota, tu diario y archivo personal, y lo que aportaste en tus cápsulas. <b>No se puede deshacer.</b></p>
+function delAsk(){RA=null;showSheet(`<div class="c">${pi('aviso',56)}</div><h2>Eliminar mi cuenta</h2><p class="mu">Se borrarán para siempre: tu perfil, tu mascota, tu diario y archivo personal, y lo que aportaste en tus cápsulas. <b>No se puede deshacer.</b></p>
  <p class="mu">Lo que otras personas escribieron en tus cápsulas no se toca. Si eres quien creó una cápsula, esta seguirá existiendo para los demás.</p>
  <p class="mu">Si quieres, antes descarga tus recuerdos (Perfil → Mis datos).</p>
  <label class="lb" for="delt">Escribe ELIMINAR para continuar</label><input id="delt" class="in" autocomplete="off" oninput="delChk()">
@@ -2253,8 +2254,8 @@ function personas(){
  return `<div class="card"><h3>Personas</h3><span class="mu">${L.length} ${L.length>1?'personas':'persona'} en la cápsula</span>
   ${L.map(r=>{const pt=presTxt(r.m),own=(r.id==='me'?me:r.id)===S.group.ownerUid;return `<button class="row sp mrow" onclick="memberCard('${esc(r.id)}')" aria-label="Ver perfil de ${esc(r.n)}"><div class="row"><span class="avw">${pAv(r.id,40)}${isOn(r.m)?'<i class="odot"></i>':''}</span><span class="mt"><b>${esc(r.n)}</b><span class="mu">${own?'Administra la cápsula':'Miembro'}${pt?' · '+pt:''}</span></span></div></button>`}).join('')}</div>
  <div class="card"><span class="mu">Código de la cápsula</span><div class="code">${esc(S.group.code)}</div>
-  <button class="btn w" onclick="shareInvite()">Compartir invitación</button>
-  <button class="btn s w" onclick="showQr()">Invitar en persona (QR)</button>
+  <button class="btn w" onclick="shareInvite()">${pi('compartir',24)}Compartir invitación</button>
+  <button class="btn s w" onclick="showQr()">${pi('qr',24)}Invitar en persona (QR)</button>
   ${S.group.ownerUid===me?'<button class="btn s w" onclick="renewAsk()">Renovar código</button>':''}
   <p class="mu">Ganas 15 Lumis por cada persona que se una con tu invitación.</p></div>
  ${S.group.ownerUid===me?`<div class="card"><h3>Portada de la cápsula</h3><p class="mu">Una foto que verán todas las personas de la cápsula.</p><button class="btn s w" onclick="coverPick()">${ic('image',18)} ${S.group.cover?'Cambiar portada':'Poner portada'}</button>${S.group.cover?`<button class="btn s w" onclick="coverSet('')">Quitar portada</button>`:''}</div>`:''}
@@ -2296,7 +2297,7 @@ function cap(){
 function act(){
  const rc=recentHTML(10);
  return `<div class="spch"><h2>Actividad</h2></div>
- ${rc?`<span class="lab">${S.group?esc(S.group.name):'Mi diario'}</span>${rc}`:`<div class="card c">${ic('bell',44)}<h3>Todo al día</h3><p class="mu">Aquí verás las cartas, respuestas e invitaciones de tus cápsulas.</p></div>`}
+ ${rc?`<span class="lab">${S.group?esc(S.group.name):'Mi diario'}</span>${rc}`:`<div class="card c">${pi('listo',56)}<h3>Todo al día</h3><p class="mu">Aquí verás las cartas, respuestas e invitaciones de tus cápsulas.</p></div>`}
  <div class="card"><h3>Tu mundo</h3><p class="mu">${LI} ${S.lm||0} Lumis · ${XI} nivel ${Math.floor(S.xp/100)+1} · ${S.streak?'racha de '+S.streak+(S.streak>1?' días':' día'):'sin racha todavía'}</p></div>
  <p class="mu c">Por ahora ves la actividad de la cápsula abierta. Los avisos al teléfono llegarán más adelante.</p>`}
 /* ---------- mini guías (una para el juego, otra para las cápsulas; se ven la primera vez y se reabren desde Perfil) ---------- */
@@ -2328,7 +2329,7 @@ function guideOpen(k,i){const g=GUIDES[k];if(!g)return;i=i||0;try{localStorage.s
  nubiSheet({c:g.c,fly:i===0,k:g.k+' · '+(i+1)+' de '+g.s.length,ic:st[0],t:st[1],x:st[2],dots:`<div class="obs gs" aria-hidden="true">${g.s.map((_,j)=>`<i class="${j<=i?'on':''}"></i>`).join('')}</div>`,
   extra:(st[3]?`<button class="btn s w" onclick="cl();${st[3][1]}">${st[3][0]}</button>`:'')+`<div class="row" style="gap:8px;width:100%">${i?`<button class="btn s" style="flex:1" onclick="guideOpen('${k}',${i-1})">Atrás</button>`:`<button class="btn s" style="flex:1" onclick="cl()">Saltar</button>`}<button class="btn" style="flex:2" onclick="${last?'cl()':`guideOpen('${k}',${i+1})`}">${last?'Entendido':'Siguiente'}</button></div>`})}
 function guideAuto(k){if(S.scr!=='main'||gSeen(k)||!legalOk())return;setTimeout(()=>{if(S.scr!=='main'||gSeen(k)||$('#sh.open')||$('.lvup'))return;if(k==='mundo'&&S.tab!=='mundo')return;if(k==='cap'&&S.tab!=='cap')return;guideOpen(k,0)},900)}
-const guideCard=()=>`<div class="card"><h3>Ayuda</h3><span class="mu">Repasa cómo funciona cada parte.</span><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn s" onclick="guideOpen('mundo',0)">Guía de Mi mascota</button><button class="btn s" onclick="guideOpen('cap',0)">Guía de las cápsulas</button><button class="btn s" onclick="guideOpen('amig',0)">Guía de amigos</button></div></div>`;
+const guideCard=()=>`<div class="card"><h3 class="h3i">${pi('ayuda',28)}Ayuda</h3><span class="mu">Repasa cómo funciona cada parte.</span><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn s" onclick="guideOpen('mundo',0)">Guía de Mi mascota</button><button class="btn s" onclick="guideOpen('cap',0)">Guía de las cápsulas</button><button class="btn s" onclick="guideOpen('amig',0)">Guía de amigos</button></div></div>`;
 /* ---------- favoritas (solo las ves tú) ---------- */
 const isFav=id=>(S.favs||[]).includes(id);
 function favSet(id){S.favs=S.favs||[];const i=S.favs.indexOf(id);if(i>=0)S.favs.splice(i,1);else{S.favs.push(id);if(S.favs.length>300)S.favs.shift()}save();soft()}
@@ -2343,7 +2344,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=140;
+const BUILD=141;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
@@ -2477,7 +2478,7 @@ function compose(k){
  const ttl=ph=>`<label class="lb" for="ttl">Título</label><input id="ttl" class="in" maxlength="60" placeholder="${ph}" oninput="chk()">`;
  const B={
   voz:`<div id="vb">${voz()}</div>`,
-  foto:`${NATIVE&&NP('Camera')?`<button class="btn w" onclick="camShot()" style="margin-bottom:8px">${ic('camera',20)} Tomar foto ahora</button>`:''}<label class="drop" for="ph-f"><span class="ti">${ic('camera',24)}</span><b>${NATIVE&&NP('Camera')?'O elige una de tu galería':'Elegir una foto'}</b><span class="mu">${NATIVE&&NP('Camera')?'Fotos que ya tienes':'De tu galería o de la cámara'}</span></label><input id="ph-f" type="file" accept="image/*" hidden onchange="pick(this,'img')"><img id="pv" class="pv" alt="Vista previa de tu foto" hidden>${ttl('Ponle un nombre al recuerdo')}<label class="lb" for="cap">¿Qué pasó ahí?</label><textarea id="cap" class="in tall" rows="6" maxlength="600" placeholder="Cuenta quiénes salen, dónde fue y qué recuerdas de ese día…" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,360)+'px'"></textarea>${go}`,
+  foto:`${NATIVE&&NP('Camera')?`<button class="btn w" onclick="camShot()" style="margin-bottom:8px">${pi('camara',26)}Tomar foto ahora</button>`:''}<label class="drop" for="ph-f"><span class="ti">${pi('camara',36)}</span><b>${NATIVE&&NP('Camera')?'O elige una de tu galería':'Elegir una foto'}</b><span class="mu">${NATIVE&&NP('Camera')?'Fotos que ya tienes':'De tu galería o de la cámara'}</span></label><input id="ph-f" type="file" accept="image/*" hidden onchange="pick(this,'img')"><img id="pv" class="pv" alt="Vista previa de tu foto" hidden>${ttl('Ponle un nombre al recuerdo')}<label class="lb" for="cap">¿Qué pasó ahí?</label><textarea id="cap" class="in tall" rows="6" maxlength="600" placeholder="Cuenta quiénes salen, dónde fue y qué recuerdas de ese día…" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,360)+'px'"></textarea>${go}`,
   carta:`<label class="lb" for="to">Para</label><input id="to" class="in" maxlength="40" placeholder="${toDef()}"><label class="lb" for="tx">Tu carta</label><textarea id="tx" class="in paper" rows="7" maxlength="800" placeholder="Querido(a)…" oninput="chk()"></textarea><p id="cth" class="mu" style="display:none">Escribe al menos 10 letras para poder guardarla.</p>${go}`,
   dibujo:`<canvas id="cv" class="cv" width="600" height="440" aria-label="Lienzo para dibujar"></canvas><div class="tools"><div class="row" style="gap:8px">${[['#ff8dbb','Rosa'],['#c43d7a','Fucsia'],['#ffb1d0','Rosa pastel'],['#7ccfae','Verde'],['#7fb8f5','Azul'],['#4a2336','Ciruela'],['#ffffff','Borrador']].map((c,i)=>`<button class="swb ${i?'':'on'}" style="background:${c[0]}" data-c="${c[0]}" onclick="setCol(this)" aria-label="${c[1]}"></button>`).join('')}</div><div class="row" style="gap:8px">${[4,8,16].map((s,i)=>`<button class="szb ${i===1?'on':''}" onclick="setSz(this,${s})" aria-label="Grosor ${s}"><i style="width:${s+2}px;height:${s+2}px"></i></button>`).join('')}<button class="btn s" onclick="clr()">Borrar todo</button></div></div>${ttl('Ponle un nombre a tu dibujo')}${go}`,
   video:`<label class="drop" for="vd-f"><span class="ti">${ic('video',24)}</span><b>Elegir o grabar un video</b><span class="mu">Hasta 60 segundos</span></label><input id="vd-f" type="file" accept="video/*" hidden onchange="pick(this,'vid')"><video id="pv" class="pv" controls playsinline hidden></video><p class="err" id="err"></p>${ttl('Ponle un nombre a tu video')}<label class="lb" for="cap">¿Qué cuenta el video?</label><textarea id="cap" class="in" rows="4" maxlength="600" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,360)+'px'"></textarea>${go}`,
