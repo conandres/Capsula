@@ -661,7 +661,7 @@ nav button.on::after{display:none!important}
 .obt{display:flex;align-items:center;gap:14px;padding:4px max(18px,env(safe-area-inset-right,0px)) 0 max(18px,env(safe-area-inset-left,0px))}
 .obs{flex:1;display:flex;gap:5px}.obs i{flex:1;height:4px;border-radius:4px;background:var(--tint-2);transition:background .3s}.obs i.on{background:var(--pd)}
 .skip{border:0;background:none;color:var(--mu);font:inherit;font-weight:700;font-size:15px;padding:8px 2px;cursor:pointer;flex:none}
-.ob .cr{min-height:0}
+.ob .cr{min-height:0;overflow-x:hidden;touch-action:pan-y}
 .ob .ct{background:none;border:0;border-radius:0;padding:14px 8px 0;align-items:center;text-align:center;gap:10px;overflow:visible;justify-content:flex-start}
 .ob .ct::before{display:none}
 .obh{font-size:30px;line-height:1.1;font-weight:800;letter-spacing:-.03em;text-wrap:balance;margin:4px 0 0;font-family:var(--f)}
@@ -1108,37 +1108,40 @@ function welcome(){
  const O=['gato','perro','conejo','oso'];
  const hearts=[['12%','0s'],['46%','.9s'],['78%','1.7s']].map(h=>`<span class="hh" style="left:${h[0]};--d:${h[1]}">${ic('heart',22)}</span>`).join('');
  const cards=[
-  ['Tu mascota te espera','Crece contigo',
+  ['Conoce a tu mascota','Vive en Mi mundo',
    `<div class="hz"><span class="bigpet">${pet('nube',150)}</span>${hearts}</div><div class="row5">${O.map((k,i)=>`<span class="pw" style="--i:${i}">${pet(k,56)}</span>`).join('')}</div><div class="bar" style="max-width:260px"><i style="width:60%"></i></div>`,
-   'Crece con cada historia que cuentas, te pregunta cómo te fue y te hace compañía todos los días.'],
-  ['Cuenta y gana','Elige cómo contarlo',
-   `<div class="mg">${Object.entries(TY).filter(([k])=>k!=='video').map(([k,v],i)=>`<span class="ti" style="--i:${i}">${ic(v.i,28)}</span>`).join('')}</div><div class="mq">Voz, foto, carta, dibujo o receta</div>`,
-   'Cuéntalo con tu voz, una foto, una carta, un dibujo o una receta. Como te salga mejor.'],
-  ['Una pregunta al día','Respondan juntos',
+   'Es tu mascota 3D. Le das caricias, comida, baño y sueño, y la mandas de expedición. Cuanto más la cuidas y más cuentas, más crece.'],
+  ['Guarda tus recuerdos','Voz, foto, carta, dibujo o receta',
+   `<div class="mg">${Object.entries(TY).filter(([k])=>k!=='video').map(([k,v],i)=>`<span class="ti" style="--i:${i}">${ic(v.i,28)}</span>`).join('')}</div><div class="mq">Tu diario es solo tuyo</div>`,
+   'Cuenta lo que vives como te salga mejor. Puedes guardarlo en tu diario privado o compartirlo en una cápsula con tu familia, tu pareja o tus amigos.'],
+  ['Una pregunta al día','Solo o en grupo',
    `<div class="mq">“¿Qué comida te recuerda a tu infancia?”</div><div class="mo o1">Ana: el arroz con leche</div><div class="mo o2">Beto: las arepas de la abuela</div><div class="mo o3">Tú: …</div>`,
-   'Cada día hay una pregunta nueva. Respondes y ves lo que contestó cada persona. Solo o en grupo, ganas Lumis y crecimiento.'],
+   'Cada día hay una pregunta nueva. En tu diario respondes tú; en una cápsula ves lo que contestó cada persona cuando respondes la tuya.'],
+  ['Gana Lumis y racha','Y gástalos en tu mascota',
+   `<div class="row5" style="gap:18px;align-items:center"><span>${LI.replace('class="ci"','class="ci" style="width:64px;height:64px"')}</span><span>${XI.replace('class="ci"','class="ci" style="width:64px;height:64px"')}</span></div><div class="mq">Lumis para la tienda · XP para crecer</div>`,
+   'Ganas Lumis y XP al contar historias, cuidar a tu mascota, abrir el cofre y cumplir misiones. Si cuentas algo cada día sumas racha, y un escudo la protege si fallas.'],
   ['Armen su libro','12 historias y listo',
    `<span class="bk2">${ic('book',52)}</span><div class="sg">${Array.from({length:12},(_,i)=>`<i style="--i:${i}"></i>`).join('')}</div><div class="mq">Con 12 historias se arma vuestro libro</div>`,
-   'Todo lo que cuenten se junta en un libro para guardar y compartir con quien más quieras.'],
+   'Todo lo que cuenten en una cápsula se junta en un libro para guardar y compartir con quien más quieras.'],
   ['Tu gente, tu espacio','Privado de verdad',
    `<span class="ti lkb">${pi('candado',44)}</span><div class="row5">${['A','B','C'].map((c,i)=>`<span class="pav" style="width:46px;height:46px;font-size:19px;--i:${i}">${c}</span>`).join('')}</div><div class="mq">Solo entra quien tú invitas</div>`,
-   'Tus cápsulas son privadas: solo las ven las personas que invitas con un código. Puedes borrar tu cuenta cuando quieras.']
+   'Tus cápsulas son privadas: solo las ven quienes invitas con un código. Tu diario se puede bloquear con tu huella. Puedes borrar tu cuenta cuando quieras.']
  ];
  CR.n=cards.length;
  return `<div class="wl ob">
-  <div class="obt"><div class="obs" id="obs" aria-hidden="true">${cards.map((_,k)=>`<i class="${k?'':'on'}"></i>`).join('')}</div><button class="skip" id="skp" onclick="CR.go(CR.n-1)">Saltar</button></div>
+  <div class="obt"><div class="obs" id="obs" aria-hidden="true">${cards.map((_,k)=>`<i class="${k?'':'on'}"></i>`).join('')}</div></div>
   <div class="cr" id="cr" tabindex="0" aria-label="Bienvenida a Cápsula">${cards.map((c,k)=>`<div class="ct${k?'':' act'}"><h1 class="obh">${c[0]}</h1><p class="mu obp">${c[3]}</p><div class="ill" aria-label="${esc(c[1])}">${c[2]}</div></div>`).join('')}</div>
  </div>
- <div class="cta" data-last="0"><button class="btn w nx" onclick="CR.next()">Siguiente →</button><button class="lnk nx" style="align-self:center;padding:6px" onclick="gsheet()">Ya tengo cuenta</button><button class="gbtn gx" onclick="gsheet()">${GLOGO} Continuar con Google</button><p class="mu c gx">Para ti solo, en pareja, con amigos o en familia.</p></div>`}
-const CR={t:null,i:0,n:5,ms:3000,hold:0};
+ <div class="cta" data-last="0"><button class="btn w nx" id="crn" onclick="CR.next()" disabled>Siguiente →</button><button class="lnk nx" style="align-self:center;padding:6px" onclick="gsheet()">Ya tengo cuenta</button><button class="gbtn gx" id="crg" onclick="gsheet()" disabled>${GLOGO} Continuar con Google</button><p class="mu c gx">Para ti solo, en pareja, con amigos o en familia.</p></div>`}
+const CR={t:null,i:0,n:6,ms:3000,hold:0,rd:8};
 function bindCr(){const c=$('#cr');if(!c)return;CR.i=0;
  const w=()=>c.firstElementChild.offsetWidth+12,RM=()=>matchMedia('(prefers-reduced-motion:reduce)').matches;
  function set(i,scroll){CR.i=i;[...c.children].forEach((e,j)=>e.classList.toggle('act',j===i));
   document.querySelectorAll('#obs i').forEach((b,j)=>b.classList.toggle('on',j<=i));
-  const cta=$('.cta');if(cta)cta.dataset.last=i===CR.n-1?'1':'0';const sk=$('#skp');if(sk)sk.style.visibility=i===CR.n-1?'hidden':'visible';
-  if(scroll)c.scrollTo({left:i*w(),behavior:RM()?'auto':'smooth'})}
+  const cta=$('.cta');if(cta)cta.dataset.last=i===CR.n-1?'1':'0';
+  if(scroll)c.scrollTo({left:i*w(),behavior:RM()?'auto':'smooth'});
+  clearInterval(CR.t);let left=CR.rd;const nb=$('#crn'),gb=$('#crg'),tick=()=>{const last=i===CR.n-1;if(nb){nb.disabled=left>0;nb.textContent=left>0?'Lee con calma… '+left:'Siguiente →'}if(gb)gb.disabled=left>0;if(left<=0)clearInterval(CR.t);left--};tick();CR.t=setInterval(()=>{if($('#crn')||$('#crg'))tick();else clearInterval(CR.t)},1000)}
  CR.go=i=>set(Math.max(0,Math.min(CR.n-1,i)),true);CR.next=()=>CR.go(CR.i+1);
- c.addEventListener('scroll',()=>{const i=Math.max(0,Math.min(CR.n-1,Math.round(c.scrollLeft/w())));if(i!==CR.i)set(i,false)},{passive:true});
  set(0,false)}
 
 const CFG=()=>window.CAPSULA_CONFIG||{};
@@ -1184,14 +1187,13 @@ async function remApply(){const P=NP('LocalNotifications');if(!P)return false;co
  if(!c.on)return true;
  let pr=await P.checkPermissions().catch(()=>({display:'prompt'}));if(pr.display!=='granted')pr=await P.requestPermissions();
  if(pr.display!=='granted')return false;
- const now=new Date(),list=[];for(let k=0;k<14;k++){const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+k,c.h,0,0);if(d<=now)continue;
+ const now=new Date(),list=[];for(let k=0;k<14;k++){const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()+k,c.h,0,0);if(d<=now)continue;if(k===0&&(S.qd===dayKey()||S.last===today()))continue;
   const x=remText(k);list.push({id:100+k,title:x.title,body:x.body,largeBody:x.body,schedule:{at:d,allowWhileIdle:true}})}
  /* avisos inteligentes (máx. 2 al día, entre 9 a. m. y 9 p. m.) */
- if(c.pet!==false){const win=d=>{const h=d.getHours();if(h<9)d.setHours(9,0,0,0);else if(h>=21){d.setDate(d.getDate()+1);d.setHours(9,0,0,0)}return d},nm=(S.pet&&S.pet.name)||'Tu mascota';
+ if(c.pet!==false){const win=d=>{const h=d.getHours();if(h<9)d.setHours(9,0,0,0);else if(h>=21){d.setDate(d.getDate()+1);d.setHours(9,0,0,0)}if(c.on){const dt=new Date(d.getFullYear(),d.getMonth(),d.getDate(),c.h,0,0);if(Math.abs(d-dt)<2*H){d=new Date(dt.getTime()+2*H);if(d.getHours()>=21||d.getHours()<9)d=new Date(dt.getTime()-2*H)}}return d},nm=(S.pet&&S.pet.name)||'Tu mascota';
   const away=[S.pt].concat((S.others||[]).map(o=>o.pt)).filter(q=>q&&q.ex&&!q.ex.done&&q.ex.end>Date.now()).sort((a,b)=>a.ex.end-b.ex.end)[0],e=away&&away.ex;if(e)list.push({id:3,title:'Tu mascota volvió de su expedición',body:'Trae una postal y una pregunta para ti.',schedule:{at:win(new Date(e.end+60000)),allowWhileIdle:true}});
   list.push({id:4,title:nm+' te extraña',body:'Tiene hambre y quiere jugar un rato contigo.',schedule:{at:win(new Date(Date.now()+8*H)),allowWhileIdle:true}});
-  if(S.streak>0&&S.last!==today()){const d=new Date();d.setHours(19,30,0,0);if(d>new Date())list.push({id:5,title:'Tu racha de '+S.streak+' día'+(S.streak>1?'s':'')+' está en peligro',body:'Cuenta una historia hoy para no perderla.',schedule:{at:d,allowWhileIdle:true}})}}
-  if(c.pet!==false&&S.families.length&&S.qd!==dayKey()){const d=new Date();d.setHours(20,0,0,0);if(d<=new Date())d.setDate(d.getDate()+1);list.push({id:6,title:'Ya llegó la pregunta de hoy',body:'Respóndela y mira qué contestó tu familia.',schedule:{at:d,allowWhileIdle:true}})}
+  if(S.streak>0&&S.last!==today()){const d=win(new Date(new Date().setHours(19,30,0,0)));if(d>new Date())list.push({id:5,title:'Tu racha de '+S.streak+' día'+(S.streak>1?'s':'')+' está en peligro',body:'Cuenta una historia hoy para no perderla.',schedule:{at:d,allowWhileIdle:true}})}}
  if(list.length)await P.schedule({notifications:list});return true}
 async function remSet(on,h){const c=remGet();if(on!==null)c.on=!!on;if(h!==null)c.h=+h;try{localStorage.setItem('capsula_rem',JSON.stringify(c))}catch(e){}
  const ok=await remApply();toast(c.on?(ok?'Recordatorio diario activado':'No diste permiso para avisos'):'Recordatorio apagado');render()}
@@ -2345,7 +2347,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=143;
+const BUILD=144;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
