@@ -47,8 +47,8 @@ function start() {
   const pick = (id, d) => ({ id, name: d.name || 'Familia', code: d.code || '', ownerUid: d.ownerUid || '', type: TYPES.includes(d.type) ? d.type : 'familia', plan: d.plan === 'plus' ? 'plus' : 'free', cover: typeof d.cover === 'string' && d.cover.length <= 100000 && SAFE_COVER.test(d.cover) ? d.cover : '' });
 
   /* ---------- estado de guardado: cuántas escrituras esperan confirmación de la nube ---------- */
-  let pend = 0;
-  const notify = () => { try { A.sync && A.sync({ pend }); } catch (e) {} };
+  let pend = 0, errP = false;
+  const notify = () => { try { A.sync && A.sync({ pend, err: errP }); } catch (e) {} };
   const track = p => { pend++; notify(); Promise.resolve(p).catch(() => {}).then(() => { pend--; notify(); }); return p; };
 
   /* ---------- guardado del progreso personal (con espera para no escribir de más) ---------- */
@@ -68,8 +68,8 @@ function start() {
       lastP = ph;
       const np = A.nameP && A.nameP();
       track(setDoc(userRef(), { ...p, email: me.email, photo: me.photo, updatedAt: serverTimestamp(), ...(np ? { nameAt: serverTimestamp() } : {}) }, { merge: true })
-        .then(() => { cloudLm = +p.lm || 0; cloudXp = +p.xp || 0; fails = 0; if (np && A.nameP) A.nameP(false); if (more) { clearTimeout(timer); timer = setTimeout(() => flush(false), 1200); } })
-        .catch(e => { lastP = ''; console.warn('No se guardó el progreso', e); if (fails++ < 6) { clearTimeout(timer); timer = setTimeout(() => flush(false), 8000 * fails); } }));
+        .then(() => { cloudLm = +p.lm || 0; cloudXp = +p.xp || 0; fails = 0; if (errP) { errP = false; notify(); } if (np && A.nameP) A.nameP(false); if (more) { clearTimeout(timer); timer = setTimeout(() => flush(false), 1200); } })
+        .catch(e => { lastP = ''; console.warn('No se guardó el progreso', e); errP = true; notify(); if (fails++ < 6) { clearTimeout(timer); timer = setTimeout(() => flush(false), 8000 * fails); } }));
     }
     const eh = [p.streak, (p.wear || []).join(','), p.total || 0, p.showSeen !== false].join('|');
     if (force || eh !== lastE) { lastE = eh; pushExtra(false); }

@@ -394,6 +394,9 @@ textarea.in{resize:vertical;line-height:1.45;min-height:132px;padding-top:12px}t
 .fl.hop{animation:hop .6s ease-out}
 @keyframes hop{0%{transform:none}25%{transform:translateY(-34px) scale(.92,1.1)}50%{transform:translateY(0) scale(1.15,.85)}70%{transform:translateY(-12px)}100%{transform:none}}
 .diag{white-space:pre-wrap;background:var(--soft);border-radius:14px;padding:12px;font-size:13px;line-height:1.5;margin:0 0 12px}
+.hw{background:linear-gradient(135deg,#7B5CFF,#FF5CAA)!important;color:#fff;box-shadow:0 10px 26px rgba(123,92,255,.3)}.card.hw h2,.card.hw .mu,.card.hw p{color:#fff!important}.card.hw .mu{opacity:.94}.card.hw .btn{background:#fff!important;color:#4A2FB0!important;box-shadow:none!important}
+.wrc{background:linear-gradient(135deg,#2F9BFF,#7B5CFF)!important;color:#fff;box-shadow:0 8px 22px rgba(47,155,255,.28)}.card.wrc .mu,.card.wrc b{color:#fff!important}.card.wrc .btn{background:#fff!important;color:#4A2FB0!important;box-shadow:none!important}
+.chestc{background:linear-gradient(135deg,#FFB800,#FF7A3D)!important;color:#fff;box-shadow:0 8px 22px rgba(255,140,60,.3)}.card.chestc h3{color:#fff!important}.card.chestc .btn{background:#fff!important;color:#C2410C!important;box-shadow:none!important}
 .qcard{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:0;border-radius:26px;padding:18px;color:#fff;font:inherit;cursor:pointer;position:relative;overflow:hidden;background:linear-gradient(135deg,#FF9A3D,#FF5C7A);box-shadow:0 8px 22px rgba(255,110,90,.28)}
 .qcard.t-pareja{background:linear-gradient(135deg,#FF5C8A,#C23B8F);box-shadow:0 8px 22px rgba(194,59,143,.3)}.qcard.t-amigos{background:linear-gradient(135deg,#2F9BFF,#18C4A8);box-shadow:0 8px 22px rgba(47,155,255,.3)}
 .qcard::after{content:"";position:absolute;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.14);right:-40px;top:-50px}
@@ -1477,7 +1480,7 @@ function mBody(){const ms=S.ms||'cuidar';
  if(ms==='tienda')return `${petShopHTML()}${shopHTML()}`;
  if(ms==='armario')return closetHTML();
  return `${socCard()}
- ${S.chest===today()?`<section class="card c"><span class="mu">Cofre de hoy abierto. Vuelve mañana por otro</span></section>`:`<section class="card c hero"><div class="chest">${pi('cofre',64)}</div><h3>¡${esc(S.pet.name)} te trajo un regalo!</h3><button class="btn" onclick="chest()">Abrir cofre</button></section>`}
+ ${S.chest===today()?`<section class="card c"><span class="mu">Cofre de hoy abierto. Vuelve mañana por otro</span></section>`:`<section class="card c hero chestc"><div class="chest">${pi('cofre',64)}</div><h3>¡${esc(S.pet.name)} te trajo un regalo!</h3><button class="btn" onclick="chest()">Abrir cofre</button></section>`}
  ${streakCard()}
  ${missionsHTML()}
  ${moodCard()}
@@ -2406,7 +2409,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=153;
+const BUILD=155;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
@@ -2643,7 +2646,7 @@ addEventListener('online',offBar);addEventListener('offline',offBar);setTimeout(
 /* ---------- estado de guardado ---------- */
 let SYNC={pend:0};
 const syncOff=()=>navigator.onLine===false;
-const syncTxt=()=>syncOff()?'Sin conexión. Tus cambios están a salvo en este celular y se envían solos cuando vuelvas.':SYNC.pend>0?'Guardando en tu cuenta…':'Todo guardado en tu cuenta.';
+const syncTxt=()=>SYNC.err&&!syncOff()?'No se pudo guardar tu progreso en la nube. Se reintenta solo; tus datos siguen en este celular.':syncOff()?'Sin conexión. Tus cambios están a salvo en este celular y se envían solos cuando vuelvas.':SYNC.pend>0?'Guardando en tu cuenta…':'Todo guardado en tu cuenta.';
 function syncPaint(){const w=syncOff()||SYNC.pend>0;const b=$('.top .pf');if(b)b.classList.toggle('unsaved',w);const e=$('#sy');if(e){e.className='sy mu'+(w?' w':'');e.lastChild.textContent=syncTxt()}}
 addEventListener('online',syncPaint);addEventListener('offline',syncPaint);
 
