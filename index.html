@@ -1956,7 +1956,7 @@ function ckDraw(){let o=$('#ck');if(!CK){if(o)o.remove();return}
  const x=`<button class="ckx" onclick="ckClose()" aria-label="Cerrar">${ic('x',22)}</button>`;
  if(CK.st==='q')o.innerHTML=x+`<div class="ckp">${pet3('pet3dx',150)}</div><span class="cks">${esc(S.pet.name)} te pregunta</span><h1 class="ckq">${esc(CK.q)}</h1><button class="ckb" onclick="ckGo()">¡Voy a contestar!</button><button class="ckl" onclick="ckSkip()">Otra pregunta</button>`;
  else if(CK.st==='cd')o.innerHTML=x+`<div class="ckc"><i></i><b key="${CK.cd}">${CK.cd}</b></div><p class="cks">Prepárate…</p>`;
- else if(CK.st==='a')o.innerHTML=x+`<span class="cks">${esc(CK.q)}</span><textarea id="ckt" class="ckt" rows="5" maxlength="300" placeholder="Escribe aquí cómo te fue…" oninput="CK.tx=this.value;$('#ckb').disabled=!this.value.trim()">${esc(CK.tx)}</textarea>${CK.err?`<p class="cke">${esc(CK.err)}<small>${esc(CK.cd2||'')}</small></p>`:''}<button class="ckb" id="ckb" onclick="ckSend()" ${CK.tx.trim()?'':'disabled'}>Guardar en mi diario</button><button class="ckl" onclick="ckSkip()">Cambiar pregunta</button>`;
+ else if(CK.st==='a')o.innerHTML=x+`<span class="cks">${esc(CK.q)}</span><textarea id="ckt" class="ckt" rows="5" maxlength="300" placeholder="Escribe aquí cómo te fue…" oninput="CK.tx=this.value;$('#ckb').disabled=!this.value.trim()">${esc(CK.tx)}</textarea>${CK.err?`<p class="cke">${esc(CK.err)}</p>`:''}<button class="ckb" id="ckb" onclick="ckSend()" ${CK.tx.trim()?'':'disabled'}>Guardar en mi diario</button><button class="ckl" onclick="ckSkip()">Cambiar pregunta</button>`;
  else if(CK.st==='w')o.innerHTML=x+`<div class="ckc"><b>…</b></div><p class="cks">Guardando…</p>`;
  else{const a=ckLoad();o.innerHTML=x+`<div class="ckp">${pet3('pet3dx',150)}</div><h1 class="ckq">¡Guardado en tu diario!</h1><p class="cks">${a.n<3?'Ganaste Lumis y XP por contarle a '+esc(S.pet.name)+'.':'Hoy ya ganaste tus premios. Puedes seguir contando.'}</p><button class="ckb" onclick="ckNext()">Otra pregunta</button><button class="ckl" onclick="ckClose(1)">Ver mi diario</button>`}
  if(CK&&(CK.st==='q'||CK.st==='d'))p3mount()
@@ -1966,9 +1966,9 @@ function ckSkip(){const a=ckLoad();a.i++;ckSave(a);CK.q=ckQ();CK.bg=CKBG[(a.i+a.
 function ckNext(){const a=ckLoad();a.i++;ckSave(a);CK.q=ckQ();CK.bg=CKBG[(a.i+a.n)%CKBG.length];CK.st='q';CK.tx='';ckDraw()}
 function ckClose(toDiary){CK=null;ckDraw();p3show();if(toDiary){if(S.group)spaceTo(null);go('arc')}else if(S.tab==='arc'||S.tab==='home')soft()}
 async function ckSend(){const t=(CK.tx||'').trim().slice(0,300);if(!t)return;const q=CK.q;CK.st='w';ckDraw();
- const to=setTimeout(()=>{if(CK&&CK.st==='w'){CK.st='a';CK.tx=t;CK.err='Tarda demasiado en guardar. Tu texto sigue aquí.';CK.cd2='el servidor no confirmó en 15 s';ckDraw()}},15000);
+ const to=setTimeout(()=>{if(CK&&CK.st==='w'){CK.st='a';CK.tx=t;CK.err='Tarda demasiado en guardar. Tu texto sigue aquí.';ckDraw()}},15000);
  try{await CLOUD.publishMe({k:'carta',t:q.slice(0,120),x:{to:'Mi día',tx:t},by:''});clearTimeout(to)}
- catch(e){clearTimeout(to);if(CK){CK.st='a';CK.tx=t;CK.err='No se pudo guardar. Tu texto sigue aquí.';CK.cd2=String((e&&(e.code||e.message))||'error').slice(0,80);ckDraw()}return}
+ catch(e){clearTimeout(to);if(CK){CK.st='a';CK.tx=t;CK.err='No se pudo guardar. Tu texto sigue aquí.';ckDraw()}return}
  if(!CK)return;const a=ckLoad();const first=a.n<3;a.n++;a.i++;ckSave(a);S.qaN=(S.qaN||0)+1;S.qd=dayKey();track('qa');burst(30);buzz('big');if(first)rw(3,3);
  CK.st='d';ckDraw()}
 
@@ -2406,7 +2406,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=152;
+const BUILD=153;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
