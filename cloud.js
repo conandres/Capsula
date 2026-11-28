@@ -4,9 +4,9 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/fireba
 import { getAuth, onAuthStateChanged, signInWithCredential, GoogleAuthProvider, signOut, reauthenticateWithCredential, deleteUser,
   createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, EmailAuthProvider }
   from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
-import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager, memoryLocalCache,
+import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager,
   doc, collection, getDoc, getDocs, setDoc, updateDoc, addDoc, deleteDoc, writeBatch, onSnapshot, query, where, orderBy, limit,
-  serverTimestamp, arrayUnion, arrayRemove, getCountFromServer, terminate, clearIndexedDbPersistence, deleteField, getDocFromServer }
+  serverTimestamp, arrayUnion, arrayRemove, getCountFromServer, terminate, clearIndexedDbPersistence, deleteField }
   from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
 const A = window.APP;
@@ -28,12 +28,9 @@ function start() {
   const auth = getAuth(app);
   let db;
   try {
-    /* En el celular (app) el guardado sin conexión queda en el dispositivo; en el navegador se usa memoria para que varias pestañas no se bloqueen entre sí. */
-    const nat = !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform());
     db = initializeFirestore(app, {
       ignoreUndefinedProperties: true,
-      experimentalAutoDetectLongPolling: true,
-      localCache: nat ? persistentLocalCache({ tabManager: persistentMultipleTabManager(), cacheSizeBytes: 200 * 1024 * 1024 }) : memoryLocalCache()
+      localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager(), cacheSizeBytes: 200 * 1024 * 1024 })
     });
   } catch (e) { db = getFirestore(app); }
   CLOUD.configured = true;
@@ -532,49 +529,6 @@ function start() {
     k: p.k, t: p.t, x: p.x, by: p.by || '', authorUid: me.uid, authorName: A.personal().name,
     createdAt: serverTimestamp(), rx0: [], rx1: [], rx2: []
   }));
-
-  /* Prueba de conexión: dice qué responde y qué no (para saber por qué no guarda). */
-  CLOUD.diag = async () => {
-    const out = [];
-    const tm = (pr, ms) => Promise.race([pr, new Promise((_, r) => setTimeout(() => r({ code: 'sin-respuesta-' + ms / 1000 + 's' }), ms))]);
-    out.push('Internet del dispositivo: ' + (navigator.onLine ? 'sí' : 'no'));
-    out.push('Cuenta: ' + (me ? me.uid.slice(0, 6) + '…' : 'sin sesión'));
-    out.push('Cápsula activa: ' + (active ? 'sí' : 'no (diario)'));
-    if (me) {
-      let t0 = Date.now();
-      try { await tm(getDocFromServer(userRef()), 6000); out.push('Lectura del servidor: OK (' + (Date.now() - t0) + ' ms)'); }
-      catch (e) { out.push('Lectura del servidor: ' + (e && (e.code || e.message) || 'error')); }
-      t0 = Date.now();
-      try { await tm(getDocs(query(collection(db, 'users', me.uid, 'posts'), limit(1))), 6000); out.push('Lectura del diario: OK (' + (Date.now() - t0) + ' ms)'); }
-      catch (e) { out.push('Lectura del diario: ' + (e && (e.code || e.message) || 'error')); }
-    }
-    return out.join('\n');
-  };
-
-  /* Guarda en el diario por la vía directa (REST): no depende de la cola de escritura del SDK y devuelve el error real del servidor. */
-  CLOUD.saveDiary = async p => {
-    if (!me || !auth.currentUser) throw new Error('sin-sesion');
-    const tok = await auth.currentUser.getIdToken();
-    const al = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const id = Array.from(crypto.getRandomValues(new Uint8Array(20)), v => al[v % al.length]).join('');
-    const S = v => ({ stringValue: String(v) });
-    const name = 'projects/' + fb.projectId + '/databases/(default)/documents/users/' + me.uid + '/posts/' + id;
-    const body = { writes: [{
-      update: { name, fields: {
-        k: S(p.k), t: S(p.t), x: { mapValue: { fields: Object.fromEntries(Object.entries(p.x).map(([k, v]) => [k, S(v)])) } },
-        by: S(p.by || ''), authorUid: S(me.uid), authorName: S(A.personal().name || ''),
-        rx0: { arrayValue: {} }, rx1: { arrayValue: {} }, rx2: { arrayValue: {} } } },
-      updateTransforms: [{ fieldPath: 'createdAt', setToServerTime: 'REQUEST_TIME' }],
-      currentDocument: { exists: false } }] };
-    const ac = new AbortController(); const tm = setTimeout(() => ac.abort(), 15000);
-    try {
-      const r = await fetch('https://firestore.googleapis.com/v1/projects/' + fb.projectId + '/databases/(default)/documents:commit', {
-        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok }, body: JSON.stringify(body), signal: ac.signal });
-      if (!r.ok) { let m = ''; try { const j = await r.json(); m = (j.error && (j.error.status + ': ' + j.error.message)) || ''; } catch (e) {} const er = new Error(m || ('http-' + r.status)); er.code = 'http-' + r.status; throw er; }
-      return id;
-    } catch (e) { if (e && e.name === 'AbortError') { const er = new Error('sin-respuesta-15s'); er.code = 'sin-respuesta-15s'; throw er; } throw e; }
-    finally { clearTimeout(tm); }
-  };
 
   CLOUD.publishMe = p => track(addDoc(collection(db, 'users', me.uid, 'posts'), {
     k: p.k, t: p.t, x: p.x, by: p.by || '', authorUid: me.uid, authorName: A.personal().name,
