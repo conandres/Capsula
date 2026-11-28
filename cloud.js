@@ -4,7 +4,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/fireba
 import { getAuth, onAuthStateChanged, signInWithCredential, GoogleAuthProvider, signOut, reauthenticateWithCredential, deleteUser,
   createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, EmailAuthProvider }
   from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
-import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager,
+import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager, memoryLocalCache,
   doc, collection, getDoc, getDocs, setDoc, updateDoc, addDoc, deleteDoc, writeBatch, onSnapshot, query, where, orderBy, limit,
   serverTimestamp, arrayUnion, arrayRemove, getCountFromServer, terminate, clearIndexedDbPersistence, deleteField }
   from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
@@ -28,9 +28,12 @@ function start() {
   const auth = getAuth(app);
   let db;
   try {
+    /* En el celular (app) el guardado sin conexión queda en el dispositivo; en el navegador se usa memoria para que varias pestañas no se bloqueen entre sí. */
+    const nat = !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform());
     db = initializeFirestore(app, {
       ignoreUndefinedProperties: true,
-      localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager(), cacheSizeBytes: 200 * 1024 * 1024 })
+      experimentalAutoDetectLongPolling: true,
+      localCache: nat ? persistentLocalCache({ tabManager: persistentMultipleTabManager(), cacheSizeBytes: 200 * 1024 * 1024 }) : memoryLocalCache()
     });
   } catch (e) { db = getFirestore(app); }
   CLOUD.configured = true;

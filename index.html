@@ -393,6 +393,11 @@ textarea.in{resize:vertical;line-height:1.45;min-height:132px;padding-top:12px}t
 @keyframes fh{0%{transform:translate(-50%,0) scale(.6);opacity:0}20%{opacity:1;transform:translate(-50%,-10px) scale(1.2)}100%{transform:translate(-50%,-90px) scale(1);opacity:0}}
 .fl.hop{animation:hop .6s ease-out}
 @keyframes hop{0%{transform:none}25%{transform:translateY(-34px) scale(.92,1.1)}50%{transform:translateY(0) scale(1.15,.85)}70%{transform:translateY(-12px)}100%{transform:none}}
+.qcard{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:0;border-radius:26px;padding:18px;color:#fff;font:inherit;cursor:pointer;position:relative;overflow:hidden;background:linear-gradient(135deg,#FF9A3D,#FF5C7A);box-shadow:0 8px 22px rgba(255,110,90,.28)}
+.qcard.t-pareja{background:linear-gradient(135deg,#FF5C8A,#C23B8F);box-shadow:0 8px 22px rgba(194,59,143,.3)}.qcard.t-amigos{background:linear-gradient(135deg,#2F9BFF,#18C4A8);box-shadow:0 8px 22px rgba(47,155,255,.3)}
+.qcard::after{content:"";position:absolute;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.14);right:-40px;top:-50px}
+.qcb{flex:none;width:48px;height:48px;border-radius:16px;background:rgba(255,255,255,.25);display:grid;place-items:center}.qct{display:flex;flex-direction:column;gap:4px;position:relative;z-index:1}
+.qct i{font-style:normal;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;opacity:.92}.qct b{font-size:18px;line-height:1.25}.qct em{font-style:normal;font-size:13px;font-weight:700;opacity:.95}
 .ckcard{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:0;border-radius:24px;padding:16px 18px;color:#fff;font:inherit;cursor:pointer;background:linear-gradient(135deg,#7B5CFF,#FF5CAA);box-shadow:0 8px 22px rgba(123,92,255,.3)}.ckcard span{display:flex;flex-direction:column;gap:2px}.ckcard b{font-size:17px}.ckcard i{font-style:normal;font-size:13px;opacity:.9}
 .ck{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:28px 24px max(28px,env(safe-area-inset-bottom));text-align:center;color:#fff;background:linear-gradient(160deg,var(--c1),var(--c2));animation:fi .3s}
 .ck::before,.ck::after{content:"";position:absolute;border-radius:50%;background:rgba(255,255,255,.14);pointer-events:none}.ck::before{width:260px;height:260px;top:-70px;right:-80px}.ck::after{width:200px;height:200px;bottom:-60px;left:-60px}
@@ -1413,11 +1418,12 @@ function home(){
  <div class="duo"><button class="tile2" style="grid-column:1/-1" onclick="go('caps')">${pi('capsulas',40)}<b>Mis cápsulas</b><span class="mu">${n?'Compartes historias en '+n+(n>1?' espacios':' espacio'):'Comparte historias con tu familia o amigos'}</span></button></div>
 
  ${goalCard()}`}
+const qCard=(q,oc,tag,type,cta)=>`<button class="qcard t-${type||'familia'}" onclick="${oc}"><span class="qcb">${ic('bulb',22,1.8)}</span><span class="qct"><i>${tag}</i><b>${esc(q)}</b><em>${cta}</em></span></button>`;
 const qLine=(q,oc,tag)=>`<button class="qline" onclick="${oc}"><span>${ic('bulb',18,1.8)}</span><span class="qt"><i>${tag||'Pregunta del día'}</i>${esc(q)}</span>${ic('back',16).replace('class="ic"','class="ic" style="transform:rotate(180deg);opacity:.5"')}</button>`;
 const goTrivF=id=>{spaceTo(id);go('triv')};
 function dqCard(){const f=S.families[0],done=S.qd===dayKey();
  if(!f)return qLine(ckQ(),'openCk()','Mi día · '+esc(S.pet.name)+' te pregunta');
- return qLine(qaToday(false,f),`goTrivF('${esc(f.id)}')`,done?'Ya respondiste · ver respuestas':'Pregunta de hoy · '+esc(f.name))}
+ return qCard(qaToday(false,f),`goTrivF('${esc(f.id)}')`,'Pregunta de hoy · '+esc(f.name),f.type,done?'Ya respondiste · ver respuestas →':'Toca para responder →')}
 const FGOAL=10;
 function weekCount(){const t0=weekStart().getTime();return S.posts.filter(p=>p.ts>=t0&&TY[p.k]&&!isBlk(p.a)).length}
 function goalCheck(){if(!S.user||!S.families.length||!S.group)return;if(weekCount()>=FGOAL&&S.wkG!==wkKey()){S.wkG=wkKey();S.fg=(S.fg||0)+1;S.lm=(S.lm||0)+30;S.lmT=Date.now();save();checkUnl();toast('¡Meta semanal cumplida! +30 Lumis');burst(40);p3play('cheer');bubSay('¡Lo logramos en familia!');render()}}
@@ -1958,7 +1964,7 @@ function ckSkip(){const a=ckLoad();a.i++;ckSave(a);CK.q=ckQ();CK.bg=CKBG[(a.i+a.
 function ckNext(){const a=ckLoad();a.i++;ckSave(a);CK.q=ckQ();CK.bg=CKBG[(a.i+a.n)%CKBG.length];CK.st='q';CK.tx='';ckDraw()}
 function ckClose(toDiary){CK=null;ckDraw();p3show();if(toDiary){if(S.group)spaceTo(null);go('arc')}else if(S.tab==='arc'||S.tab==='home')soft()}
 async function ckSend(){const t=(CK.tx||'').trim().slice(0,300);if(!t)return;const q=CK.q;CK.st='w';ckDraw();
- let to=setTimeout(()=>{if(CK&&CK.st==='w'){CK.st='a';ckDraw();toast('Tarda en guardar. Revisa tu conexión y vuelve a intentar.')}},12000);
+ let to=setTimeout(()=>{if(CK&&CK.st==='w'){CK.st='a';ckDraw();toast(navigator.onLine?'El servidor no respondió. Cierra otras pestañas de Cápsula y vuelve a intentar.':'Sin internet. Vuelve a intentar al reconectarte.')}},12000);
  try{await CLOUD.publishMe({k:'carta',t:q.slice(0,120),x:{to:'Mi día',tx:t},by:''});clearTimeout(to)}
  catch(e){clearTimeout(to);if(CK){CK.st='a';CK.tx=t;ckDraw();toast('No se guardó ('+String((e&&(e.code||e.message))||'error').slice(0,60)+'). Inténtalo otra vez.')}return}
  if(!CK)return;const a=ckLoad();const first=a.n<3;a.n++;a.i++;ckSave(a);S.qaN=(S.qaN||0)+1;S.qd=dayKey();track('qa');burst(30);buzz('big');if(first)rw(3,3);
@@ -2100,7 +2106,6 @@ function arc(){
  const n=S.posts.length;
  return `<div class="spch"><h2>Mi diario</h2>${spaceTag()}</div>
  <section class="card"><h3>¿Cómo quieres contar hoy?</h3><div class="qp">${Object.entries(TY).map(([k,v])=>`<button onclick="compose('${k}')">${ic(v.i,18)}${v.l}</button>`).join('')}</div></section>
- ${qLine(wqNow(),'chooser(wqNow())','Pregunta de la semana')}
  <button class="ckcard" onclick="openCk()">${pi('pregunta',44)}<span><b>Cuéntale a ${esc(S.pet.name)} tu día</b><i>Una pregunta, tu respuesta y a tu diario</i></span></button>
  ${wrapCard()}${memCard()}${bookCard(n)}${afChips()}${arcList(S.af)}`}
 function delPost(id){if(!confirm('¿Eliminar esta historia'+(S.group?' para todo el grupo':'')+'?'))return;CLOUD.deletePost(id).then(()=>toast('Historia eliminada')).catch(()=>toast('No se eliminó. Revisa tu conexión e inténtalo otra vez.'))}
@@ -2335,7 +2340,7 @@ const mgCard=()=>`<section class="card"><div class="mgcs"><h3>Juegos de memoria 
  <div class="mrow">${pi('torres',44)}<div class="tx"><b>Torres</b><span class="mu">Ordena los bloques como el objetivo</span></div><button class="btn" onclick="twStart()">Jugar</button></div>
 </div></section>`;
 function capHome(){
- return `${famCard()}${wrapCard()}${memCard()}${qLine(qaToday(),"go('triv')",S.qd===dayKey()?'Ya respondiste · ver respuestas':'Pregunta de hoy')}
+ return `${famCard()}${wrapCard()}${memCard()}${qCard(qaToday(),"go('triv')",'Pregunta de hoy',S.group&&S.group.type,S.qd===dayKey()?'Ya respondiste · ver respuestas →':'Toca para responder →')}
  <div class="duo"><button class="tile2" onclick="chooser()">${pi('primera',40)}<b>Escribir aquí</b><span class="mu">Se guarda en ${esc(S.group.name)}</span></button><button class="tile2" onclick="S.sub='recuerdos';soft()">${pi('libro',40)}<b>Recuerdos</b><span class="mu">${S.posts.length} ${S.posts.length===1?'historia':'historias'}</span></button></div>
  <div class="duo"><button class="tile2" style="grid-column:1/-1" onclick="S.sub='cartas';soft()">${pi('capsulas',40)}<b>Cartas</b><span class="mu">${S.posts.filter(p=>p.k==='carta').length} escritas</span></button></div>
  ${bookCard(S.posts.length)}
@@ -2399,7 +2404,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=148;
+const BUILD=149;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
