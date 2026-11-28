@@ -559,9 +559,9 @@ nav button .ic{width:26px;height:26px}
 .pav{position:relative;display:inline-grid;place-items:center;border-radius:50%;background:#EDE8FF;color:#4F36B0;font-weight:800;flex:none;overflow:hidden}
 .pav img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .dst{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.afc{display:flex;gap:8px;overflow-x:auto;flex:none}
-.afc button{min-height:44px;padding:0 16px;border-radius:99px;border:1.5px solid var(--line);background:var(--card);font:inherit;font-weight:700;font-size:14px;color:var(--tx);cursor:pointer;white-space:nowrap}
-.afc button.on{background:var(--p);border-color:var(--p);color:var(--color-on-primary)}
+.afc{display:flex;flex-wrap:wrap;gap:8px;flex:none}
+.afc button{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:99px;border:1.5px solid var(--line);background:var(--card);font:inherit;font-weight:700;font-size:14px;color:var(--tx);cursor:pointer;white-space:nowrap}
+.afc button em{font-style:normal;font-size:12px;opacity:.7}.afc button.on{background:var(--p);border-color:var(--p);color:var(--color-on-primary)}
 .sec3{display:flex;flex-direction:column;gap:6px}
 /* ===== Capa estilo iOS: títulos grandes, tarjetas limpias, botones táctiles, control segmentado y hojas con agarre. Usa los mismos colores y temas. ===== */
 h1,h2,.spch h2,.ch h2{font-family:var(--f);font-weight:800;letter-spacing:-.03em}
@@ -1966,7 +1966,10 @@ function postBody(p){
  if(p.k==='receta')return `<div class="rcp">${x.by?`<span class="mu">Te la enseñó ${esc(x.by)}</span>`:''}<b>Ingredientes</b><ul>${(Array.isArray(x.ing)?x.ing:[]).map(i=>`<li>${esc(i)}</li>`).join('')}</ul><b>Preparación</b><p>${esc(x.stp||'')}</p></div>`;
  return ''}
 const AFL=()=>Object.entries(TY).filter(([k])=>k!=='video');
-const afChips=()=>`<div class="afc" role="group" aria-label="Filtrar">${[['', 'Todo'],['fav','★ Favoritas'],...AFL().map(([k,v])=>[k,v.l])].map(([k,l])=>`<button class="${(S.af||'')===k?'on':''}" aria-pressed="${(S.af||'')===k}" onclick="S.af='${k}';soft()">${l}</button>`).join('')}</div>`;
+const afChips=()=>{const all=S.posts.filter(p=>TY[p.k]&&!isBlk(p.a));if(!all.length)return'';
+ const cnt=k=>k===''?all.length:k==='fav'?all.filter(p=>isFav(p.id)).length:all.filter(p=>p.k===k).length,cur=S.af||'';
+ const L=[['','Todo','book'],['fav','Favoritas','star'],...AFL().map(([k,v])=>[k,v.l,v.i])].filter(([k])=>k===''||k===cur||cnt(k)>0);
+ return `<div class="afc" role="group" aria-label="Filtrar">${L.map(([k,l,i])=>`<button class="${cur===k?'on':''}" aria-pressed="${cur===k}" onclick="S.af='${k}';soft()">${ic(i,16)}<span>${l}</span><em>${cnt(k)}</em></button>`).join('')}</div>`};
 /* ---------- moderación: reportar y bloquear ---------- */
 const isBlk=u=>!!u&&u!=='me'&&(S.blk||[]).includes(u);
 const RSN=[['sexual','Contenido sexual o desnudez'],['violencia','Violencia o algo peligroso'],['acoso','Acoso, burla o insultos'],['privado','Muestra información privada'],['menor','Pone en riesgo a un menor'],['otro','Otro motivo']];
@@ -2348,7 +2351,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=146;
+const BUILD=147;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
