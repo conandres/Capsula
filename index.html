@@ -2110,7 +2110,7 @@ function qrSvg(text,px){
 
 function showQr(){let svg='';try{svg=qrSvg(inviteLink(),248)}catch(e){toast('No pudimos crear el QR. Comparte el enlace o el código.');return}
  showSheet(`<h2>Invita en persona</h2><p class="mu">Pídele a quien tengas al lado que abra la cámara de su celular y apunte aquí. Se une a “${esc(S.group.name)}” al instante.</p><div class="qrb">${svg}</div><p class="mu c">O dile el código: <b>${esc(S.group.code)}</b></p><button class="btn s w" onclick="cl()">Cerrar</button>`);S.inv=1;save()}
-const baseUrl=()=>location.origin+location.pathname.replace(/index\.html$/,'');
+const baseUrl=()=>/^(localhost|127\.0\.0\.1)$/.test(location.hostname)&&location.port===''||(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform())?'https://conandres.github.io/Capsula/':location.origin+location.pathname.replace(/index\.html$/,'');
 const inviteLink=()=>baseUrl()+'?codigo='+S.group.code+(S.user?'&de='+encodeURIComponent(S.user.uid):'');
 const appLink=()=>baseUrl()+'?ref='+encodeURIComponent(S.user.uid);
 const appText=()=>'Estoy usando Cápsula para guardar historias con mi gente y cuidar una mascota. Únete con mi enlace: '+appLink();
@@ -2345,7 +2345,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=142;
+const BUILD=143;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
