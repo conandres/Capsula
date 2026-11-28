@@ -530,6 +530,11 @@ function start() {
     createdAt: serverTimestamp(), rx0: [], rx1: [], rx2: []
   }));
 
+  CLOUD.publishMe = p => track(addDoc(collection(db, 'users', me.uid, 'posts'), {
+    k: p.k, t: p.t, x: p.x, by: p.by || '', authorUid: me.uid, authorName: A.personal().name,
+    createdAt: serverTimestamp(), rx0: [], rx1: [], rx2: []
+  }));
+
   /* Pasar la cápsula a otro miembro: cambia el dueño de la familia y de su código en una sola operación. */
   CLOUD.transferOwner = async (fid, uid) => {
     const f = families.find(x => x.id === fid);
