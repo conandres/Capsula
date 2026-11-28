@@ -1966,9 +1966,9 @@ function ckNext(){const a=ckLoad();a.i++;ckSave(a);CK.q=ckQ();CK.bg=CKBG[(a.i+a.
 function ckClose(toDiary){CK=null;ckDraw();p3show();if(toDiary){if(S.group)spaceTo(null);go('arc')}else if(S.tab==='arc'||S.tab==='home')soft()}
 async function ckSend(){const t=(CK.tx||'').trim().slice(0,300);if(!t)return;const q=CK.q;CK.st='w';ckDraw();
  let W={st:'pend'},to=setTimeout(async()=>{if(CK&&CK.st==='w'){CK.st='a';CK.tx=t;ckDraw();let r='';try{r=await CLOUD.diag()}catch(e){r='No se pudo probar: '+e}
-  showSheet(`<div class="ch"><h2>No se pudo guardar</h2></div><p class="mu">El servidor tardó demasiado. Tu texto sigue aquí; inténtalo otra vez. Si se repite, mándame una captura de esto:</p><pre class="diag">${esc(r+'\nEscritura: '+(W.st==='err'?W.code:W.st==='ok'?'OK':'sin respuesta'))}</pre><button class="btn w" onclick="cl()">Entendido</button>`)}},12000);
- try{await CLOUD.publishMe({k:'carta',t:q.slice(0,120),x:{to:'Mi día',tx:t},by:''});W.st='ok';clearTimeout(to)}
- catch(e){W.st='err';W.code=String((e&&(e.code||e.message))||'error');clearTimeout(to);if(CK){CK.st='a';CK.tx=t;ckDraw();toast('No se guardó ('+String((e&&(e.code||e.message))||'error').slice(0,60)+'). Inténtalo otra vez.')}return}
+  showSheet(`<div class="ch"><h2>No se pudo guardar</h2></div><p class="mu">El servidor tardó demasiado. Tu texto sigue aquí; inténtalo otra vez. Si se repite, mándame una captura de esto:</p><pre class="diag">${esc(r+'\nEscritura: '+(W.st==='err'?W.code:W.st==='ok'?'OK':'sin respuesta'))}</pre><button class="btn w" onclick="cl()">Entendido</button>`)}},20000);
+ try{await (CLOUD.saveDiary||CLOUD.publishMe)({k:'carta',t:q.slice(0,120),x:{to:'Mi día',tx:t},by:''});W.st='ok';clearTimeout(to)}
+ catch(e){W.st='err';W.code=String((e&&(e.message||e.code))||'error');clearTimeout(to);if(CK){CK.st='a';CK.tx=t;ckDraw();showSheet(`<div class="ch"><h2>No se pudo guardar</h2></div><p class="mu">Tu texto sigue aquí. Mándame una captura de esto:</p><pre class="diag">${esc(W.code)}</pre><button class="btn w" onclick="cl()">Entendido</button>`)}return}
  if(!CK)return;const a=ckLoad();const first=a.n<3;a.n++;a.i++;ckSave(a);S.qaN=(S.qaN||0)+1;S.qd=dayKey();track('qa');burst(30);buzz('big');if(first)rw(3,3);
  CK.st='d';ckDraw()}
 
@@ -2406,7 +2406,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=150;
+const BUILD=151;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';

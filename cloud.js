@@ -551,6 +551,31 @@ function start() {
     return out.join('\n');
   };
 
+  /* Guarda en el diario por la vía directa (REST): no depende de la cola de escritura del SDK y devuelve el error real del servidor. */
+  CLOUD.saveDiary = async p => {
+    if (!me || !auth.currentUser) throw new Error('sin-sesion');
+    const tok = await auth.currentUser.getIdToken();
+    const al = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const id = Array.from(crypto.getRandomValues(new Uint8Array(20)), v => al[v % al.length]).join('');
+    const S = v => ({ stringValue: String(v) });
+    const name = 'projects/' + fb.projectId + '/databases/(default)/documents/users/' + me.uid + '/posts/' + id;
+    const body = { writes: [{
+      update: { name, fields: {
+        k: S(p.k), t: S(p.t), x: { mapValue: { fields: Object.fromEntries(Object.entries(p.x).map(([k, v]) => [k, S(v)])) } },
+        by: S(p.by || ''), authorUid: S(me.uid), authorName: S(A.personal().name || ''),
+        rx0: { arrayValue: {} }, rx1: { arrayValue: {} }, rx2: { arrayValue: {} } } },
+      updateTransforms: [{ fieldPath: 'createdAt', setToServerTime: 'REQUEST_TIME' }],
+      currentDocument: { exists: false } }] };
+    const ac = new AbortController(); const tm = setTimeout(() => ac.abort(), 15000);
+    try {
+      const r = await fetch('https://firestore.googleapis.com/v1/projects/' + fb.projectId + '/databases/(default)/documents:commit', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok }, body: JSON.stringify(body), signal: ac.signal });
+      if (!r.ok) { let m = ''; try { const j = await r.json(); m = (j.error && (j.error.status + ': ' + j.error.message)) || ''; } catch (e) {} const er = new Error(m || ('http-' + r.status)); er.code = 'http-' + r.status; throw er; }
+      return id;
+    } catch (e) { if (e && e.name === 'AbortError') { const er = new Error('sin-respuesta-15s'); er.code = 'sin-respuesta-15s'; throw er; } throw e; }
+    finally { clearTimeout(tm); }
+  };
+
   CLOUD.publishMe = p => track(addDoc(collection(db, 'users', me.uid, 'posts'), {
     k: p.k, t: p.t, x: p.x, by: p.by || '', authorUid: me.uid, authorName: A.personal().name,
     createdAt: serverTimestamp(), rx0: [], rx1: [], rx2: []
