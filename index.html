@@ -1140,7 +1140,7 @@ function bindCr(){const c=$('#cr');if(!c)return;CR.i=0;
   document.querySelectorAll('#obs i').forEach((b,j)=>b.classList.toggle('on',j<=i));
   const cta=$('.cta');if(cta)cta.dataset.last=i===CR.n-1?'1':'0';
   if(scroll)c.scrollTo({left:i*w(),behavior:RM()?'auto':'smooth'});
-  clearInterval(CR.t);let left=CR.rd;const nb=$('#crn'),gb=$('#crg'),tick=()=>{const last=i===CR.n-1;if(nb){nb.disabled=left>0;nb.textContent=left>0?'Lee con calma… '+left:'Siguiente →'}if(gb)gb.disabled=left>0;if(left<=0)clearInterval(CR.t);left--};tick();CR.t=setInterval(()=>{if($('#crn')||$('#crg'))tick();else clearInterval(CR.t)},1000)}
+  clearInterval(CR.t);let left=CR.rd;const nb=$('#crn'),gb=$('#crg'),tick=()=>{const last=i===CR.n-1;if(nb){nb.disabled=left>0}if(gb)gb.disabled=left>0;if(left<=0)clearInterval(CR.t);left--};tick();CR.t=setInterval(()=>{if($('#crn')||$('#crg'))tick();else clearInterval(CR.t)},1000)}
  CR.go=i=>set(Math.max(0,Math.min(CR.n-1,i)),true);CR.next=()=>CR.go(CR.i+1);
  set(0,false)}
 
@@ -2347,7 +2347,7 @@ function backTop(){
  return false}
 try{history.replaceState({c:0},'');history.pushState({c:1},'');
  window.addEventListener('popstate',()=>{if(backTop())history.pushState({c:1},'');else if(history.state&&history.state.c===0){/* sale de la app */history.back()}})}catch(e){}
-const BUILD=144;
+const BUILD=145;
 async function updChk(){if(!NATIVE)return;try{if(sessionStorage.getItem('capsula_updx'))return}catch(e){}
  try{const r=await fetch((CFG().webUrl||'https://conandres.github.io/Capsula/')+'latest.json?'+Date.now(),{cache:'no-store'});const j=await r.json();if(j&&+j.build>BUILD){S.upd=+j.build;soft()}}catch(e){}}
 const updCard=()=>S.upd?`<section class="card upd"><div class="row sp"><span class="tx"><b>Hay una versión nueva de Cápsula</b><span class="mu">Actualízala desde la tienda para tener las últimas mejoras.</span></span><button class="btn s" onclick="updX()">Entendido</button></div></section>`:'';
