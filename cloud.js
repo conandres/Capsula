@@ -6,7 +6,7 @@ import { getAuth, onAuthStateChanged, signInWithCredential, GoogleAuthProvider, 
   from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 import { initializeFirestore, getFirestore, persistentLocalCache, persistentMultipleTabManager, memoryLocalCache,
   doc, collection, getDoc, getDocs, setDoc, updateDoc, addDoc, deleteDoc, writeBatch, onSnapshot, query, where, orderBy, limit,
-  serverTimestamp, arrayUnion, arrayRemove, getCountFromServer, terminate, clearIndexedDbPersistence, deleteField }
+  serverTimestamp, arrayUnion, arrayRemove, getCountFromServer, terminate, clearIndexedDbPersistence, deleteField, getDocFromServer }
   from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
 const A = window.APP;
@@ -532,6 +532,24 @@ function start() {
     k: p.k, t: p.t, x: p.x, by: p.by || '', authorUid: me.uid, authorName: A.personal().name,
     createdAt: serverTimestamp(), rx0: [], rx1: [], rx2: []
   }));
+
+  /* Prueba de conexión: dice qué responde y qué no (para saber por qué no guarda). */
+  CLOUD.diag = async () => {
+    const out = [];
+    const tm = (pr, ms) => Promise.race([pr, new Promise((_, r) => setTimeout(() => r({ code: 'sin-respuesta-' + ms / 1000 + 's' }), ms))]);
+    out.push('Internet del dispositivo: ' + (navigator.onLine ? 'sí' : 'no'));
+    out.push('Cuenta: ' + (me ? me.uid.slice(0, 6) + '…' : 'sin sesión'));
+    out.push('Cápsula activa: ' + (active ? 'sí' : 'no (diario)'));
+    if (me) {
+      let t0 = Date.now();
+      try { await tm(getDocFromServer(userRef()), 6000); out.push('Lectura del servidor: OK (' + (Date.now() - t0) + ' ms)'); }
+      catch (e) { out.push('Lectura del servidor: ' + (e && (e.code || e.message) || 'error')); }
+      t0 = Date.now();
+      try { await tm(getDocs(query(collection(db, 'users', me.uid, 'posts'), limit(1))), 6000); out.push('Lectura del diario: OK (' + (Date.now() - t0) + ' ms)'); }
+      catch (e) { out.push('Lectura del diario: ' + (e && (e.code || e.message) || 'error')); }
+    }
+    return out.join('\n');
+  };
 
   CLOUD.publishMe = p => track(addDoc(collection(db, 'users', me.uid, 'posts'), {
     k: p.k, t: p.t, x: p.x, by: p.by || '', authorUid: me.uid, authorName: A.personal().name,
